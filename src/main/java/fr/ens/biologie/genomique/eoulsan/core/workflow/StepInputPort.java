@@ -33,7 +33,7 @@ import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.Set;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.core.SimpleInputPort;
@@ -138,7 +138,7 @@ class StepInputPort extends SimpleInputPort implements Serializable {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("name", getName())
+    return MoreObjects.toStringHelper(this).add("name", getName())
         .add("format", getFormat().getName())
         .add("compressionsAccepted", getCompressionsAccepted())
         .add("requiredInWorkingDirectory", isRequiredInWorkingDirectory())

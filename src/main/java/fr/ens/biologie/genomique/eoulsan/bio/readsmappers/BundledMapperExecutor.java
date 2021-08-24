@@ -35,7 +35,7 @@ import java.nio.channels.FileLock;
 import java.util.List;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 import fr.ens.biologie.genomique.eoulsan.util.BinariesInstaller;
 
@@ -198,7 +198,7 @@ public class BundledMapperExecutor implements MapperExecutor {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("softwarePackage", softwarePackage)
+    return MoreObjects.toStringHelper(this).add("softwarePackage", softwarePackage)
         .add("version", version)
         .add("executablesTemporaryDirectory", executablesTemporaryDirectory)
         .toString();

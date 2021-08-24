@@ -29,6 +29,8 @@ import static java.util.Objects.requireNonNull;
 import java.io.Serializable;
 import java.util.Objects;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * This class defines the default implementation of the experiment sample.
  * @author Xavier Bauquet
@@ -64,7 +66,7 @@ public class ExperimentSampleImpl implements Serializable, ExperimentSample {
   @Override
   public String toString() {
 
-    return com.google.common.base.Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
         .add("experimentSampleName", this.sample)
         .add("experimentSampleMetadata", this.metadata).toString();
   }

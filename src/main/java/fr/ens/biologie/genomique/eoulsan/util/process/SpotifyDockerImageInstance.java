@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.DockerClient.LogsParameter;
 import com.spotify.docker.client.DockerException;
@@ -594,7 +594,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("dockerImage", dockerImage)
+    return MoreObjects.toStringHelper(this).add("dockerImage", dockerImage)
         .toString();
   }
 

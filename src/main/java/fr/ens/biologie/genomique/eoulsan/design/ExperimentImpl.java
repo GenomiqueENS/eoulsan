@@ -36,6 +36,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.common.base.MoreObjects;
+
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 
 /**
@@ -210,7 +212,7 @@ public class ExperimentImpl implements Serializable, Experiment {
   @Override
   public String toString() {
 
-    return com.google.common.base.Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
         .add("experimentId", this.experimentId)
         .add("experimentNumber", this.experimentNumber)
         .add("experimentName", this.experimentName)

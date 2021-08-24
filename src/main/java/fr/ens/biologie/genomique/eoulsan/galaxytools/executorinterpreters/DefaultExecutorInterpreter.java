@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Arrays;
 import java.util.List;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 /**
  * This class define the default executor interpreter. This interpreter use
@@ -38,7 +38,7 @@ public class DefaultExecutorInterpreter extends AbstractExecutorInterpreter {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("name", getName()).toString();
+    return MoreObjects.toStringHelper(this).add("name", getName()).toString();
   }
 
 }

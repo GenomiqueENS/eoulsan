@@ -34,7 +34,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.UUID;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -360,7 +360,7 @@ public class ExecutorArguments {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
         .add("localWorkingPathname", getLocalWorkingPathname())
         .add("hadoopWorkingPathname", getHadoopWorkingPathname())
         .add("designPathname", getDesignPathname())

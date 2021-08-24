@@ -35,7 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -235,7 +235,7 @@ class StepOutputPort extends SimpleOutputPort {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("name", getName())
+    return MoreObjects.toStringHelper(this).add("name", getName())
         .add("format", getFormat().getName())
         .add("compression", getCompression()).add("step", getStep().getId())
         .toString();

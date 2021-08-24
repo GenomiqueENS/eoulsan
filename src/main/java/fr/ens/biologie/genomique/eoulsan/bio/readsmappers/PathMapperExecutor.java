@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.BundledMapperExecutor.ProcessResult;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
@@ -105,7 +105,7 @@ public class PathMapperExecutor implements MapperExecutor {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).toString();
+    return MoreObjects.toStringHelper(this).toString();
   }
 
   //

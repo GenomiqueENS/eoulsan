@@ -29,7 +29,7 @@ import static java.util.Objects.requireNonNull;
 import java.io.Serializable;
 import java.util.List;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -146,7 +146,7 @@ public class UnmodifiableData implements Data, Serializable {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("name", getName())
+    return MoreObjects.toStringHelper(this).add("name", getName())
         .add("format", getFormat().getName()).add("metadata", getMetadata())
         .add("list", isList()).add("elements", getListElements()).toString();
   }

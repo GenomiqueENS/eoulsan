@@ -42,6 +42,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import com.google.common.base.MoreObjects;
+
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
@@ -483,7 +485,7 @@ public final class XMLDataFormat extends AbstractDataFormat
   @Override
   public String toString() {
 
-    return com.google.common.base.Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
         .add("name", this.name).add("description", this.description)
         .add("alias", this.alias).add("prefix", this.prefix)
         .add("contentType", this.contentType)

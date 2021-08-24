@@ -39,7 +39,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
@@ -270,7 +270,7 @@ public class DockerMapperExecutor implements MapperExecutor {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
         .add("dockerConnection", dockerConnection)
         .add("temporaryDirectory", temporaryDirectory).toString();
   }

@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -492,7 +492,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   @Override
   public String toString() {
-    return Objects.toStringHelper(this).add("id", this.id)
+    return MoreObjects.toStringHelper(this).add("id", this.id)
         .add("step", this.step.getId()).add("contextName", this.contextName)
         .toString();
   }
