@@ -47,7 +47,7 @@ public class SAMUtilsTest {
     final InputStream is =
         SAMUtilsTest.class.getResourceAsStream("/mapper_results_SE.sam");
 
-    String s = "@HD\tVN:1.4\n"
+    String s = "@HD\tVN:1.5\n"
         + "@SQ\tSN:chr1\tLN:197195432\n" + "@SQ\tSN:chr2\tLN:181748087\n"
         + "@SQ\tSN:chr3\tLN:159599783\n" + "@SQ\tSN:chr4\tLN:155630120\n"
         + "@SQ\tSN:chr5\tLN:152537259\n" + "@SQ\tSN:chr6\tLN:149517037\n"

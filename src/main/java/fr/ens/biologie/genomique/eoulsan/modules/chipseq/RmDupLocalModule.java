@@ -25,7 +25,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
-import picard.sam.MarkDuplicates;
+import picard.sam.markduplicates.MarkDuplicates;
 
 /**
  * This class removes PCR duplicates from a SAM file. It uses Picard's

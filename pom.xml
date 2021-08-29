@@ -19,7 +19,7 @@
 
 		<java.version>1.8</java.version>
 		<hadoop.version>2.3.0</hadoop.version>
-		<htsjdk.version>1.118</htsjdk.version>
+		<htsjdk.version>2.13.2</htsjdk.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -428,13 +428,13 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.sourceforge.picard</groupId>
+			<groupId>com.github.samtools</groupId>
 			<artifactId>htsjdk</artifactId>
 			<version>${htsjdk.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.sourceforge.picard</groupId>
+			<groupId>com.github.broadinstitute</groupId>
 			<artifactId>picard</artifactId>
 			<version>${htsjdk.version}</version>
 			<scope>compile</scope>

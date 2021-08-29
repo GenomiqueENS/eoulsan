@@ -462,7 +462,7 @@ public class HTSeqCounter extends AbstractExpressionCounter
 
     // secondary alignment
     if (this.removeSecondaryAlignments
-        && samRecord.getNotPrimaryAlignmentFlag()) {
+        && samRecord.isSecondaryAlignment()) {
       counters.secondaryAlignments++;
       return false;
     }
@@ -524,10 +524,10 @@ public class HTSeqCounter extends AbstractExpressionCounter
 
     // secondary alignment
     if (this.removeSecondaryAlignments) {
-      if (sam1 != null && sam1.getNotPrimaryAlignmentFlag()) {
+      if (sam1 != null && sam1.isSecondaryAlignment()) {
         return false;
       }
-      if (sam2 != null && sam2.getNotPrimaryAlignmentFlag()) {
+      if (sam2 != null && sam2.isSecondaryAlignment()) {
         return false;
       }
     }
