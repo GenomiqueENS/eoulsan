@@ -38,8 +38,6 @@ import org.seqdoop.hadoop_bam.BAMRecordReader;
 import org.seqdoop.hadoop_bam.KeyIgnoringAnySAMOutputFormat;
 import org.seqdoop.hadoop_bam.SAMFormat;
 import org.seqdoop.hadoop_bam.SAMRecordWritable;
-import org.seqdoop.hadoop_bam.cli.CLIMergingAnySAMOutputFormat;
-import org.seqdoop.hadoop_bam.cli.Utils;
 import org.seqdoop.hadoop_bam.util.SAMHeaderReader;
 
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
@@ -55,7 +53,6 @@ import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractSAM2BAMModule;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SortRecordReader.IndexerMapper;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopJobEmergencyStopTask;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.MapReduceUtils;
-import hbparquet.hadoop.util.ContextUtil;
 import htsjdk.samtools.BAMIndexer;
 import htsjdk.samtools.SAMFileHeader.SortOrder;
 import htsjdk.samtools.SAMRecord;
@@ -193,7 +190,7 @@ public class SAM2BAMHadoopModule extends AbstractSAM2BAMModule {
     context.getLogger().info("Output BAM path: " + output);
     context.getLogger().info("Working path: " + workPath);
 
-    Utils.setHeaderMergerSortOrder(conf, SortOrder.coordinate);
+    HadoopBamUtils.setHeaderMergerSortOrder(conf, SortOrder.coordinate);
 
     if (stringency != null)
       conf.set(SAMHeaderReader.VALIDATION_STRINGENCY_PROPERTY,
@@ -201,14 +198,14 @@ public class SAM2BAMHadoopModule extends AbstractSAM2BAMModule {
 
     // Used by Utils.getMergeableWorkFile() to name the output files.
     final String intermediateOutName = output.getName();
-    conf.set(Utils.WORK_FILENAME_PROPERTY, intermediateOutName);
+    conf.set(HadoopBamUtils.WORK_FILENAME_PROPERTY, intermediateOutName);
 
     conf.set(AnySAMOutputFormat.OUTPUT_SAM_FORMAT_PROPERTY,
         SAMFormat.BAM.toString());
     conf.set(AnySAMInputFormat.TRUST_EXTS_PROPERTY, "true");
     conf.set(KeyIgnoringAnySAMOutputFormat.WRITE_HEADER_PROPERTY, "false");
 
-    Utils.configureSampling(workPath, intermediateOutName, conf);
+    HadoopBamUtils.configureSampling(workPath, intermediateOutName, conf);
 
     final Job job = Job.getInstance(conf,
         "Sam2Bam ("
@@ -224,7 +221,7 @@ public class SAM2BAMHadoopModule extends AbstractSAM2BAMModule {
     job.setOutputValueClass(SAMRecordWritable.class);
 
     job.setInputFormatClass(SortInputFormat.class);
-    job.setOutputFormatClass(CLIMergingAnySAMOutputFormat.class);
+    job.setOutputFormatClass(HadoopBamUtils.CLIMergingAnySAMOutputFormat.class);
 
     // Set the reducer task count
     if (getReducerTaskCount() > 0) {
@@ -245,8 +242,8 @@ public class SAM2BAMHadoopModule extends AbstractSAM2BAMModule {
           FileInputFormat.addInputPath(job, p);
 
           if (first) {
-            job.getConfiguration()
-                .setStrings(Utils.HEADERMERGER_INPUTS_PROPERTY, p.toString());
+            job.getConfiguration().setStrings(
+                HadoopBamUtils.HEADERMERGER_INPUTS_PROPERTY, p.toString());
           }
 
           context.getLogger().info("add path1: " + p);
@@ -254,16 +251,18 @@ public class SAM2BAMHadoopModule extends AbstractSAM2BAMModule {
       }
     } else {
       FileInputFormat.addInputPath(job, input);
-      job.getConfiguration().setStrings(Utils.HEADERMERGER_INPUTS_PROPERTY,
-          input.toString());
+      job.getConfiguration().setStrings(
+          HadoopBamUtils.HEADERMERGER_INPUTS_PROPERTY, input.toString());
       context.getLogger().info("add path2: " + input);
     }
 
     FileOutputFormat.setOutputPath(job, workPath);
 
     job.setPartitionerClass(TotalOrderPartitioner.class);
-    context.getLogger().info(Utils.HEADERMERGER_INPUTS_PROPERTY
-        + ":" + job.getConfiguration().get(Utils.HEADERMERGER_INPUTS_PROPERTY));
+    context.getLogger()
+        .info(HadoopBamUtils.HEADERMERGER_INPUTS_PROPERTY
+            + ":" + job.getConfiguration()
+                .get(HadoopBamUtils.HEADERMERGER_INPUTS_PROPERTY));
 
     InputSampler.writePartitionFile(job,
         new InputSampler.RandomSampler<LongWritable, SAMRecordWritable>(0.01,
@@ -395,7 +394,7 @@ final class SortInputFormat
   public RecordReader<LongWritable, SAMRecordWritable> createRecordReader(
       InputSplit split, TaskAttemptContext ctx)
       throws InterruptedException, IOException {
-    initBaseIF(ContextUtil.getConfiguration(ctx));
+    initBaseIF(HadoopBamUtils.getConfiguration(ctx));
 
     final RecordReader<LongWritable, SAMRecordWritable> rr =
         new SortRecordReader(baseIF.createRecordReader(split, ctx));
@@ -405,13 +404,13 @@ final class SortInputFormat
 
   @Override
   protected boolean isSplitable(JobContext job, Path path) {
-    initBaseIF(ContextUtil.getConfiguration(job));
+    initBaseIF(HadoopBamUtils.getConfiguration(job));
     return baseIF.isSplitable(job, path);
   }
 
   @Override
   public List<InputSplit> getSplits(JobContext job) throws IOException {
-    initBaseIF(ContextUtil.getConfiguration(job));
+    initBaseIF(HadoopBamUtils.getConfiguration(job));
     return baseIF.getSplits(job);
   }
 }
@@ -429,7 +428,7 @@ final class SortRecordReader
   @Override
   public void initialize(InputSplit spl, TaskAttemptContext ctx)
       throws InterruptedException, IOException {
-    conf = ContextUtil.getConfiguration(ctx);
+    conf = HadoopBamUtils.getConfiguration(ctx);
   }
 
   @Override
@@ -462,7 +461,7 @@ final class SortRecordReader
 
     final int ri = rec.getReferenceIndex();
 
-    Utils.correctSAMRecordForMerging(rec, conf);
+    HadoopBamUtils.correctSAMRecordForMerging(rec, conf);
 
     if (rec.getReferenceIndex() != ri)
       getCurrentKey().set(BAMRecordReader.getKey(rec));
