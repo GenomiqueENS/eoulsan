@@ -41,8 +41,6 @@ public class HadoopBamUtils {
       "hadoopbam.headermerger.inputs";
   static final String WORK_FILENAME_PROPERTY = "hadoopbam.work.filename";
 
-  private static SamFileHeaderMerger headerMerger = null;
-
   /**
    * Computes the merger of the SAM headers in the files listed in
    * HEADERMERGER_INPUTS_PROPERTY. The sort order of the result is set according
@@ -216,8 +214,8 @@ public class HadoopBamUtils {
    */
   public static void correctSAMRecordForMerging(SAMRecord r, Configuration conf)
       throws IOException {
-    if (headerMerger == null)
-      getSAMHeaderMerger(conf);
+
+    SamFileHeaderMerger headerMerger = getSAMHeaderMerger(conf);
 
     final SAMFileHeader h = r.getHeader();
 
