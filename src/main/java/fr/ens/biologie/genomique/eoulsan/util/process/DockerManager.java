@@ -41,7 +41,7 @@ public class DockerManager {
 
   /** Available Docker clients. */
   public enum ClientType {
-    FALLBACK, SPOTIFY, SINGULARITY
+    DOCKER_CLIENT, SPOTIFY, SINGULARITY, FALLBACK
   };
 
   private static DockerManager singleton;
@@ -160,6 +160,10 @@ public class DockerManager {
 
     case SINGULARITY:
       this.client = new SingularityDockerClient();
+      break;
+
+    case DOCKER_CLIENT:
+      this.client = new DockerClientDockerClient();
       break;
 
     default:
