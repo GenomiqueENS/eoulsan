@@ -1,7 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.util.process;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.util.process.SpotifyDockerImageInstance.convertNFSFileToMountPoint;
 import static fr.ens.biologie.genomique.eoulsan.util.process.SpotifyDockerImageInstance.fileIndirections;
 import static java.util.Objects.requireNonNull;
@@ -13,8 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
 import fr.ens.biologie.genomique.eoulsan.util.Utils;
@@ -31,6 +30,7 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
   private final int userUid;
   private final int userGid;
   private final boolean convertNFSFilesToMountRoots;
+  private final GenericLogger logger;
 
   @Override
   public AdvancedProcess start(final List<String> commandLine,
@@ -44,7 +44,7 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
     requireNonNull(stdoutFile, "stdoutFile argument cannot be null");
     requireNonNull(stderrFile, "stderrFile argument cannot be null");
 
-    EoulsanLogger.getLogger().fine(getClass().getSimpleName()
+    this.logger.debug(getClass().getSimpleName()
         + ": commandLine=" + commandLine + ", executionDirectory="
         + executionDirectory + ", environmentVariables=" + environmentVariables
         + ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile="
@@ -91,7 +91,8 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
     }
 
     // Bind directories
-    toBind(command, directoriesToBind, this.convertNFSFilesToMountRoots);
+    toBind(command, directoriesToBind, this.convertNFSFilesToMountRoots,
+        this.logger);
 
     // Set the UID and GID of the docker process
     if (this.userUid >= 0 && this.userGid >= 0) {
@@ -135,10 +136,11 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
    * @throws IOException if an error occurs when converting the file path
    */
   private static void toBind(final List<String> command, final List<File> files,
-      final boolean convertNFSFilesToMountRoots) throws IOException {
+      final boolean convertNFSFilesToMountRoots, final GenericLogger logger)
+      throws IOException {
 
-    for (File file : fileIndirections(
-        convertNFSFileToMountPoint(files, convertNFSFilesToMountRoots))) {
+    for (File file : fileIndirections(convertNFSFileToMountPoint(files,
+        convertNFSFilesToMountRoots, logger))) {
 
       command.add("--volume");
       command.add(file.getAbsolutePath() + ':' + file.getAbsolutePath());
@@ -159,7 +161,7 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
       }
     }
 
-    getLogger().fine("Pull Docker image: " + this.dockerImage);
+    this.logger.debug("Pull Docker image: " + this.dockerImage);
     Process p = new ProcessBuilder("docker", "pull", this.dockerImage).start();
     int exitCode;
     try {
@@ -197,12 +199,15 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
   /**
    * Constructor.
    * @param dockerImage Docker image
+   * @param logger logger to use
    */
-  FallBackDockerImageInstance(final String dockerImage) {
+  FallBackDockerImageInstance(final String dockerImage,
+      final GenericLogger logger) {
 
     requireNonNull(dockerImage, "dockerImage argument cannot be null");
+    requireNonNull(logger, "logger argument cannot be null");
 
-    EoulsanLogger.getLogger().fine(
+    logger.debug(
         getClass().getSimpleName() + " docker image used: " + dockerImage);
 
     this.dockerImage = dockerImage;
@@ -211,6 +216,7 @@ public class FallBackDockerImageInstance extends AbstractSimpleProcess
 
     this.convertNFSFilesToMountRoots = EoulsanRuntime.isRuntime()
         ? EoulsanRuntime.getSettings().isDockerMountNFSRoots() : false;
+    this.logger = logger;
   }
 
 }

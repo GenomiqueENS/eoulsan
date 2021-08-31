@@ -14,6 +14,8 @@ import com.google.common.io.Files;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.io.FileCharsets;
+import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 
 /**
@@ -24,6 +26,7 @@ import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 public class SingularityDockerClient implements DockerClient {
 
   private File imageDirectory;
+  private final GenericLogger logger;
 
   @Override
   public void initialize(URI dockerConnectionURI) throws IOException {
@@ -34,7 +37,7 @@ public class SingularityDockerClient implements DockerClient {
       throws IOException {
 
     return new SingularityDockerImageInstance(dockerImage,
-        getStorageDirectory());
+        getStorageDirectory(), this.logger);
   }
 
   @Override
@@ -117,6 +120,27 @@ public class SingularityDockerClient implements DockerClient {
     }
 
     return this.imageDirectory;
+  }
+
+  //
+  // Constructors
+  //
+
+  /**
+   * Constructor.
+   */
+  public SingularityDockerClient() {
+
+    this(null);
+  }
+
+  /**
+   * Constructor.
+   * @param logger logger to use
+   */
+  public SingularityDockerClient(GenericLogger logger) {
+
+    this.logger = logger == null ? new EoulsanRuntimeLogger() : logger;
   }
 
 }

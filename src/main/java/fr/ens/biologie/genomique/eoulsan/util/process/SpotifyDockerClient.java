@@ -10,6 +10,8 @@ import com.spotify.docker.client.DockerException;
 import com.spotify.docker.client.messages.Image;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
+import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.CollectionUtils;
 
 /**
@@ -20,6 +22,7 @@ import fr.ens.biologie.genomique.eoulsan.util.CollectionUtils;
 public class SpotifyDockerClient implements DockerClient {
 
   private DefaultDockerClient client;
+  private final GenericLogger logger;
 
   @Override
   public void initialize(URI dockerConnectionURI) throws IOException {
@@ -54,7 +57,8 @@ public class SpotifyDockerClient implements DockerClient {
       throw new IllegalStateException("Docker client not initialized");
     }
 
-    return new SpotifyDockerImageInstance(this.client, dockerImage);
+    return new SpotifyDockerImageInstance(this.client, dockerImage,
+        this.logger);
   }
 
   @Override
@@ -88,6 +92,27 @@ public class SpotifyDockerClient implements DockerClient {
     }
 
     return result;
+  }
+
+  //
+  // Constructors
+  //
+
+  /**
+   * Constructor.
+   */
+  public SpotifyDockerClient() {
+
+    this(null);
+  }
+
+  /**
+   * Constructor.
+   * @param logger logger to use
+   */
+  public SpotifyDockerClient(GenericLogger logger) {
+
+    this.logger = logger == null ? new EoulsanRuntimeLogger() : logger;
   }
 
 }

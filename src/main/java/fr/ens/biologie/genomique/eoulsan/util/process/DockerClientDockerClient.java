@@ -14,6 +14,8 @@ import com.github.dockerjava.transport.DockerHttpClient;
 import com.github.dockerjava.zerodep.ZerodepDockerHttpClient;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
+import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 
 /**
  * This class define a Docker client using the DockerClient client library.
@@ -23,6 +25,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 public class DockerClientDockerClient implements DockerClient {
 
   private com.github.dockerjava.api.DockerClient client;
+  private final GenericLogger logger;
 
   @Override
   public void initialize(URI dockerConnectionURI) throws IOException {
@@ -52,7 +55,8 @@ public class DockerClientDockerClient implements DockerClient {
       throw new IllegalStateException("Docker client not initialized");
     }
 
-    return new DockerClientDockerImageInstance(this.client, dockerImage);
+    return new DockerClientDockerImageInstance(this.client, dockerImage,
+        this.logger);
   }
 
   @Override
@@ -76,6 +80,27 @@ public class DockerClientDockerClient implements DockerClient {
   public void close() throws IOException {
 
     this.client.close();
+  }
+
+  //
+  // Constructors
+  //
+
+  /**
+   * Constructor.
+   */
+  public DockerClientDockerClient() {
+
+    this(null);
+  }
+
+  /**
+   * Constructor.
+   * @param logger logger to use
+   */
+  public DockerClientDockerClient(GenericLogger logger) {
+
+    this.logger = logger == null ? new EoulsanRuntimeLogger() : logger;
   }
 
 }

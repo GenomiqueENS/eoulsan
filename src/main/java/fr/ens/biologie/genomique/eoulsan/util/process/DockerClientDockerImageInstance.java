@@ -1,7 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.util.process;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.util.process.SpotifyDockerImageInstance.convertNFSFileToMountPoint;
 import static java.util.Objects.requireNonNull;
 
@@ -28,8 +27,8 @@ import com.github.dockerjava.api.command.WaitContainerResultCallback;
 import com.github.dockerjava.api.model.Bind;
 import com.github.dockerjava.api.model.Frame;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
 import fr.ens.biologie.genomique.eoulsan.util.Utils;
 
@@ -47,6 +46,7 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
   private final int userUid;
   private final int userGid;
   private final boolean convertNFSFilesToMountRoots;
+  private final GenericLogger logger;
 
   class LogWriteAll extends ResultCallback.Adapter<Frame> {
 
@@ -60,7 +60,7 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
         this.stdoutChannel.close();
         this.stderrChannel.close();
       } catch (IOException e) {
-        getLogger().severe(e.getMessage());
+        logger.error(e.getMessage());
       }
     }
 
@@ -71,7 +71,7 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
         this.stdoutChannel.close();
         this.stderrChannel.close();
       } catch (IOException e) {
-        getLogger().severe(e.getMessage());
+        logger.error(e.getMessage());
       }
     }
 
@@ -93,7 +93,7 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
         }
 
       } catch (IOException e) {
-        getLogger().severe(e.getMessage());
+        logger.error(e.getMessage());
       }
     }
 
@@ -116,7 +116,7 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
         this.stdoutChannel.close();
         this.stderrChannel.close();
       } catch (IOException e) {
-        getLogger().severe(e.getMessage());
+        logger.error(e.getMessage());
       }
     }
 
@@ -127,7 +127,7 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
         this.stdoutChannel.close();
         this.stderrChannel.close();
       } catch (IOException e) {
-        getLogger().severe(e.getMessage());
+        logger.error(e.getMessage());
       }
     }
 
@@ -149,7 +149,7 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
         }
 
       } catch (IOException e) {
-        getLogger().severe(e.getMessage());
+        logger.error(e.getMessage());
       }
 
     }
@@ -172,7 +172,7 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
     requireNonNull(stdoutFile, "stdoutFile argument cannot be null");
     requireNonNull(stderrFile, "stderrFile argument cannot be null");
 
-    getLogger().fine(getClass().getSimpleName()
+    this.logger.debug(getClass().getSimpleName()
         + ": commandLine=" + commandLine + ", executionDirectory="
         + executionDirectory + ", environmentVariables=" + environmentVariables
         + ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile="
@@ -197,7 +197,8 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
     pullImageIfNotExists();
 
     // Create container configuration
-    getLogger().fine("Configure container, command to execute: " + commandLine);
+    this.logger
+        .debug("Configure container, command to execute: " + commandLine);
 
     final CreateContainerCmd cmd = this.dockerClient
         .createContainerCmd(this.dockerImage).withCmd(commandLine);
@@ -226,8 +227,10 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
     }
 
     // Set binds
-    cmd.getHostConfig().setBinds(createBinds(executionDirectory, toBind,
-        this.convertNFSFilesToMountRoots).toArray(new Bind[0]));
+    cmd.getHostConfig()
+        .setBinds(createBinds(executionDirectory, toBind,
+            this.convertNFSFilesToMountRoots, this.logger)
+                .toArray(new Bind[0]));
 
     // Set environment variables
     cmd.withEnv(env);
@@ -239,7 +242,7 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
     final String containerId = container.getId();
 
     // Start container
-    getLogger().fine("Start of the Docker container: " + containerId);
+    this.logger.debug("Start of the Docker container: " + containerId);
     this.dockerClient.startContainerCmd(container.getId()).exec();
 
     redirect(containerId, stdoutFile, stderrFile, redirectErrorStream);
@@ -258,7 +261,7 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
       long exitValue;
 
       // Wait the end of the container
-      getLogger().fine("Wait the end of the Docker container: " + containerId);
+      this.logger.debug("Wait the end of the Docker container: " + containerId);
       this.dockerClient.waitContainerCmd(containerId)
           .exec(new WaitContainerResultCallback()).awaitStatusCode();
 
@@ -267,10 +270,10 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
           this.dockerClient.inspectContainerCmd(containerId).exec().getState();
 
       exitValue = exitState.getExitCodeLong();
-      getLogger().fine("Exit value: " + exitValue);
+      this.logger.debug("Exit value: " + exitValue);
 
       // Remove container
-      getLogger().fine("Remove Docker container: " + containerId);
+      this.logger.debug("Remove Docker container: " + containerId);
 
       dockerClient.removeContainerCmd(containerId).exec();
 
@@ -293,7 +296,7 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
     try {
       logContainerCmd.exec(callback).awaitCompletion();
     } catch (InterruptedException e) {
-      getLogger().severe(e.getMessage());
+      this.logger.error(e.getMessage());
     }
 
   };
@@ -341,8 +344,8 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
    * @return a list with binds to create
    */
   private static List<Bind> createBinds(final File executionDirectory,
-      final List<File> files, final boolean convertNFSFilesToMountRoots)
-      throws IOException {
+      final List<File> files, final boolean convertNFSFilesToMountRoots,
+      final GenericLogger logger) throws IOException {
 
     List<Bind> binds = new ArrayList<>();
     Set<File> mounted = new HashSet<>();
@@ -350,15 +353,17 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
     if (executionDirectory != null) {
 
       File f = convertNFSFilesToMountRoots
-          ? convertNFSFileToMountPoint(executionDirectory) : executionDirectory;
+          ? convertNFSFileToMountPoint(executionDirectory, logger)
+          : executionDirectory;
 
       binds.add(Bind.parse(f.getAbsolutePath() + ':' + f.getAbsolutePath()));
       mounted.add(f.getAbsoluteFile());
     }
 
     if (files != null) {
-      for (File f : SpotifyDockerImageInstance.fileIndirections(
-          convertNFSFileToMountPoint(files, convertNFSFilesToMountRoots))) {
+      for (File f : SpotifyDockerImageInstance
+          .fileIndirections(convertNFSFileToMountPoint(files,
+              convertNFSFilesToMountRoots, logger))) {
 
         if (!mounted.contains(f.getAbsoluteFile())) {
           binds
@@ -379,15 +384,17 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
    * Constructor.
    * @param dockerClient Docker connection URI
    * @param dockerImage Docker image
+   * @param logger logger to use
    */
   DockerClientDockerImageInstance(
       final com.github.dockerjava.api.DockerClient dockerClient,
-      final String dockerImage) {
+      final String dockerImage, final GenericLogger logger) {
 
     requireNonNull(dockerClient, "dockerClient argument cannot be null");
     requireNonNull(dockerImage, "dockerImage argument cannot be null");
+    requireNonNull(logger, "logger argument cannot be null");
 
-    EoulsanLogger.getLogger().fine(
+    logger.debug(
         getClass().getSimpleName() + " docker image used: " + dockerImage);
 
     this.dockerClient = dockerClient;
@@ -396,6 +403,7 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
     this.userGid = SystemUtils.gid();
     this.convertNFSFilesToMountRoots = EoulsanRuntime.isRuntime()
         ? EoulsanRuntime.getSettings().isDockerMountNFSRoots() : false;
+    this.logger = logger;
   }
 
 }

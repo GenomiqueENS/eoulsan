@@ -1,7 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.util.process;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.util.process.SpotifyDockerImageInstance.convertNFSFileToMountPoint;
 import static fr.ens.biologie.genomique.eoulsan.util.process.SpotifyDockerImageInstance.fileIndirections;
 import static java.util.Objects.requireNonNull;
@@ -16,8 +15,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 
 public class SingularityDockerImageInstance extends AbstractSimpleProcess
     implements DockerImageInstance {
@@ -25,6 +24,7 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
   private final String dockerImage;
   private final File imageDirectory;
   private final boolean convertNFSFilesToMountRoots;
+  private final GenericLogger logger;
 
   @Override
   public AdvancedProcess start(final List<String> commandLine,
@@ -38,7 +38,7 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
     requireNonNull(stdoutFile, "stdoutFile argument cannot be null");
     requireNonNull(stderrFile, "stderrFile argument cannot be null");
 
-    EoulsanLogger.getLogger().fine(getClass().getSimpleName()
+    this.logger.debug(getClass().getSimpleName()
         + ": commandLine=" + commandLine + ", executionDirectory="
         + executionDirectory + ", environmentVariables=" + environmentVariables
         + ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile="
@@ -86,7 +86,8 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
     }
 
     // Bind directories
-    toBind(command, directoriesToBind, this.convertNFSFilesToMountRoots);
+    toBind(command, directoriesToBind, this.convertNFSFilesToMountRoots,
+        this.logger);
 
     // TODO The container must be writable as Docker images but it cannot work
     // with Singularity Docker image compatibility mode
@@ -117,7 +118,7 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
       }
     }
 
-    EoulsanLogger.getLogger().fine(getClass().getSimpleName()
+    this.logger.debug(getClass().getSimpleName()
         + ": singularity command line: " + pb.command());
 
     final Process process = pb.start();
@@ -140,10 +141,11 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
    * @throws IOException if an error occurs when converting the file path
    */
   private static void toBind(final List<String> command, final List<File> files,
-      final boolean convertNFSFilesToMountRoots) throws IOException {
+      final boolean convertNFSFilesToMountRoots, final GenericLogger logger)
+      throws IOException {
 
-    for (File file : fileIndirections(
-        convertNFSFileToMountPoint(files, convertNFSFilesToMountRoots))) {
+    for (File file : fileIndirections(convertNFSFileToMountPoint(files,
+        convertNFSFilesToMountRoots, logger))) {
 
       command.add("--bind");
       command.add(file.getAbsolutePath() + ':' + file.getAbsolutePath());
@@ -159,7 +161,7 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
       return;
     }
 
-    getLogger().fine("Pull Docker image: " + this.dockerImage);
+    this.logger.debug("Pull Docker image: " + this.dockerImage);
     Process p = new ProcessBuilder("singularity", "pull",
         "docker://" + this.dockerImage).directory(this.imageDirectory).start();
     int exitCode;
@@ -240,14 +242,16 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
   /**
    * Constructor.
    * @param dockerImage Docker image
+   * @param logger logger to use
    */
   SingularityDockerImageInstance(final String dockerImage,
-      final File imageDirectory) {
+      final File imageDirectory, final GenericLogger logger) {
 
     requireNonNull(dockerImage, "dockerImage argument cannot be null");
     requireNonNull(imageDirectory, "imageDirectory argument cannot be null");
+    requireNonNull(logger, "logger argument cannot be null");
 
-    EoulsanLogger.getLogger().fine(
+    logger.debug(
         getClass().getSimpleName() + " docker image used: " + dockerImage);
 
     this.dockerImage = dockerImage;
@@ -255,6 +259,7 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
 
     this.convertNFSFilesToMountRoots = EoulsanRuntime.isRuntime()
         ? EoulsanRuntime.getSettings().isDockerMountNFSRoots() : false;
+    this.logger = logger;
   }
 
 }

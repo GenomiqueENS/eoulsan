@@ -1,7 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.util.process;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.util.CollectionUtils.nullToEmpty;
 import static java.util.Objects.requireNonNull;
 
@@ -37,8 +36,8 @@ import com.spotify.docker.client.messages.Image;
 import com.spotify.docker.client.messages.ProgressDetail;
 import com.spotify.docker.client.messages.ProgressMessage;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
 import fr.ens.biologie.genomique.eoulsan.util.Utils;
 
@@ -58,6 +57,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
   private final int userUid;
   private final int userGid;
   private final boolean convertNFSFilesToMountRoots;
+  private final GenericLogger logger;
 
   @Override
   public AdvancedProcess start(List<String> commandLine,
@@ -69,7 +69,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
     requireNonNull(stdoutFile, "stdoutFile argument cannot be null");
     requireNonNull(stderrFile, "stderrFile argument cannot be null");
 
-    EoulsanLogger.getLogger().fine(getClass().getSimpleName()
+    this.logger.debug(getClass().getSimpleName()
         + ": commandLine=" + commandLine + ", executionDirectory="
         + executionDirectory + ", environmentVariables=" + environmentVariables
         + ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile="
@@ -96,8 +96,8 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
       pullImageIfNotExists();
 
       // Create container configuration
-      getLogger()
-          .fine("Configure container, command to execute: " + commandLine);
+      this.logger
+          .debug("Configure container, command to execute: " + commandLine);
 
       final ContainerConfig.Builder builder =
           ContainerConfig.builder().image(dockerImage).cmd(commandLine);
@@ -126,7 +126,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
       }
 
       builder.hostConfig(createBinds(executionDirectory, toBind,
-          this.convertNFSFilesToMountRoots));
+          this.convertNFSFilesToMountRoots, this.logger));
 
       // Set environment variables
       builder.env(env);
@@ -139,13 +139,13 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
       final String containerId = creation.id();
 
       // Start container
-      getLogger().fine("Start of the Docker container: " + containerId);
+      this.logger.debug("Start of the Docker container: " + containerId);
       this.dockerClient.startContainer(containerId);
 
       // Redirect stdout and stderr
       final LogStream logStream = this.dockerClient.logs(containerId,
           LogsParameter.FOLLOW, LogsParameter.STDERR, LogsParameter.STDOUT);
-      redirect(logStream, stdoutFile, stderrFile, redirectErrorStream);
+      redirect(logStream, stdoutFile, stderrFile, redirectErrorStream, logger);
 
       // Get process exit code
       final ContainerInfo info = dockerClient.inspectContainer(containerId);
@@ -162,30 +162,30 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
         try {
 
           // Wait the end of the container
-          getLogger()
-              .fine("Wait the end of the Docker container: " + containerId);
+          this.logger
+              .debug("Wait the end of the Docker container: " + containerId);
           dockerClient.waitContainer(containerId);
 
           // Get process exit code
           final ContainerInfo info1 =
               dockerClient.inspectContainer(containerId);
           exitValue = info1.state().exitCode();
-          getLogger().fine("Exit value: " + exitValue);
+          this.logger.debug("Exit value: " + exitValue);
 
           // Stop container before removing it
           dockerClient.stopContainer(containerId,
               SECOND_TO_WAIT_BEFORE_KILLING_CONTAINER);
 
           // Remove container
-          getLogger().fine("Remove Docker container: " + containerId);
+          this.logger.debug("Remove Docker container: " + containerId);
         } catch (DockerException | InterruptedException e) {
           throw new IOException(e);
         }
         try {
           dockerClient.removeContainer(containerId);
         } catch (DockerException | InterruptedException e) {
-          EoulsanLogger.getLogger()
-              .severe("Unable to remove Docker container: " + containerId);
+          this.logger
+              .error("Unable to remove Docker container: " + containerId);
         }
 
         return exitValue;
@@ -214,7 +214,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
         }
       }
 
-      getLogger().fine("Pull Docker image: " + this.dockerImage);
+      this.logger.debug("Pull Docker image: " + this.dockerImage);
       this.dockerClient.pull(this.dockerImage);
     } catch (InterruptedException | DockerException e) {
       throw new IOException(e);
@@ -235,7 +235,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
         }
       }
 
-      getLogger().fine("Pull Docker image: " + this.dockerImage);
+      this.logger.debug("Pull Docker image: " + this.dockerImage);
 
       if (progress != null) {
 
@@ -316,11 +316,12 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
    * @param executionDirectory execution directory
    * @param files files to binds
    * @param convertNFSFilesToMountRoots convert NFS files to mount points
+   * @param logger the logger
    * @return an HostConfig object
    */
   private static HostConfig createBinds(final File executionDirectory,
-      final List<File> files, final boolean convertNFSFilesToMountRoots)
-      throws IOException {
+      final List<File> files, final boolean convertNFSFilesToMountRoots,
+      final GenericLogger logger) throws IOException {
 
     HostConfig.Builder builder = HostConfig.builder();
     Set<String> binds = new HashSet<>();
@@ -328,14 +329,15 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
     if (executionDirectory != null) {
 
       File f = convertNFSFilesToMountRoots
-          ? convertNFSFileToMountPoint(executionDirectory) : executionDirectory;
+          ? convertNFSFileToMountPoint(executionDirectory, logger)
+          : executionDirectory;
 
       binds.add(f.getAbsolutePath() + ':' + f.getAbsolutePath());
     }
 
     if (files != null) {
-      for (File f : fileIndirections(
-          convertNFSFileToMountPoint(files, convertNFSFilesToMountRoots))) {
+      for (File f : fileIndirections(convertNFSFileToMountPoint(files,
+          convertNFSFilesToMountRoots, logger))) {
         binds.add(f.getAbsolutePath() + ':' + f.getAbsolutePath());
       }
     }
@@ -350,10 +352,12 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
    * @param logStream the log stream
    * @param stdout stdout output file
    * @param stderr stderr output file
+   * @param logger the logger
    * @param redirectErrorStream redirect stderr in stdout
    */
   private static void redirect(final LogStream logStream, final File stdout,
-      final File stderr, final boolean redirectErrorStream) {
+      final File stderr, final boolean redirectErrorStream,
+      final GenericLogger logger) {
 
     final Runnable r;
 
@@ -380,7 +384,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
             }
           }
         } catch (IOException e) {
-          EoulsanLogger.getLogger().severe(e.getMessage());
+          logger.error(e.getMessage());
         }
       };
 
@@ -413,7 +417,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
             }
           }
         } catch (IOException | RuntimeException e) {
-          EoulsanLogger.getLogger().severe(e.getMessage());
+          logger.error(e.getMessage());
         }
       };
     }
@@ -425,11 +429,13 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
    * Convert a file path to a mount point path if the file is on a NFS server.
    * @param files the list of the files to convert
    * @param convertNFSFilesToMountRoots true if files must be converted
+   * @param logger the logger
    * @return a set of files
    * @throws IOException if mount of a file cannot be found
    */
   static Set<File> convertNFSFileToMountPoint(final Collection<File> files,
-      final boolean convertNFSFilesToMountRoots) throws IOException {
+      final boolean convertNFSFilesToMountRoots, final GenericLogger logger)
+      throws IOException {
 
     if (files == null) {
       return null;
@@ -441,7 +447,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
 
       if (file != null && file.exists()) {
         result.add(convertNFSFilesToMountRoots
-            ? convertNFSFileToMountPoint(file) : file);
+            ? convertNFSFileToMountPoint(file, logger) : file);
       }
     }
 
@@ -451,18 +457,18 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
   /**
    * Convert a file path to a mount point path if the file is on a NFS server.
    * @param file the file to convert
+   * @param logger the logger
    * @return a converted file
    * @throws IOException if mount of a file cannot be found
    */
-  static File convertNFSFileToMountPoint(final File file) throws IOException {
+  static File convertNFSFileToMountPoint(final File file,
+      final GenericLogger logger) throws IOException {
 
-    if (file == null) {
-      return null;
-    }
+    requireNonNull(file);
+    requireNonNull(logger);
 
     FileStore fileStore = Files.getFileStore(file.toPath());
-    EoulsanLogger.getLogger()
-        .info("file: " + file + ", fileSystem type: " + fileStore.type());
+    logger.info("file: " + file + ", fileSystem type: " + fileStore.type());
 
     // If the file is on an NFS mount
     if ("nfs".equals(fileStore.type()) || "nfs4".equals(fileStore.type())) {
@@ -606,14 +612,16 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
    * Constructor.
    * @param dockerClient Docker connection URI
    * @param dockerImage Docker image
+   * @param logger logger to use
    */
   SpotifyDockerImageInstance(final DockerClient dockerClient,
-      final String dockerImage) {
+      final String dockerImage, final GenericLogger logger) {
 
     requireNonNull(dockerClient, "dockerClient argument cannot be null");
     requireNonNull(dockerImage, "dockerImage argument cannot be null");
+    requireNonNull(logger, "logger argument cannot be null");
 
-    EoulsanLogger.getLogger().fine(
+    logger.debug(
         getClass().getSimpleName() + " docker image used: " + dockerImage);
 
     this.dockerClient = dockerClient;
@@ -622,6 +630,7 @@ public class SpotifyDockerImageInstance extends AbstractSimpleProcess
     this.userGid = SystemUtils.gid();
     this.convertNFSFilesToMountRoots = EoulsanRuntime.isRuntime()
         ? EoulsanRuntime.getSettings().isDockerMountNFSRoots() : false;
+    this.logger = logger;
   }
 
 }
