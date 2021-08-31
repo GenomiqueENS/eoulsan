@@ -48,6 +48,10 @@ public class DockerClientDockerClient implements DockerClient {
   public DockerImageInstance createConnection(String dockerImage)
       throws IOException {
 
+    if (client == null) {
+      throw new IllegalStateException("Docker client not initialized");
+    }
+
     return new DockerClientDockerImageInstance(this.client, dockerImage);
   }
 

@@ -50,6 +50,10 @@ public class SpotifyDockerClient implements DockerClient {
   @Override
   public DockerImageInstance createConnection(String dockerImage) {
 
+    if (client == null) {
+      throw new IllegalStateException("Docker client not initialized");
+    }
+
     return new SpotifyDockerImageInstance(this.client, dockerImage);
   }
 
