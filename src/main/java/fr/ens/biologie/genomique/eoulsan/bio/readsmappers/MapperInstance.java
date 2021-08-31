@@ -39,6 +39,8 @@ import java.util.List;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperExecutor.Result;
 import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
+import fr.ens.biologie.genomique.eoulsan.log.DummyLogger;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 
@@ -57,7 +59,7 @@ public class MapperInstance {
   private final String version;
   private final String flavor;
   private final File temporaryDirectory;
-  private final MapperLogger logger;
+  private final GenericLogger logger;
 
   private boolean mapperInstalled;
 
@@ -319,7 +321,7 @@ public class MapperInstance {
    * @throws IOException if an error occurs while uncompressing the genome file
    */
   private static File uncompressGenomeIfNecessary(final File genomeFile,
-      final File outputDir, final MapperLogger logger) throws IOException {
+      final File outputDir, final GenericLogger logger) throws IOException {
 
     final CompressionType ct =
         CompressionType.getCompressionTypeByFilename(genomeFile.getName());
@@ -518,7 +520,7 @@ public class MapperInstance {
    */
   MapperInstance(Mapper mapper, MapperExecutor executor, final String version,
       final String flavor, final File temporaryDirectory,
-      final MapperLogger logger) throws IOException {
+      final GenericLogger logger) throws IOException {
 
     requireNonNull(mapper, "mapper cannot be null");
     requireNonNull(executor, "executor cannot be null");
@@ -529,7 +531,7 @@ public class MapperInstance {
     this.version = version;
     this.flavor = flavor;
     this.temporaryDirectory = temporaryDirectory;
-    this.logger = logger == null ? new DummyMapperLogger() : logger;
+    this.logger = logger == null ? new DummyLogger() : logger;
 
     this.logger.debug("Use executor: " + this.executor);
 

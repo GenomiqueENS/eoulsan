@@ -1,11 +1,11 @@
-package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
+package fr.ens.biologie.genomique.eoulsan.log;
 
 /**
- * This class implements a dummy MapperLogger
+ * This class implements a dummy logger.
  * @author Laurent Jourdren
  * @since 2.6
  */
-public class DummyMapperLogger implements MapperLogger {
+public class DummyLogger implements GenericLogger {
 
   @Override
   public void debug(String message) {
@@ -21,6 +21,10 @@ public class DummyMapperLogger implements MapperLogger {
 
   @Override
   public void error(String message) {
+  }
+
+  @Override
+  public void error(Throwable exception) {
   }
 
   @Override

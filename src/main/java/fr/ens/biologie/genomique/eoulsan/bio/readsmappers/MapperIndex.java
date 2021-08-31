@@ -34,6 +34,7 @@ import java.nio.channels.FileLock;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 
@@ -47,7 +48,7 @@ public class MapperIndex {
   private final MapperInstance mapperInstance;
   private final InputStream in;
   private final File indexDirectory;
-  private final MapperLogger logger;
+  private final GenericLogger logger;
   private boolean unzipped;
 
   //
@@ -242,7 +243,7 @@ public class MapperIndex {
    */
   MapperIndex(final MapperInstance mapperInstance,
       final InputStream archiveIndexFileInputStream,
-      final File indexOutputDirectory, final MapperLogger logger) {
+      final File indexOutputDirectory, final GenericLogger logger) {
 
     requireNonNull(mapperInstance, "mapperInstance cannot be null");
     requireNonNull(archiveIndexFileInputStream,

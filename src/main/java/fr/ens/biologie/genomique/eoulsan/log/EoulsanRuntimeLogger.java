@@ -1,13 +1,13 @@
-package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
+package fr.ens.biologie.genomique.eoulsan.log;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
 /**
- * This class implement a logger for mapping using the Eoulsan standard logger.
+ * This class implement a logger using the Eoulsan standard logger.
  * @author Laurent Jourdren
  * @since 2.6
  */
-public class EoulsanMapperLogger implements MapperLogger {
+public class EoulsanRuntimeLogger implements GenericLogger {
 
   @Override
   public void debug(String message) {

@@ -1,11 +1,11 @@
-package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
+package fr.ens.biologie.genomique.eoulsan.log;
 
 /**
- * This interface define a MapperLogger
+ * This interface define a generic logger for Eoulsan.
  * @author Laurent Jourdren
  * @since 2.6
  */
-public interface MapperLogger {
+public interface GenericLogger {
 
   /**
    * Log a debug message.
@@ -30,6 +30,15 @@ public interface MapperLogger {
    * @param message message to log
    */
   void error(String message);
+
+  /**
+   * Log an error message.
+   * @param exception exception to log
+   */
+  default void error(Throwable exception) {
+
+    error(exception != null ? exception.getMessage() : "exception is null");
+  }
 
   /**
    * Flush log entries.

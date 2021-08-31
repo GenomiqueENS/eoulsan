@@ -35,7 +35,6 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.Generator;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.EoulsanMapperLogger;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Minimap2MapperProvider;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
@@ -48,6 +47,7 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
+import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 
 /**
@@ -62,7 +62,7 @@ public class Minimap2IndexGeneratorModule extends AbstractModule {
   public static final String MODULE_NAME = "minimap2indexgenerator";
 
   private final Mapper mapper = Mapper
-      .newMapper(Minimap2MapperProvider.MAPPER_NAME, new EoulsanMapperLogger());
+      .newMapper(Minimap2MapperProvider.MAPPER_NAME, new EoulsanRuntimeLogger());
 
   private String indexerArguments = "";
 

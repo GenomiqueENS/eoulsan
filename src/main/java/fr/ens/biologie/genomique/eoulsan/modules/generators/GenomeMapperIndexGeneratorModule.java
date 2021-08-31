@@ -38,7 +38,6 @@ import java.util.Set;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.EoulsanMapperLogger;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperInstance;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
@@ -55,6 +54,7 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractFilterAndMapReadsModule;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsMapperModule;
@@ -116,7 +116,7 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
       case "mappername":
         final String mapperName = p.getStringValue();
 
-        this.mapper = Mapper.newMapper(mapperName, new EoulsanMapperLogger());
+        this.mapper = Mapper.newMapper(mapperName, new EoulsanRuntimeLogger());
 
         if (this.mapper == null) {
           Modules.badParameterValue(context, p, "Unknown mapper");

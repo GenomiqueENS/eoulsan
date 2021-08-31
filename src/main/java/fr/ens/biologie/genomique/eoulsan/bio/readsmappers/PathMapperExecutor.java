@@ -34,6 +34,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
 
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.BundledMapperExecutor.ProcessResult;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 
 /**
@@ -44,14 +45,14 @@ import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
  */
 public class PathMapperExecutor implements MapperExecutor {
 
-  private MapperLogger logger;
+  private GenericLogger logger;
 
   //
   // MapperExecutor methods
   //
 
   @Override
-  public MapperLogger getLogger() {
+  public GenericLogger getLogger() {
     return this.logger;
   }
 
@@ -116,7 +117,7 @@ public class PathMapperExecutor implements MapperExecutor {
    * Constructor.
    * @param logger the logger to use
    */
-  PathMapperExecutor(MapperLogger logger) {
+  PathMapperExecutor(GenericLogger logger) {
 
     requireNonNull(logger, "logger argument cannot be null");
     this.logger = logger;
