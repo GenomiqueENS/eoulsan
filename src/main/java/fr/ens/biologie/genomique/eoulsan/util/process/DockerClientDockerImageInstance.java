@@ -1,7 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.util.process;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static fr.ens.biologie.genomique.eoulsan.util.process.SpotifyDockerImageInstance.convertNFSFileToMountPoint;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -353,7 +352,7 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
     if (executionDirectory != null) {
 
       File f = convertNFSFilesToMountRoots
-          ? convertNFSFileToMountPoint(executionDirectory, logger)
+          ? DockerUtils.convertNFSFileToMountPoint(executionDirectory, logger)
           : executionDirectory;
 
       binds.add(Bind.parse(f.getAbsolutePath() + ':' + f.getAbsolutePath()));
@@ -361,8 +360,8 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
     }
 
     if (files != null) {
-      for (File f : SpotifyDockerImageInstance
-          .fileIndirections(convertNFSFileToMountPoint(files,
+      for (File f : DockerUtils
+          .fileIndirections(DockerUtils.convertNFSFileToMountPoint(files,
               convertNFSFilesToMountRoots, logger))) {
 
         if (!mounted.contains(f.getAbsoluteFile())) {

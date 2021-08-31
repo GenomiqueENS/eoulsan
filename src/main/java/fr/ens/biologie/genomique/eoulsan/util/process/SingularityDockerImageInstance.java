@@ -1,8 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.util.process;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static fr.ens.biologie.genomique.eoulsan.util.process.SpotifyDockerImageInstance.convertNFSFileToMountPoint;
-import static fr.ens.biologie.genomique.eoulsan.util.process.SpotifyDockerImageInstance.fileIndirections;
 import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedWriter;
@@ -144,7 +142,7 @@ public class SingularityDockerImageInstance extends AbstractSimpleProcess
       final boolean convertNFSFilesToMountRoots, final GenericLogger logger)
       throws IOException {
 
-    for (File file : fileIndirections(convertNFSFileToMountPoint(files,
+    for (File file : DockerUtils.fileIndirections(DockerUtils.convertNFSFileToMountPoint(files,
         convertNFSFilesToMountRoots, logger))) {
 
       command.add("--bind");

@@ -1,5 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.util.process;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
@@ -27,6 +29,8 @@ public class SpotifyDockerClient implements DockerClient {
   @Override
   public void initialize(URI dockerConnectionURI) throws IOException {
 
+    requireNonNull(dockerConnectionURI);
+
     synchronized (this) {
 
       if (this.client != null) {
@@ -44,8 +48,8 @@ public class SpotifyDockerClient implements DockerClient {
       this.client = new DefaultDockerClient(dockerConnection);
 
       if (this.client == null) {
-        throw new IOException("Unable to connect to Docker deamon: "
-            + EoulsanRuntime.getSettings().getDockerConnection());
+        throw new IOException(
+            "Unable to connect to Docker deamon: " + dockerConnectionURI);
       }
     }
   }

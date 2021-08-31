@@ -1,5 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.util.process;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
@@ -13,7 +15,6 @@ import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.transport.DockerHttpClient;
 import com.github.dockerjava.zerodep.ZerodepDockerHttpClient;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
 import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 
@@ -30,19 +31,28 @@ public class DockerClientDockerClient implements DockerClient {
   @Override
   public void initialize(URI dockerConnectionURI) throws IOException {
 
+    requireNonNull(dockerConnectionURI);
+
     synchronized (this) {
 
-      DockerClientConfig standard =
-          DefaultDockerClientConfig.createDefaultConfigBuilder().build();
+      if (this.client != null) {
+        return;
+      }
 
-      DockerHttpClient httpClient = new ZerodepDockerHttpClient.Builder()
-          .dockerHost(dockerConnectionURI).build();
+      synchronized (this) {
 
-      this.client = DockerClientImpl.getInstance(standard, httpClient);
+        DockerClientConfig standard =
+            DefaultDockerClientConfig.createDefaultConfigBuilder().build();
 
-      if (this.client == null) {
-        throw new IOException("Unable to connect to Docker deamon: "
-            + EoulsanRuntime.getSettings().getDockerConnection());
+        DockerHttpClient httpClient = new ZerodepDockerHttpClient.Builder()
+            .dockerHost(dockerConnectionURI).build();
+
+        this.client = DockerClientImpl.getInstance(standard, httpClient);
+
+        if (this.client == null) {
+          throw new IOException(
+              "Unable to connect to Docker deamon: " + dockerConnectionURI);
+        }
       }
     }
   }
