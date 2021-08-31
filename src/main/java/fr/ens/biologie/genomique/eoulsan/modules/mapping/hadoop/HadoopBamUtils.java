@@ -137,7 +137,7 @@ public class HadoopBamUtils {
   // Utils.getSAMHeaderMerger().getMergedHeader() and allows the output
   // directory
   // (the "work directory") to exist.
-  public class CLIMergingAnySAMOutputFormat<K>
+  public static class CLIMergingAnySAMOutputFormat<K>
       extends FileOutputFormat<K, SAMRecordWritable> {
     private KeyIgnoringAnySAMOutputFormat<K> baseOF;
 
