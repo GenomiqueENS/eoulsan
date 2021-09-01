@@ -132,7 +132,7 @@ public class DockerManager {
       return ClientType.FALLBACK;
     }
 
-    return ClientType.SPOTIFY;
+    return ClientType.DOCKER_JAVA;
   }
 
   //
