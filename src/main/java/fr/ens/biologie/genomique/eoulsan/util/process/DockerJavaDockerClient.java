@@ -23,7 +23,7 @@ import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
  * @author Laurent Jourdren
  * @since 2.6
  */
-public class DockerClientDockerClient implements DockerClient {
+public class DockerJavaDockerClient implements DockerClient {
 
   private com.github.dockerjava.api.DockerClient client;
   private final GenericLogger logger;
@@ -65,7 +65,7 @@ public class DockerClientDockerClient implements DockerClient {
       throw new IllegalStateException("Docker client not initialized");
     }
 
-    return new DockerClientDockerImageInstance(this.client, dockerImage,
+    return new DockerJavaDockerImageInstance(this.client, dockerImage,
         this.logger);
   }
 
@@ -99,7 +99,7 @@ public class DockerClientDockerClient implements DockerClient {
   /**
    * Constructor.
    */
-  public DockerClientDockerClient() {
+  public DockerJavaDockerClient() {
 
     this(null);
   }
@@ -108,7 +108,7 @@ public class DockerClientDockerClient implements DockerClient {
    * Constructor.
    * @param logger logger to use
    */
-  public DockerClientDockerClient(GenericLogger logger) {
+  public DockerJavaDockerClient(GenericLogger logger) {
 
     this.logger = logger == null ? new EoulsanRuntimeLogger() : logger;
   }

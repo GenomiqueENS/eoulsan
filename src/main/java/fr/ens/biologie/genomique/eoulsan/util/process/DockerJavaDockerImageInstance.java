@@ -37,7 +37,7 @@ import fr.ens.biologie.genomique.eoulsan.util.Utils;
  * @author Laurent Jourdren
  * @since 2.6
  */
-public class DockerClientDockerImageInstance extends AbstractSimpleProcess
+public class DockerJavaDockerImageInstance extends AbstractSimpleProcess
     implements DockerImageInstance {
 
   private final com.github.dockerjava.api.DockerClient dockerClient;
@@ -385,7 +385,7 @@ public class DockerClientDockerImageInstance extends AbstractSimpleProcess
    * @param dockerImage Docker image
    * @param logger logger to use
    */
-  DockerClientDockerImageInstance(
+  DockerJavaDockerImageInstance(
       final com.github.dockerjava.api.DockerClient dockerClient,
       final String dockerImage, final GenericLogger logger) {
 
