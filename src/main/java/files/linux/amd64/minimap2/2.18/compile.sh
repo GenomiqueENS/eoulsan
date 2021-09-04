@@ -13,7 +13,7 @@ cat > Dockerfile << EOF
 ############################################################
 
 # Set the base image to Ubuntu
-FROM ubuntu:18.04
+FROM ubuntu:16.04
 
 # File Author / Maintainer
 MAINTAINER Laurent Jourdren <jourdren@biologie.ens.fr>
