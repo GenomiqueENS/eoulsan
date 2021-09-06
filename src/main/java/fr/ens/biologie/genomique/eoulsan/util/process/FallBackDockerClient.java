@@ -9,6 +9,8 @@ import java.util.Set;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 
+import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 
 /**
@@ -18,6 +20,8 @@ import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
  */
 public class FallBackDockerClient implements DockerClient {
 
+  private final GenericLogger logger;
+
   @Override
   public void initialize(URI dockerConnectionURI) {
     // Nothing to do
@@ -26,7 +30,7 @@ public class FallBackDockerClient implements DockerClient {
   @Override
   public DockerImageInstance createConnection(String dockerImage) {
 
-    return new FallBackDockerImageInstance(dockerImage);
+    return new FallBackDockerImageInstance(dockerImage, this.logger);
   }
 
   @Override
@@ -64,6 +68,27 @@ public class FallBackDockerClient implements DockerClient {
     }
 
     return result;
+  }
+
+  //
+  // Constructors
+  //
+
+  /**
+   * Constructor.
+   */
+  public FallBackDockerClient() {
+
+    this(null);
+  }
+
+  /**
+   * Constructor.
+   * @param logger logger to use
+   */
+  public FallBackDockerClient(GenericLogger logger) {
+
+    this.logger = logger == null ? new EoulsanRuntimeLogger() : logger;
   }
 
 }

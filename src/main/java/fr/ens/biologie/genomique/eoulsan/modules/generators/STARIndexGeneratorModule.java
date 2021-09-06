@@ -45,7 +45,6 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.Generator;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.EoulsanMapperLogger;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.STARMapperProvider;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
@@ -66,6 +65,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
 import fr.ens.biologie.genomique.eoulsan.data.protocols.DataProtocol;
 import fr.ens.biologie.genomique.eoulsan.data.protocols.StorageDataProtocol;
 import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
+import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule;
 
@@ -81,7 +81,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
   public static final String MODULE_NAME = "starindexgenerator";
 
   private final Mapper mapper = Mapper.newMapper(STARMapperProvider.MAPPER_NAME,
-      new EoulsanMapperLogger());
+      new EoulsanRuntimeLogger());
 
   private Integer overhang = null;
   private boolean gtfFile;

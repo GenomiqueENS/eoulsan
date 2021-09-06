@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 
 /**
@@ -47,7 +48,7 @@ public class EntryMapping {
   protected final List<String> mapperArguments;
   protected final int threadNumber;
   protected final boolean multipleInstanceEnabled;
-  protected final MapperLogger logger;
+  protected final GenericLogger logger;
 
   //
   // Getters
@@ -243,7 +244,7 @@ public class EntryMapping {
       final List<String> mapperArguments, final int threadNumber,
       final boolean multipleInstanceEnabled,
       final ReporterIncrementer incrementer, final String counterGroup,
-      final MapperLogger logger) {
+      final GenericLogger logger) {
 
     requireNonNull(mapperIndex, "mapperIndex cannot be null");
     requireNonNull(fastqFormat, "fastqFormat cannot be null");

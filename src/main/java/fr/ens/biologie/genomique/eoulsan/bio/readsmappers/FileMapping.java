@@ -38,6 +38,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
 import fr.ens.biologie.genomique.eoulsan.bio.io.FastqReader;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 
 /**
@@ -360,7 +361,7 @@ public class FileMapping extends EntryMapping {
       final FastqFormat fastqFormat, final List<String> mapperArguments,
       final int threadNumber, final boolean multipleInstanceEnabled,
       final ReporterIncrementer incrementer, final String counterGroup,
-      final MapperLogger logger) {
+      final GenericLogger logger) {
 
     super(mapperIndex, fastqFormat, mapperArguments, threadNumber,
         multipleInstanceEnabled, incrementer, counterGroup, logger);

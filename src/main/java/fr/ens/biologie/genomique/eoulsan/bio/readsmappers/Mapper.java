@@ -31,6 +31,8 @@ import java.io.IOException;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.eoulsan.log.DummyLogger;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 
 /**
  * This class define a class allow to define the mapper name, the version, the
@@ -41,7 +43,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 public class Mapper {
 
   private final MapperProvider provider;
-  private MapperLogger logger;
+  private GenericLogger logger;
   private File tempDir = EoulsanRuntime.getSettings().getTempDirectoryFile();
   private File executablesTempDir =
       EoulsanRuntime.getSettings().getExecutablesTempDirectoryFile();
@@ -152,7 +154,7 @@ public class Mapper {
    * Set the logger to use for the mapping.
    * @param logger the logger to use for the mapping
    */
-  public void setLogger(final MapperLogger logger) {
+  public void setLogger(final GenericLogger logger) {
 
     requireNonNull(logger, "logger cannot be null");
 
@@ -280,7 +282,7 @@ public class Mapper {
    * @return a Mapper object
    */
   public static Mapper newMapper(final String mapperName,
-      final MapperLogger logger) {
+      final GenericLogger logger) {
 
     requireNonNull(mapperName, "mapperName cannot be null");
 
@@ -292,7 +294,7 @@ public class Mapper {
     }
 
     return new Mapper(provider,
-        logger == null ? new DummyMapperLogger() : logger);
+        logger == null ? new DummyLogger() : logger);
   }
 
   /**
@@ -328,7 +330,7 @@ public class Mapper {
    * @param provider the provider to use the the Mapper class.
    * @param logger the logger to use
    */
-  private Mapper(final MapperProvider provider, final MapperLogger logger) {
+  private Mapper(final MapperProvider provider, final GenericLogger logger) {
 
     requireNonNull(provider, "provider cannot be null");
     this.provider = provider;

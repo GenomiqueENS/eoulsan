@@ -37,6 +37,7 @@ import java.util.List;
 import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
 
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.BinariesInstaller;
 
 /**
@@ -50,7 +51,7 @@ public class BundledMapperExecutor implements MapperExecutor {
   private final String softwarePackage;
   private final String version;
   private final File executablesTemporaryDirectory;
-  private final MapperLogger logger;
+  private final GenericLogger logger;
 
   /**
    * This class define an executor result for BundledMapperExecutor and
@@ -94,7 +95,7 @@ public class BundledMapperExecutor implements MapperExecutor {
   }
 
   @Override
-  public MapperLogger getLogger() {
+  public GenericLogger getLogger() {
     return this.logger;
   }
 
@@ -216,7 +217,7 @@ public class BundledMapperExecutor implements MapperExecutor {
    * @param executablesTemporaryDirectory temporary directory for executables
    */
   BundledMapperExecutor(final String softwarePackage, final String version,
-      final File executablesTemporaryDirectory, final MapperLogger logger) {
+      final File executablesTemporaryDirectory, final GenericLogger logger) {
 
     requireNonNull(softwarePackage, "dockerConnection argument cannot be null");
     requireNonNull(version, "dockerConnection argument cannot be null");

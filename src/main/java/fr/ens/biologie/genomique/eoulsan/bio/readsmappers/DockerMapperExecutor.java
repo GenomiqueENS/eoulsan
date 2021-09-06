@@ -41,6 +41,7 @@ import java.util.UUID;
 
 import com.google.common.base.MoreObjects;
 
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.process.DockerImageInstance;
@@ -57,7 +58,7 @@ public class DockerMapperExecutor implements MapperExecutor {
 
   private final DockerImageInstance dockerConnection;
   private final File temporaryDirectory;
-  private final MapperLogger logger;
+  private final GenericLogger logger;
 
   /**
    * This class define an executor result.
@@ -182,7 +183,7 @@ public class DockerMapperExecutor implements MapperExecutor {
   //
 
   @Override
-  public MapperLogger getLogger() {
+  public GenericLogger getLogger() {
     return this.logger;
   }
 
@@ -287,7 +288,7 @@ public class DockerMapperExecutor implements MapperExecutor {
    * @throws IOException if an error occurs while creating the connection
    */
   DockerMapperExecutor(final String dockerImage, final File temporaryDirectory,
-      final MapperLogger logger) throws IOException {
+      final GenericLogger logger) throws IOException {
 
     requireNonNull(dockerImage, "dockerImage argument cannot be null");
     requireNonNull(temporaryDirectory,

@@ -556,7 +556,6 @@
 			<type>jar</type>
 			<scope>runtime</scope>
 		</dependency>
-		
 		<dependency>
 			<groupId>uk.ac.babraham</groupId>
 			<artifactId>fastqc</artifactId>
@@ -715,6 +714,49 @@
                         <artifactId>activation</artifactId>
                         <version>1.1.1</version>
                 </dependency>
+
+                <!-- New Docker client -->
+                <dependency>
+                        <groupId>com.github.docker-java</groupId>
+                        <artifactId>docker-java-api</artifactId>
+                        <version>3.2.11</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.github.docker-java</groupId>
+                        <artifactId>docker-java-core</artifactId>
+                        <version>3.2.11</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.github.docker-java</groupId>
+                        <artifactId>docker-java-transport</artifactId>
+                        <version>3.2.11</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.github.docker-java</groupId>
+                        <artifactId>docker-java-transport-zerodep</artifactId>
+                        <version>3.2.11</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-core</artifactId>
+                        <version>2.12.5</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-databind</artifactId>
+                        <version>2.12.5</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-annotations</artifactId>
+                        <version>2.12.5</version>
+                </dependency>
+                <dependency>
+                        <groupId>net.java.dev.jna</groupId>
+                        <artifactId>jna</artifactId>
+                        <version>5.8.0</version>
+                </dependency>
+
 
 	</dependencies>
 

@@ -1,5 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.util.process;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.HashSet;
@@ -10,6 +12,8 @@ import com.spotify.docker.client.DockerException;
 import com.spotify.docker.client.messages.Image;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
+import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.CollectionUtils;
 
 /**
@@ -20,9 +24,12 @@ import fr.ens.biologie.genomique.eoulsan.util.CollectionUtils;
 public class SpotifyDockerClient implements DockerClient {
 
   private DefaultDockerClient client;
+  private final GenericLogger logger;
 
   @Override
   public void initialize(URI dockerConnectionURI) throws IOException {
+
+    requireNonNull(dockerConnectionURI);
 
     synchronized (this) {
 
@@ -41,8 +48,8 @@ public class SpotifyDockerClient implements DockerClient {
       this.client = new DefaultDockerClient(dockerConnection);
 
       if (this.client == null) {
-        throw new IOException("Unable to connect to Docker deamon: "
-            + EoulsanRuntime.getSettings().getDockerConnection());
+        throw new IOException(
+            "Unable to connect to Docker deamon: " + dockerConnectionURI);
       }
     }
   }
@@ -50,7 +57,12 @@ public class SpotifyDockerClient implements DockerClient {
   @Override
   public DockerImageInstance createConnection(String dockerImage) {
 
-    return new SpotifyDockerImageInstance(this.client, dockerImage);
+    if (client == null) {
+      throw new IllegalStateException("Docker client not initialized");
+    }
+
+    return new SpotifyDockerImageInstance(this.client, dockerImage,
+        this.logger);
   }
 
   @Override
@@ -84,6 +96,27 @@ public class SpotifyDockerClient implements DockerClient {
     }
 
     return result;
+  }
+
+  //
+  // Constructors
+  //
+
+  /**
+   * Constructor.
+   */
+  public SpotifyDockerClient() {
+
+    this(null);
+  }
+
+  /**
+   * Constructor.
+   * @param logger logger to use
+   */
+  public SpotifyDockerClient(GenericLogger logger) {
+
+    this.logger = logger == null ? new EoulsanRuntimeLogger() : logger;
   }
 
 }
