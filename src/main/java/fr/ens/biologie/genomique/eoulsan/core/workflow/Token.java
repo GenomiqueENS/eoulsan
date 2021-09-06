@@ -27,6 +27,8 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.common.base.MoreObjects;
+
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 
 /**
@@ -92,7 +94,7 @@ class Token {
   @Override
   public String toString() {
 
-    return com.google.common.base.Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
         .add("id", this.id).add("fromPort", this.fromPort)
         .add("tokensSent", this.tokensCount).add("data", this.data).toString();
   }

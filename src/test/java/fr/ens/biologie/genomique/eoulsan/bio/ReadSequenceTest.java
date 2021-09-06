@@ -47,6 +47,7 @@ public class ReadSequenceTest {
 
     try {
 
+      @SuppressWarnings("unused")
       Sequence sequence = new ReadSequence();
       assertTrue(true);
     } catch (ClassCastException e) {
@@ -504,6 +505,36 @@ public class ReadSequenceTest {
     s.setQuality("!!!!");
     assertTrue(s.validate());
 
+  }
+
+  @Test
+  public void testReverseComplement() {
+
+    ReadSequence s = new ReadSequence("toto", "ATGC", "abcd");
+    assertEquals("ATGC", s.getSequence());
+    assertEquals("abcd", s.getQuality());
+    s.reverseComplement();
+    assertEquals("GCAT", s.getSequence());
+    assertEquals("dcba", s.getQuality());
+
+    s = new ReadSequence("toto", null, null);
+    assertNull(s.getSequence());
+    assertNull(s.getQuality());
+  }
+
+  @Test
+  public void testReverse() {
+
+    ReadSequence s = new ReadSequence("toto", "ATGC", "abcd");
+    assertEquals("ATGC", s.getSequence());
+    assertEquals("abcd", s.getQuality());
+    s.reverse();
+    assertEquals("CGTA", s.getSequence());
+    assertEquals("dcba", s.getQuality());
+
+    s = new ReadSequence("toto", null, null);
+    assertNull(s.getSequence());
+    assertNull(s.getQuality());
   }
 
 }

@@ -37,7 +37,7 @@ import java.util.List;
 
 import org.w3c.dom.Document;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.DockerExecutorInterpreter;
@@ -173,7 +173,7 @@ public class ToolInfo {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("toolID", this.toolID)
+    return MoreObjects.toStringHelper(this).add("toolID", this.toolID)
         .add("toolName", this.toolName).add("toolVersion", this.toolVersion)
         .add("description", this.description)
         .add("interpreters", this.interpreters)

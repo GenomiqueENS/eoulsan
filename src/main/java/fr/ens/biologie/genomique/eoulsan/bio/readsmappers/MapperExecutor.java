@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
+
 /**
  * This interface define a mapper executors that allow to execute system
  * processes against the mapper execution mode (bundled binaries, binaries in
@@ -57,6 +59,12 @@ interface MapperExecutor {
      */
     int waitFor() throws IOException;
   }
+
+  /**
+   * Get the logger to use for the mapping.
+   * @return the logger to use for the mapping
+   */
+  GenericLogger getLogger();
 
   /**
    * Test if an executable exists.

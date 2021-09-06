@@ -24,8 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -227,8 +225,6 @@ public abstract class AbstractBowtieMapperProvider
 
         // Input from temporary FASTQ file
         cmd.add(getNamedPipeFile1().getAbsolutePath());
-
-        getLogger().info(cmd.toString());
 
         return Collections.singletonList(cmd);
       }

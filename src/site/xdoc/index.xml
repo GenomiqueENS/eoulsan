@@ -124,16 +124,9 @@
         <section name="What's new in Eoulsan @@@VERSION@@@? ">
 		<p>The Eoulsan @@@VERSION@@@ main new enhancements since its last version are: </p>
 		<ul>
-			<li>Eoulsan requirements of Java 8 and support of Java 11</li>
-			<li>Hadoop 3.x support</li>
-			<li>New STAR (2.7.2d) and Minimap 2.12 bundled binaries</li>
-			<li>Galaxy tools modules working in both Docker and non-Docker modes</li>
-			<li>Data storage created using a Galaxy tool module</li>
-			<li>The MultiQC module using MultiQC 1.7 Docker image by default</li>
-			<li>Support for Singularity in addition to Docker to launch software containers</li>
-			<li>Handling the 'X' and '=' Cigar codes in expression module</li>
-			<li>Support of scRNA-seq count matrices</li>
-			<li>Fixes in workflow engine</li>
+			<li>New STAR 2.7.8a and Minimap 2.18 bundled binaries</li>
+			<li>New read filters to identify/remove/retains/reverse sequences with GGG head or polyA tails</li>
+			<li>And many fixes</li>
 		</ul>
 		<p>For the full change log, please report to the <a href="changes-report.html#a@@@VERSION@@@">dedicated page</a>.</p>
 	</section>

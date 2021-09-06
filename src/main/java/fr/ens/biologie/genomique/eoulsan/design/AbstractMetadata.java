@@ -34,6 +34,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.google.common.base.MoreObjects;
+
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 
 /**
@@ -165,7 +167,7 @@ public abstract class AbstractMetadata implements Metadata, Serializable {
   @Override
   public String toString() {
 
-    return com.google.common.base.Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
         .add("metadata", this.metadata).toString();
   }
 

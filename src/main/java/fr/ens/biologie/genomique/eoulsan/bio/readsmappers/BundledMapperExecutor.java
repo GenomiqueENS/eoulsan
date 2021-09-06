@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -36,8 +35,9 @@ import java.nio.channels.FileLock;
 import java.util.List;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.BinariesInstaller;
 
 /**
@@ -51,6 +51,7 @@ public class BundledMapperExecutor implements MapperExecutor {
   private final String softwarePackage;
   private final String version;
   private final File executablesTemporaryDirectory;
+  private final GenericLogger logger;
 
   /**
    * This class define an executor result for BundledMapperExecutor and
@@ -91,6 +92,11 @@ public class BundledMapperExecutor implements MapperExecutor {
 
       this.process = process;
     }
+  }
+
+  @Override
+  public GenericLogger getLogger() {
+    return this.logger;
   }
 
   @Override
@@ -177,11 +183,11 @@ public class BundledMapperExecutor implements MapperExecutor {
       builder.directory(executionDirectory);
     }
 
-    getLogger()
+    this.logger
         .info("Process command: " + Joiner.on(' ').join(builder.command()));
-    getLogger().info("Process directory: " + builder.directory());
-    getLogger().fine("Process redirect output: " + builder.redirectOutput());
-    getLogger().fine("Process redirect error: " + builder.redirectError());
+    this.logger.info("Process directory: " + builder.directory());
+    this.logger.debug("Process redirect output: " + builder.redirectOutput());
+    this.logger.debug("Process redirect error: " + builder.redirectError());
 
     return new ProcessResult(builder.start());
   }
@@ -193,7 +199,7 @@ public class BundledMapperExecutor implements MapperExecutor {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("softwarePackage", softwarePackage)
+    return MoreObjects.toStringHelper(this).add("softwarePackage", softwarePackage)
         .add("version", version)
         .add("executablesTemporaryDirectory", executablesTemporaryDirectory)
         .toString();
@@ -207,19 +213,22 @@ public class BundledMapperExecutor implements MapperExecutor {
    * Constructor.
    * @param softwarePackage software package of the mapper
    * @param version version of the mapper
+   * @param logger the logger to use
    * @param executablesTemporaryDirectory temporary directory for executables
    */
   BundledMapperExecutor(final String softwarePackage, final String version,
-      final File executablesTemporaryDirectory) {
+      final File executablesTemporaryDirectory, final GenericLogger logger) {
 
     requireNonNull(softwarePackage, "dockerConnection argument cannot be null");
     requireNonNull(version, "dockerConnection argument cannot be null");
     requireNonNull(executablesTemporaryDirectory,
         "dockerConnection argument cannot be null");
+    requireNonNull(logger, "logger argument cannot be null");
 
     this.softwarePackage = softwarePackage;
     this.version = version;
     this.executablesTemporaryDirectory = executablesTemporaryDirectory;
+    this.logger = logger;
   }
 
 }

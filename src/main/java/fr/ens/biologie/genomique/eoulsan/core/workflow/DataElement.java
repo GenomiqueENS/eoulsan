@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
@@ -274,7 +274,7 @@ class DataElement extends AbstractData implements Serializable {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("name", getName())
+    return MoreObjects.toStringHelper(this).add("name", getName())
         .add("format", getFormat().getName()).add("metadata", getMetadata())
         .add("list", isList()).add("content", this.files).toString();
   }

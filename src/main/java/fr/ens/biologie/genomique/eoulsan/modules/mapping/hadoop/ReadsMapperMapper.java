@@ -59,6 +59,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperIndex;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperInstance;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperProcess;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopReporter;
@@ -180,7 +181,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     // Set the mapper
     final fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper mapper =
         fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper
-            .newMapper(mapperName);
+            .newMapper(mapperName, new EoulsanRuntimeLogger());
 
     // Create temporary directory if not exists
     final File tempDir = EoulsanRuntime.getRuntime().getTempDirectory();

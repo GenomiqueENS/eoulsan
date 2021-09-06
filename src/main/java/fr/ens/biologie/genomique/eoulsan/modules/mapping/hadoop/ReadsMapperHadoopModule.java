@@ -370,6 +370,7 @@ public class ReadsMapperHadoopModule extends AbstractReadsMapperModule {
     ZipArchiveInputStream zais = new ZipArchiveInputStream(in);
 
     // Create Hash function
+    @SuppressWarnings("deprecation")
     final Hasher hs = Hashing.md5().newHasher();
 
     // Store entries in a map

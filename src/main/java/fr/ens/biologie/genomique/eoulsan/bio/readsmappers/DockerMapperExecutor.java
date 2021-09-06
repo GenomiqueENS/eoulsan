@@ -26,7 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.collect.Lists.newArrayList;
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -40,8 +39,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.process.DockerImageInstance;
@@ -58,6 +58,7 @@ public class DockerMapperExecutor implements MapperExecutor {
 
   private final DockerImageInstance dockerConnection;
   private final File temporaryDirectory;
+  private final GenericLogger logger;
 
   /**
    * This class define an executor result.
@@ -85,7 +86,7 @@ public class DockerMapperExecutor implements MapperExecutor {
 
         return Channels.newInputStream(fis.getChannel());
       } catch (FileNotFoundException e) {
-        getLogger().severe("Cannot find stdout named pipe of the container: "
+        logger.error("Cannot find stdout named pipe of the container: "
             + this.stdoutFile);
         return null;
       }
@@ -102,15 +103,14 @@ public class DockerMapperExecutor implements MapperExecutor {
       int result;
 
       // Wait the end of the container
-      getLogger().fine("Wait the end of the Docker container");
+      logger.debug("Wait the end of the Docker container");
 
       result = process.waitFor();
 
       // Remove named pipe
       if (this.stdoutFile != null) {
         if (!this.stdoutFile.delete()) {
-          getLogger()
-              .warning("Unable to delete stdout file: " + this.stdoutFile);
+          logger.warn("Unable to delete stdout file: " + this.stdoutFile);
         }
       }
 
@@ -143,7 +143,7 @@ public class DockerMapperExecutor implements MapperExecutor {
       dockerConnection.pullImageIfNotExists();
 
       // Create container configuration
-      getLogger().fine("Configure container, command to execute: " + command);
+      logger.debug("Configure container, command to execute: " + command);
 
       List<File> newFilesUsed = new ArrayList<>();
       if (filesUsed != null) {
@@ -165,7 +165,7 @@ public class DockerMapperExecutor implements MapperExecutor {
       }
 
       // Start container
-      getLogger().fine("Start of the Docker container");
+      logger.debug("Start of the Docker container");
       // dockerClient.startContainer(containerId);
 
       final File nullFile = new File("/dev/null");
@@ -181,6 +181,11 @@ public class DockerMapperExecutor implements MapperExecutor {
   //
   // MapperExecutor methods
   //
+
+  @Override
+  public GenericLogger getLogger() {
+    return this.logger;
+  }
 
   @Override
   public boolean isExecutable(final String executable) throws IOException {
@@ -266,7 +271,7 @@ public class DockerMapperExecutor implements MapperExecutor {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
         .add("dockerConnection", dockerConnection)
         .add("temporaryDirectory", temporaryDirectory).toString();
   }
@@ -279,18 +284,21 @@ public class DockerMapperExecutor implements MapperExecutor {
    * Constructor.
    * @param dockerImage Docker image
    * @param temporaryDirectory temporary directory
+   * @param logger logger to use
    * @throws IOException if an error occurs while creating the connection
    */
-  DockerMapperExecutor(final String dockerImage, final File temporaryDirectory)
-      throws IOException {
+  DockerMapperExecutor(final String dockerImage, final File temporaryDirectory,
+      final GenericLogger logger) throws IOException {
 
     requireNonNull(dockerImage, "dockerImage argument cannot be null");
     requireNonNull(temporaryDirectory,
         "temporaryDirectory argument cannot be null");
+    requireNonNull(logger, "logger argument cannot be null");
 
     this.temporaryDirectory = temporaryDirectory;
     this.dockerConnection =
         DockerManager.getInstance().createImageInstance(dockerImage);
+    this.logger = logger;
   }
 
 }

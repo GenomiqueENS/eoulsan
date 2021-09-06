@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.readsmappers;
 
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.util.FileUtils.checkExistingStandardFile;
 import static java.util.Objects.requireNonNull;
 
@@ -39,6 +38,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
 import fr.ens.biologie.genomique.eoulsan.bio.io.FastqReader;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 
 /**
@@ -102,8 +102,8 @@ public class FileMapping extends EntryMapping {
           logFile);
     }
 
-    getLogger().fine("First pair FASTQ file to map: " + readsFile1);
-    getLogger().fine("Second pair FASTQ file to map: " + readsFile2);
+    this.logger.debug("First pair FASTQ file to map: " + readsFile1);
+    this.logger.debug("Second pair FASTQ file to map: " + readsFile2);
 
     return mapPE(readsFile1.open(), readsFile2.open(), errorFile, logFile);
   }
@@ -128,9 +128,9 @@ public class FileMapping extends EntryMapping {
     checkExistingStandardFile(readsFile2,
         "readsFile2 not exits or is not a standard file.");
 
-    getLogger().fine("First pair FASTQ file to map: " + readsFile1);
-    getLogger().fine("Second pair FASTQ file to map: " + readsFile2);
-    getLogger().fine("Mapping with "
+    this.logger.debug("First pair FASTQ file to map: " + readsFile1);
+    this.logger.debug("Second pair FASTQ file to map: " + readsFile2);
+    this.logger.debug("Mapping with "
         + this.mapperIndex.getMapperName() + " in paired-end mode");
 
     // Process to mapping
@@ -161,7 +161,7 @@ public class FileMapping extends EntryMapping {
     requireNonNull(in1, "in1 argument is null");
     requireNonNull(in2, "in2 argument is null");
 
-    getLogger().fine("Mapping with "
+    this.logger.debug("Mapping with "
         + this.mapperIndex.getMapperName() + " in paired-end mode");
 
     requireNonNull(in1, "readsFile1 is null");
@@ -200,7 +200,7 @@ public class FileMapping extends EntryMapping {
       return mapSE(readsFile.toFile(), errorFile, logFile);
     }
 
-    getLogger().fine("FASTQ file to map: " + readsFile);
+    this.logger.debug("FASTQ file to map: " + readsFile);
 
     return mapSE(readsFile.open(), errorFile, logFile);
   }
@@ -218,7 +218,7 @@ public class FileMapping extends EntryMapping {
 
     requireNonNull(in, "in argument is null");
 
-    getLogger().fine("Mapping with "
+    this.logger.debug("Mapping with "
         + this.mapperIndex.getMapperName() + " in single-end mode");
 
     // Process to mapping
@@ -246,8 +246,8 @@ public class FileMapping extends EntryMapping {
     checkExistingStandardFile(readsFile,
         "reads File not exits or is not a standard file.");
 
-    getLogger().fine("FASTQ file to map: " + readsFile);
-    getLogger().fine("Mapping with "
+    this.logger.debug("FASTQ file to map: " + readsFile);
+    this.logger.debug("Mapping with "
         + this.mapperIndex.getMapperName() + " in single-end mode");
 
     // Process to mapping
@@ -355,14 +355,16 @@ public class FileMapping extends EntryMapping {
    * @param multipleInstanceEnabled true if multiple instance must be enabled
    * @param incrementer the incrementer
    * @param counterGroup the counter group
+   * @param logger the logger
    */
   public FileMapping(final MapperIndex mapperIndex,
       final FastqFormat fastqFormat, final List<String> mapperArguments,
       final int threadNumber, final boolean multipleInstanceEnabled,
-      final ReporterIncrementer incrementer, final String counterGroup) {
+      final ReporterIncrementer incrementer, final String counterGroup,
+      final GenericLogger logger) {
 
     super(mapperIndex, fastqFormat, mapperArguments, threadNumber,
-        multipleInstanceEnabled, incrementer, counterGroup);
+        multipleInstanceEnabled, incrementer, counterGroup, logger);
   }
 
 }

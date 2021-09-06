@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
@@ -62,7 +62,7 @@ public class GenericExecutorInterpreter extends AbstractExecutorInterpreter {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("name", this.name)
+    return MoreObjects.toStringHelper(this).add("name", this.name)
         .add("path", this.path).toString();
   }
 

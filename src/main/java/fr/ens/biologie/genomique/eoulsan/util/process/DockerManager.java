@@ -24,7 +24,10 @@
 
 package fr.ens.biologie.genomique.eoulsan.util.process;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
+import java.net.URI;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -35,6 +38,11 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
  * @since 2.0
  */
 public class DockerManager {
+
+  /** Available Docker clients. */
+  public enum ClientType {
+    DOCKER_JAVA, SPOTIFY, SINGULARITY, FALLBACK
+  };
 
   private static DockerManager singleton;
   private final DockerClient client;
@@ -82,13 +90,49 @@ public class DockerManager {
    * @throws IOException if an error occurs while creating the DockerManager
    *           instance
    */
-  public static synchronized DockerManager getInstance() throws IOException {
+  public static DockerManager getInstance() throws IOException {
+
+    return getInstance(findClientForEoulsan(),
+        EoulsanRuntime.getSettings().getDockerConnectionURI());
+  }
+
+  /**
+   * Get the instance of the DockerManager.
+   * @param clientType Docker client type
+   * @param dockerConnection URI of the docker connection
+   * @return the instance of the DockerManager
+   * @throws IOException if an error occurs while creating the DockerManager
+   *           instance
+   */
+  public static synchronized DockerManager getInstance(ClientType clientType,
+      URI dockerConnection) throws IOException {
 
     if (singleton == null) {
-      singleton = new DockerManager();
+      singleton = new DockerManager(clientType, dockerConnection);
     }
 
     return singleton;
+  }
+
+  //
+  // Other methods
+  //
+
+  private static ClientType findClientForEoulsan() {
+
+    if (EoulsanRuntime.isRuntime()
+        && EoulsanRuntime.getSettings().isDockerBySingularityEnabled()) {
+
+      return ClientType.SINGULARITY;
+    }
+
+    if (EoulsanRuntime.isRuntime()
+        && EoulsanRuntime.getRuntime().getMode().isHadoopMode()) {
+
+      return ClientType.FALLBACK;
+    }
+
+    return ClientType.DOCKER_JAVA;
   }
 
   //
@@ -99,25 +143,35 @@ public class DockerManager {
    * Private constructor.
    * @throws IOException if an error occurs while creating the instance
    */
-  private DockerManager() throws IOException {
+  private DockerManager(ClientType clientType, URI dockerConnection)
+      throws IOException {
 
-    if (EoulsanRuntime.isRuntime()
-        && EoulsanRuntime.getSettings().isDockerBySingularityEnabled()) {
+    requireNonNull(clientType);
+    requireNonNull(dockerConnection);
 
+    switch (clientType) {
+    case FALLBACK:
+      this.client = new FallBackDockerClient();
+      break;
+
+    case SPOTIFY:
+      this.client = new SpotifyDockerClient();
+      break;
+
+    case SINGULARITY:
       this.client = new SingularityDockerClient();
+      break;
 
-    } else {
+    case DOCKER_JAVA:
+      this.client = new DockerJavaDockerClient();
+      break;
 
-      if (EoulsanRuntime.isRuntime()
-          && EoulsanRuntime.getRuntime().getMode().isHadoopMode()) {
-        this.client = new FallBackDockerClient();
-      } else {
-        this.client = new SpotifyDockerClient();
-      }
+    default:
+      throw new IllegalStateException(
+          "Unsupported Docker client implementation: " + clientType);
     }
 
-    this.client
-        .initialize(EoulsanRuntime.getSettings().getDockerConnectionURI());
+    this.client.initialize(dockerConnection);
   }
 
 }

@@ -65,6 +65,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
 import fr.ens.biologie.genomique.eoulsan.data.protocols.DataProtocol;
 import fr.ens.biologie.genomique.eoulsan.data.protocols.StorageDataProtocol;
 import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
+import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule;
 
@@ -79,8 +80,8 @@ public class STARIndexGeneratorModule extends AbstractModule {
 
   public static final String MODULE_NAME = "starindexgenerator";
 
-  private final Mapper mapper =
-      Mapper.newMapper(STARMapperProvider.MAPPER_NAME);
+  private final Mapper mapper = Mapper.newMapper(STARMapperProvider.MAPPER_NAME,
+      new EoulsanRuntimeLogger());
 
   private Integer overhang = null;
   private boolean gtfFile;

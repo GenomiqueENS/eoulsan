@@ -31,6 +31,8 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.common.base.MoreObjects;
+
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 
 /**
@@ -114,7 +116,7 @@ class SampleImpl implements Serializable, Sample {
   @Override
   public String toString() {
 
-    return com.google.common.base.Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
         .add("sampleId", this.sampleId).add("sampleNumber", this.sampleNumber)
         .add("sampleName", this.sampleName)
         .add("sampleMetadata", this.sampleMetadata).toString();

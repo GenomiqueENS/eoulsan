@@ -5,7 +5,7 @@
 	<groupId>fr.ens.biologie.genomique</groupId>
 	<artifactId>eoulsan</artifactId>
 	<packaging>jar</packaging>
-	<version>2.4-SNAPSHOT</version>
+	<version>2.6-SNAPSHOT</version>
 	<name>Eoulsan</name>
 	<description>
 		A pipeline for NGS analysis.
@@ -354,7 +354,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.11</version>
+			<version>4.13.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -418,7 +418,13 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>15.0</version>
+			<version>30.1.1-jre</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>failureaccess</artifactId>
+			<version>1.0.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -515,7 +521,7 @@
 		<dependency>
 			<groupId>xerces</groupId>
 			<artifactId>xercesImpl</artifactId>
-			<version>2.9.1</version>
+			<version>2.12.0</version>
 		</dependency>
 		<!-- Python interpreter -->
 		<dependency>
@@ -550,7 +556,6 @@
 			<type>jar</type>
 			<scope>runtime</scope>
 		</dependency>
-		
 		<dependency>
 			<groupId>uk.ac.babraham</groupId>
 			<artifactId>fastqc</artifactId>
@@ -576,7 +581,7 @@
 		<dependency>
 			<groupId>org.apache.ant</groupId>
 			<artifactId>ant</artifactId>
-			<version>1.8.2</version>
+			<version>1.10.9</version>
 			<scope>compile</scope>
 		</dependency>
 
@@ -584,7 +589,7 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.2</version>
+			<version>2.13.2</version>
 		</dependency>
 
 		<!-- Required to patch FastQC at runtime -->
@@ -709,6 +714,49 @@
                         <artifactId>activation</artifactId>
                         <version>1.1.1</version>
                 </dependency>
+
+                <!-- New Docker client -->
+                <dependency>
+                        <groupId>com.github.docker-java</groupId>
+                        <artifactId>docker-java-api</artifactId>
+                        <version>3.2.11</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.github.docker-java</groupId>
+                        <artifactId>docker-java-core</artifactId>
+                        <version>3.2.11</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.github.docker-java</groupId>
+                        <artifactId>docker-java-transport</artifactId>
+                        <version>3.2.11</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.github.docker-java</groupId>
+                        <artifactId>docker-java-transport-zerodep</artifactId>
+                        <version>3.2.11</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-core</artifactId>
+                        <version>2.12.5</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-databind</artifactId>
+                        <version>2.12.5</version>
+                </dependency>
+                <dependency>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-annotations</artifactId>
+                        <version>2.12.5</version>
+                </dependency>
+                <dependency>
+                        <groupId>net.java.dev.jna</groupId>
+                        <artifactId>jna</artifactId>
+                        <version>5.8.0</version>
+                </dependency>
+
 
 	</dependencies>
 
@@ -1160,7 +1208,7 @@ o
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>3.0.1</version>
+				<version>3.0.5</version>
 				<configuration>
 					<effort>Max</effort>
 					<xmlOutput>true</xmlOutput>

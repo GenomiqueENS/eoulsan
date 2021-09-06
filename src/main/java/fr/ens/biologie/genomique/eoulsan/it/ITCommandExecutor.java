@@ -25,13 +25,13 @@ package fr.ens.biologie.genomique.eoulsan.it;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toTimeHumanReadable;
+import static java.util.Collections.singleton;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -106,10 +106,7 @@ public class ITCommandExecutor {
     if (isApplicationCmdLine) {
 
       try {
-
-        com.google.common.io.Files.write(cmdLine + "\n", this.cmdLineFile,
-            StandardCharsets.UTF_8);
-
+        Files.write(this.cmdLineFile.toPath(), singleton(cmdLine));
       } catch (final IOException e) {
 
         getLogger().warning(

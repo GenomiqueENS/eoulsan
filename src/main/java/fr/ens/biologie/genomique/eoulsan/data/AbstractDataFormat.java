@@ -28,6 +28,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import com.google.common.base.MoreObjects;
+
 import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 
@@ -140,7 +142,7 @@ abstract class AbstractDataFormat implements DataFormat {
     final Module generator = getGenerator();
     final Checker checker = getChecker();
 
-    return com.google.common.base.Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
         .add("name", getName()).add("description", getDescription())
         .add("contentType", getContentType())
         .add("defaultExtension", getDefaultExtension())

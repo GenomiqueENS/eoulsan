@@ -36,6 +36,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.google.common.base.MoreObjects;
+
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 
 /**
@@ -269,7 +271,7 @@ class DesignImpl implements Serializable, Design {
   @Override
   public String toString() {
 
-    return com.google.common.base.Objects.toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
         .add("designNumber", this.designNumber)
         .add("designName", this.designName).add("samples", this.samples)
         .add("experiments", this.experiments)

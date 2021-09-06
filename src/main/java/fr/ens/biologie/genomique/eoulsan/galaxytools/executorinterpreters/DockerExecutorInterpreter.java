@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.io.IOException;
 import java.util.List;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
@@ -49,7 +49,7 @@ public class DockerExecutorInterpreter extends AbstractExecutorInterpreter {
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("name", getName())
+    return MoreObjects.toStringHelper(this).add("name", getName())
         .add("dockerImage", dockerImage).toString();
   }
 

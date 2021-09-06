@@ -27,7 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.core;
 import java.io.Serializable;
 import java.util.EnumSet;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
@@ -60,7 +60,7 @@ public class SimpleInputPort extends AbstractPort
   @Override
   public String toString() {
 
-    return Objects.toStringHelper(this).add("name", getName())
+    return MoreObjects.toStringHelper(this).add("name", getName())
         .add("format", getFormat().getName()).add("list", isList())
         .add("compressionsAccepted", getCompressionsAccepted())
         .add("requiredInWorkingDirectory", isRequiredInWorkingDirectory())

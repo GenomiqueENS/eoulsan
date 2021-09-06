@@ -6,7 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
+import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 
 /**
  * This class define how to easily launch a subprocess using the Java Process
@@ -16,6 +17,8 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
  */
 public class SystemSimpleProcess extends AbstractSimpleProcess {
 
+  private final GenericLogger logger;
+
   @Override
   public AdvancedProcess start(final List<String> commandLine,
       final File executionDirectory,
@@ -24,7 +27,7 @@ public class SystemSimpleProcess extends AbstractSimpleProcess {
       final File stderrFile, final boolean redirectErrorStream,
       final File... filesUsed) throws IOException {
 
-    EoulsanLogger.getLogger().fine(getClass().getName()
+    this.logger.debug(getClass().getName()
         + " : commandLine=" + commandLine + ", executionDirectory="
         + executionDirectory + ", environmentVariables=" + environmentVariables
         + ", temporaryDirectory=" + temporaryDirectory + ", stdoutFile="
@@ -70,6 +73,27 @@ public class SystemSimpleProcess extends AbstractSimpleProcess {
         throw new IOException(e);
       }
     };
+  }
+
+  //
+  // Constructors
+  //
+
+  /**
+   * Constructor.
+   */
+  public SystemSimpleProcess() {
+
+    this(null);
+  }
+
+  /**
+   * Constructor.
+   * @param logger logger to use
+   */
+  public SystemSimpleProcess(GenericLogger logger) {
+
+    this.logger = logger == null ? new EoulsanRuntimeLogger() : logger;
   }
 
 }
