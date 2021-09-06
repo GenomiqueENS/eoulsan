@@ -3,7 +3,7 @@
 # This file contains the Docker instruction used to build the Minimap2
 # executable for Eoulsan
 
-VERSION=2.18
+VERSION=2.22
 DOCKER_IMAGE="minimap2-eoulsan:$VERSION"
 
 cat > Dockerfile << EOF
