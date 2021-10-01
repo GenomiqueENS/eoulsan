@@ -14,4 +14,4 @@ Here is a quick access to the main pages:
 - [Reference website](http://outils.genomique.biologie.ens.fr/eoulsan/) to get the complete documentation.
 - [Developers wiki](https://github.com/GenomicParisCentre/eoulsan/wiki/HomeDeveloper) to get information on how to contribute to the Eoulsan project and develop plug-ins.
 
-![Eoulsan single-cell workflows graphics](https://github.com/GenomicParisCentre/eoulsan/blob/master/src/main/java/files/Eoulsan_single_cell_workflow.png)
+![Eoulsan single-cell workflows graphics](https://github.com/GenomicParisCentre/eoulsan/blob/master/src/main/java/files/Eoulsan_single_cell_workflow_v2.png)
