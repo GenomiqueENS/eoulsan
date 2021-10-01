@@ -11,7 +11,6 @@ Here is a quick access to the main pages:
   - [Bulk RNA-seq long read data (Nanopore)](https://github.com/GenomicParisCentre/eoulsan/wiki/Bulk-RNA-Seq-Nanopore-tutorial)
   - [Single cell RNA-seq (Smart-Seq2)](https://github.com/GenomicParisCentre/eoulsan/wiki/Smart-Seq2-scRNA-seq-tutorial)
   - [Single cell RNA-seq (10x Genomics)](https://github.com/GenomicParisCentre/eoulsan/wiki/10x-Genomics-scRNA-seq-tutorial)
-  - ChIP-seq / ATAC-seq [_in progress_]
 - [Reference website](http://outils.genomique.biologie.ens.fr/eoulsan/) to get the complete documentation.
 - [Developers wiki](https://github.com/GenomicParisCentre/eoulsan/wiki/HomeDeveloper) to get information on how to contribute to the Eoulsan project and develop plug-ins.
 
