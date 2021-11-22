@@ -153,6 +153,9 @@ public final class Settings implements Serializable {
   private static final String SMTP_HOST_KEY =
       MAIN_PREFIX_KEY + "mail.smtp.host";
 
+  private static final String DOCKER_BACKEND_KEY =
+      MAIN_PREFIX_KEY + "docker.backend";
+
   private static final String DOCKER_URI_KEY = MAIN_PREFIX_KEY + "docker.uri";
 
   private static final String DOCKER_SINGULARITY_ENABLED_KEY =
@@ -560,6 +563,15 @@ public final class Settings implements Serializable {
   public String getUIName() {
 
     return this.properties.getProperty(UI_NAME_KEY, Globals.UI_NAME_DEFAULT);
+  }
+
+  /**
+   * Get the Docker backend name.
+   * @return the docker connection string
+   */
+  public String getDockerBackend() {
+
+    return this.properties.getProperty(DOCKER_BACKEND_KEY);
   }
 
   /**
@@ -1161,6 +1173,15 @@ public final class Settings implements Serializable {
   public void setUIName(final String uiName) {
 
     this.properties.setProperty(UI_NAME_KEY, uiName);
+  }
+
+  /**
+   * Set the Docker URI.
+   * @param backend the Docker back-end
+   */
+  public void setDockerBackEnd(final String backend) {
+
+    this.properties.setProperty(DOCKER_BACKEND_KEY, backend);
   }
 
   /**

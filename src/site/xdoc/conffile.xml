@@ -83,6 +83,7 @@
 		<tr><td>main.genome.desc.storage.path</td><td>string</td><td>Not set</td><td>Path to the genome descriptions repository (cannot be an URL)</td></tr>
 		<tr><td>main.additional.annotation.hypertext.links.path</td><td>string</td><td>Not set</td><td>Path to the additional annotation hypertext links info file (cannot be an URL)</td></tr>
 		
+		<tr><td>main.docker.backend</td><td>string</td><td>docker-java</td><td>The Docker library backend to use. Current available backends are: docker-java, spotify, singularity, fallback and default</td></tr>
 		<tr><td>main.docker.uri</td><td>string</td><td>Not set</td><td>The Docker server URI. Usually the value is <tt>unix:///var/run/docker.sock</tt></td></tr>
 		<tr><td>main.docker.mount.nfs.roots</td><td>boolean</td><td>false</td><td>If this option is enabled, when mounted data in a Docker container are stored in a NFS volume, mount the root the of NFS volume instead of data path. This option avoid some right issues with NFS root squash</td></tr>
 

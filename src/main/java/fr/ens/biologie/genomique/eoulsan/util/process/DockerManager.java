@@ -41,7 +41,35 @@ public class DockerManager {
 
   /** Available Docker clients. */
   public enum ClientType {
-    DOCKER_JAVA, SPOTIFY, SINGULARITY, FALLBACK
+    DEFAULT, DOCKER_JAVA, SPOTIFY, SINGULARITY, FALLBACK;
+
+    public static ClientType parseClientName(String name) {
+
+      if (name == null) {
+        return DEFAULT;
+      }
+
+      switch (name.toLowerCase().trim()) {
+      case "docker-java":
+      case "docker_java":
+      case "dockerjava":
+        return DOCKER_JAVA;
+
+      case "spotify":
+        return SPOTIFY;
+
+      case "singularity":
+        return SINGULARITY;
+
+      case "fallback":
+        return FALLBACK;
+
+      default:
+        return DEFAULT;
+      }
+
+    }
+
   };
 
   private static DockerManager singleton;
@@ -132,7 +160,12 @@ public class DockerManager {
       return ClientType.FALLBACK;
     }
 
-    return ClientType.DOCKER_JAVA;
+    if (EoulsanRuntime.isRuntime()) {
+      return ClientType
+          .parseClientName(EoulsanRuntime.getSettings().getDockerBackend());
+    }
+
+    return ClientType.DEFAULT;
   }
 
   //
@@ -162,6 +195,7 @@ public class DockerManager {
       this.client = new SingularityDockerClient();
       break;
 
+    case DEFAULT:
     case DOCKER_JAVA:
       this.client = new DockerJavaDockerClient();
       break;
