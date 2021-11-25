@@ -336,6 +336,14 @@
 			<name>ImageJ repository</name>
 			<url>http://maven.imagej.net/content/repositories/releases/</url>
 		</repository>
+		<repository>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<id>scijava</id>
+			<name>SciJava repository</name>
+			<url>https://maven.scijava.org/content/groups/public</url>
+		</repository>
 	</repositories>
 
 	<scm>
@@ -692,7 +700,7 @@
 		<dependency>
 			<groupId>cisd</groupId>
 			<artifactId>jhdf5</artifactId>
-			<version>12.02.3</version>
+			<version>19.04.0</version>
 			<!--scope>compile</scope-->
 		</dependency>
 

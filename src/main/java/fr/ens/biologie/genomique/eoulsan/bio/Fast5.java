@@ -126,7 +126,7 @@ public class Fast5 implements AutoCloseable {
   private Status readStatus() {
 
     // test if the reader is open
-    if (this.reader.getFile() == null) {
+    if (this.reader.file() == null) {
       throw new IllegalStateException("The file is closed");
     }
 
@@ -161,7 +161,7 @@ public class Fast5 implements AutoCloseable {
     // test if the basecaller is Metrichor
     if (this.basecaller == Basecaller.METRICHOR) {
 
-      String modelType = reader.getStringAttribute(
+      String modelType = reader.string().getAttr(
           "/Analyses/Basecall_1D_000/Configuration/general", "model_type");
 
       // test if the chemistry version is R7.3
@@ -187,14 +187,14 @@ public class Fast5 implements AutoCloseable {
     if (this.basecaller == Basecaller.ALBACORE) {
 
       final String model;
-      if (reader.hasAttribute(
+      if (reader.object().hasAttribute(
           "/Analyses/Basecall_1D_000/Configuration/basecall_1d",
           "template_model")) {
-        model = reader.getStringAttribute(
+        model = reader.string().getAttr(
             "/Analyses/Basecall_1D_000/Configuration/basecall_1d",
             "template_model");
       } else {
-        model = reader.getStringAttribute(
+        model = reader.string().getAttr(
             "/Analyses/Basecall_1D_000/Configuration/basecall_1d", "model");
       }
 
@@ -232,7 +232,7 @@ public class Fast5 implements AutoCloseable {
     }
 
     String nameAttribute =
-        reader.getStringAttribute("/Analyses/Basecall_1D_000", "name");
+        reader.string().getAttr("/Analyses/Basecall_1D_000", "name");
 
     // test if the basecaller is Metrichor by a specific Metrichor field
     if (nameAttribute.equals("ONT Sequencing Workflow")) {
@@ -342,8 +342,7 @@ public class Fast5 implements AutoCloseable {
    * @return a string with the serial number of the minION
    */
   public String getNumMinION() {
-    return reader.getStringAttribute("/UniqueGlobalKey/tracking_id",
-        "device_id");
+    return reader.string().getAttr("/UniqueGlobalKey/tracking_id", "device_id");
   }
 
   /**
@@ -351,7 +350,7 @@ public class Fast5 implements AutoCloseable {
    * @return a string with the flowcell id
    */
   public String getFlowcellId() {
-    return reader.getStringAttribute("/UniqueGlobalKey/tracking_id",
+    return reader.string().getAttr("/UniqueGlobalKey/tracking_id",
         "flow_cell_id");
   }
 
@@ -360,7 +359,7 @@ public class Fast5 implements AutoCloseable {
    * @return a string with the MinKnow version
    */
   public String getMinknowVersion() {
-    return reader.getStringAttribute("/UniqueGlobalKey/tracking_id", "version");
+    return reader.string().getAttr("/UniqueGlobalKey/tracking_id", "version");
   }
 
   /**
@@ -372,7 +371,7 @@ public class Fast5 implements AutoCloseable {
 
     // test if the basecaller is metrichor
     if (this.basecaller == Basecaller.METRICHOR) {
-      String dateInt = reader.getStringAttribute("/UniqueGlobalKey/tracking_id",
+      String dateInt = reader.string().getAttr("/UniqueGlobalKey/tracking_id",
           "exp_start_time");
       return new Date(Long.parseLong(dateInt) * 1000);
     }
@@ -390,7 +389,7 @@ public class Fast5 implements AutoCloseable {
 
     // test if the basecaller is metrichor
     if (this.basecaller == Basecaller.ALBACORE) {
-      return reader.getStringAttribute("/UniqueGlobalKey/tracking_id",
+      return reader.string().getAttr("/UniqueGlobalKey/tracking_id",
           "exp_start_time");
     }
     return null;
@@ -402,7 +401,7 @@ public class Fast5 implements AutoCloseable {
    * @return a string with the protocol id
    */
   public String getProtocolRunId() {
-    return reader.getStringAttribute("/UniqueGlobalKey/tracking_id",
+    return reader.string().getAttr("/UniqueGlobalKey/tracking_id",
         "protocol_run_id");
   }
 
@@ -412,8 +411,7 @@ public class Fast5 implements AutoCloseable {
    * @return a string with the host name
    */
   public String getHostname() {
-    return reader.getStringAttribute("/UniqueGlobalKey/tracking_id",
-        "hostname");
+    return reader.string().getAttr("/UniqueGlobalKey/tracking_id", "hostname");
   }
 
   /**
@@ -421,7 +419,7 @@ public class Fast5 implements AutoCloseable {
    * @return a string with the Operating System
    */
   public String getOS() {
-    return reader.getStringAttribute("/UniqueGlobalKey/tracking_id",
+    return reader.string().getAttr("/UniqueGlobalKey/tracking_id",
         "operating_system");
   }
 
@@ -435,7 +433,7 @@ public class Fast5 implements AutoCloseable {
    * @return a string with the experiment kit
    */
   public String getExperimentKit() {
-    return reader.getStringAttribute("/UniqueGlobalKey/context_tags",
+    return reader.string().getAttr("/UniqueGlobalKey/context_tags",
         "experiment_kit");
   }
 
@@ -445,9 +443,9 @@ public class Fast5 implements AutoCloseable {
    * @return a string with the experiment type
    */
   public String getExperimentType() {
-    if (reader.hasAttribute("/UniqueGlobalKey/context_tags",
+    if (reader.object().hasAttribute("/UniqueGlobalKey/context_tags",
         "experiment_type")) {
-      return reader.getStringAttribute("/UniqueGlobalKey/context_tags",
+      return reader.string().getAttr("/UniqueGlobalKey/context_tags",
           "experiment_type");
     }
     return null;
@@ -459,8 +457,8 @@ public class Fast5 implements AutoCloseable {
    * @return an int with sample frequency
    */
   public int getSampleFrequency() {
-    return Integer.parseInt(reader.getStringAttribute(
-        "/UniqueGlobalKey/context_tags", "sample_frequency"));
+    return Integer.parseInt(reader.string()
+        .getAttr("/UniqueGlobalKey/context_tags", "sample_frequency"));
   }
 
   /**
@@ -469,8 +467,8 @@ public class Fast5 implements AutoCloseable {
    * @return an int with sample frequency
    */
   public int getChannelNumber() {
-    return Integer.parseInt(reader
-        .getStringAttribute("/UniqueGlobalKey/channel_id", "channel_number"));
+    return Integer.parseInt(reader.string()
+        .getAttr("/UniqueGlobalKey/channel_id", "channel_number"));
   }
 
   //
@@ -488,27 +486,27 @@ public class Fast5 implements AutoCloseable {
 
     // test if the fast5 file is basecalled and is R9
     if (!isBasecalled() && this.reader.exists("/Raw/Reads")) {
-      String reads = reader.getAllGroupMembers("/Raw/Reads").get(0);
+      String reads = reader.object().getAllGroupMembers("/Raw/Reads").get(0);
       return Integer.parseInt(reads.substring(reads.indexOf('_') + 1));
     }
 
     // test if the fast5 file is basecalled and is R7.3
     if (!isBasecalled()
         && this.reader.exists("/Analyses/EventDetection_000/Reads")) {
-      String reads = reader
+      String reads = reader.object()
           .getAllGroupMembers("/Analyses/EventDetection_000/Reads").get(0);
       return Integer.parseInt(reads.substring(reads.indexOf('_') + 1));
     }
 
     // test if the basecaller is Metrichor
     if (this.basecaller == Basecaller.METRICHOR) {
-      return Integer.parseInt(reader.getStringAttribute(
+      return Integer.parseInt(reader.string().getAttr(
           "/Analyses/Basecall_1D_000/Configuration/general", "read_id"));
     }
 
     // test if the basecaller is Albacore
     if (this.basecaller == Basecaller.ALBACORE) {
-      String reads = reader.getAllGroupMembers("/Raw/Reads").get(0);
+      String reads = reader.object().getAllGroupMembers("/Raw/Reads").get(0);
       return Integer.parseInt(reads.substring(reads.indexOf('_') + 1));
     }
 
@@ -529,12 +527,12 @@ public class Fast5 implements AutoCloseable {
         return null;
       }
       // get the version of chimaera
-      String chimaeraVersion = reader
-          .getStringAttribute("/Analyses/Basecall_1D_000", "chimaera version");
+      String chimaeraVersion = reader.string()
+          .getAttr("/Analyses/Basecall_1D_000", "chimaera version");
 
       // get the version of dragonet
-      String dragonetVersion = reader
-          .getStringAttribute("/Analyses/Basecall_1D_000", "dragonet version");
+      String dragonetVersion = reader.string()
+          .getAttr("/Analyses/Basecall_1D_000", "dragonet version");
       return "chimaera v" + chimaeraVersion + " | dragonet v" + dragonetVersion;
     }
 
@@ -556,7 +554,7 @@ public class Fast5 implements AutoCloseable {
     if (this.basecaller == Basecaller.ALBACORE) {
 
       // get the version of chimaera
-      return reader.getStringAttribute("/Analyses/Basecall_1D_000", "version");
+      return reader.string().getAttr("/Analyses/Basecall_1D_000", "version");
     }
 
     return null;
@@ -575,7 +573,7 @@ public class Fast5 implements AutoCloseable {
       return 0;
     }
 
-    return reader.getIntAttribute(
+    return reader.int32().getAttr(
         "/Analyses/Basecall_1D_000/Summary/basecall_1d_template",
         "sequence_length");
   }
@@ -592,7 +590,7 @@ public class Fast5 implements AutoCloseable {
       return 0;
     }
 
-    return reader.getIntAttribute(
+    return reader.int32().getAttr(
         "/Analyses/Basecall_1D_000/Summary/basecall_1d_complement",
         "sequence_length");
   }
@@ -614,7 +612,7 @@ public class Fast5 implements AutoCloseable {
       // test if the basecaller is Metrichor
       if (this.basecaller == Basecaller.METRICHOR) {
 
-        return reader.getStringAttribute("/Analyses/Barcoding_000/Barcoding",
+        return reader.string().getAttr("/Analyses/Barcoding_000/Barcoding",
             "barcode_arrangement");
 
       }
@@ -622,7 +620,7 @@ public class Fast5 implements AutoCloseable {
       // test if the basecaller is Albacore
       if (this.basecaller == Basecaller.ALBACORE) {
 
-        return reader.getStringAttribute(
+        return reader.string().getAttr(
             "/Analyses/Barcoding_000/Summary/barcoding",
             "barcode_full_arrangement");
       }
