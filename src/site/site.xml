@@ -29,8 +29,8 @@
 	<publishDate position="left" format="yyyy-MM-dd HH:mm"/>
 
 	<bannerLeft>
-		<name>Genomic Paris Centre</name>
-		<src>images/logo_genomicpariscentre-90pxh.png</src>
+		<name>GenomiqueENS</name>
+		<src>images/logo-GenomiqueENS-90pxh.png</src>
 		<href>https://www.genomique.biologie.ens.fr/</href>
 	</bannerLeft>
 	<bannerRight>
@@ -40,7 +40,7 @@
 	</bannerRight>
 	<body>
 		<links>
-			<item name="IBENS genomic platform"
+			<item name="GenomiqueENS genomics core facility"
 				href="https://www.genomique.biologie.ens.fr" />
 			<item name="École normale supérieure"
 				href="http://www.ens.fr" />
