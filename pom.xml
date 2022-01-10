@@ -466,12 +466,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk</artifactId>
-			<version>1.3.30</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.googlecode.lanterna</groupId>
 			<artifactId>lanterna</artifactId>
 			<version>3.0.1</version>
@@ -513,7 +507,7 @@
 		<dependency>
 			<groupId>org.apache.xmlbeans</groupId>
 			<artifactId>xmlbeans</artifactId>
-			<version>2.3.0</version>
+			<version>3.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>xerces</groupId>
@@ -572,41 +566,9 @@
 
 		<!-- Required by Docker -->
 		<dependency>
-			<groupId>com.spotify</groupId>
-			<artifactId>docker-client</artifactId>
-			<classifier>shaded</classifier>
-			<version>3.1.3</version>
-		</dependency>
-
-		<!-- Required by Docker and AWS java SDK runtime -->
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.5.13</version>
-			<scope>runtime</scope>
-		</dependency>
-
-		<!-- Required by Docker -->
-		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.6</version>
-			<scope>runtime</scope>
-		</dependency>
-
-		<!-- Required by Docker -->
-		<dependency>
-			<groupId>de.gesellix</groupId>
-			<artifactId>unix-socket-factory</artifactId>
-			<version>2014-11-16T14-41-27</version>
-			<scope>runtime</scope>
-		</dependency>
-
-		<!-- Required by Docker -->
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpcore</artifactId>
-			<version>4.3.2</version>
 			<scope>runtime</scope>
 		</dependency>
 
@@ -1128,7 +1090,7 @@ o
 						<configuration>
 							<!-- All libs except junit, hadoop-core, ws-java-sdk and its runtime 
 								dependencies -->
-							<excludeArtifactIds>junit,hadoop-client,aws-java-sdk,httpclient,commons-logging,commons-codec,jackson-core-asl,jackson-mapper-asl
+							<excludeArtifactIds>junit,hadoop-client,httpclient
 							</excludeArtifactIds>
 							<excludeTransitive>true</excludeTransitive>
 							<outputDirectory>${basedir}/target/dist/lib</outputDirectory>
@@ -1142,7 +1104,7 @@ o
 						</goals>
 						<configuration>
 							<!-- hadoop-core, aws-java-sdk and its runtime dependencies -->
-							<includeArtifactIds>hadoop-client,aws-java-sdk,httpclient,commons-logging,commons-codec,jackson-core-asl,jackson-mapper-asl
+							<includeArtifactIds>hadoop-client,httpclient
 							</includeArtifactIds>
 							<outputDirectory>${basedir}/target/dist/lib/local
 							</outputDirectory>
