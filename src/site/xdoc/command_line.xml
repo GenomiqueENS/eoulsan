@@ -62,7 +62,6 @@ usage: eoulsan [options] action arguments
                        used several times
  -version              show version of the software
 Available actions:
- - emrexec      execute eoulsan on Amazon Elastic MapReduce service.
  - createdesign create a design file from a list of files.
  - createhadoopjar      create a jar file for hadoop with all dependencies include.
  - exec execute Eoulsan in local mode.
@@ -72,11 +71,10 @@ Available actions:
 
   <p>Actually, Eoulsan has 5 available actions:</p>
   <ul>
-    <li><b>emrexec</b>: Upload data and launch Eoulsan analysis on Amazon Web Services cloud.</li>
     <li><b>exec</b>: Launch Eoulsan analysis in local mode.</li>
     <li><b>hadoopexec</b>: Launch Eoulsan analysis on a Hadoop cluster.</li>
     <li><b>createdesign</b>: Create a design file from a list of fastq, gff and fasta files.</li>
-    <li><b>createhadoopjar</b>: Create an Eoulsan jar file that contains all jar dependencies. This jar file can be used to run manualy Eoulsan on a Hadoop cluster (local or in Amazon Web Services cloud).</li>
+    <li><b>createhadoopjar</b>: Create an Eoulsan jar file that contains all jar dependencies. This jar file can be used to run manualy Eoulsan on a Hadoop cluster.</li>
   </ul>
 
   <p>You can display general help and specific help about an action using <b>-h</b> argument.</p>

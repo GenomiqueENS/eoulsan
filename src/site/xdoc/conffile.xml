@@ -99,20 +99,6 @@
 		<tr><td>zookeeper.default.port</td><td>integer</td><td>2181</td><td>ZooKeeper Default port</td></tr>
 		<tr><td>zookeeper.session.timeout</td><td>integer</td><td>10000</td><td>ZooKeeper session timeout</td></tr>
 
-		<tr><td>aws.access.key</td><td>string</td><td>Not set</td><td>AWS access key, a 20-character alphanumeric string</td></tr>
-		<tr><td>aws.secret.key</td><td>string</td><td>Not set</td><td>AWS secret key, a 40-character string</td></tr>
-
-		<tr><td>aws.ec2.key.name</td><td>string</td><td>Not set</td><td>EC2 key pair key name that allow SSH connection to the remote cluster.</td></tr>
-		<tr><td>aws.mapreduce.hadoop.version</td><td>string</td><td>1.0.3</td><td>Hadoop version to use with AWS MapReduce</td></tr>
-		<tr><td>aws.mapreduce.instances.number</td><td>string</td><td>Not set</td><td>Number of instances in the cluster</td></tr>
-		<tr><td>aws.mapreduce.instances.type</td><td>string</td><td>m1.xlarge</td><td>Instance type</td></tr>
-		<tr><td>aws.mapreduce.endpoint</td><td>string</td><td>Europe (see below for the real value)</td><td>AWS endpoint to use (European as default).</td></tr>
-		<tr><td>aws.mapreduce.log.path</td><td>string</td><td>Not set</td><td>Log path. If not set, no log will be generated</td></tr>
-		<tr><td>aws.mapreduce.task.tracker.mapper.max.tasks</td><td>integer</td><td>0</td><td>The number of maximal task mapper that can be created on a task tracker (0 for no limit)</td></tr>
-		<tr><td>aws.mapreduce.enable.debugging</td><td>boolean</td><td>false</td><td>If set to true, AWS Elastic MapReduce debug mode will be enable. (Require AWS SimpleDB)</td></tr>
-
-		<tr><td>aws.mapreduce.wait.job</td><td>boolean</td><td>false</td><td>Wait the end of the job on AWS MapReduce</td></tr>
-
 		<tr><td>main.cluster.scheduler.name</td><td>string</td><td>Not set</td><td>The name of the cluster scheduler to use</td></tr>
 		<tr><td>main.cluster.default.required.memory</td><td>integer</td><td>Not set</td><td>The default amount of memory in MB required to launch a step on the cluster</td></tr>
 		<tr><td>htcondor.concurrency.limits</td><td>string</td><td>Not set</td><td>HTCondor concurrency limits values to use if user wants to limit the number of simultaneous running jobs (e.g. eoulsan:2500)</td></tr>
@@ -121,24 +107,8 @@
 
 	</table>
 
-	<p>This values are overridden by the values of the global section of the XML workflow file. It is useful to use a configuration file to set AWS keys to remove
-	 this entries from the workflow file that is sent on the network when using Amazon Web Services.
+	<p>This values are overridden by the values of the global section of the XML workflow file.
 	 Developers can also use additional parameter that are not in the previous table.</p>
-
-	<p>The following table contains the endpoints for the several AWS regions where EMR is available:</p>
-	<table>
-		<tr><th>Region</th><th>Endpoint</th></tr>
-		<tr><td>US-East (Northern Virginia)</td><td>us-east-1.elasticmapreduce.amazonaws.com</td></tr>
-		<tr><td>US West (Oregon)</td><td>elasticmapreduce.us-west-2.amazonaws.com</td></tr>
-		<tr><td>US-West (Northern California)</td><td>us-west-1.elasticmapreduce.amazonaws.com</td></tr>
-		<tr><td>EU (Ireland)</td><td>eu-west-1.elasticmapreduce.amazonaws.com</td></tr>
-		<tr><td>Asia Pacific (Singapore)</td><td>elasticmapreduce.ap-southeast-1.amazonaws.com</td></tr>
-		<tr><td>Asia Pacific (Sydney)</td><td>elasticmapreduce.ap-southeast-2.amazonaws.com</td></tr>
-		<tr><td>Asia Pacific (Tokyo)</td><td>elasticmapreduce.ap-northeast-1.amazonaws.com</td></tr>
-		<tr><td>South America (Sao Paulo)</td><td>elasticmapreduce.sa-east-1.amazonaws.com</td></tr>
-	</table>
-
-	<p>The lastest list of available EMR endpoints can be found <a href="http://docs.aws.amazon.com/general/latest/gr/rande.html#emr_region">here</a>.</p>
 
 		<a name="smtp"/>
 		<subsection name="SMTP configuration (Mail service)">

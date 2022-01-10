@@ -131,78 +131,6 @@
 		<p>For the full change log, please report to the <a href="changes-report.html#a@@@VERSION@@@">dedicated page</a>.</p>
 	</section>
 
-        <!--section name="What's new in Eoulsan since Eoulsan 1? ">
-
-		<p>Eoulsan @@@VERSION@@@ has successfully passed our integration tests and will generate the same outputs obtained with Eoulsan 1.2.2.</p>
-
-		<p><b>Warning:</b> this documentation may not be up to date for the latest features of Eoulsan 2.x.</p>
-
-		<p>The main new features in this version of Eoulsan are:</p>
-		<ul>
-		  <li>New workflow engine</li>
-		  <li>New steps:
-                    <ul>
-                      <li>DESeq2</li>
-                      <li>FastQC</li>
-                      <li>MultiQC</li>
-                      <li>sam2bam</li>
-                      <li>splice2bed</li>
-                      <li>bam2sam</li>
-                      <li>sam2fastq</li>
-                      <li>shell</li>
-                      <li>expression additional annotation</li>
-                      <li>diffana additional annotation</li>
-                      <li>import</li>
-                      <li>technicalreplicatemerger</li>
-                      <li>Bioconductor SingleCellExperiment object creator</li>
-                    </ul>
-                  </li>
-		  <li>Separate log file for each step</li>
-		  <li>Integration tests engine</li>
-		  <li>Support for multiple versions of a mapper</li>
-		  <li>Rewritten mapper launcher</li>
-		  <li>New JSON format for step result file</li>
-		  <li>Docker support</li>
-		  <li>New mappers added: STAR, Minimap2</li>
-		  <li>Support of flavors of mappers (e.g. standard and large index binary versions of Bowtie 1, Bowtie 2 and STAR)</li>
-		  <li>Update of the bundled versions of the mappers: Bowtie (1.1.1), Bowtie2 (2.2.4), BWA (0.7.12 and 0.7.15), GSNAP (2014-12-21, 2017-02-25 and 2017-04-24) and Minimap2 (2.5, 2.10 and 2.17)</li>
-		  <li>Hadoop 2.x and 3.x support</li>
-		  <li>Support of many job schedulers: HT-Condor, SLURM, TORQUE, PBS Pro and TGCC</li>
-		  <li>Galaxy tool XML file can be interpreted as an Eoulsan step</li>
-		  <li>New enhanced design file format</li>
-		  <li>New step for normalization and differential analysis using DESeq2</li>
-		  <li>R code can be executed on local system, on a Rserve server or in a Docker container</li>
-		  <li>New Eoulsan actions: info, modules and formats to get the Eoulsan configuration and the list of available modules and formats.</li>
-		  <li>A "eoulsan-data" directory is now created when no repository for mapper indexes or genome description are defined. This new directory avoid to relaunch the index or genome description computation.</li>
-		  <li>Support for Java 8, 9 and 10.</li>
-		  <li>The Eoulsan HTSeq-count implementation has now the same features as the original HTSeq-count.</li>
-		  <li>And many other enhancements,  see the <a href="changes-report.html#@@@VERSION@@@">full changelog</a> for more information</li>
-		</ul>
-		
-		<p>You can now easily run Eoulsan using <a href="http://www.docker.com">Docker</a> with a dedicated 
-		<tt>eoulsan-docker.sh</tt> script that automatically configure your Docker environment like 
-		Eoulsan resources mounts. For more information about Docker and Eoulsan see the 
-		<a href="installing.html#docker">the related Eoulsan documentation</a>.	To install this
-		script just copy and paste the following command line in your terminal: </p>
-		<source>
-$ curl @@@WEBSITE@@@/eoulsan-docker-installer.sh | bash</source>
-
-		<p>Only few Eoulsan modes are currently working with the current version. The following table summarize the status of each mode:</p>
-		<table>
-			<tr><th>Eoulsan Mode</th><th>Action name</th><th>Status</th></tr>
-			<tr><td>Local mode</td><td>exec</td><td>Working</td></tr>
-			<tr><td>Hadoop mode</td><td>hadoopexec</td><td>Working, Hadoop 3.x is required</td></tr>
-			<tr><td>Cluster mode</td><td>clusterexec</td><td>Working</td></tr>
-			<tr><td>Grid mode</td><td>gridexec</td><td>Planned, prototype works, waiting the Hadoop mode achievement</td></tr>
-			<tr><td>Amazon EMR mode</td><td>emrexec</td><td>Not working, dedicated code must be rewritten for the new workflow engine</td></tr>
-			<tr><td>Other cloud mode</td><td>not defined</td><td>Planned, implementation not started</td></tr>
-		</table>
-
-        <p><b>Note:</b> Eoulsan 2.x is not binary compatible with Eoulsan 1.2.x, so step plug-ins written for previous versions will not work this release. The Eoulsan 2.x API
-        is currently almost stable and small breaking compatibility may occurs in future.</p>
-
-	</section-->
-
 	<!--section name="Screencast demo">
 
 	<p>The following screencast show how to install Eoulsan, create a design file and launch an analysis in local mode. For more information see the <a href="quickstart.html">quickstart guide</a>.</p>
@@ -249,11 +177,10 @@ $ curl @@@WEBSITE@@@/eoulsan-docker-installer.sh | bash</source>
 
 		<section name="Funding">
 
-		<p>This work was supported by the Infrastructures en Biologie Santé et Agronomie (IBiSA), France Genomique and Amazon Web Services research grant.</p>
+		<p>This work was supported by the Infrastructures en Biologie Santé et Agronomie (IBiSA), France Genomique.</p>
 		<div align="center">
 		<a href="http://www.ibisa.net/"><img src="images/logo_ibisa-40.gif"/></a>&#160;&#160;
 				<a href="http://www.france-genomique.org/"><img src="images/france-genomique-40.png"/></a>&#160;&#160;
-		<a href="http://aws.amazon.com/"><img src="images/logo_aws-40.gif"/></a>
 		</div>
 
 

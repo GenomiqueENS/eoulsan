@@ -57,9 +57,6 @@
 				<li>
 					<a href="#cluster_mode">Execute Eoulsan on a cluster</a>
 				</li>
-				<li>
-					<a href="#aws_mode">Execute Eoulsan on Amazon Web Services cloud computing</a>
-				</li>
 			</ul>
 
 
@@ -206,89 +203,7 @@ $ eoulsan.sh clusterexec workflow-local.xml design.txt
 
 		</subsection>
 
-		<a name="aws_mode"/>
-		<subsection name="Launch Eoulsan on Amazon Web Service cloud computing">
-
-			<p><b>Warning:</b> Eoulsan 2.x do not currently work on AWS. <b>This section is outdated</b>.</p>
-
-			<p>You must have an AWS account for Amazon S3 and Amazon 
-			   MapReduce to launch Eoulsan on Amazon cloud. You can register to Amazon Web Services here:</p>
-
-			<ul>
-				<li>Create an <a href="https://aws-portal.amazon.com/gp/aws/developer/registration/index.html">AWS account</a></li>
-				<li>Sign up for <a href="https://aws-portal.amazon.com/gp/aws/developer/subscription/index.html?productCode=AmazonS3">Amazon S3</a></li>
-				<li>Sign up for <a href="https://aws-portal.amazon.com/gp/aws/developer/subscription/index.html?productCode=ElasticMapReduce">Amazon Elastic MapReduce</a></li>
-			</ul>
-
-
-			<p>Then you 
-                           must set Amazon credentials in a <a href="./conffile.html">Eoulsan configuration file</a> or 
-			   in the <a href="./workflowfile.html#globalsection">workflow file</a> (see <a href="./awsmode.html">AWS configuration</a>).
-			   Here an example of <b>~/.eoulsan</b> configuration file.</p>
-<source>
-# This is an example of configuration file for Eoulsan.
-# You need to use the -conf parameter or rename this file to
-# $HOME/.eoulsan to enable it.
-
-# Temporary directory.
-# By default Eoulsan use the temporary directory for your platform.
-#main.tmp.dir=/tmp
-
-# Debug mode.
-# By default in Eoulsan the debug mode is disable.
-main.debug=false
-
-
-# Warning: The following Amazon Web Services access and secret keys are 
-# fake keys. You MUST replace them by valid keys.
-
-# Access Key ID (a 20-character, alphanumeric sequence)
-aws.access.key=022QF06E7MXBSH9DHM02
-# AWS Secret Access Key (a 40-character sequence)
-aws.secret.key=kWcrlUX5JEDGM/LtmEENI/aVmYvHNif5zB+d9+ct
-</source>
-
-			<p><b>Warning:</b> If you use the sample workflow file, check the global section of the file to set the AWS region, the type and the number of instances to use. 
-			   See the <a href="./conffile.html">configuration file page</a> for the list of global parameters dedicated to AWS mode. </p>
-
-			<p>Then you can launch Eoulsan analysis with the following command:</p>
-<source>
-$ eoulsan.sh emrexec -d "My Eoulsan Test" workflow-hadoop.xml design.txt s3://mybucket/test
-</source>
-
-			<p> <b>Note:</b> In the sample URL <code>s3://mybucket/test</code>, <code>mybucket</code> 
-			is the name of your S3 bucket and <code>/test</code> is the path of the data in S3 your bucket.</p>
-
-			<p>In AWS mode, there is 2 phases in the analysis:</p>
-			<ul>
-				<li>First data to analyse, design and workflow files are uploaded to your S3 
-                                    bucket on Amazon Cloud.</li>
-				<li>Then, the cluster in the cloud is created and the "real" analysis starts. 
-                                    Eoulsan on your local computer only wait the end of the analysis. 
-                                    You can quit Eoulsan or shutdown your computer, no data will be lost and 
-                                    analysis will continue on the cloud.</li>
-			</ul>
-
-
-			<p>At the end of the analysis, the results files, the logs files (one main and one for each steps)
-			   and a copy of the design and the workflow files will be in a new directory 
-                           in your S3 bucket named like <b>eoulsan-20110310-101235</b> (the numbers in the 
-                           directory name after eoulsan are respectively the date and the time of the launch 
-                           of the analysis). You must manually download these data from S3 to your computer.</p>
-
-			<p>To retrieve your data you can use one of the following tools:</p>
-			<ul>
-				<li><b><a href="https://console.aws.amazon.com/s3/home?">AWS S3 Console Web interface</a></b>. Note that with this tool you can not download more than one file at the same time.</li>
-				<li><b><a href="http://s3tools.org/s3cmd">s3cmd</a></b>: a command line tool. s3cmd is also available as Debian/Ubuntu package.</li>
-				<li><b><a href="http://www.s3fox.net/">S3Fox Organizer</a></b>: a Firefox extension that handle S3 upload and download.</li>
-				<li><b><a href="http://cyberduck.ch/">Cyberduck</a></b>: An open source FTP, SFTP, WebDAV, Cloud Files, Google Docs &amp; 
-											Amazon S3 Browser for Mac &amp; Windows.</li>
-			</ul>
-
-
-		</subsection>
 	</section>
-
 	</body>
 </document>
 

@@ -1,10 +1,8 @@
 # CLI mode actions
-fr.ens.biologie.genomique.eoulsan.actions.EMRExecAction
 fr.ens.biologie.genomique.eoulsan.actions.CreateDesignAction
 fr.ens.biologie.genomique.eoulsan.actions.CreateHadoopJarAction
 fr.ens.biologie.genomique.eoulsan.actions.ExecAction
 fr.ens.biologie.genomique.eoulsan.actions.HadoopExecAction
-fr.ens.biologie.genomique.eoulsan.actions.UploadS3Action
 fr.ens.biologie.genomique.eoulsan.actions.ClusterExecAction
 fr.ens.biologie.genomique.eoulsan.actions.InfoAction
 fr.ens.biologie.genomique.eoulsan.actions.FormatsAction
@@ -15,9 +13,6 @@ fr.ens.biologie.genomique.eoulsan.actions.ExecJarHadoopAction
 
 # Cluster task action
 fr.ens.biologie.genomique.eoulsan.actions.ClusterTaskAction
-
-# Fake actions
-fr.ens.biologie.genomique.eoulsan.actions.AWSExecAction
 
 # Validation Eoulsan version
 fr.ens.biologie.genomique.eoulsan.actions.IntegrationTestAction

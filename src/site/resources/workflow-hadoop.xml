@@ -144,25 +144,6 @@
     </steps>
 
     <globals>
-
-        <!-- Amazon MapReduce cluster configuration -->
-        <parameter>
-                <name>aws.mapreduce.endpoint</name>
-                <value>eu-west-1.elasticmapreduce.amazonaws.com</value>
-        </parameter>
-        <parameter>
-                <name>aws.mapreduce.hadoop.version</name>
-                <value>1.0.3</value>
-        </parameter>
-        <parameter>
-                <name>aws.mapreduce.instances.type</name>
-                <value>m1.xlarge</value>
-        </parameter>
-        <parameter>
-                <name>aws.mapreduce.instances.number</name>
-                <value>5</value>
-        </parameter>
-
     </globals>
 
 </analysis>
