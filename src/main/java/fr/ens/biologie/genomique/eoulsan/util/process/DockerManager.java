@@ -41,7 +41,7 @@ public class DockerManager {
 
   /** Available Docker clients. */
   public enum ClientType {
-    DEFAULT, DOCKER_JAVA, SPOTIFY, SINGULARITY, FALLBACK;
+    DEFAULT, DOCKER_JAVA, SINGULARITY, FALLBACK;
 
     public static ClientType parseClientName(String name) {
 
@@ -54,9 +54,6 @@ public class DockerManager {
       case "docker_java":
       case "dockerjava":
         return DOCKER_JAVA;
-
-      case "spotify":
-        return SPOTIFY;
 
       case "singularity":
         return SINGULARITY;
@@ -185,10 +182,6 @@ public class DockerManager {
     switch (clientType) {
     case FALLBACK:
       this.client = new FallBackDockerClient();
-      break;
-
-    case SPOTIFY:
-      this.client = new SpotifyDockerClient();
       break;
 
     case SINGULARITY:
