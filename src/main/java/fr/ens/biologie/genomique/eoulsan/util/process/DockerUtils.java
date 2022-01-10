@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.nio.file.FileStore;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
@@ -107,7 +109,8 @@ public class DockerUtils {
    * @return a set with the file indirections
    * @throws IOException if an error occurs while searching indirections
    */
-  private static Set<File> fileIndirections(final File file) throws IOException {
+  private static Set<File> fileIndirections(final File file)
+      throws IOException {
 
     requireNonNull(file);
 
@@ -138,7 +141,7 @@ public class DockerUtils {
 
     File previousFile = new File("/");
 
-    for (File f : SpotifyDockerImageInstance.parentDirectories(file)) {
+    for (File f : parentDirectories(file)) {
 
       Path path = f.toPath();
 
@@ -161,6 +164,26 @@ public class DockerUtils {
     }
 
     result.add(file);
+  }
+
+  /**
+   * Get all the parent directories of a file.
+   * @param file the file
+   * @return a list with all the parent directories of the file
+   */
+  private static List<File> parentDirectories(final File file) {
+
+    List<File> result = new ArrayList<>();
+    File f = file;
+
+    do {
+
+      result.add(0, f);
+      f = f.getParentFile();
+
+    } while (f != null);
+
+    return result;
   }
 
   //
