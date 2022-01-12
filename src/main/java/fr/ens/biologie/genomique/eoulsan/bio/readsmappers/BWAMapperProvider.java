@@ -35,7 +35,6 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
@@ -238,7 +237,7 @@ public class BWAMapperProvider extends AbstractMapperProvider {
 
         protected void additionalInit() throws IOException {
 
-          final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
+          final File tmpDir = mapping.getTemporaryDirectory();
 
           final String uuid = getUUID();
 
@@ -397,7 +396,7 @@ public class BWAMapperProvider extends AbstractMapperProvider {
 
         protected void additionalInit() throws IOException {
 
-          final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
+          final File tmpDir = mapping.getTemporaryDirectory();
 
           final String uuid = getUUID();
 
