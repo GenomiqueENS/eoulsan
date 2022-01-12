@@ -1934,6 +1934,66 @@ of reads that reject each filter like in local mode.
 
          </release>
 
+	 <release version="2.6" description="Eoulsan 2.6 release" date="TBD">
+
+            <action dev="jourdren" type="fix">
+              Remove many unused dependencies.
+            </action>
+
+            <action dev="jourdren" type="fix">
+              Now use Log4J 2.17.1. This dependency is only there for Hadoop logging. It is not used in other execution modes.
+            </action>
+
+            <action dev="jourdren" type="fix">
+              Fix issue with Minimap 2.18 that did not work with Ubuntu 16.04.
+            </action>
+
+            <action dev="jourdren" type="add">
+              Update Docker Manager API to allow manualy define the Docker client to use.
+            </action>
+
+            <action dev="jourdren" type="add">
+              A custom logger can now be used in read mapping API.
+            </action>
+
+            <action dev="jourdren" type="add">
+              New API for logging. This abstraction allow to use any other logging library. This new API is now used for logging in classes dedicated for mapping.
+            </action>
+
+            <action dev="jourdren" type="add">
+              Add Minimap2 2.24 in addition of previous versions.
+            </action>
+
+            <action dev="jourdren" type="update">
+              Now use Guava 30.1.1 dependency.
+            </action>
+
+            <action dev="jourdren" type="update">
+              Now use HTSJDK 2.13.2.
+            </action>
+
+            <action dev="jourdren" type="update">
+              Now use Haddop-BAM 7.10.0.
+            </action>
+
+            <action dev="jourdren" type="update">
+              Add a new Docker client based on the docker-java library. This new client replace the old client based on Spotify library that is now deprecated. The old Spotify client has been removed.
+            </action>
+
+            <action dev="jourdren" type="update">
+              Now use jhdf5 19.04.0.
+            </action>
+
+            <action dev="jourdren" type="update">
+              Remove unused code dedicated code to AWS Elastic MapReduce.
+            </action>
+
+            <action dev="jourdren" type="update">
+              Update the name and the logo of the IBENS genomics core facility.
+            </action>
+
+         </release>
+
     </body>
 
 </document>
