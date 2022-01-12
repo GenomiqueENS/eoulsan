@@ -34,6 +34,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.bio.GFFEntry;
 import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 import htsjdk.samtools.SAMRecord;
 
@@ -67,6 +68,18 @@ public interface ExpressionCounter {
    * @throws EoulsanException if the parameter is invalid
    */
   void setParameter(String key, String value) throws EoulsanException;
+
+  /**
+   * Set the logger to use.
+   * @param logger the logger to use
+   */
+  void setLogger(GenericLogger logger);
+
+  /**
+   * Get the logger.
+   * @return the logger
+   */
+  GenericLogger getLogger();
 
   /**
    * Check the counter configuration.

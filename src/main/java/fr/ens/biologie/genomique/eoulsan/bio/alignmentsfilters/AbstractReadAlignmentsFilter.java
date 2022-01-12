@@ -24,7 +24,11 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters;
 
+import static java.util.Objects.requireNonNull;
+
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.log.DummyLogger;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 
 /**
  * This class define an abstract AlignmentsFilter that contains default code for
@@ -35,12 +39,27 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 public abstract class AbstractReadAlignmentsFilter
     implements ReadAlignmentsFilter {
 
+  private GenericLogger logger = new DummyLogger();
+
   @Override
   public void setParameter(final String key, final String value)
       throws EoulsanException {
 
     throw new EoulsanException(
         "Unknown parameter for " + getName() + " alignments filter: " + key);
+  }
+
+  @Override
+  public void setLogger(GenericLogger logger) {
+
+    requireNonNull(logger);
+    this.logger = logger;
+  }
+
+  @Override
+  public GenericLogger getLogger() {
+
+    return this.logger;
   }
 
   @Override

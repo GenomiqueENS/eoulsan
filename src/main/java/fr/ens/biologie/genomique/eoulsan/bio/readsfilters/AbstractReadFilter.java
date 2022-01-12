@@ -24,8 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.readsfilters;
 
+import static java.util.Objects.requireNonNull;
+
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
+import fr.ens.biologie.genomique.eoulsan.log.DummyLogger;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 
 /**
  * This class define an abstract ReadFilter that allow simple Pair-end and
@@ -34,6 +38,21 @@ import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
  * @author Laurent Jourdren
  */
 public abstract class AbstractReadFilter implements ReadFilter {
+
+  private GenericLogger logger = new DummyLogger();
+
+  @Override
+  public void setLogger(GenericLogger logger) {
+
+    requireNonNull(logger);
+    this.logger = logger;
+  }
+
+  @Override
+  public GenericLogger getLogger() {
+
+    return this.logger;
+  }
 
   @Override
   public boolean accept(final ReadSequence read1, final ReadSequence read2) {

@@ -24,10 +24,14 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.readsfilters;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
+import fr.ens.biologie.genomique.eoulsan.log.DummyLogger;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 
 /**
@@ -38,9 +42,23 @@ import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
  */
 public class MultiReadFilter implements ReadFilter {
 
+  private GenericLogger logger = new DummyLogger();
   private final List<ReadFilter> list = new ArrayList<>();
   private final ReporterIncrementer incrementer;
   private final String counterGroup;
+
+  @Override
+  public void setLogger(GenericLogger logger) {
+
+    requireNonNull(logger);
+    this.logger = logger;
+  }
+
+  @Override
+  public GenericLogger getLogger() {
+
+    return this.logger;
+  }
 
   @Override
   public boolean accept(final ReadSequence read) {

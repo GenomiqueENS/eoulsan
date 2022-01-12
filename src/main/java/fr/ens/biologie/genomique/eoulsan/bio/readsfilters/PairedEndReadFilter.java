@@ -24,8 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.readsfilters;
 
+import static java.util.Objects.requireNonNull;
+
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
+import fr.ens.biologie.genomique.eoulsan.log.DummyLogger;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 
 /**
  * This class define a read filter that allow to filter paired-end reads of
@@ -35,8 +39,22 @@ import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
  */
 public class PairedEndReadFilter implements ReadFilter {
 
+  private GenericLogger logger = new DummyLogger();
   private boolean acceptPairedEnd = true;
   private final boolean acceptSingleEnd = true;
+
+  @Override
+  public void setLogger(GenericLogger logger) {
+
+    requireNonNull(logger);
+    this.logger = logger;
+  }
+
+  @Override
+  public GenericLogger getLogger() {
+
+    return this.logger;
+  }
 
   @Override
   public boolean accept(final ReadSequence read) {

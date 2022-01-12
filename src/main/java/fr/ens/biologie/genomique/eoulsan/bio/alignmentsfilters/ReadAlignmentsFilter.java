@@ -27,6 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import htsjdk.samtools.SAMRecord;
 
 /**
@@ -63,6 +64,18 @@ public interface ReadAlignmentsFilter {
    * @throws EoulsanException if the parameter is invalid
    */
   void setParameter(String key, String value) throws EoulsanException;
+
+  /**
+   * Set the logger to use.
+   * @param logger the logger to use
+   */
+  void setLogger(GenericLogger logger);
+
+  /**
+   * Get the logger.
+   * @return the logger
+   */
+  GenericLogger getLogger();
 
   /**
    * Initialize the filter.

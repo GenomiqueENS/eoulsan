@@ -39,6 +39,8 @@ import fr.ens.biologie.genomique.eoulsan.bio.io.GFFReader;
 import fr.ens.biologie.genomique.eoulsan.bio.io.GTFReader;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.log.DummyLogger;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 import htsjdk.samtools.SAMFileWriter;
 import htsjdk.samtools.SAMFileWriterFactory;
@@ -58,6 +60,21 @@ public abstract class AbstractExpressionCounter implements ExpressionCounter {
   private static final String MAX_RECORDS_IN_RAM_KEY = "max.entries.in.ram";
 
   private int maxRecordsInRam = DEFAULT_MAX_RECORDS_IN_RAM;
+
+  private GenericLogger logger = new DummyLogger();
+
+  @Override
+  public void setLogger(GenericLogger logger) {
+
+    requireNonNull(logger);
+    this.logger = logger;
+  }
+
+  @Override
+  public GenericLogger getLogger() {
+
+    return this.logger;
+  }
 
   /**
    * This class allow to save the modified SAM entries after the counting.

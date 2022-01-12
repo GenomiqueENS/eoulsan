@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters;
 
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.log.DummyLogger;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 
 /**
@@ -43,9 +45,29 @@ import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
  */
 public class MultiReadAlignmentsFilterBuilder {
 
+  private GenericLogger logger = new DummyLogger();
   private final Map<String, ReadAlignmentsFilter> mapFilters = new HashMap<>();
   private final List<ReadAlignmentsFilter> listFilter = new ArrayList<>();
   private final Map<String, String> mapParameters = new LinkedHashMap<>();
+
+  /**
+   * Set the logger to use.
+   * @param logger the logger to use
+   */
+  private void setLogger(GenericLogger logger) {
+
+    requireNonNull(logger);
+    this.logger = logger;
+  }
+
+  /**
+   * Get the logger.
+   * @return the logger
+   */
+  public GenericLogger getLogger() {
+
+    return this.logger;
+  }
 
   /**
    * Add a parameter to the builder
@@ -114,6 +136,7 @@ public class MultiReadAlignmentsFilterBuilder {
             "Unable to find " + filterName + " alignments filter.");
       }
 
+      filter.setLogger(this.logger);
       this.mapFilters.put(filterName, filter);
       this.listFilter.add(filter);
     }
@@ -211,6 +234,15 @@ public class MultiReadAlignmentsFilterBuilder {
 
   /**
    * Public constructor.
+   * @param logger the logger to use
+   */
+  public MultiReadAlignmentsFilterBuilder(final GenericLogger logger) {
+
+    setLogger(logger);
+  }
+
+  /**
+   * Public constructor.
    * @param parameters parameters to add to the builder
    * @throws EoulsanException EoulsanException if the filter reference in the
    *           key does not exist or if an error occurs while setting the
@@ -219,6 +251,21 @@ public class MultiReadAlignmentsFilterBuilder {
   public MultiReadAlignmentsFilterBuilder(final Map<String, String> parameters)
       throws EoulsanException {
 
+    addParameters(parameters);
+  }
+
+  /**
+   * Public constructor.
+   * @param logger the logger to use
+   * @param parameters parameters to add to the builder
+   * @throws EoulsanException EoulsanException if the filter reference in the
+   *           key does not exist or if an error occurs while setting the
+   *           parameter in the dedicated filter
+   */
+  public MultiReadAlignmentsFilterBuilder(final GenericLogger logger,
+      final Map<String, String> parameters) throws EoulsanException {
+
+    setLogger(logger);
     addParameters(parameters);
   }
 

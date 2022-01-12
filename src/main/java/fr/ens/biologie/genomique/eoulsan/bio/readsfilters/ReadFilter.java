@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.bio.readsfilters;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 
 /**
  * This interface define a filter for reads.
@@ -66,6 +67,18 @@ public interface ReadFilter {
    * @throws EoulsanException if the parameter is invalid
    */
   void setParameter(String key, String value) throws EoulsanException;
+
+  /**
+   * Set the logger to use.
+   * @param logger the logger to use
+   */
+  void setLogger(GenericLogger logger);
+
+  /**
+   * Get the logger.
+   * @return the logger
+   */
+  GenericLogger getLogger();
 
   /**
    * Initialize the filter.

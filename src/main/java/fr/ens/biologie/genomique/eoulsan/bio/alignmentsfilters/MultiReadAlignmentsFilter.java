@@ -24,9 +24,13 @@
 
 package fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.ens.biologie.genomique.eoulsan.log.DummyLogger;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 import htsjdk.samtools.SAMRecord;
 
@@ -39,6 +43,7 @@ import htsjdk.samtools.SAMRecord;
  */
 public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
 
+  private GenericLogger logger = new DummyLogger();
   private final List<ReadAlignmentsFilter> list = new ArrayList<>();
   private final ReporterIncrementer incrementer;
   private final String counterGroup;
@@ -110,6 +115,19 @@ public class MultiReadAlignmentsFilter implements ReadAlignmentsFilter {
   @Override
   public void setParameter(final String key, final String value) {
     // This filter has no parameter
+  }
+
+  @Override
+  public void setLogger(GenericLogger logger) {
+
+    requireNonNull(logger);
+    this.logger = logger;
+  }
+
+  @Override
+  public GenericLogger getLogger() {
+
+    return this.logger;
   }
 
   @Override
