@@ -41,7 +41,6 @@ import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
-import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 
 /**
@@ -280,7 +279,7 @@ public abstract class AbstractReadsMapperModule extends AbstractModule {
     }
 
     // Create a Mapper object
-    this.mapper = Mapper.newMapper(mapperName, new EoulsanRuntimeLogger());
+    this.mapper = Mapper.newMapper(mapperName, context.getGenericLogger());
 
     // Check if the mapper wrapper has been found
     if (mapper == null) {

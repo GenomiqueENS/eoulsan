@@ -35,6 +35,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
 
 /**
@@ -313,6 +314,15 @@ public class WorkflowContext implements Serializable {
   public Logger getLogger() {
 
     return EoulsanLogger.getLogger();
+  }
+
+  /**
+   * Get the generic logger.
+   * @return the generic logger
+   */
+  public GenericLogger getGenericLogger() {
+
+    return EoulsanLogger.getGenericLogger();
   }
 
   //

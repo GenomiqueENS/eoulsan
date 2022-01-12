@@ -24,6 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.generators;
 
+import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getGenericLogger;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_FASTA;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsMapperModule.MAPPER_FLAVOR_PARAMETER_NAME;
@@ -54,7 +55,6 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractFilterAndMapReadsModule;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsMapperModule;
@@ -116,7 +116,7 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
       case "mappername":
         final String mapperName = p.getStringValue();
 
-        this.mapper = Mapper.newMapper(mapperName, new EoulsanRuntimeLogger());
+        this.mapper = Mapper.newMapper(mapperName, getGenericLogger());
 
         if (this.mapper == null) {
           Modules.badParameterValue(context, p, "Unknown mapper");

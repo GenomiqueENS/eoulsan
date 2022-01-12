@@ -1,12 +1,13 @@
 package fr.ens.biologie.genomique.eoulsan.util.process;
 
+import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getGenericLogger;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
 import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 
 /**
@@ -93,7 +94,7 @@ public class SystemSimpleProcess extends AbstractSimpleProcess {
    */
   public SystemSimpleProcess(GenericLogger logger) {
 
-    this.logger = logger == null ? new EoulsanRuntimeLogger() : logger;
+    this.logger = logger == null ? getGenericLogger() : logger;
   }
 
 }

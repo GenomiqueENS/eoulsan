@@ -45,6 +45,7 @@ import java.util.logging.Logger;
 import com.google.common.base.MoreObjects;
 
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime;
+import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.Settings;
@@ -56,6 +57,7 @@ import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.ClassLoaderObjectInputStream;
 
 /**
@@ -265,6 +267,12 @@ public class TaskContextImpl implements TaskContext, Serializable {
   public Logger getLogger() {
 
     return this.workflowContext.getLogger();
+  }
+
+  @Override
+  public GenericLogger getGenericLogger() {
+
+    return EoulsanLogger.getGenericLogger();
   }
 
   @Override

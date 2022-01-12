@@ -23,6 +23,7 @@
  */
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop;
 
+import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getGenericLogger;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.OUTPUT_MAPPING_ALIGNMENTS_COUNTER;
 import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.unDoubleQuotes;
@@ -59,7 +60,6 @@ import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperIndex;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperInstance;
 import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperProcess;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopReporter;
@@ -181,7 +181,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
     // Set the mapper
     final fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper mapper =
         fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper
-            .newMapper(mapperName, new EoulsanRuntimeLogger());
+            .newMapper(mapperName, getGenericLogger());
 
     // Create temporary directory if not exists
     final File tempDir = EoulsanRuntime.getRuntime().getTempDirectory();

@@ -43,6 +43,7 @@ import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 
@@ -117,7 +118,7 @@ public abstract class AbstractSAMFilterModule extends AbstractModule {
       final Set<Parameter> stepParameters) throws EoulsanException {
 
     final MultiReadAlignmentsFilterBuilder filterBuilder =
-        new MultiReadAlignmentsFilterBuilder();
+        new MultiReadAlignmentsFilterBuilder(context.getGenericLogger());
 
     for (Parameter p : stepParameters) {
 
@@ -175,20 +176,21 @@ public abstract class AbstractSAMFilterModule extends AbstractModule {
 
   /**
    * Get the ReadAlignmentsFilter object.
+   * @param logger generic logger
    * @param incrementer incrementer to use
    * @param counterGroup counter group for the incrementer
    * @return a new ReadAlignmentsFilter object
    * @throws EoulsanException if an error occurs while initialize one of the
    *           filter
    */
-  protected MultiReadAlignmentsFilter getAlignmentsFilter(
+  protected MultiReadAlignmentsFilter getAlignmentsFilter(GenericLogger logger,
       final ReporterIncrementer incrementer, final String counterGroup)
       throws EoulsanException {
 
     // As filters are not thread safe, create a new
     // MultiReadAlignmentsFilterBuilder
     // with a new instance of each filter
-    return new MultiReadAlignmentsFilterBuilder(
+    return new MultiReadAlignmentsFilterBuilder(logger,
         this.alignmentsFiltersParameters).getAlignmentsFilter(incrementer,
             counterGroup);
   }

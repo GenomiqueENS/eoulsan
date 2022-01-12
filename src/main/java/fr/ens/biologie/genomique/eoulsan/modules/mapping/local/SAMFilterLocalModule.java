@@ -80,8 +80,8 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
     try {
 
       // Get the read filter
-      final MultiReadAlignmentsFilter filter =
-          getAlignmentsFilter(reporter, COUNTER_GROUP);
+      final MultiReadAlignmentsFilter filter = getAlignmentsFilter(
+          context.getGenericLogger(), reporter, COUNTER_GROUP);
       getLogger().info("Read alignments filters to apply: "
           + Joiner.on(", ").join(filter.getFilterNames()));
 

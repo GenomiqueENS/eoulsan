@@ -1,5 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.util.process;
 
+import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getGenericLogger;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
@@ -15,7 +16,6 @@ import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.transport.DockerHttpClient;
 import com.github.dockerjava.zerodep.ZerodepDockerHttpClient;
 
-import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
 import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 
 /**
@@ -110,7 +110,7 @@ public class DockerJavaDockerClient implements DockerClient {
    */
   public DockerJavaDockerClient(GenericLogger logger) {
 
-    this.logger = logger == null ? new EoulsanRuntimeLogger() : logger;
+    this.logger = logger == null ? getGenericLogger() : logger;
   }
 
 }

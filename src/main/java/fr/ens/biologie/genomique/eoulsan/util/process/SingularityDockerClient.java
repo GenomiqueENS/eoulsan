@@ -1,5 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.util.process;
 
+import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getGenericLogger;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -14,7 +16,6 @@ import com.google.common.io.Files;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.io.FileCharsets;
-import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
 import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
 
@@ -140,7 +141,7 @@ public class SingularityDockerClient implements DockerClient {
    */
   public SingularityDockerClient(GenericLogger logger) {
 
-    this.logger = logger == null ? new EoulsanRuntimeLogger() : logger;
+    this.logger = logger == null ? getGenericLogger() : logger;
   }
 
 }

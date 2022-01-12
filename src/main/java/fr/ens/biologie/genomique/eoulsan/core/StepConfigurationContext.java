@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 
 public interface StepConfigurationContext {
 
@@ -128,6 +129,12 @@ public interface StepConfigurationContext {
    * @return the logger
    */
   Logger getLogger();
+
+  /**
+   * Get the generic logger.
+   * @return the generic logger
+   */
+  GenericLogger getGenericLogger();
 
   /**
    * Get the current step.

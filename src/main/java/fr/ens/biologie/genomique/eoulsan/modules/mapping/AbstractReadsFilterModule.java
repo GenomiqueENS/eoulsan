@@ -42,6 +42,7 @@ import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 
@@ -117,7 +118,8 @@ public abstract class AbstractReadsFilterModule extends AbstractModule {
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
 
-    final MultiReadFilterBuilder filterBuilder = new MultiReadFilterBuilder();
+    final MultiReadFilterBuilder filterBuilder =
+        new MultiReadFilterBuilder(context.getGenericLogger());
 
     for (Parameter p : stepParameters) {
 
@@ -190,18 +192,20 @@ public abstract class AbstractReadsFilterModule extends AbstractModule {
 
   /**
    * Get the ReadFilter object.
+   * @param logger the generic logger
    * @param incrementer incrementer to use
    * @param counterGroup counter group for the incrementer
    * @return a new ReadFilter object
    * @throws EoulsanException if an error occurs while initialize one of the
    *           filter
    */
-  protected MultiReadFilter getReadFilter(final ReporterIncrementer incrementer,
-      final String counterGroup) throws EoulsanException {
+  protected MultiReadFilter getReadFilter(GenericLogger logger,
+      final ReporterIncrementer incrementer, final String counterGroup)
+      throws EoulsanException {
 
     // As filters are not thread safe, create a new MultiReadFilterBuilder
     // with a new instance of each filter
-    return new MultiReadFilterBuilder(this.readsFiltersParameters)
+    return new MultiReadFilterBuilder(logger, this.readsFiltersParameters)
         .getReadFilter(incrementer, counterGroup);
   }
 

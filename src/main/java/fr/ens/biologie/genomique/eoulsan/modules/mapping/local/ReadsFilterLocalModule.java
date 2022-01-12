@@ -91,7 +91,8 @@ public class ReadsFilterLocalModule extends AbstractReadsFilterModule {
       }
 
       // Get the read filter
-      final MultiReadFilter filter = getReadFilter(reporter, COUNTER_GROUP);
+      final MultiReadFilter filter =
+          getReadFilter(context.getGenericLogger(), reporter, COUNTER_GROUP);
       getLogger().info("Reads filters to apply: "
           + Joiner.on(", ").join(filter.getFilterNames()));
 

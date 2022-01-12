@@ -24,12 +24,15 @@
 
 package fr.ens.biologie.genomique.eoulsan;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
 
 /**
  * This class allow to change the logger name for all Eoulsan classes. The
@@ -38,6 +41,41 @@ import java.util.logging.Logger;
  * @since 2.0
  */
 public class EoulsanLogger {
+
+  private static class EoulsanRuntimeLogger
+      implements GenericLogger, Serializable {
+
+    private static final long serialVersionUID = 7316420644292128626L;
+
+    @Override
+    public void debug(String message) {
+      getLogger().fine(message);
+    }
+
+    @Override
+    public void info(String message) {
+      getLogger().info(message);
+    }
+
+    @Override
+    public void warn(String message) {
+      getLogger().warning(message);
+    }
+
+    @Override
+    public void error(String message) {
+      getLogger().severe(message);
+    }
+
+    @Override
+    public void flush() {
+    }
+
+    @Override
+    public void close() {
+    }
+
+  }
 
   private static String loggerName = Globals.APP_NAME;
 
@@ -206,6 +244,11 @@ public class EoulsanLogger {
   public static void logFinest(final String message) {
 
     getLogger().finest(message);
+  }
+
+  public static GenericLogger getGenericLogger() {
+
+    return new EoulsanRuntimeLogger();
   }
 
 }

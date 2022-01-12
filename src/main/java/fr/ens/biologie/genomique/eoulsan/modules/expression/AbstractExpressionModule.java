@@ -190,6 +190,9 @@ public abstract class AbstractExpressionModule extends AbstractModule {
       Modules.invalidConfiguration(context, "Unknown counter: " + counterName);
     }
 
+    // Set the logger for the counter
+    this.counter.setLogger(context.getGenericLogger());
+
     // Handle old parameter names for HTSeq-count counter
     if (HTSeqCounter.COUNTER_NAME.equals(counterName)) {
 

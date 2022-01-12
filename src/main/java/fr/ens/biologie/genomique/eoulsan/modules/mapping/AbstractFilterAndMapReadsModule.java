@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.modules.mapping;
 
 import static fr.ens.biologie.genomique.eoulsan.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getGenericLogger;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
@@ -51,7 +52,6 @@ import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.Version;
-import fr.ens.biologie.genomique.eoulsan.log.EoulsanRuntimeLogger;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 
 /**
@@ -237,9 +237,9 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
     String mapperName = null;
     final MultiReadFilterBuilder readFilterBuilder =
-        new MultiReadFilterBuilder();
+        new MultiReadFilterBuilder(getGenericLogger());
     final MultiReadAlignmentsFilterBuilder alignmentsFilterBuilder =
-        new MultiReadAlignmentsFilterBuilder();
+        new MultiReadAlignmentsFilterBuilder(getGenericLogger());
 
     for (Parameter p : stepParameters) {
 
@@ -300,7 +300,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
     }
 
     // Create a Mapper object
-    this.mapper = Mapper.newMapper(mapperName, new EoulsanRuntimeLogger());
+    this.mapper = Mapper.newMapper(mapperName, context.getGenericLogger());
 
     if (this.mapper == null) {
       Modules.invalidConfiguration(context, "Unknown mapper: " + mapperName);
