@@ -124,9 +124,9 @@
         <section name="What's new in Eoulsan @@@VERSION@@@? ">
 		<p>The Eoulsan @@@VERSION@@@ main new enhancements since its last version are: </p>
 		<ul>
-			<li>New STAR 2.7.8a and Minimap 2.18 bundled binaries</li>
-			<li>New read filters to identify/remove/retains/reverse sequences with GGG head or polyA tails</li>
-			<li>And many fixes</li>
+			<li>Minimap 2.24 binary is now bundled in Eoulsan</li>
+			<li>Update versions of many dependencies</li>
+			<li>Remove unused code and dependencies (e.g. AWS Elastic MapReduce support)</li>
 		</ul>
 		<p>For the full change log, please report to the <a href="changes-report.html#a@@@VERSION@@@">dedicated page</a>.</p>
 	</section>
