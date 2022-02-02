@@ -38,6 +38,7 @@ import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
 import uk.ac.babraham.FastQC.Modules.QCModule;
+import uk.ac.babraham.FastQC.Report.HTMLReportArchiveNeigborClass;
 import uk.ac.babraham.FastQC.Utilities.ImageToBase64;
 
 /**
@@ -84,8 +85,11 @@ public class FastQCRuntimePatcher {
         cc.addMethod(newBase64ForIconMethod);
 
         // Load the class by the ClassLoader
-        cc.toClass();
-
+        if (isJavaModuleSystemAvailable()) {
+          cc.toClass(HTMLReportArchiveNeigborClass.class);
+        } else {
+          cc.toClass();
+        }
       }
 
     } catch (NotFoundException | CannotCompileException e) {
@@ -94,13 +98,26 @@ public class FastQCRuntimePatcher {
   }
 
   /**
+   * Check if the version of Java use module system.
+   * @return true if the version of Java use module system
+   */
+  private static boolean isJavaModuleSystemAvailable() {
+
+    String javaSpecVersion =
+        System.getProperty("java.vm.specification.version");
+
+    // Is Java > 8
+    return javaSpecVersion.indexOf('.') == -1;
+  }
+
+  /**
    * This method replace the HTMLReportArchive.base64ForIcon() method.
    * @param path path of the resource to load
    * @param clazz the class that call the method
    * @return an image encoded in base64
    */
-  public static String base64ForIcon(String path,
-      @SuppressWarnings("rawtypes") Class clazz) {
+  public static String base64ForIcon(String path, @SuppressWarnings("rawtypes")
+  Class clazz) {
 
     try {
       BufferedImage b =
