@@ -39,17 +39,22 @@
 		
 			<!--p>Eoulsan is currently under submission process.</p-->
 
-                        <p>
-                                <b>
-                                        Eoulsan: A Cloud Computing-Based Framework Facilitating High Throughput Sequencing Analyses.
-                                </b>
-                        </p>
-                        <p>
-                                <small>
-                                        Laurent Jourdren, Maria Bernard, Marie-Agnès Dillies and Stéphane Le Crom
-                                </small>
+                        <p><b>Eoulsan 2: an efficient workflow manager for reproducible bulk, long-read and single-cell transcriptomics analyses</b></p><p>
+                                <small>Nathalie Lehmann, Sandrine Perrin, Claire Wallon, Xavier Bauquet, Vivien Deshaies, Cyril Firmo, Runxin Du, Charlotte Berthelier, Céline Hernandez, Cédric Michaud, Denis Thieffry, Stéphane Le Crom, Morgane Thomas-Chollier and Laurent Jourdren</small>
                                 <br />
-                                <small><i>Bioinformatics (2012) <b>28</b> <b>(11)</b>: 1542-1543. doi: <a href="http://doi.org/10.1093/bioinformatics/bts165">10.1093/bioinformatics/bts165</a></i></small>
+                                <small><i>BioRxiv (2021): doi: <a href="ihttps://doi.org/10.1101/2021.10.13.464219 ">10.1101/2021.10.13.464219 </a></i></small>
+                                <br/>
+                                <small>
+                                  <a href="https://www.biorxiv.org/content/10.1101/2021.10.13.464219v1">[Abstract] </a>
+                                  <a href="https://www.biorxiv.org/content/10.1101/2021.10.13.464219v1.full">[Full Text] </a>
+                                  <a href="https://www.biorxiv.org/content/10.1101/2021.10.13.464219v1.full.pdf">[Full Text PDF]</a>
+                                </small>
+                        </p>
+
+                        <p><b>Eoulsan: A Cloud Computing-Based Framework Facilitating High Throughput Sequencing Analyses.</b></p><p>
+                                <small>Laurent Jourdren, Maria Bernard, Marie-Agnès Dillies and Stéphane Le Crom</small>
+                                <br />
+                                <small><i>Bioinformatics (2012) <b>28</b> <b>(11)</b>: 1542-1543. doi: <a href="https://doi.org/10.1093/bioinformatics/bts165">10.1093/bioinformatics/bts165</a></i></small>
                                 <br/>
                                 <small>
                                   <a href="http://bioinformatics.oxfordjournals.org/content/28/11/1542">[Abstract] </a>
