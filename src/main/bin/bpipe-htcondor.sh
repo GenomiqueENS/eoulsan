@@ -118,6 +118,12 @@ make_htcondor_description_file () {
       concurrency_limits="concurrency_limits = ${CONCURRENCY_LIMITS}"
    fi
 
+   if [[ -z $CONCURRENCY_LIMITS ]]; then
+      accounting_group=""
+   else
+      accounting_group="accounting_group = ${CONCURRENCY_LIMITS}"
+   fi
+
    if [[ -z $NICE_USER ]]; then
       nice_user="False"
    else
@@ -157,6 +163,7 @@ output = $job_script_dir/script-$JOB_SCRIPT_ID.stdout
 error = $job_script_dir/script-$JOB_SCRIPT_ID.stderr
 arguments = $ARGUMENTS
 $concurrency_limits
+$accounting_group
 nice_user = $nice_user
 queue
 HERE

@@ -40,6 +40,7 @@ public class HTCondorTaskScheduler extends BundledScriptBpipeTaskScheduler {
   private static final String COMMAND_WRAPPER_SCRIPT = "bpipe-htcondor.sh";
 
   private final String concurrencyLimits;
+  private final String accountingGroup;
   private final boolean niceUser;
 
   @Override
@@ -50,6 +51,10 @@ public class HTCondorTaskScheduler extends BundledScriptBpipeTaskScheduler {
 
     if (this.concurrencyLimits != null) {
       result.put("CONCURRENCY_LIMITS", this.concurrencyLimits);
+    }
+
+    if (this.accountingGroup != null) {
+      result.put("ACCOUNTING_GROUP", this.accountingGroup);
     }
 
     return result;
@@ -72,6 +77,10 @@ public class HTCondorTaskScheduler extends BundledScriptBpipeTaskScheduler {
     // Get nice user priority
     this.niceUser = EoulsanRuntime.getRuntime().getSettings()
         .getBooleanSetting("htcondor.nice.user");
+
+    // Get accounting group
+    this.accountingGroup = EoulsanRuntime.getRuntime().getSettings()
+        .getSetting("htcondor.accounting.group");
   }
 
 }
