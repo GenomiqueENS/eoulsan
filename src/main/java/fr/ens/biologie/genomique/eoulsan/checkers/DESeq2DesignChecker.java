@@ -8,6 +8,7 @@ import static fr.ens.biologie.genomique.eoulsan.design.SampleMetadata.REP_TECH_G
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -37,7 +38,9 @@ import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
  * @since 2.4
  * @author Charlotte Berthelier
  */
-public class DESeq2DesignChecker implements Checker {
+public class DESeq2DesignChecker implements Checker, Serializable {
+
+  private static final long serialVersionUID = -7079642248159153890L;
 
   @Override
   public String getName() {
