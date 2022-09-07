@@ -46,8 +46,6 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import fr.ens.biologie.genomique.aozan.illumina.samplesheet.SampleSheet;
-import fr.ens.biologie.genomique.aozan.illumina.samplesheet.io.SampleSheetCSVReader;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
@@ -61,6 +59,8 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.illumina.samplesheet.SampleSheet;
+import fr.ens.biologie.genomique.kenetre.illumina.samplesheet.io.SampleSheetCSVReader;
 
 /**
  * This class allow to easily build Design object from files paths.
@@ -446,7 +446,7 @@ public class DesignBuilder {
         new File(bcl2fastqOutputDir.getPath() + "/Project_" + projectName)
             .isDirectory();
 
-    for (fr.ens.biologie.genomique.aozan.illumina.samplesheet.Sample sample : samplesheet) {
+    for (fr.ens.biologie.genomique.kenetre.illumina.samplesheet.Sample sample : samplesheet) {
 
       final String sampleProject = sample.getSampleProject();
       final String sampleId = sample.getSampleId();
@@ -583,13 +583,11 @@ public class DesignBuilder {
       file = samplesheetFile;
     }
 
-    try {
-      SampleSheetCSVReader reader = new SampleSheetCSVReader(file);
+    try (SampleSheetCSVReader reader = new SampleSheetCSVReader(file)) {
       addBcl2FastqSamplesheetProject(reader.read(), projectName, baseDir);
     } catch (IOException e) {
       throw new EoulsanException(e);
     }
-
   }
 
   /**
