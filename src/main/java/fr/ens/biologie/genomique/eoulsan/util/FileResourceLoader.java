@@ -13,6 +13,7 @@ import java.util.ServiceConfigurationError;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 
 /**
  * This class allow to define a resource loader for files.

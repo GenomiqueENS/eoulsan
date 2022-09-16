@@ -27,6 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.modules.mapping;
 import static fr.ens.biologie.genomique.eoulsan.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getGenericLogger;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.EoulsanRuntime.getSettings;
 import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_FASTQ;
@@ -41,17 +42,22 @@ import java.util.Map;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
-import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
+import fr.ens.biologie.genomique.kenetre.bio.alignmentfilter.MultiReadAlignmentFilterBuilder;
+import fr.ens.biologie.genomique.kenetre.KenetreException;
+import fr.ens.biologie.genomique.kenetre.bio.readfilter.MultiReadFilterBuilder;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.Mapper;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperBuilder;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstanceBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import fr.ens.biologie.genomique.eoulsan.data.MapperIndexDataFormat;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 
 /**
@@ -215,7 +221,8 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort(READS_PORT_NAME, READS_FASTQ);
-    builder.addPort(MAPPER_INDEX_PORT_NAME, this.mapper.getArchiveFormat());
+    builder.addPort(MAPPER_INDEX_PORT_NAME,
+        new MapperIndexDataFormat(this.mapper));
 
     return builder.create();
   }
@@ -238,59 +245,63 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
     String mapperName = null;
     final MultiReadFilterBuilder readFilterBuilder =
         new MultiReadFilterBuilder(getGenericLogger());
-    final MultiReadAlignmentsFilterBuilder alignmentsFilterBuilder =
-        new MultiReadAlignmentsFilterBuilder(getGenericLogger());
+    final MultiReadAlignmentFilterBuilder alignmentsFilterBuilder =
+        new MultiReadAlignmentFilterBuilder(getGenericLogger());
 
-    for (Parameter p : stepParameters) {
+    try {
+      for (Parameter p : stepParameters) {
 
-      // Check if the parameter is deprecated
-      AbstractReadsFilterModule.checkDeprecatedParameter(context, p);
-      AbstractReadsMapperModule.checkDeprecatedParameter(context, p);
-      AbstractSAMFilterModule.checkDeprecatedParameter(context, p);
+        // Check if the parameter is deprecated
+        AbstractReadsFilterModule.checkDeprecatedParameter(context, p);
+        AbstractReadsMapperModule.checkDeprecatedParameter(context, p);
+        AbstractSAMFilterModule.checkDeprecatedParameter(context, p);
 
-      switch (p.getName()) {
+        switch (p.getName()) {
 
-      case MAPPER_NAME_PARAMETER_NAME:
-        mapperName = p.getStringValue();
-        break;
+        case MAPPER_NAME_PARAMETER_NAME:
+          mapperName = p.getStringValue();
+          break;
 
-      case MAPPER_VERSION_PARAMETER_NAME:
-        mapperVersion = p.getStringValue();
-        break;
+        case MAPPER_VERSION_PARAMETER_NAME:
+          mapperVersion = p.getStringValue();
+          break;
 
-      case MAPPER_FLAVOR_PARAMETER_NAME:
-        mapperFlavor = p.getStringValue();
-        break;
+        case MAPPER_FLAVOR_PARAMETER_NAME:
+          mapperFlavor = p.getStringValue();
+          break;
 
-      case MAPPER_ARGUMENTS_PARAMETER_NAME:
-        this.mapperArguments = p.getStringValue();
-        break;
+        case MAPPER_ARGUMENTS_PARAMETER_NAME:
+          this.mapperArguments = p.getStringValue();
+          break;
 
-      case HADOOP_THREADS_PARAMETER_NAME:
-        this.hadoopThreads = p.getIntValueGreaterOrEqualsTo(1);
-        break;
+        case HADOOP_THREADS_PARAMETER_NAME:
+          this.hadoopThreads = p.getIntValueGreaterOrEqualsTo(1);
+          break;
 
-      case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
-        this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
-        break;
+        case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
+          this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
+          break;
 
-      default:
+        default:
 
-        // Add read filters parameters
-        if (!(readFilterBuilder.addParameter(p.getName(), p.getStringValue(),
-            true) ||
-        // Add read alignments filters parameters
-            alignmentsFilterBuilder.addParameter(p.getName(),
-                p.getStringValue(), true))) {
+          // Add read filters parameters
+          if (!(readFilterBuilder.addParameter(p.getName(), p.getStringValue(),
+              true) ||
+          // Add read alignments filters parameters
+              alignmentsFilterBuilder.addParameter(p.getName(),
+                  p.getStringValue(), true))) {
 
-          Modules.unknownParameter(context, p);
+            Modules.unknownParameter(context, p);
+          }
         }
       }
-    }
 
-    // Force parameter checking
-    readFilterBuilder.getReadFilter();
-    alignmentsFilterBuilder.getAlignmentsFilter();
+      // Force parameter checking
+      readFilterBuilder.getReadFilter();
+      alignmentsFilterBuilder.getAlignmentFilter();
+    } catch (KenetreException e) {
+      throw new EoulsanException(e);
+    }
 
     this.readsFiltersParameters = readFilterBuilder.getParameters();
     this.alignmentsFiltersParameters = alignmentsFilterBuilder.getParameters();
@@ -299,25 +310,34 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
       Modules.invalidConfiguration(context, "No mapper set");
     }
 
-    // Create a Mapper object
-    this.mapper = Mapper.newMapper(mapperName, context.getGenericLogger());
-
-    if (this.mapper == null) {
-      Modules.invalidConfiguration(context, "Unknown mapper: " + mapperName);
-    }
-
-    if (this.mapper.isIndexGeneratorOnly()) {
-      Modules.invalidConfiguration(context,
-          "The selected mapper can only be used for index generation: "
-              + mapperName);
-    }
-
-    // Check if the binary for the mapper is available
     try {
 
+      // Create a Mapper object
+      this.mapper = new MapperBuilder(mapperName).withLogger(getGenericLogger())
+          .withApplicationName(Globals.APP_NAME)
+          .withApplicationVersion(Globals.APP_VERSION_STRING)
+          .withTempDirectory(getSettings().getTempDirectoryFile())
+          .withExecutablesTempDirectory(
+              EoulsanRuntime.getSettings().getExecutablesTempDirectoryFile())
+          .build();
+
+      if (this.mapper == null) {
+        Modules.invalidConfiguration(context, "Unknown mapper: " + mapperName);
+      }
+
+      if (this.mapper.isIndexGeneratorOnly()) {
+        Modules.invalidConfiguration(context,
+            "The selected mapper can only be used for index generation: "
+                + mapperName);
+      }
+
+      // Check if the binary for the mapper is available
+
       // Create a new instance of the mapper for required version and flavor
-      this.mapper.newMapperInstance(this.mapperVersion, this.mapperFlavor, true,
-          null);
+      new MapperInstanceBuilder(this.mapper)
+          .withMapperVersion(this.mapperVersion)
+          .withMapperFlavor(this.mapperFlavor).withUseBundledBinaries(true)
+          .build();
 
       // Check if the mapper is not only a generator
       if (mapper.isIndexGeneratorOnly()) {

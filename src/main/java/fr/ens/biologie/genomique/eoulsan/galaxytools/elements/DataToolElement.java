@@ -35,7 +35,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
-import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
+import fr.ens.biologie.genomique.kenetre.util.GuavaCompatibility;
 
 /**
  * The Class ToolOutputsData.

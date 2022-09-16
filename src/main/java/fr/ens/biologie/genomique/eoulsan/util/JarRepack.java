@@ -32,6 +32,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+
 /**
  * This class allow to repackage a jar file.
  * @since 1.0

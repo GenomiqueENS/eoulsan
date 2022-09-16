@@ -42,8 +42,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepObserverRegistry;
-import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 
 /**
  * This class define common constants.

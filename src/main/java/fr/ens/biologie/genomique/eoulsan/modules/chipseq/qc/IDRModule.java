@@ -21,13 +21,13 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
-import fr.ens.biologie.genomique.eoulsan.util.BinariesInstaller;
+import fr.ens.biologie.genomique.kenetre.util.BinariesInstaller;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
 
 /**
@@ -159,10 +159,14 @@ public class IDRModule extends AbstractModule {
    */
   private void install() {
     try {
+
+      BinariesInstaller installer =
+          new BinariesInstaller(Globals.APP_NAME, Globals.APP_VERSION_STRING);
+
       // Get the shipped archive
-      String binaryFile = BinariesInstaller.install(TOOL_NAME,
-          SHIPPED_PACKAGE_VERSION, PACKAGE_ARCHIVE, EoulsanRuntime.getSettings()
-              .getTempDirectoryFile().getAbsolutePath());
+      String binaryFile = installer.install(TOOL_NAME, SHIPPED_PACKAGE_VERSION,
+          PACKAGE_ARCHIVE, EoulsanRuntime.getSettings().getTempDirectoryFile()
+              .getAbsolutePath());
       getLogger().info("Archive location : " + binaryFile);
       DataFile idrArchive = new DataFile(binaryFile);
 

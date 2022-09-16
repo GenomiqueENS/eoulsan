@@ -43,6 +43,7 @@ import java.util.Set;
 import com.google.common.base.Joiner;
 
 import fr.ens.biologie.genomique.eoulsan.io.FileCharsets;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 
 /**
  * Utility class for launching external process.

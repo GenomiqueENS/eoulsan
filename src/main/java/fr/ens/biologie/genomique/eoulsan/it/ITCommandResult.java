@@ -24,7 +24,7 @@
 package fr.ens.biologie.genomique.eoulsan.it;
 
 import static fr.ens.biologie.genomique.eoulsan.Globals.DEFAULT_CHARSET;
-import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toTimeHumanReadable;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toTimeHumanReadable;
 
 import java.io.BufferedReader;
 import java.io.File;

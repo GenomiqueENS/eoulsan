@@ -26,7 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getGenericLogger;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.OUTPUT_MAPPING_ALIGNMENTS_COUNTER;
-import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.unDoubleQuotes;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.unDoubleQuotes;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -54,17 +54,19 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.EntryMapping;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperIndex;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperInstance;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperProcess;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopReporter;
 import fr.ens.biologie.genomique.eoulsan.util.locker.DistributedLocker;
 import fr.ens.biologie.genomique.eoulsan.util.locker.Locker;
+import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.EntryMapping;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperBuilder;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperIndex;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstance;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstanceBuilder;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperProcess;
 
 /**
  * This class defines a generic mapper for reads mapping.
@@ -178,11 +180,6 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
       throw new IOException("No mapper set");
     }
 
-    // Set the mapper
-    final fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper mapper =
-        fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper
-            .newMapper(mapperName, getGenericLogger());
-
     // Create temporary directory if not exists
     final File tempDir = EoulsanRuntime.getRuntime().getTempDirectory();
     if (!tempDir.exists()) {
@@ -194,14 +191,18 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
       }
     }
 
-    // Set mapper temporary directory
-    mapper.setTempDirectory(tempDir);
+    // Set the mapper
+    final fr.ens.biologie.genomique.kenetre.bio.readmapper.Mapper mapper =
+        new MapperBuilder(mapperName).withLogger(getGenericLogger())
+            .withApplicationName(Globals.APP_NAME)
+            .withApplicationVersion(Globals.APP_VERSION_STRING)
+            .withTempDirectory(tempDir).withExecutablesTempDirectory(tempDir)
+            .build();
 
-    // Set mapper executable temporary directory
-    mapper.setExecutablesTempDirectory(tempDir);
-
-    final MapperInstance mapperInstance = mapper.newMapperInstance(
-        conf.get(MAPPER_VERSION_KEY), conf.get(MAPPER_FLAVOR_KEY));
+    final MapperInstance mapperInstance = new MapperInstanceBuilder(mapper)
+        .withMapperVersion(conf.get(MAPPER_VERSION_KEY))
+        .withMapperFlavor(conf.get(MAPPER_FLAVOR_KEY))
+        .withUseBundledBinaries(true).build();
 
     // Get counter group
     final String counterGroup = conf.get(CommonHadoop.COUNTER_GROUP_KEY);

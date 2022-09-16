@@ -27,7 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractChildElementsByTagName;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.newEoulsanException;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.setElementValue;
-import static fr.ens.biologie.genomique.eoulsan.util.XMLUtils.getElementsByTagName;
+import static fr.ens.biologie.genomique.kenetre.util.XMLUtils.getElementsByTagName;
 
 import java.util.ArrayList;
 import java.util.Collection;

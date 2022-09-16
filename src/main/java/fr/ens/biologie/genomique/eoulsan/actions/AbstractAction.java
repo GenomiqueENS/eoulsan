@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.actions;
 
-import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 
 /**
  * This class define an abstract Action
@@ -42,13 +42,29 @@ public abstract class AbstractAction implements Action {
   @Override
   public boolean isCurrentArchCompatible() {
 
-    return SystemUtils.isApplicationAvailableForCurrentArch();
+    return isApplicationAvailableForCurrentArch();
   }
 
   @Override
   public boolean isHidden() {
 
     return false;
+  }
+
+  //
+  // Private methods
+  //
+
+  /**
+   * Check if the application is available for current platform.
+   * @return true if the application is available for current platform
+   */
+  public static boolean isApplicationAvailableForCurrentArch() {
+
+    final String os = System.getProperty("os.name").toLowerCase();
+    final String arch = System.getProperty("os.arch").toLowerCase();
+
+    return Globals.AVAILABLE_BINARY_ARCH.contains(os + "\t" + arch);
   }
 
 }

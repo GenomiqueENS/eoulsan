@@ -27,8 +27,8 @@ package fr.ens.biologie.genomique.eoulsan.modules;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.singleInputPort;
-import static fr.ens.biologie.genomique.eoulsan.io.CompressionType.NONE;
-import static fr.ens.biologie.genomique.eoulsan.io.CompressionType.getCompressionTypeByContentEncoding;
+import static fr.ens.biologie.genomique.kenetre.io.CompressionType.NONE;
+import static fr.ens.biologie.genomique.kenetre.io.CompressionType.getCompressionTypeByContentEncoding;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,13 +52,13 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.data.DataMetadata;
-import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.splitermergers.Splitter;
 
 /**

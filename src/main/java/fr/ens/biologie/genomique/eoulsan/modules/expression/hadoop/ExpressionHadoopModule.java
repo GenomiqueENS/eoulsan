@@ -55,7 +55,8 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
-import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.ExpressionCounter;
+import fr.ens.biologie.genomique.kenetre.KenetreException;
+import fr.ens.biologie.genomique.kenetre.bio.expressioncounter.ExpressionCounter;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.ExpressionOutputFormat;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.SAMInputFormat;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.SAMOutputFormat;
@@ -69,8 +70,9 @@ import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule;
+import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounterUtils;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.FinalExpressionFeaturesCreator;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.MapReduceUtils;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.PathUtils;
 import fr.ens.biologie.genomique.eoulsan.util.locker.Locker;
@@ -182,7 +184,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
       return status.createTaskResult(e,
           "Error while running job: " + e.getMessage());
-    } catch (EoulsanException e) {
+    } catch (KenetreException | EoulsanException e) {
 
       return status.createTaskResult(e,
           "Error while reading the annotation file: " + e.getMessage());
@@ -420,10 +422,11 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
    */
   private static void initializeCounter(final ExpressionCounter counter,
       final Data genomeDescData, final Data annotationData)
-      throws EoulsanException, IOException {
+      throws KenetreException, IOException {
 
     // Initialize the counter
-    counter.init(genomeDescData.getDataFile(), annotationData.getDataFile(),
+    ExpressionCounterUtils.init(counter, genomeDescData.getDataFile(),
+        annotationData.getDataFile(),
         annotationData.getFormat() == DataFormats.ANNOTATION_GTF);
   }
 

@@ -42,9 +42,9 @@ import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.io.FileCharsets;
+import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 
 /**
  * This class contains globals constants for the application.

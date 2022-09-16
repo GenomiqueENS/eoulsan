@@ -47,7 +47,7 @@ import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.io.DefaultDesignReader;
 import fr.ens.biologie.genomique.eoulsan.ui.UI;
 import fr.ens.biologie.genomique.eoulsan.ui.UIService;
-import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
+import fr.ens.biologie.genomique.kenetre.util.SystemUtils;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopInfo;
 
 /**

@@ -30,6 +30,7 @@ import static fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode.OWN_PAR
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_LOG;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_FASTQ;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,15 +41,9 @@ import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Logger;
 
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
-import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.FileMapping;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperIndex;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperInstance;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperProcess;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.STARMapperProvider;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
@@ -59,13 +54,24 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.MapperIndexDataFormat;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsMapperModule;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters;
-import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
-import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
-import fr.ens.biologie.genomique.eoulsan.util.Reporter;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
-import fr.ens.biologie.genomique.eoulsan.util.UnSynchronizedBufferedWriter;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.io.UnSynchronizedBufferedWriter;
+import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.FileMapping;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.Mapper;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperBuilder;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperIndex;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstance;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstanceBuilder;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperProcess;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.STARMapperProvider;
+import fr.ens.biologie.genomique.kenetre.util.LocalReporter;
+import fr.ens.biologie.genomique.kenetre.util.Reporter;
 
 /**
  * This class define a module for reads mapping.
@@ -87,7 +93,8 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort(READS_PORT_NAME, READS_FASTQ);
-    builder.addPort(MAPPER_INDEX_PORT_NAME, getMapper().getArchiveFormat());
+    builder.addPort(MAPPER_INDEX_PORT_NAME,
+        new MapperIndexDataFormat(getMapper()));
 
     return builder.create();
   }
@@ -112,8 +119,8 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
       // Create the reporter
       final Reporter reporter = new LocalReporter();
 
-      final DataFile archiveIndexFile =
-          context.getInputData(getMapper().getArchiveFormat()).getDataFile();
+      final DataFile archiveIndexFile = context
+          .getInputData(new MapperIndexDataFormat(getMapper())).getDataFile();
 
       final File indexDir = new File(StringUtils
           .filenameWithoutExtension(archiveIndexFile.toUri().getPath()));
@@ -146,7 +153,7 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
       final FastqFormat fastqFormat = inData.getMetadata().getFastqFormat();
 
       // Initialize the mapper
-      final FileMapping mapper = initMapper(context, fastqFormat,
+      final FileMapping fileMapping = initMapper(context, fastqFormat,
           archiveIndexFile, indexDir, reporter);
 
       if (inData.getDataFileCount() < 1) {
@@ -169,11 +176,12 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
 
         getLogger().info("Map file: "
             + inFile + ", Fastq format: " + fastqFormat + ", use "
-            + mapper.getName() + " with " + mapper.getThreadNumber()
+            + fileMapping.getName() + " with " + fileMapping.getThreadNumber()
             + " threads option");
 
         // Single read mapping
-        final MapperProcess process = mapper.mapSE(inFile, errorFile, logFile);
+        final MapperProcess process =
+            mapSE(fileMapping, inFile, errorFile, logFile, context.getLogger());
 
         // Set executed command line in status
         status.setCommandLine(process.getCommandLine());
@@ -185,7 +193,7 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
         process.waitFor();
 
         logMsg = "Mapping reads in "
-            + fastqFormat + " with " + mapper.getName() + " ("
+            + fastqFormat + " with " + fileMapping.getName() + " ("
             + inData.getName() + ", " + inFile.getName() + ")";
 
       }
@@ -202,12 +210,12 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
 
         getLogger().info("Map files: "
             + inFile1 + "," + inFile2 + ", Fastq format: " + fastqFormat
-            + ", use " + mapper.getName() + " with " + mapper.getThreadNumber()
-            + " threads option");
+            + ", use " + fileMapping.getName() + " with "
+            + fileMapping.getThreadNumber() + " threads option");
 
         // Single read mapping
-        final MapperProcess process =
-            mapper.mapPE(inFile1, inFile2, errorFile, logFile);
+        final MapperProcess process = mapPE(fileMapping, inFile1, inFile2,
+            errorFile, logFile, context.getLogger());
 
         // Parse output of the mapper
         parseSAMResults(process.getStout(), samFile, reporter);
@@ -216,13 +224,13 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
         process.waitFor();
 
         logMsg = "Mapping reads in "
-            + fastqFormat + " with " + mapper.getName() + " ("
+            + fastqFormat + " with " + fileMapping.getName() + " ("
             + inData.getName() + ", " + inFile1.getName() + ","
             + inFile2.getName() + ")";
       }
 
       // Throw an exception if an exception has occurred while mapping
-      mapper.throwMappingException();
+      fileMapping.throwMappingException();
 
       // Set the description of the context
       status.setDescription(logMsg);
@@ -256,19 +264,19 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
       final File indexDir, final Reporter reporter) throws IOException {
 
     // Get the mapper object
-    final Mapper mapper = getMapper();
-
-    // Set mapper temporary directory
-    mapper.setTempDirectory(context.getLocalTempDirectory());
-
-    // Set mapper executable temporary directory
-    mapper.setExecutablesTempDirectory(
-        context.getSettings().getExecutablesTempDirectoryFile());
+    final Mapper mapper =
+        new MapperBuilder(getMapper())
+            .withTempDirectory(context.getLocalTempDirectory())
+            .withExecutablesTempDirectory(
+                context.getSettings().getExecutablesTempDirectoryFile())
+            .build();
 
     // Create the mapper instance
     final MapperInstance mapperInstance =
-        mapper.newMapperInstance(getMapperVersion(), getMapperFlavor(),
-            isUseBundledBinaries(), getMapperDockerImage());
+        new MapperInstanceBuilder(mapper).withMapperVersion(getMapperVersion())
+            .withMapperFlavor(getMapperFlavor())
+            .withUseBundledBinaries(isUseBundledBinaries())
+            .withDockerImage(getMapperDockerImage()).build();
 
     // Create the MapperIndex object
     final MapperIndex mapperIndex =
@@ -337,6 +345,82 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
 
     getLogger().info(entriesParsed
         + " entries parsed in " + getMapperName() + " output file");
+  }
+
+  //
+  // Utility methods
+  //
+
+  /**
+   * Map a file in single-end mode.
+   * @param readsFile first file
+   * @param errorFile standard error file
+   * @param logFile log file
+   * @return a MapperProcess object
+   * @throws IOException if an error occurs while launching the mapper
+   */
+  private static final MapperProcess mapSE(FileMapping fileMapping,
+      final DataFile readsFile, final File errorFile, final File logFile,
+      final Logger logger) throws IOException {
+
+    requireNonNull(fileMapping);
+
+    requireNonNull(readsFile, "readsFile is null");
+
+    if (!readsFile.exists()) {
+      throw new IOException("readsFile1 not exits");
+    }
+
+    // Use file mapping only if file is local and not compressed
+    if (readsFile.isLocalFile()
+        && readsFile.getCompressionType() == CompressionType.NONE) {
+      return fileMapping.mapSE(readsFile.toFile(), errorFile, logFile);
+    }
+
+    logger.fine("FASTQ file to map: " + readsFile);
+
+    return fileMapping.mapSE(readsFile.open(), errorFile, logFile);
+  }
+
+  /**
+   * Map files in paired-end mode.
+   * @param readsFile1 first file
+   * @param readsFile2 second file
+   * @param errorFile standard error file
+   * @param logFile log file
+   * @return a MapperProcess object
+   * @throws IOException if an error occurs while launching the mapper
+   */
+  private static final MapperProcess mapPE(FileMapping fileMapping,
+      final DataFile readsFile1, final DataFile readsFile2,
+      final File errorFile, final File logFile, final Logger logger)
+      throws IOException {
+
+    requireNonNull(readsFile1, "readsFile1 is null");
+    requireNonNull(readsFile2, "readsFile2 is null");
+
+    if (!readsFile1.exists()) {
+      throw new IOException("readsFile1 not exits");
+    }
+
+    if (!readsFile2.exists()) {
+      throw new IOException("readsFile1 not exits");
+    }
+
+    // Use file mapping only if files are local and not compressed
+    if (readsFile1.isLocalFile()
+        && readsFile1.getCompressionType() == CompressionType.NONE
+        && readsFile2.isLocalFile()
+        && readsFile2.getCompressionType() == CompressionType.NONE) {
+      return fileMapping.mapPE(readsFile1.toFile(), readsFile2.toFile(),
+          errorFile, logFile);
+    }
+
+    logger.fine("First pair FASTQ file to map: " + readsFile1);
+    logger.fine("Second pair FASTQ file to map: " + readsFile2);
+
+    return fileMapping.mapPE(readsFile1.open(), readsFile2.open(), errorFile,
+        logFile);
   }
 
 }

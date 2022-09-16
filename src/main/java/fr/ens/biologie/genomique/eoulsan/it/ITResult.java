@@ -25,7 +25,7 @@ package fr.ens.biologie.genomique.eoulsan.it;
 
 import static com.google.common.io.Files.newWriter;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toTimeHumanReadable;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toTimeHumanReadable;
 
 import java.io.File;
 import java.io.IOException;

@@ -29,7 +29,6 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
@@ -40,10 +39,11 @@ import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
+import fr.ens.biologie.genomique.eoulsan.util.EoulsanDockerManager;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
-import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
-import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import fr.ens.biologie.genomique.kenetre.util.process.SimpleProcess;
 
 /**
  * This class defines the macs2 peak-calling step. Handle multiple experiments
@@ -319,7 +319,7 @@ public class MACS2Module extends AbstractModule {
         getLogger().info("Run command line : " + commandLine2);
         try {
           final SimpleProcess process =
-              DockerManager.getInstance().createImageInstance(dockerImage);
+              EoulsanDockerManager.getInstance().createImageInstance(dockerImage);
           final int exitValue = process.execute(commandLine,
               context.getStepOutputDirectory().toFile(),
               context.getLocalTempDirectory(), stdoutFile, stderrFile,

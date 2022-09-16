@@ -45,15 +45,15 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
-import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
-import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.MultiReadFilter;
-import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
+import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
+import fr.ens.biologie.genomique.kenetre.bio.ReadSequence;
+import fr.ens.biologie.genomique.kenetre.KenetreException;
+import fr.ens.biologie.genomique.kenetre.bio.readfilter.MultiReadFilter;
+import fr.ens.biologie.genomique.kenetre.bio.readfilter.MultiReadFilterBuilder;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopReporterIncrementer;
 
 /**
@@ -132,7 +132,7 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
       getLogger().info("Reads filters to apply: "
           + Joiner.on(", ").join(this.filter.getFilterNames()));
 
-    } catch (EoulsanException e) {
+    } catch (KenetreException e) {
       throw new IOException(e);
     }
 

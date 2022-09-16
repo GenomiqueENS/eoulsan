@@ -1,6 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.modules.multiqc;
 
-import fr.ens.biologie.genomique.eoulsan.util.ServiceNameLoader;
+import fr.ens.biologie.genomique.kenetre.util.ServiceNameLoader;
 
 /**
  * This class define a service to retrieve a InputPreprocessor.

@@ -32,7 +32,7 @@ import java.util.Collections;
 
 import org.junit.Test;
 
-import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
+import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 
 public class SampleMetadataTest {
 

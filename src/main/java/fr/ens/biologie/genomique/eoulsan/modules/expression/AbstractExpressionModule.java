@@ -25,11 +25,11 @@
 package fr.ens.biologie.genomique.eoulsan.modules.expression;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.ATTRIBUTE_ID_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.GENOMIC_TYPE_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.OVERLAP_MODE_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.kenetre.bio.expressioncounter.HTSeqCounter.ATTRIBUTE_ID_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.kenetre.bio.expressioncounter.HTSeqCounter.GENOMIC_TYPE_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.kenetre.bio.expressioncounter.HTSeqCounter.OVERLAP_MODE_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.kenetre.bio.expressioncounter.HTSeqCounter.REMOVE_AMBIGUOUS_CASES_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.kenetre.bio.expressioncounter.HTSeqCounter.SPLIT_ATTRIBUTE_VALUES_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.core.Modules.renamedParameter;
 import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
@@ -43,16 +43,17 @@ import java.util.Set;
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.ExpressionCounter;
-import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.ExpressionCounterService;
-import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter;
+import fr.ens.biologie.genomique.kenetre.KenetreException;
+import fr.ens.biologie.genomique.kenetre.bio.expressioncounter.ExpressionCounter;
+import fr.ens.biologie.genomique.kenetre.bio.expressioncounter.ExpressionCounterService;
+import fr.ens.biologie.genomique.kenetre.bio.expressioncounter.HTSeqCounter;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.modules.CheckerModule;
 
@@ -274,7 +275,7 @@ public abstract class AbstractExpressionModule extends AbstractModule {
       default:
         try {
           this.counter.setParameter(p.getName(), p.getValue());
-        } catch (EoulsanException e) {
+        } catch (KenetreException e) {
           throw new EoulsanException("The invalid value ("
               + p.getValue() + ") for \"" + p.getName()
               + "\" parameter in the \"" + context.getCurrentStep().getId()
@@ -284,8 +285,12 @@ public abstract class AbstractExpressionModule extends AbstractModule {
 
     }
 
-    // Check the counter configuration
-    this.counter.checkConfiguration();
+    try {
+      // Check the counter configuration
+      this.counter.checkConfiguration();
+    } catch (KenetreException e) {
+      throw new EoulsanException(e);
+    }
 
     // Configure Checker
     if (context.getRuntime().getMode() != EoulsanExecMode.CLUSTER_TASK) {

@@ -32,7 +32,7 @@ import java.lang.management.ManagementFactory;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 
 /**
  * This class define a lock to prevent execution of a process simultaneously on

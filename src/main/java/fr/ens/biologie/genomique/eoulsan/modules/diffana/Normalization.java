@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toCompactTime;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toCompactTime;
 import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
@@ -48,7 +48,7 @@ import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
-import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 import fr.ens.biologie.genomique.eoulsan.util.r.RSConnection;
 

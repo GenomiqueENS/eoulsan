@@ -51,7 +51,7 @@ import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Main;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.Executor;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.ExecutorArguments;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 
 /**
  * This class define an action that allow to execute a jar on an Hadoop cluster.

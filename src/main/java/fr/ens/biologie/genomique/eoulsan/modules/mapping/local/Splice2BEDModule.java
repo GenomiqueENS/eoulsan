@@ -1,13 +1,10 @@
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.local;
 
-import static fr.ens.biologie.genomique.eoulsan.bio.SAMUtils.parseIntervalsToBEDEntry;
+import static fr.ens.biologie.genomique.kenetre.bio.SAMUtils.parseIntervalsToBEDEntry;
 
 import java.io.IOException;
 
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
-import fr.ens.biologie.genomique.eoulsan.bio.BEDEntry;
-import fr.ens.biologie.genomique.eoulsan.bio.EntryMetadata;
-import fr.ens.biologie.genomique.eoulsan.bio.io.BEDWriter;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
@@ -15,8 +12,11 @@ import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractSplice2BEDModule;
-import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
-import fr.ens.biologie.genomique.eoulsan.util.Reporter;
+import fr.ens.biologie.genomique.kenetre.bio.BEDEntry;
+import fr.ens.biologie.genomique.kenetre.bio.EntryMetadata;
+import fr.ens.biologie.genomique.kenetre.bio.io.BEDWriter;
+import fr.ens.biologie.genomique.kenetre.util.LocalReporter;
+import fr.ens.biologie.genomique.kenetre.util.Reporter;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SamInputResource;
 import htsjdk.samtools.SamReader;

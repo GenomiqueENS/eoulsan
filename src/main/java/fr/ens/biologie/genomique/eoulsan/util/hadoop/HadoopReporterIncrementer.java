@@ -28,7 +28,7 @@ import static java.util.Objects.requireNonNull;
 
 import org.apache.hadoop.mapreduce.TaskInputOutputContext;
 
-import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
+import fr.ens.biologie.genomique.kenetre.util.ReporterIncrementer;
 
 /**
  * This class define a Hadoop reporter.

@@ -23,7 +23,7 @@
  */
 package fr.ens.biologie.genomique.eoulsan.io.comparators;
 
-import static fr.ens.biologie.genomique.eoulsan.io.CompressionType.getCompressionTypeByFilename;
+import static fr.ens.biologie.genomique.kenetre.io.CompressionType.getCompressionTypeByFilename;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 

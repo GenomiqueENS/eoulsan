@@ -47,7 +47,7 @@ import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSampleMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
-import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
+import fr.ens.biologie.genomique.kenetre.util.GuavaCompatibility;
 
 /**
  * This class define a design reader for Eoulsan 2 design file.

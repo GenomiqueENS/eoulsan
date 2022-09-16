@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+
 /**
  * This class define a linux info file parser.
  * @since 1.0

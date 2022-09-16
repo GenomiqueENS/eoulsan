@@ -29,7 +29,7 @@ import static java.util.Objects.requireNonNull;
 import java.io.Serializable;
 import java.util.List;
 
-import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
+import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 
 /**
  * This class defines the default implementation of the sample metadata.

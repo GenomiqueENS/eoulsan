@@ -25,9 +25,9 @@
 package fr.ens.biologie.genomique.eoulsan.modules.mgmt.upload;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.io.CompressionType.BZIP2;
-import static fr.ens.biologie.genomique.eoulsan.io.CompressionType.removeCompressionExtension;
-import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.compressionExtension;
+import static fr.ens.biologie.genomique.kenetre.io.CompressionType.BZIP2;
+import static fr.ens.biologie.genomique.kenetre.io.CompressionType.removeCompressionExtension;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.compressionExtension;
 
 import java.io.IOException;
 import java.util.Map;
@@ -39,7 +39,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatConverter;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
-import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 
 /**
  * This class define a Step for local mode file uploading.

@@ -30,16 +30,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
-import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
-import fr.ens.biologie.genomique.eoulsan.bio.io.FastqReader;
-import fr.ens.biologie.genomique.eoulsan.bio.io.FastqWriter;
-import fr.ens.biologie.genomique.eoulsan.bio.io.ReadSequenceReader;
-import fr.ens.biologie.genomique.eoulsan.bio.io.ReadSequenceWriter;
-import fr.ens.biologie.genomique.eoulsan.bio.io.TFQReader;
-import fr.ens.biologie.genomique.eoulsan.bio.io.TFQWriter;
-import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
-import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import fr.ens.biologie.genomique.kenetre.bio.BadBioEntryException;
+import fr.ens.biologie.genomique.kenetre.bio.ReadSequence;
+import fr.ens.biologie.genomique.kenetre.bio.io.FastqReader;
+import fr.ens.biologie.genomique.kenetre.bio.io.FastqWriter;
+import fr.ens.biologie.genomique.kenetre.bio.io.ReadSequenceReader;
+import fr.ens.biologie.genomique.kenetre.bio.io.ReadSequenceWriter;
+import fr.ens.biologie.genomique.kenetre.bio.io.TFQReader;
+import fr.ens.biologie.genomique.kenetre.bio.io.TFQWriter;
 
 /**
  * This class allow to copy and transform data while copying.

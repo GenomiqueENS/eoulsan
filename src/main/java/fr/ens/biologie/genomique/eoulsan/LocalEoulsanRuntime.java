@@ -31,7 +31,7 @@ import java.io.OutputStream;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 
-import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 
 /**
  * This class define the Runtime to execute low level IO operation for Eoulsan

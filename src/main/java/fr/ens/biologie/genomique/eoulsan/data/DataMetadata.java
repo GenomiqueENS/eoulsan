@@ -26,7 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.data;
 
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
+import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
 

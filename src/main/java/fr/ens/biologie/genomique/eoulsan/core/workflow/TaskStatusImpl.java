@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.eoulsan.util.Reporter;
+import fr.ens.biologie.genomique.kenetre.util.Reporter;
 
 /**
  * This class define a task status.

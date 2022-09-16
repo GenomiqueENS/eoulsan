@@ -1,9 +1,0 @@
-fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.RemoveUnmappedReadAlignmentsFilter
-fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.RemoveMultiMatchesReadAlignmentsFilter
-fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.KeepOneMatchReadAlignmentsFilter
-fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.QualityReadAlignmentsFilter
-fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.KeepNumberMatchReadAlignmentsFilter
-fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.DistanceFromReferenceReadAlignmentsFilter
-fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.GSNAPReadAlignmentsFilter
-fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.SupplementaryAlignmentRemoveFlagReadAlignmentsFilter
-fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.SecondaryAlignmentRemoveFlagReadAlignmentsFilter

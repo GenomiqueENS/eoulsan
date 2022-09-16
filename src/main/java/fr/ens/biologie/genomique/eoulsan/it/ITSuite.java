@@ -25,8 +25,8 @@ package fr.ens.biologie.genomique.eoulsan.it;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.LocalEoulsanRuntime.initEoulsanRuntimeForExternalApp;
-import static fr.ens.biologie.genomique.eoulsan.util.FileUtils.checkExistingDirectoryFile;
-import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toTimeHumanReadable;
+import static fr.ens.biologie.genomique.kenetre.io.FileUtils.checkExistingDirectoryFile;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toTimeHumanReadable;
 import static java.nio.file.Files.createSymbolicLink;
 
 import java.io.File;

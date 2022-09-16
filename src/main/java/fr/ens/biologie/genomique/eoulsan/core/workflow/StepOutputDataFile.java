@@ -25,8 +25,8 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toLetter;
-import static fr.ens.biologie.genomique.eoulsan.util.Utils.equal;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toLetter;
+import static fr.ens.biologie.genomique.kenetre.util.Utils.equal;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
@@ -40,7 +40,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
-import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 
 /**
  * This class define an output file of workflow set.

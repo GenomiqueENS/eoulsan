@@ -23,7 +23,7 @@
  */
 package fr.ens.biologie.genomique.eoulsan.io.comparators;
 
-import static fr.ens.biologie.genomique.eoulsan.io.CompressionType.getCompressionTypeByFilename;
+import static fr.ens.biologie.genomique.kenetre.io.CompressionType.getCompressionTypeByFilename;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,7 +33,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.util.EnhancedBloomFilter;
 
 /**

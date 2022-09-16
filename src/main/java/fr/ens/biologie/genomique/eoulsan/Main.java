@@ -26,7 +26,7 @@ package fr.ens.biologie.genomique.eoulsan;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.Globals.MINIMAL_JAVA_VERSION_REQUIRED;
-import static fr.ens.biologie.genomique.eoulsan.util.SystemUtils.getJavaVersion;
+import static fr.ens.biologie.genomique.kenetre.util.SystemUtils.getJavaVersion;
 import static java.util.Collections.unmodifiableList;
 
 import java.io.File;

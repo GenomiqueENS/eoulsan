@@ -32,7 +32,7 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 
-import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 
 /**
  * This class define an InputStream that concatenate files in an InputStream.

@@ -35,7 +35,7 @@ import org.apache.hadoop.mapreduce.TaskInputOutputContext;
 
 import com.google.common.collect.Sets;
 
-import fr.ens.biologie.genomique.eoulsan.util.Reporter;
+import fr.ens.biologie.genomique.kenetre.util.Reporter;
 
 /**
  * This class define a Hadoop reporter.

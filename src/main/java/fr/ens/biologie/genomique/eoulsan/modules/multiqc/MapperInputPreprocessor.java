@@ -1,6 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.modules.multiqc;
 
-import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.filenameWithoutExtension;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.filenameWithoutExtension;
 
 import java.io.File;
 import java.io.IOException;

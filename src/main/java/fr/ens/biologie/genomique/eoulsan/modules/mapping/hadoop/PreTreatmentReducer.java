@@ -33,7 +33,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
+import fr.ens.biologie.genomique.kenetre.bio.ReadSequence;
 
 /**
  * This class define a reducer for the pretreatment of paired-end data before

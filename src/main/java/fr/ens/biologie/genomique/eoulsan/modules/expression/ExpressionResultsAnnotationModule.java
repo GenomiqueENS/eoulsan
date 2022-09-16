@@ -31,7 +31,7 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATED_EXPRE
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATED_EXPRESSION_RESULTS_XLSX;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
-import static fr.ens.biologie.genomique.eoulsan.translators.TranslatorUtils.loadTranslator;
+import static fr.ens.biologie.genomique.eoulsan.util.EoulsanTranslatorUtils.loadTranslator;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -57,17 +57,17 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
-import fr.ens.biologie.genomique.eoulsan.translators.Translator;
-import fr.ens.biologie.genomique.eoulsan.translators.TranslatorUtils;
-import fr.ens.biologie.genomique.eoulsan.translators.io.ODSTranslatorOutputFormat;
-import fr.ens.biologie.genomique.eoulsan.translators.io.TSVTranslatorOutputFormat;
-import fr.ens.biologie.genomique.eoulsan.translators.io.TranslatorOutputFormat;
-import fr.ens.biologie.genomique.eoulsan.translators.io.XLSXTranslatorOutputFormat;
+import fr.ens.biologie.genomique.eoulsan.util.EoulsanTranslatorUtils;
+import fr.ens.biologie.genomique.kenetre.translator.Translator;
+import fr.ens.biologie.genomique.kenetre.translator.TranslatorUtils;
+import fr.ens.biologie.genomique.kenetre.translator.io.TSVTranslatorOutputFormat;
+import fr.ens.biologie.genomique.kenetre.translator.io.TranslatorOutputFormat;
+import fr.ens.biologie.genomique.kenetre.translator.io.XLSXTranslatorOutputFormat;
 
 /**
  * This class define a module that create annotated expression files in TSV, ODS
@@ -224,7 +224,7 @@ public class ExpressionResultsAnnotationModule extends AbstractModule {
 
     // Get hypertext links file
     final DataFile linksFile =
-        TranslatorUtils.getLinksFileFromSettings(context.getSettings());
+        EoulsanTranslatorUtils.getLinksFileFromSettings(context.getSettings());
 
     // Load translator
     final Translator translator;
@@ -241,7 +241,7 @@ public class ExpressionResultsAnnotationModule extends AbstractModule {
             loadTranslator(additionalAnnotationData.getDataFile(), linksFile);
       } else {
         // Create translator without additional annotation file
-        translator = TranslatorUtils.loadTranslator(linksFile);
+        translator = loadTranslator(linksFile);
       }
 
     } catch (IOException e) {
@@ -273,8 +273,6 @@ public class ExpressionResultsAnnotationModule extends AbstractModule {
         if (format == ANNOTATED_EXPRESSION_RESULTS_XLSX) {
           of = new XLSXTranslatorOutputFormat(outFile.create(),
               context.getLocalTempDirectory());
-        } else if (format == ANNOTATED_EXPRESSION_RESULTS_ODS) {
-          of = new ODSTranslatorOutputFormat(outFile.create());
         } else {
           of = new TSVTranslatorOutputFormat(outFile.create());
         }

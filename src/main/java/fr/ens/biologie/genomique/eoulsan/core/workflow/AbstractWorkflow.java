@@ -31,7 +31,7 @@ import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.PARTIALLY_DO
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.READY;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WAITING;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
-import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.stackTraceToString;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.stackTraceToString;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -69,8 +69,8 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.io.DesignWriter;
 import fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignWriter;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
-import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.process.DockerManager;
 
 /**
  * This class define a Workflow. This class must be extended by a class to be

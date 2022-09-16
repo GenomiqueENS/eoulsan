@@ -26,9 +26,9 @@ package fr.ens.biologie.genomique.eoulsan.data.storages;
 
 import java.util.Map;
 
-import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperInstance;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.kenetre.bio.GenomeDescription;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstance;
 
 /**
  * This interface define a genome index storage.

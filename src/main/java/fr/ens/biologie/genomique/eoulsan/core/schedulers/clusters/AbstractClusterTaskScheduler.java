@@ -53,7 +53,7 @@ import fr.ens.biologie.genomique.eoulsan.core.schedulers.AbstractTaskScheduler;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResultImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskRunner;
-import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 
 /**
  * This class is a scheduler for task running on a cluster.

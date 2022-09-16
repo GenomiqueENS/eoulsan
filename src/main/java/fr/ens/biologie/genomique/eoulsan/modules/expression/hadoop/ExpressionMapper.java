@@ -46,12 +46,13 @@ import org.apache.hadoop.mapreduce.Mapper;
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
-import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
-import fr.ens.biologie.genomique.eoulsan.bio.SAMUtils;
-import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.ExpressionCounter;
-import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopReporterIncrementer;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.PathUtils;
+import fr.ens.biologie.genomique.kenetre.KenetreException;
+import fr.ens.biologie.genomique.kenetre.bio.GenomeDescription;
+import fr.ens.biologie.genomique.kenetre.bio.SAMUtils;
+import fr.ens.biologie.genomique.kenetre.bio.expressioncounter.ExpressionCounter;
+import fr.ens.biologie.genomique.kenetre.util.ReporterIncrementer;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFormatException;
 import htsjdk.samtools.SAMLineParser;
@@ -204,7 +205,7 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, LongWritable> {
         context.write(this.outKey, this.outValue);
       }
 
-    } catch (SAMFormatException | EoulsanException e) {
+    } catch (SAMFormatException | KenetreException | EoulsanException e) {
 
       context.getCounter(this.counterGroup,
           INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);

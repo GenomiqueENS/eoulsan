@@ -50,7 +50,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeDebug;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.DataToolElement;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElement;
-import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
+import fr.ens.biologie.genomique.kenetre.util.GuavaCompatibility;
 
 /**
  * The class define unit tests on GalaxyToolStep, it check if the command line

@@ -29,7 +29,7 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GTF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_FASTA;
-import static fr.ens.biologie.genomique.eoulsan.util.FileUtils.computeMD5Sum;
+import static fr.ens.biologie.genomique.kenetre.io.FileUtils.computeMD5Sum;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -45,9 +45,6 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.Generator;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
-import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.STARMapperProvider;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
@@ -59,15 +56,20 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
+import fr.ens.biologie.genomique.eoulsan.data.MapperIndexDataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.protocols.DataProtocol;
 import fr.ens.biologie.genomique.eoulsan.data.protocols.StorageDataProtocol;
-import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule;
+import fr.ens.biologie.genomique.kenetre.bio.expressioncounter.HTSeqCounter;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.Mapper;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperBuilder;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.STARMapperProvider;
 
 /**
  * This class define a module that generate a STAR mapper index.
@@ -80,8 +82,9 @@ public class STARIndexGeneratorModule extends AbstractModule {
 
   public static final String MODULE_NAME = "starindexgenerator";
 
-  private final Mapper mapper = Mapper.newMapper(STARMapperProvider.MAPPER_NAME,
-      getGenericLogger());
+  private final Mapper mapper =
+      new MapperBuilder(STARMapperProvider.MAPPER_NAME)
+          .withLogger(getGenericLogger()).build();
 
   private Integer overhang = null;
   private boolean gtfFile;
@@ -129,7 +132,8 @@ public class STARIndexGeneratorModule extends AbstractModule {
 
   @Override
   public OutputPorts getOutputPorts() {
-    return OutputPortsBuilder.singleOutputPort(this.mapper.getArchiveFormat());
+    return OutputPortsBuilder
+        .singleOutputPort(new MapperIndexDataFormat(this.mapper));
   }
 
   @Override

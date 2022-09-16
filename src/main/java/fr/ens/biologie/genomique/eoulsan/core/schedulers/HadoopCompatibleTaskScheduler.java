@@ -29,7 +29,7 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_DATA_EXTENSION;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_DONE_EXTENSION;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_RESULT_EXTENSION;
-import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toTimeHumanReadable;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toTimeHumanReadable;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;

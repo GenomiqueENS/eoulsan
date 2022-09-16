@@ -41,16 +41,16 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 import com.google.common.base.Joiner;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.bio.SAMComparator;
-import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
-import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
-import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopReporterIncrementer;
+import fr.ens.biologie.genomique.kenetre.KenetreException;
+import fr.ens.biologie.genomique.kenetre.bio.SAMComparator;
+import fr.ens.biologie.genomique.kenetre.bio.alignmentfilter.MultiReadAlignmentFilter;
+import fr.ens.biologie.genomique.kenetre.bio.alignmentfilter.MultiReadAlignmentFilterBuilder;
+import fr.ens.biologie.genomique.kenetre.bio.alignmentfilter.ReadAlignmentFilterBuffer;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMLineParser;
 import htsjdk.samtools.SAMRecord;
@@ -69,7 +69,7 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
   private final SAMLineParser parser = new SAMLineParser(new SAMFileHeader());
   private String counterGroup;
-  private MultiReadAlignmentsFilter filter;
+  private MultiReadAlignmentFilter filter;
 
   private final Text outKey = new Text();
   private final Text outValue = new Text();
@@ -98,19 +98,19 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
     // Set the filters
     try {
-      final MultiReadAlignmentsFilterBuilder mrafb =
-          new MultiReadAlignmentsFilterBuilder();
+      final MultiReadAlignmentFilterBuilder mrafb =
+          new MultiReadAlignmentFilterBuilder();
 
       // Add the parameters from the job configuration to the builder
       mrafb.addParameters(
           jobConfToParameters(conf, MAP_FILTER_PARAMETER_KEY_PREFIX));
 
-      this.filter = mrafb.getAlignmentsFilter(
+      this.filter = mrafb.getAlignmentFilter(
           new HadoopReporterIncrementer(context), this.counterGroup);
       getLogger().info("Read alignments filters to apply: "
           + Joiner.on(", ").join(this.filter.getFilterNames()));
 
-    } catch (EoulsanException e) {
+    } catch (KenetreException e) {
       throw new IOException(e);
     }
 
@@ -140,8 +140,8 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
       final Context context) throws IOException, InterruptedException {
 
     // Creation of a buffer object to store alignments with the same read name
-    final ReadAlignmentsFilterBuffer rafb =
-        new ReadAlignmentsFilterBuffer(this.filter);
+    final ReadAlignmentFilterBuffer rafb =
+        new ReadAlignmentFilterBuffer(this.filter);
 
     int cptRecords = 0;
     String strRecord = null;

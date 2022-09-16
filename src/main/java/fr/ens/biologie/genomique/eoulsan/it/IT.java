@@ -35,9 +35,9 @@ import static fr.ens.biologie.genomique.eoulsan.it.ITFactory.RUNTIME_IT_MAXIMUM_
 import static fr.ens.biologie.genomique.eoulsan.it.ITFactory.SUCCESS_IT_DELETE_FILE_CONF_KEY;
 import static fr.ens.biologie.genomique.eoulsan.it.ITFactory.evaluateExpressions;
 import static fr.ens.biologie.genomique.eoulsan.it.ITSuite.createRelativeOrAbsoluteSymbolicLink;
-import static fr.ens.biologie.genomique.eoulsan.util.FileUtils.checkExistingDirectoryFile;
-import static fr.ens.biologie.genomique.eoulsan.util.FileUtils.checkExistingFile;
-import static fr.ens.biologie.genomique.eoulsan.util.FileUtils.recursiveDelete;
+import static fr.ens.biologie.genomique.kenetre.io.FileUtils.checkExistingDirectoryFile;
+import static fr.ens.biologie.genomique.kenetre.io.FileUtils.checkExistingFile;
+import static fr.ens.biologie.genomique.kenetre.io.FileUtils.recursiveDelete;
 
 import java.io.BufferedReader;
 import java.io.File;

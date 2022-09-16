@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
+import fr.ens.biologie.genomique.kenetre.log.GenericLogger;
 
 public interface StepConfigurationContext {
 

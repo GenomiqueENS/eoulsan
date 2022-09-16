@@ -26,12 +26,12 @@ package fr.ens.biologie.genomique.eoulsan.modules.generators;
 
 import java.io.IOException;
 
-import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
-import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.checkers.CheckStore;
 import fr.ens.biologie.genomique.eoulsan.checkers.GenomeChecker;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.storages.GenomeDescStorage;
+import fr.ens.biologie.genomique.kenetre.bio.BadBioEntryException;
+import fr.ens.biologie.genomique.kenetre.bio.GenomeDescription;
 
 /**
  * This class define a genome description creator.

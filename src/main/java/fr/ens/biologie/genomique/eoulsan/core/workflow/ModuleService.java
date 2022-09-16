@@ -27,7 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
-import fr.ens.biologie.genomique.eoulsan.util.ServiceNameLoader;
+import fr.ens.biologie.genomique.kenetre.util.ServiceNameLoader;
 
 /**
  * This class allow to get a Step object from a class in the classpath.

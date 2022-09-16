@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.util.Utils;
+import fr.ens.biologie.genomique.kenetre.util.Utils;
 
 /**
  * This class define a server for the scheduler.

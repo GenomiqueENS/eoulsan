@@ -33,12 +33,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperInstance;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
 import fr.ens.biologie.genomique.eoulsan.data.storages.GenomeIndexStorage;
 import fr.ens.biologie.genomique.eoulsan.data.storages.SimpleGenomeIndexStorage;
+import fr.ens.biologie.genomique.kenetre.bio.GenomeDescription;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstance;
 
 /**
  * This class define a genome mapper indexer.

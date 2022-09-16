@@ -44,9 +44,9 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
-import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
-import fr.ens.biologie.genomique.eoulsan.util.Utils;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import fr.ens.biologie.genomique.kenetre.util.Utils;
+import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 
 /**
  * This class define a settings class.

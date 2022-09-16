@@ -25,7 +25,9 @@
 package fr.ens.biologie.genomique.eoulsan.modules.mapping;
 
 import static fr.ens.biologie.genomique.eoulsan.CommonHadoop.HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getGenericLogger;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.EoulsanRuntime.getSettings;
 import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
@@ -34,13 +36,16 @@ import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.Mapper;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperBuilder;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstanceBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 
 /**
@@ -278,20 +283,28 @@ public abstract class AbstractReadsMapperModule extends AbstractModule {
       Modules.invalidConfiguration(context, "No mapper set");
     }
 
-    // Create a Mapper object
-    this.mapper = Mapper.newMapper(mapperName, context.getGenericLogger());
-
-    // Check if the mapper wrapper has been found
-    if (mapper == null) {
-      Modules.invalidConfiguration(context, "Unknown mapper: " + mapperName);
-    }
-
-    // Check if the binary for the mapper is available
     try {
+      // Create a Mapper object
+      this.mapper = new MapperBuilder(mapperName).withLogger(getGenericLogger())
+          .withApplicationName(Globals.APP_NAME)
+          .withApplicationVersion(Globals.APP_VERSION_STRING)
+          .withTempDirectory(getSettings().getTempDirectoryFile())
+          .withExecutablesTempDirectory(
+              EoulsanRuntime.getSettings().getExecutablesTempDirectoryFile())
+          .build();
+
+      // Check if the mapper wrapper has been found
+      if (mapper == null) {
+        Modules.invalidConfiguration(context, "Unknown mapper: " + mapperName);
+      }
+
+      // Check if the binary for the mapper is available
 
       // Create a new instance of the mapper for required version and flavor
-      this.mapper.newMapperInstance(this.mapperVersion, this.mapperFlavor,
-          this.useBundledBinaries, this.mapperDockerImage);
+      new MapperInstanceBuilder(this.mapper)
+          .withMapperVersion(this.mapperVersion)
+          .withMapperFlavor(this.mapperFlavor).withUseBundledBinaries(true)
+          .withDockerImage(this.mapperDockerImage).build();
 
       // Check if the mapper is not only a generator
       if (mapper.isIndexGeneratorOnly()) {

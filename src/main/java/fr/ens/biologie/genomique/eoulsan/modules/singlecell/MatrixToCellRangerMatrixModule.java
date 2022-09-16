@@ -1,6 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.modules.singlecell;
 
-import static fr.ens.biologie.genomique.eoulsan.bio.io.CellRangerExpressionMatrixWriter.DEFAULT_FEATURE_TYPE;
+import static fr.ens.biologie.genomique.kenetre.bio.io.CellRangerExpressionMatrixWriter.DEFAULT_FEATURE_TYPE;
 import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.noOutputPort;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ADDITIONAL_ANNOTATION_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_MATRIX_TSV;
@@ -14,11 +14,6 @@ import java.util.Set;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
-import fr.ens.biologie.genomique.eoulsan.bio.AnnotationMatrix;
-import fr.ens.biologie.genomique.eoulsan.bio.ExpressionMatrix;
-import fr.ens.biologie.genomique.eoulsan.bio.io.AnnotationMatrixReader;
-import fr.ens.biologie.genomique.eoulsan.bio.io.CellRangerExpressionMatrixWriter;
-import fr.ens.biologie.genomique.eoulsan.bio.io.TSVAnnotationMatrixReader;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
@@ -28,9 +23,14 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
+import fr.ens.biologie.genomique.kenetre.bio.AnnotationMatrix;
+import fr.ens.biologie.genomique.kenetre.bio.ExpressionMatrix;
+import fr.ens.biologie.genomique.kenetre.bio.io.AnnotationMatrixReader;
+import fr.ens.biologie.genomique.kenetre.bio.io.CellRangerExpressionMatrixWriter;
+import fr.ens.biologie.genomique.kenetre.bio.io.TSVAnnotationMatrixReader;
 
 /**
  * This class define a class that allow to create a Cell Ranger matrix from an

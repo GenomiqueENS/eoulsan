@@ -34,19 +34,20 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
-import fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.ExpressionCounter;
-import fr.ens.biologie.genomique.eoulsan.bio.io.CountsWriter;
-import fr.ens.biologie.genomique.eoulsan.bio.io.TSVCountsWriter;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule;
-import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
-import fr.ens.biologie.genomique.eoulsan.util.Reporter;
+import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounterUtils;
+import fr.ens.biologie.genomique.kenetre.KenetreException;
+import fr.ens.biologie.genomique.kenetre.bio.expressioncounter.ExpressionCounter;
+import fr.ens.biologie.genomique.kenetre.bio.io.CountsWriter;
+import fr.ens.biologie.genomique.kenetre.bio.io.TSVCountsWriter;
+import fr.ens.biologie.genomique.kenetre.util.LocalReporter;
+import fr.ens.biologie.genomique.kenetre.util.Reporter;
 
 /**
  * This class is the module to compute expression in local mode
@@ -88,7 +89,9 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
       // Get final expression file
       final DataFile expressionFile = expressionData.getDataFile();
 
-      counter.init(genomeDescFile, annotationFile, isGTFInputFormat());
+      // Initialize the counter
+      ExpressionCounterUtils.init(counter, genomeDescFile, annotationFile,
+          isGTFInputFormat());
 
       final String sampleCounterHeader = "Expression computation with "
           + counter.getName() + " (" + alignmentData.getName() + ", "
@@ -105,7 +108,8 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
             context.getLocalTempDirectory(), reporter, COUNTER_GROUP);
       } else {
         // Launch counting
-        result = counter.count(alignmentFile, reporter, COUNTER_GROUP);
+        result = ExpressionCounterUtils.count(counter, alignmentFile, reporter,
+            COUNTER_GROUP);
 
         // Add features with zero count
         counter.addZeroCountFeatures(result);
@@ -129,7 +133,7 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
     } catch (IOException e) {
       return status.createTaskResult(e,
           "Error while computing expression: " + e.getMessage());
-    } catch (EoulsanException e) {
+    } catch (KenetreException e) {
       return status.createTaskResult(e,
           "Error while reading the annotation file: " + e.getMessage());
     }

@@ -13,7 +13,7 @@ import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUtils;
 import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.ModuleRegistry;
 import fr.ens.biologie.genomique.eoulsan.modules.GalaxyToolModule;
 

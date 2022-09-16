@@ -54,7 +54,7 @@ import fr.ens.biologie.genomique.eoulsan.io.comparators.LogComparator;
 import fr.ens.biologie.genomique.eoulsan.io.comparators.SAMComparator;
 import fr.ens.biologie.genomique.eoulsan.io.comparators.TextComparator;
 import fr.ens.biologie.genomique.eoulsan.it.ITOutputComparisonResult.StatusComparison;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 
 /**
  * The class manage the output directory of the integrated test for the

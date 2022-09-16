@@ -48,8 +48,8 @@ import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.util.ClassPathResourceLoader;
 import fr.ens.biologie.genomique.eoulsan.util.FileResourceLoader;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
-import fr.ens.biologie.genomique.eoulsan.util.Utils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.Utils;
 
 /**
  * this class register DataFormat to allow get the DataFormat of a file from its

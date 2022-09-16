@@ -34,18 +34,19 @@ import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
-import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilterBuilder;
-import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.QualityReadAlignmentsFilter;
+import fr.ens.biologie.genomique.kenetre.KenetreException;
+import fr.ens.biologie.genomique.kenetre.bio.alignmentfilter.MultiReadAlignmentFilter;
+import fr.ens.biologie.genomique.kenetre.bio.alignmentfilter.MultiReadAlignmentFilterBuilder;
+import fr.ens.biologie.genomique.kenetre.bio.alignmentfilter.QualityReadAlignmentFilter;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
-import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import fr.ens.biologie.genomique.kenetre.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
-import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
+import fr.ens.biologie.genomique.kenetre.util.ReporterIncrementer;
 
 /**
  * This class define an abstract module for alignments filtering.
@@ -117,31 +118,35 @@ public abstract class AbstractSAMFilterModule extends AbstractModule {
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
 
-    final MultiReadAlignmentsFilterBuilder filterBuilder =
-        new MultiReadAlignmentsFilterBuilder(context.getGenericLogger());
+    try {
+      final MultiReadAlignmentFilterBuilder filterBuilder =
+          new MultiReadAlignmentFilterBuilder(context.getGenericLogger());
 
-    for (Parameter p : stepParameters) {
+      for (Parameter p : stepParameters) {
 
-      // Check if the parameter is deprecated
-      checkDeprecatedParameter(context, p);
+        // Check if the parameter is deprecated
+        checkDeprecatedParameter(context, p);
 
-      switch (p.getName()) {
+        switch (p.getName()) {
 
-      case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
-        this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
-        break;
+        case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
+          this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
+          break;
 
-      default:
+        default:
 
-        filterBuilder.addParameter(p.getName(), p.getStringValue());
-        break;
+          filterBuilder.addParameter(p.getName(), p.getStringValue());
+          break;
+        }
       }
+
+      // Force parameter checking
+      filterBuilder.getAlignmentFilter();
+
+      this.alignmentsFiltersParameters = filterBuilder.getParameters();
+    } catch (KenetreException e) {
+      throw new EoulsanException(e);
     }
-
-    // Force parameter checking
-    filterBuilder.getAlignmentsFilter();
-
-    this.alignmentsFiltersParameters = filterBuilder.getParameters();
   }
 
   //
@@ -167,7 +172,7 @@ public abstract class AbstractSAMFilterModule extends AbstractModule {
     case "mappingquality":
     case "mappingquality.threshold":
       Modules.renamedParameter(context, parameter,
-          QualityReadAlignmentsFilter.FILTER_NAME + ".threshold", true);
+          QualityReadAlignmentFilter.FILTER_NAME + ".threshold", true);
 
     default:
       break;
@@ -183,16 +188,20 @@ public abstract class AbstractSAMFilterModule extends AbstractModule {
    * @throws EoulsanException if an error occurs while initialize one of the
    *           filter
    */
-  protected MultiReadAlignmentsFilter getAlignmentsFilter(GenericLogger logger,
+  protected MultiReadAlignmentFilter getAlignmentFilter(GenericLogger logger,
       final ReporterIncrementer incrementer, final String counterGroup)
       throws EoulsanException {
 
-    // As filters are not thread safe, create a new
-    // MultiReadAlignmentsFilterBuilder
-    // with a new instance of each filter
-    return new MultiReadAlignmentsFilterBuilder(logger,
-        this.alignmentsFiltersParameters).getAlignmentsFilter(incrementer,
-            counterGroup);
+    try {
+      // As filters are not thread safe, create a new
+      // MultiReadAlignmentsFilterBuilder
+      // with a new instance of each filter
+      return new MultiReadAlignmentFilterBuilder(logger,
+          this.alignmentsFiltersParameters).getAlignmentFilter(incrementer,
+              counterGroup);
+    } catch (KenetreException e) {
+      throw new EoulsanException(e);
+    }
   }
 
 }

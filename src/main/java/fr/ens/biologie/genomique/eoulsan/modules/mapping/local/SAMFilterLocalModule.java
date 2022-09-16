@@ -39,10 +39,6 @@ import com.google.common.base.Joiner;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
-import fr.ens.biologie.genomique.eoulsan.bio.SAMComparator;
-import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.MultiReadAlignmentsFilter;
-import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilter;
-import fr.ens.biologie.genomique.eoulsan.bio.alignmentsfilters.ReadAlignmentsFilterBuffer;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
@@ -50,8 +46,12 @@ import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractSAMFilterModule;
-import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
-import fr.ens.biologie.genomique.eoulsan.util.Reporter;
+import fr.ens.biologie.genomique.kenetre.bio.SAMComparator;
+import fr.ens.biologie.genomique.kenetre.bio.alignmentfilter.MultiReadAlignmentFilter;
+import fr.ens.biologie.genomique.kenetre.bio.alignmentfilter.ReadAlignmentFilter;
+import fr.ens.biologie.genomique.kenetre.bio.alignmentfilter.ReadAlignmentFilterBuffer;
+import fr.ens.biologie.genomique.kenetre.util.LocalReporter;
+import fr.ens.biologie.genomique.kenetre.util.Reporter;
 import htsjdk.samtools.SAMFileWriter;
 import htsjdk.samtools.SAMFileWriterFactory;
 import htsjdk.samtools.SAMFormatException;
@@ -80,7 +80,7 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
     try {
 
       // Get the read filter
-      final MultiReadAlignmentsFilter filter = getAlignmentsFilter(
+      final MultiReadAlignmentFilter filter = getAlignmentFilter(
           context.getGenericLogger(), reporter, COUNTER_GROUP);
       getLogger().info("Read alignments filters to apply: "
           + Joiner.on(", ").join(filter.getFilterNames()));
@@ -108,7 +108,7 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
    */
   private static void filterSample(final TaskContext context,
       final Reporter reporter, final TaskStatus status,
-      final ReadAlignmentsFilter filter) throws IOException {
+      final ReadAlignmentFilter filter) throws IOException {
 
     // Get input and output data
     final Data inData = context.getInputData(DataFormats.MAPPER_RESULTS_SAM);
@@ -143,7 +143,7 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
    * @throws IOException if an error occurs while filtering data
    */
   private static void filterFile(final DataFile inFile, final DataFile outFile,
-      final Reporter reporter, final ReadAlignmentsFilter filter,
+      final Reporter reporter, final ReadAlignmentFilter filter,
       final File tmpDir) throws IOException {
 
     final List<SAMRecord> records = new ArrayList<>();
@@ -153,8 +153,8 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
     boolean pairedEnd = false;
 
     // Creation of a buffer object to store alignments with the same read name
-    final ReadAlignmentsFilterBuffer rafb =
-        new ReadAlignmentsFilterBuffer(filter);
+    final ReadAlignmentFilterBuffer rafb =
+        new ReadAlignmentFilterBuffer(filter);
 
     getLogger().info("Filter SAM file: " + inFile);
 

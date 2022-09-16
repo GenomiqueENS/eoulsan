@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.requirements;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static fr.ens.biologie.genomique.eoulsan.util.SystemUtils.searchExecutableInPATH;
+import static fr.ens.biologie.genomique.kenetre.util.SystemUtils.searchExecutableInPATH;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Collections;

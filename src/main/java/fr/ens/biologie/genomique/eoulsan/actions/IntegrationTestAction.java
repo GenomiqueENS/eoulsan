@@ -42,7 +42,7 @@ import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.it.ITFactory;
 import fr.ens.biologie.genomique.eoulsan.it.ITSuite;
-import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 
 /**
  * This class launch integration test with Testng class.

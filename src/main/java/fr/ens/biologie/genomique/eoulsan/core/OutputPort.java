@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.core;
 
-import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 
 /**
  * This interface define an output port of a step.

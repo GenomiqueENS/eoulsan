@@ -35,7 +35,8 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.RecordWriter;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
-import fr.ens.biologie.genomique.eoulsan.bio.ReadSequence;
+import fr.ens.biologie.genomique.kenetre.bio.ReadSequence;
+
 
 /**
  * This class define a RecordWriter for FASTQ files.

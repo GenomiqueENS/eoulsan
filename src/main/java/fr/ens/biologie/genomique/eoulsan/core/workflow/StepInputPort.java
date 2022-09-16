@@ -40,7 +40,7 @@ import fr.ens.biologie.genomique.eoulsan.core.SimpleInputPort;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 
 /**
  * This class define a workflow input port. It is like a standard InputPort but

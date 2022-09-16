@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.xmlEscape;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.xmlEscape;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -47,8 +47,8 @@ import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
-import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.SystemUtils;
 
 /**
  * Convert a Workflow to Graphviz

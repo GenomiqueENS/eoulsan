@@ -29,7 +29,7 @@ import static java.util.Objects.requireNonNull;
 import java.io.IOException;
 
 import fr.ens.biologie.genomique.eoulsan.data.protocols.DataProtocol;
-import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 
 /**
  * This class contains utility methods on DataFile objects.

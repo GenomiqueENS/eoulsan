@@ -30,7 +30,7 @@ import java.util.Collection;
 
 import com.google.common.collect.Sets;
 
-import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 
 /**
  * This class allow to compare two binary files.

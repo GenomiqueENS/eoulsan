@@ -1,6 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop;
 
-import static fr.ens.biologie.genomique.eoulsan.bio.io.BioCharsets.SAM_CHARSET;
+import static fr.ens.biologie.genomique.kenetre.bio.io.BioCharsets.SAM_CHARSET;
 import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;

@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
+import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 
 class UnmodifiableSampleMetadata implements SampleMetadata, Serializable {
 

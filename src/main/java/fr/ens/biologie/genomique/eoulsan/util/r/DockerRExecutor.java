@@ -6,8 +6,8 @@ import java.net.URI;
 
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
-import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
-import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
+import fr.ens.biologie.genomique.eoulsan.util.EoulsanDockerManager;
+import fr.ens.biologie.genomique.kenetre.util.process.SimpleProcess;
 
 /**
  * This class define a Docker RExecutor.
@@ -99,7 +99,7 @@ public class DockerRExecutor extends ProcessRExecutor {
   @Override
   protected SimpleProcess createSimpleProcess() throws IOException {
 
-    return DockerManager.getInstance().createImageInstance(this.dockerImage);
+    return EoulsanDockerManager.getInstance().createImageInstance(this.dockerImage);
   }
 
   //

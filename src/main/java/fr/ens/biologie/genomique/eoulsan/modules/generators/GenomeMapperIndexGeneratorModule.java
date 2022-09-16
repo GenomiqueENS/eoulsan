@@ -38,9 +38,6 @@ import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.MapperInstance;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
@@ -52,12 +49,18 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.MapperIndexDataFormat;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractFilterAndMapReadsModule;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsMapperModule;
+import fr.ens.biologie.genomique.kenetre.bio.GenomeDescription;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.Mapper;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperBuilder;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstance;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstanceBuilder;
 
 /**
  * This class define a module that generate a genome mapper index.
@@ -96,7 +99,8 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
 
   @Override
   public OutputPorts getOutputPorts() {
-    return OutputPortsBuilder.singleOutputPort(this.mapper.getArchiveFormat());
+    return OutputPortsBuilder
+        .singleOutputPort(new MapperIndexDataFormat(this.mapper));
   }
 
   @Override
@@ -116,7 +120,7 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
       case "mappername":
         final String mapperName = p.getStringValue();
 
-        this.mapper = Mapper.newMapper(mapperName, getGenericLogger());
+        this.mapper = new MapperBuilder(mapperName).withLogger(getGenericLogger()).build();
 
         if (this.mapper == null) {
           Modules.badParameterValue(context, p, "Unknown mapper");
@@ -177,14 +181,16 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
           "Found more than one mapping step in the workflow");
     }
 
-    // Set mapper temporary directory
-    mapper.setTempDirectory(context.getLocalTempDirectory());
+    // Set mapper temporary and executable temporary directories
+    Mapper newMapper =
+        new MapperBuilder(mapper)
+            .withTempDirectory(context.getLocalTempDirectory())
+            .withExecutablesTempDirectory(
+                context.getSettings().getExecutablesTempDirectoryFile())
+            .build();
 
-    // Set mapper executable temporary directory
-    mapper.setExecutablesTempDirectory(
-        context.getSettings().getExecutablesTempDirectoryFile());
-
-    return mapper.newMapperInstance(version, flavor);
+    return new MapperInstanceBuilder(newMapper).withMapperVersion(version)
+        .withMapperFlavor(flavor).build();
   }
 
   /**
@@ -218,7 +224,7 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
     final Data genomeData = context.getInputData(GENOME_FASTA);
     final Data genomeDescData = context.getInputData(GENOME_DESC_TXT);
     final Data outData =
-        context.getOutputData(mapper.getArchiveFormat(), genomeData);
+        context.getOutputData(new MapperIndexDataFormat(mapper), genomeData);
 
     // Get the genome DataFile
     final DataFile genomeDataFile = genomeData.getDataFile();

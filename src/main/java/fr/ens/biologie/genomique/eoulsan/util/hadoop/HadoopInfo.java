@@ -38,7 +38,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.util.LinuxCpuInfo;
 import fr.ens.biologie.genomique.eoulsan.util.LinuxMemInfo;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 
 /**
  * This class show in log some Hadoop information.

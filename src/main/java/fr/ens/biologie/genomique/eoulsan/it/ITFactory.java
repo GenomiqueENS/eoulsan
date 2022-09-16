@@ -24,8 +24,8 @@
 package fr.ens.biologie.genomique.eoulsan.it;
 
 import static com.google.common.io.Files.newReader;
-import static fr.ens.biologie.genomique.eoulsan.util.FileUtils.checkExistingDirectoryFile;
-import static fr.ens.biologie.genomique.eoulsan.util.FileUtils.checkExistingStandardFile;
+import static fr.ens.biologie.genomique.kenetre.io.FileUtils.checkExistingDirectoryFile;
+import static fr.ens.biologie.genomique.kenetre.io.FileUtils.checkExistingStandardFile;
 
 import java.io.BufferedReader;
 import java.io.File;

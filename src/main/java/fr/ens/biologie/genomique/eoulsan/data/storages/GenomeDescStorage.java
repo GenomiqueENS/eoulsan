@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.data.storages;
 
-import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.kenetre.bio.GenomeDescription;
 
 /**
  * This interface define a genome description storage.

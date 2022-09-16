@@ -28,7 +28,7 @@ import static fr.ens.biologie.genomique.eoulsan.CommonHadoop.createConfiguration
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_TFQ;
-import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.doubleQuotes;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.doubleQuotes;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,7 +58,7 @@ import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
-import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
+import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.FastqInputFormat;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.SAMOutputFormat;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
@@ -72,6 +72,7 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.eoulsan.data.MapperIndexDataFormat;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsMapperModule;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.MapReduceUtils;
 
@@ -88,8 +89,8 @@ public class ReadsMapperHadoopModule extends AbstractReadsMapperModule {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort(READS_PORT_NAME, READS_FASTQ, true);
-    builder.addPort(MAPPER_INDEX_PORT_NAME, getMapper().getArchiveFormat(),
-        true);
+    builder.addPort(MAPPER_INDEX_PORT_NAME,
+        new MapperIndexDataFormat(getMapper()), true);
 
     return builder.create();
   }
@@ -135,7 +136,8 @@ public class ReadsMapperHadoopModule extends AbstractReadsMapperModule {
       final String dataName = readsData.getName();
 
       final DataFile mapperIndexFile =
-          context.getInputData(getMapper().getArchiveFormat()).getDataFile();
+          context.getInputData(new MapperIndexDataFormat(getMapper()))
+              .getDataFile();
       final DataFile outFile =
           context.getOutputData(MAPPER_RESULTS_SAM, readsData).getDataFile();
 

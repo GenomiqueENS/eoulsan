@@ -33,20 +33,20 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_FASTA;
 import java.io.IOException;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.bio.Sequence;
-import fr.ens.biologie.genomique.eoulsan.bio.io.FastaWriter;
-import fr.ens.biologie.genomique.eoulsan.bio.io.GFFFastaReader;
-import fr.ens.biologie.genomique.eoulsan.bio.io.SequenceReader;
-import fr.ens.biologie.genomique.eoulsan.bio.io.SequenceWriter;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
+import fr.ens.biologie.genomique.kenetre.bio.Sequence;
+import fr.ens.biologie.genomique.kenetre.bio.io.FastaWriter;
+import fr.ens.biologie.genomique.kenetre.bio.io.GFFFastaReader;
+import fr.ens.biologie.genomique.kenetre.bio.io.SequenceReader;
+import fr.ens.biologie.genomique.kenetre.bio.io.SequenceWriter;
 
 /**
  * This generator allow to generate a genome fasta file from the fasta section

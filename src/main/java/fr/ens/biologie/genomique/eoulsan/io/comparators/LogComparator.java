@@ -30,7 +30,7 @@ import java.util.Collection;
 import com.google.common.collect.Sets;
 
 import fr.ens.biologie.genomique.eoulsan.io.LogReader;
-import fr.ens.biologie.genomique.eoulsan.util.Reporter;
+import fr.ens.biologie.genomique.kenetre.util.Reporter;
 
 /**
  * This class allow compare two log files writing by step Eoulsan.

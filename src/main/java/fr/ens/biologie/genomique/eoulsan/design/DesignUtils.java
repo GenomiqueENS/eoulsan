@@ -44,7 +44,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.design.io.DefaultDesignReader;
 import fr.ens.biologie.genomique.eoulsan.design.io.DesignReader;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 
 /**
  * Utils methods for Design.

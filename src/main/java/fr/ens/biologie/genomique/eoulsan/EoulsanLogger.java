@@ -32,7 +32,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
+import fr.ens.biologie.genomique.kenetre.log.GenericLogger;
 
 /**
  * This class allow to change the logger name for all Eoulsan classes. The

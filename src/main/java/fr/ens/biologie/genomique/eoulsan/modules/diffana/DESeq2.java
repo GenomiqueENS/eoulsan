@@ -27,7 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.getAllSamplesMetadataKeys;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.getExperimentSampleAllMetadataKeys;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.referenceValueToInt;
-import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toCompactTime;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toCompactTime;
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 

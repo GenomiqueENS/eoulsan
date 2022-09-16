@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.util.ServiceConfigurationError;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.kenetre.util.ServiceListLoader;
 
 /**
  * This class allow to define a resource loader for resources in the class path.

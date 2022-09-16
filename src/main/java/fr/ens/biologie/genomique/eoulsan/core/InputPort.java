@@ -26,7 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.core;
 
 import java.util.EnumSet;
 
-import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 
 /**
  * This interface define an input port of a step.

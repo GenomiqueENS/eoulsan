@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.io.comparators;
 
-import static fr.ens.biologie.genomique.eoulsan.io.CompressionType.getCompressionTypeByFilename;
-import static fr.ens.biologie.genomique.eoulsan.util.FileUtils.checkExistingStandardFile;
+import static fr.ens.biologie.genomique.kenetre.io.CompressionType.getCompressionTypeByFilename;
+import static fr.ens.biologie.genomique.kenetre.io.FileUtils.checkExistingStandardFile;
 
 import java.io.File;
 import java.io.FileInputStream;

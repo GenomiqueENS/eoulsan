@@ -25,8 +25,8 @@ import com.google.common.base.Strings;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.util.LinuxCpuInfo;
 import fr.ens.biologie.genomique.eoulsan.util.LinuxMemInfo;
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
-import fr.ens.biologie.genomique.eoulsan.util.SystemUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.SystemUtils;
 
 /**
  * This class gathers information about Eoulsan configuration and system

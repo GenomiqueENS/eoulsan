@@ -29,7 +29,7 @@ import java.io.Serializable;
 import com.google.common.base.MoreObjects;
 
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 
 /**
  * This class define an output port of a step.

@@ -30,17 +30,17 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
-import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
-import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
-import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
-import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
-import fr.ens.biologie.genomique.eoulsan.util.process.SystemSimpleProcess;
+import fr.ens.biologie.genomique.eoulsan.util.EoulsanDockerManager;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import fr.ens.biologie.genomique.kenetre.util.GuavaCompatibility;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import fr.ens.biologie.genomique.kenetre.util.process.SimpleProcess;
+import fr.ens.biologie.genomique.kenetre.util.process.SystemSimpleProcess;
 
 /**
  * This class define a module for MultiQC.
@@ -252,7 +252,7 @@ public class MultiQCModule extends AbstractModule {
       throws IOException, EoulsanException {
 
     SimpleProcess process =
-        DockerManager.getInstance().createImageInstance(dockerImage);
+        EoulsanDockerManager.getInstance().createImageInstance(dockerImage);
 
     File executionDirectory = multiQCReportFile.getParentFile();
     File stdoutFile = new File(executionDirectory, "multiqc.stdout");

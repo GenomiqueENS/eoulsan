@@ -51,7 +51,7 @@ import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.splitermergers.Merger;
 import fr.ens.biologie.genomique.eoulsan.splitermergers.Splitter;
-import fr.ens.biologie.genomique.eoulsan.util.XMLUtils;
+import fr.ens.biologie.genomique.kenetre.util.XMLUtils;
 
 /**
  * This class define a DataFormat from an XML file.

@@ -26,7 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.core;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static fr.ens.biologie.genomique.eoulsan.core.Naming.ASCII_LETTER_OR_DIGIT;
-import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toLetter;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toLetter;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
@@ -36,7 +36,7 @@ import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
-import fr.ens.biologie.genomique.eoulsan.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 
 /**
  * This class contains methods to create workflow data file names.

@@ -36,7 +36,7 @@ import java.util.Set;
 
 import com.google.common.base.MoreObjects;
 
-import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 
 /**
  * This abstract class defines methods for metadata.

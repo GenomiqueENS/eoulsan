@@ -26,7 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.design;
 
 import java.util.List;
 
-import fr.ens.biologie.genomique.eoulsan.bio.FastqFormat;
+import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 
 /**
  * This interface defines the sample metadata.

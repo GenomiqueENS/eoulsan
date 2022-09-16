@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolExecutorResult;
-import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
-import fr.ens.biologie.genomique.eoulsan.util.process.SystemSimpleProcess;
+import fr.ens.biologie.genomique.kenetre.util.process.SimpleProcess;
+import fr.ens.biologie.genomique.kenetre.util.process.SystemSimpleProcess;
 
 /**
  * This class define an abstract executor interpreter that contains the default

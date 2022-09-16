@@ -27,7 +27,6 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
@@ -37,9 +36,10 @@ import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
+import fr.ens.biologie.genomique.eoulsan.util.EoulsanDockerManager;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
-import fr.ens.biologie.genomique.eoulsan.util.process.DockerManager;
-import fr.ens.biologie.genomique.eoulsan.util.process.SimpleProcess;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import fr.ens.biologie.genomique.kenetre.util.process.SimpleProcess;
 
 /**
  * This class uses tools from the DeepTools suite.
@@ -250,7 +250,7 @@ public class DeepToolsModule extends AbstractModule {
       final SimpleProcess process;
 
       try {
-        process = DockerManager.getInstance().createImageInstance(dockerImage);
+        process = EoulsanDockerManager.getInstance().createImageInstance(dockerImage);
       } catch (IOException err) {
         return status.createTaskResult(err);
       }

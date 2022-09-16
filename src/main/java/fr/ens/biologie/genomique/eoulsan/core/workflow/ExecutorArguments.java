@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toCompactTime;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toCompactTime;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;

@@ -40,7 +40,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.bio.SAMComparator;
+import fr.ens.biologie.genomique.kenetre.bio.SAMComparator;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFormatException;
 import htsjdk.samtools.SAMLineParser;

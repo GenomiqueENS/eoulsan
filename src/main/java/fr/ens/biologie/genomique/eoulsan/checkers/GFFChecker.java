@@ -24,11 +24,11 @@
 
 package fr.ens.biologie.genomique.eoulsan.checkers;
 
-import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.ATTRIBUTE_ID_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.GENOMIC_TYPE_PARAMETER_NAME;
-import static fr.ens.biologie.genomique.eoulsan.bio.expressioncounters.HTSeqCounter.STRANDED_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GTF;
+import static fr.ens.biologie.genomique.kenetre.bio.expressioncounter.HTSeqCounter.ATTRIBUTE_ID_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.kenetre.bio.expressioncounter.HTSeqCounter.GENOMIC_TYPE_PARAMETER_NAME;
+import static fr.ens.biologie.genomique.kenetre.bio.expressioncounter.HTSeqCounter.STRANDED_PARAMETER_NAME;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,19 +40,19 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
-import fr.ens.biologie.genomique.eoulsan.bio.GFFEntry;
-import fr.ens.biologie.genomique.eoulsan.bio.GenomeDescription;
-import fr.ens.biologie.genomique.eoulsan.bio.GenomicArray;
-import fr.ens.biologie.genomique.eoulsan.bio.GenomicInterval;
-import fr.ens.biologie.genomique.eoulsan.bio.io.GFFReader;
-import fr.ens.biologie.genomique.eoulsan.bio.io.GTFReader;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.generators.GenomeDescriptionCreator;
+import fr.ens.biologie.genomique.kenetre.bio.BadBioEntryException;
+import fr.ens.biologie.genomique.kenetre.bio.GFFEntry;
+import fr.ens.biologie.genomique.kenetre.bio.GenomeDescription;
+import fr.ens.biologie.genomique.kenetre.bio.GenomicArray;
+import fr.ens.biologie.genomique.kenetre.bio.GenomicInterval;
+import fr.ens.biologie.genomique.kenetre.bio.io.GFFReader;
+import fr.ens.biologie.genomique.kenetre.bio.io.GTFReader;
 
 /**
  * This class define a Checker on GFF annotation.

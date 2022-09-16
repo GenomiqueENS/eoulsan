@@ -26,7 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.core;
 
 import java.util.Map;
 
-import fr.ens.biologie.genomique.eoulsan.util.Reporter;
+import fr.ens.biologie.genomique.kenetre.util.Reporter;
 
 /**
  * This interface define a step status.

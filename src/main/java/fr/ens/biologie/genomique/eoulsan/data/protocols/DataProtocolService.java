@@ -30,7 +30,7 @@ import com.google.common.collect.Multimaps;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
-import fr.ens.biologie.genomique.eoulsan.util.ServiceNameLoader;
+import fr.ens.biologie.genomique.kenetre.util.ServiceNameLoader;
 
 /**
  * This class define a service to retrieve a DataProtocol.

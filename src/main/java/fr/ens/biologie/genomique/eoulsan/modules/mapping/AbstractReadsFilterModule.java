@@ -34,17 +34,18 @@ import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.MultiReadFilter;
-import fr.ens.biologie.genomique.eoulsan.bio.readsfilters.MultiReadFilterBuilder;
+import fr.ens.biologie.genomique.kenetre.KenetreException;
+import fr.ens.biologie.genomique.kenetre.bio.readfilter.MultiReadFilter;
+import fr.ens.biologie.genomique.kenetre.bio.readfilter.MultiReadFilterBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
-import fr.ens.biologie.genomique.eoulsan.log.GenericLogger;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import fr.ens.biologie.genomique.kenetre.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
-import fr.ens.biologie.genomique.eoulsan.util.ReporterIncrementer;
+import fr.ens.biologie.genomique.kenetre.util.ReporterIncrementer;
 
 /**
  * This class define an abstract module for read filtering.
@@ -118,32 +119,36 @@ public abstract class AbstractReadsFilterModule extends AbstractModule {
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
 
-    final MultiReadFilterBuilder filterBuilder =
-        new MultiReadFilterBuilder(context.getGenericLogger());
+    try {
+      final MultiReadFilterBuilder filterBuilder =
+          new MultiReadFilterBuilder(context.getGenericLogger());
 
-    for (Parameter p : stepParameters) {
+      for (Parameter p : stepParameters) {
 
-      // Check if the parameter is deprecated
-      checkDeprecatedParameter(context, p);
+        // Check if the parameter is deprecated
+        checkDeprecatedParameter(context, p);
 
-      switch (p.getName()) {
+        switch (p.getName()) {
 
-      case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
-        this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
+        case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
+          this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
 
-        break;
+          break;
 
-      default:
-        filterBuilder.addParameter(p.getName(), p.getStringValue());
-        break;
+        default:
+          filterBuilder.addParameter(p.getName(), p.getStringValue());
+          break;
+        }
+
       }
 
+      // Force parameter checking
+      filterBuilder.getReadFilter();
+
+      this.readsFiltersParameters = filterBuilder.getParameters();
+    } catch (KenetreException e) {
+      throw new EoulsanException(e);
     }
-
-    // Force parameter checking
-    filterBuilder.getReadFilter();
-
-    this.readsFiltersParameters = filterBuilder.getParameters();
   }
 
   //
@@ -203,10 +208,14 @@ public abstract class AbstractReadsFilterModule extends AbstractModule {
       final ReporterIncrementer incrementer, final String counterGroup)
       throws EoulsanException {
 
-    // As filters are not thread safe, create a new MultiReadFilterBuilder
-    // with a new instance of each filter
-    return new MultiReadFilterBuilder(logger, this.readsFiltersParameters)
-        .getReadFilter(incrementer, counterGroup);
+    try {
+      // As filters are not thread safe, create a new MultiReadFilterBuilder
+      // with a new instance of each filter
+      return new MultiReadFilterBuilder(logger, this.readsFiltersParameters)
+          .getReadFilter(incrementer, counterGroup);
+    } catch (KenetreException e) {
+      throw new EoulsanException(e);
+    }
   }
 
 }

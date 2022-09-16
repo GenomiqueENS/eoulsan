@@ -36,8 +36,6 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.Generator;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Mapper;
-import fr.ens.biologie.genomique.eoulsan.bio.readsmappers.Minimap2MapperProvider;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
@@ -47,8 +45,12 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import fr.ens.biologie.genomique.eoulsan.data.MapperIndexDataFormat;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.Mapper;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperBuilder;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.Minimap2MapperProvider;
 
 /**
  * This class define a module that generate a Minimap2 mapper index.
@@ -61,8 +63,9 @@ public class Minimap2IndexGeneratorModule extends AbstractModule {
 
   public static final String MODULE_NAME = "minimap2indexgenerator";
 
-  private final Mapper mapper = Mapper
-      .newMapper(Minimap2MapperProvider.MAPPER_NAME, getGenericLogger());
+  private final Mapper mapper =
+      new MapperBuilder(Minimap2MapperProvider.MAPPER_NAME)
+          .withLogger(getGenericLogger()).build();
 
   private String indexerArguments = "";
 
@@ -93,7 +96,8 @@ public class Minimap2IndexGeneratorModule extends AbstractModule {
 
   @Override
   public OutputPorts getOutputPorts() {
-    return OutputPortsBuilder.singleOutputPort(this.mapper.getArchiveFormat());
+    return OutputPortsBuilder
+        .singleOutputPort(new MapperIndexDataFormat(this.mapper));
   }
 
   @Override

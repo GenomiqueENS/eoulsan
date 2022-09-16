@@ -31,13 +31,13 @@ import java.util.Collections;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.bio.BadBioEntryException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.generators.GenomeDescriptionCreator;
+import fr.ens.biologie.genomique.kenetre.bio.BadBioEntryException;
 
 /**
  * This class define a Checker on genome FASTA files.

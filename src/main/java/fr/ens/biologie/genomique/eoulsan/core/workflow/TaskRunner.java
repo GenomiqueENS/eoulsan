@@ -32,8 +32,8 @@ import static fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUti
 import static fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUtils.isReuseStepInstance;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.PARTIALLY_DONE;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
-import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.stackTraceToString;
-import static fr.ens.biologie.genomique.eoulsan.util.StringUtils.toTimeHumanReadable;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.stackTraceToString;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toTimeHumanReadable;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
@@ -55,7 +55,7 @@ import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
-import fr.ens.biologie.genomique.eoulsan.core.Version;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 

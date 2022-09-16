@@ -38,7 +38,7 @@ import org.python.util.PythonInterpreter;
 import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.util.GuavaCompatibility;
+import fr.ens.biologie.genomique.kenetre.util.GuavaCompatibility;
 
 /**
  * This class create a Cheetah interpreter, it can build a command line tool
