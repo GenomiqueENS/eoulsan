@@ -65,6 +65,7 @@ import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.EoulsanTranslatorUtils;
 import fr.ens.biologie.genomique.kenetre.translator.Translator;
 import fr.ens.biologie.genomique.kenetre.translator.TranslatorUtils;
+import fr.ens.biologie.genomique.kenetre.translator.io.ODSTranslatorOutputFormat;
 import fr.ens.biologie.genomique.kenetre.translator.io.TSVTranslatorOutputFormat;
 import fr.ens.biologie.genomique.kenetre.translator.io.TranslatorOutputFormat;
 import fr.ens.biologie.genomique.kenetre.translator.io.XLSXTranslatorOutputFormat;
@@ -273,6 +274,8 @@ public class ExpressionResultsAnnotationModule extends AbstractModule {
         if (format == ANNOTATED_EXPRESSION_RESULTS_XLSX) {
           of = new XLSXTranslatorOutputFormat(outFile.create(),
               context.getLocalTempDirectory());
+        } else if (format == ANNOTATED_EXPRESSION_RESULTS_ODS) {
+          of = new ODSTranslatorOutputFormat(outFile.create());
         } else {
           of = new TSVTranslatorOutputFormat(outFile.create());
         }
@@ -295,6 +298,5 @@ public class ExpressionResultsAnnotationModule extends AbstractModule {
     // Return the result
     return status.createTaskResult();
   }
-
 
 }

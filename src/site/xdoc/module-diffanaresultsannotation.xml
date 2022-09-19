@@ -35,7 +35,7 @@
 
     <section name="Differential analysis results annotation module">
 
-      <p>This module allow to add additional annotations to differential analysis result files and create files in TSV or XLSX formats.
+      <p>This module allow to add additional annotations to differential analysis result files and create files in TSV, ODS or XLSX formats.
       This module works like the expression annotation module and will process all the files in output directory that matches with
       the <tt>diffana_*.tsv</tt> pattern.</p>
       <p>IDs can be linked with a hypertext link with ods and xlsx outputs. For more information check the hypertext link subsection in the <a href="module-expressionresultsannotation.html#hypertextlinks" name="SubSection1">expression annotation module page</a>.</p>

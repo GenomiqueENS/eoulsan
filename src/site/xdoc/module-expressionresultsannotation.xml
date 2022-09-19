@@ -35,7 +35,7 @@
 
     <section name="Expression results annotation module">
 
-      <p>This module allow to add additional annotations to expression files and create files in TSV or XLSX formats.</p>
+      <p>This module allow to add additional annotations to expression files and create files in TSV, ODS or XLSX formats.</p>
       <p>IDs can be linked with a hypertext link with ods and xlsx outputs. For more information check the <a href="#hypertextlinks" name="SubSection1">hypertext link subsection</a>.</p>
 	<br/>
       <ul>
@@ -80,7 +80,7 @@
 	&lt;parameters&gt;
 		&lt;parameter&gt;
 			&lt;name&gt;output.format&lt;/name&gt;
-			&lt;value&gt;xlsx,tsv&lt;/value&gt;
+			&lt;value&gt;xlsx,ods&lt;/value&gt;
 		&lt;/parameter&gt;
 	&lt;/parameters&gt;
 &lt;/step&gt;

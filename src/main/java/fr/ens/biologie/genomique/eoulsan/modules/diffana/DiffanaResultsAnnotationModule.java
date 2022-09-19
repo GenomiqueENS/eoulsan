@@ -67,6 +67,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.kenetre.translator.Translator;
 import fr.ens.biologie.genomique.kenetre.translator.TranslatorUtils;
+import fr.ens.biologie.genomique.kenetre.translator.io.ODSTranslatorOutputFormat;
 import fr.ens.biologie.genomique.kenetre.translator.io.TSVTranslatorOutputFormat;
 import fr.ens.biologie.genomique.kenetre.translator.io.TranslatorOutputFormat;
 import fr.ens.biologie.genomique.kenetre.translator.io.XLSXTranslatorOutputFormat;
@@ -328,6 +329,14 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
             checkIfFileExists(outFile, context);
             of = new XLSXTranslatorOutputFormat(outFile.create(),
                 context.getLocalTempDirectory());
+
+          } else if (format == ANNOTATED_EXPRESSION_RESULTS_ODS) {
+
+            // ODS output
+            outFile = new DataFile(outputDir, prefix
+                + ANNOTATED_EXPRESSION_RESULTS_ODS.getDefaultExtension());
+            checkIfFileExists(outFile, context);
+            of = new ODSTranslatorOutputFormat(outFile.create());
 
           } else {
 
