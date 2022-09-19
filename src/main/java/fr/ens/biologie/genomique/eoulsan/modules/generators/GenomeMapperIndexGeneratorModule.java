@@ -120,7 +120,8 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
       case "mappername":
         final String mapperName = p.getStringValue();
 
-        this.mapper = new MapperBuilder(mapperName).withLogger(getGenericLogger()).build();
+        this.mapper = new MapperBuilder(mapperName)
+            .withLogger(getGenericLogger()).build();
 
         if (this.mapper == null) {
           Modules.badParameterValue(context, p, "Unknown mapper");
@@ -190,7 +191,7 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
             .build();
 
     return new MapperInstanceBuilder(newMapper).withMapperVersion(version)
-        .withMapperFlavor(flavor).build();
+        .withMapperFlavor(flavor).withUseBundledBinaries(true).build();
   }
 
   /**
