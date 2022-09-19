@@ -53,7 +53,8 @@ public class MapperIndexDataFormat extends AbstractDataFormat
 
   private static final long serialVersionUID = -943794645213547885L;
 
-  private final String name;
+  private final String mapperName;
+  private final String formatName;
   private final String prefix;
 
   //
@@ -63,7 +64,7 @@ public class MapperIndexDataFormat extends AbstractDataFormat
   @Override
   public String getName() {
 
-    return this.name;
+    return this.formatName;
   }
 
   @Override
@@ -148,7 +149,8 @@ public class MapperIndexDataFormat extends AbstractDataFormat
 
     final Module generator = new GenomeMapperIndexGeneratorModule();
 
-    Parameter mapperNameParameter = new Parameter("mapperName", this.name);
+    Parameter mapperNameParameter =
+        new Parameter("mapperName", this.mapperName);
 
     try {
       generator.configure(null, Collections.singleton(mapperNameParameter));
@@ -211,19 +213,20 @@ public class MapperIndexDataFormat extends AbstractDataFormat
 
     final MapperIndexDataFormat that = (MapperIndexDataFormat) o;
 
-    return Objects.equals(this.name, that.name);
+    return Objects.equals(this.formatName, that.formatName);
   }
 
   @Override
   public int hashCode() {
 
-    return Objects.hash(this.name);
+    return Objects.hash(this.formatName);
   }
 
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this).add("name", this.name).toString();
+    return MoreObjects.toStringHelper(this).add("name", this.formatName)
+        .toString();
   }
 
   //
@@ -249,7 +252,8 @@ public class MapperIndexDataFormat extends AbstractDataFormat
 
     String mapperNameLowerCase = mapperName.toLowerCase();
 
-    this.name = mapperNameLowerCase + "_index_zip";
+    this.mapperName = mapperNameLowerCase;
+    this.formatName = mapperNameLowerCase + "_index_zip";
     this.prefix = mapperNameLowerCase + "index";
   }
 
