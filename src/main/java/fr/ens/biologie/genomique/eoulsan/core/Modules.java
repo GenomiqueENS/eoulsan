@@ -64,11 +64,27 @@ public class Modules {
       throws EoulsanException {
 
     requireNonNull(context, "context argument cannot be null");
+
+    deprecatedParameter(context.getCurrentStep().getId(), parameter,
+        throwException);
+  }
+
+  /**
+   * Show a message for deprecated parameters.
+   * @param stepId the step identifier
+   * @param parameter the deprecated parameter
+   * @throws EoulsanException throw an exception if required
+   */
+  public static void deprecatedParameter(final String stepId,
+      final Parameter parameter, final boolean throwException)
+      throws EoulsanException {
+
+    requireNonNull(stepId, "stepId argument cannot be null");
     requireNonNull(parameter, "parameter argument cannot be null");
 
     final String message = "The parameter \""
-        + parameter.getName() + "\" in the \""
-        + context.getCurrentStep().getId() + "\" step is now deprecated";
+        + parameter.getName() + "\" in the \"" + stepId
+        + "\" step is now deprecated";
 
     if (throwException) {
       throw new EoulsanException(message);
@@ -107,12 +123,29 @@ public class Modules {
       final boolean throwException) throws EoulsanException {
 
     requireNonNull(context, "context argument cannot be null");
+
+    renamedParameter(context.getCurrentStep().getId(), parameter,
+        newParameterName, throwException);
+  }
+
+  /**
+   * Show a message for deprecated parameters that has been renamed.
+   * @param stepId the step identifier
+   * @param parameter the deprecated parameter
+   * @param newParameterName the new parameter name
+   * @param throwException throw an exception
+   * @throws EoulsanException throw an exception if required
+   */
+  public static void renamedParameter(final String stepId,
+      final Parameter parameter, final String newParameterName,
+      final boolean throwException) throws EoulsanException {
+
+    requireNonNull(stepId, "stepId argument cannot be null");
     requireNonNull(parameter, "parameter argument cannot be null");
     requireNonNull(newParameterName, "newName argument cannot be null");
 
     final String message = "The parameter \""
-        + parameter.getName() + "\" in the \""
-        + context.getCurrentStep().getId()
+        + parameter.getName() + "\" in the \"" + stepId
         + "\" step is now deprecated. Please use the \"" + newParameterName
         + "\" parameter instead";
 
@@ -132,11 +165,24 @@ public class Modules {
       final Parameter parameter) throws EoulsanException {
 
     requireNonNull(context, "context argument cannot be null");
+
+    removedParameter(context.getCurrentStep().getId(), parameter);
+  }
+
+  /**
+   * Throw a exception for removed parameters.
+   * @param stepId the step identifier
+   * @param parameter the deprecated parameter
+   */
+  public static void removedParameter(final String stepId,
+      final Parameter parameter) throws EoulsanException {
+
+    requireNonNull(stepId, "context argument cannot be null");
     requireNonNull(parameter, "parameter argument cannot be null");
 
     throw new EoulsanException("The parameter \""
-        + parameter.getName() + "\" in the \""
-        + context.getCurrentStep().getId() + "\" step no more exists");
+        + parameter.getName() + "\" in the \"" + stepId
+        + "\" step no more exists");
   }
 
   /**
@@ -148,11 +194,23 @@ public class Modules {
       final Parameter parameter) throws EoulsanException {
 
     requireNonNull(context, "context argument cannot be null");
+
+    unknownParameter(context.getCurrentStep().getId(), parameter);
+  }
+
+  /**
+   * Throw a exception for unknown parameters.
+   * @param stepId the step identifier
+   * @param parameter the deprecated parameter
+   */
+  public static void unknownParameter(final String stepId,
+      final Parameter parameter) throws EoulsanException {
+
+    requireNonNull(stepId, "context argument cannot be null");
     requireNonNull(parameter, "parameter argument cannot be null");
 
     throw new EoulsanException("Unknown \""
-        + parameter.getName() + "\" parameter for the \""
-        + context.getCurrentStep().getId() + "\" step");
+        + parameter.getName() + "\" parameter for the \"" + stepId + "\" step");
   }
 
   /**
@@ -165,13 +223,26 @@ public class Modules {
       final Parameter parameter, final String message) throws EoulsanException {
 
     requireNonNull(context, "context argument cannot be null");
+
+    badParameterValue(context.getCurrentStep().getId(), parameter, message);
+  }
+
+  /**
+   * Throw a exception for bad parameter value.
+   * @param stepId the step identifier
+   * @param parameter the deprecated parameter
+   * @param message error message
+   */
+  public static void badParameterValue(final String stepId,
+      final Parameter parameter, final String message) throws EoulsanException {
+
+    requireNonNull(stepId, "context argument cannot be null");
     requireNonNull(parameter, "parameter argument cannot be null");
     requireNonNull(message, "message argument cannot be null");
 
     throw new EoulsanException("The invalid value ("
         + parameter.getValue() + ") for \"" + parameter.getName()
-        + "\" parameter in the \"" + context.getCurrentStep().getId()
-        + "\" step: " + message);
+        + "\" parameter in the \"" + stepId + "\" step: " + message);
   }
 
   /**
@@ -184,10 +255,23 @@ public class Modules {
       throws EoulsanException {
 
     requireNonNull(context, "context argument cannot be null");
+
+    invalidConfiguration(context.getCurrentStep().getId(), message);
+  }
+
+  /**
+   * Throw a exception for an invalid configuration.
+   * @param stepId the step identifier
+   * @param message error message
+   */
+  public static void invalidConfiguration(final String stepId,
+      final String message) throws EoulsanException {
+
+    requireNonNull(stepId, "stepId argument cannot be null");
     requireNonNull(message, "message argument cannot be null");
 
     throw new EoulsanException("The invalid configuration for the \""
-        + context.getCurrentStep().getId() + "\" step: " + message);
+        + stepId + "\" step: " + message);
   }
 
   /**

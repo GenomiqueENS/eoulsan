@@ -124,13 +124,13 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
             .withLogger(getGenericLogger()).build();
 
         if (this.mapper == null) {
-          Modules.badParameterValue(context, p, "Unknown mapper");
+          Modules.badParameterValue(MODULE_NAME, p, "Unknown mapper");
         }
 
         break;
 
       default:
-        Modules.unknownParameter(context, p);
+        Modules.unknownParameter(MODULE_NAME, p);
       }
     }
 
