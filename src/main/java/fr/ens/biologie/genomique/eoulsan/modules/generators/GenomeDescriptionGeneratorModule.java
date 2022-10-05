@@ -32,6 +32,7 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_FASTA;
 
 import java.io.IOException;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
@@ -39,14 +40,13 @@ import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.storages.GenomeDescStorage;
-import fr.ens.biologie.genomique.eoulsan.data.storages.SimpleGenomeDescStorage;
+import fr.ens.biologie.genomique.eoulsan.data.storages.DataFileGenomeDescStorage;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.kenetre.bio.BadBioEntryException;
 import fr.ens.biologie.genomique.kenetre.bio.GenomeDescription;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 
 /**
  * This class implements a genome description generator module.
@@ -128,7 +128,7 @@ public class GenomeDescriptionGeneratorModule extends AbstractModule {
    * @return a GenomeDescStorage object if genome storage has been defined or
    *         null if not
    */
-  static GenomeDescStorage checkForGenomeDescStore() {
+  static DataFileGenomeDescStorage checkForGenomeDescStore() {
 
     final String genomeDescStoragePath =
         EoulsanRuntime.getSettings().getGenomeDescStoragePath();
@@ -137,8 +137,8 @@ public class GenomeDescriptionGeneratorModule extends AbstractModule {
       return null;
     }
 
-    return SimpleGenomeDescStorage
-        .getInstance(new DataFile(genomeDescStoragePath));
+    return (DataFileGenomeDescStorage) DataFileGenomeDescStorage.getInstance(
+        new DataFile(genomeDescStoragePath), EoulsanLogger.getGenericLogger());
   }
 
 }

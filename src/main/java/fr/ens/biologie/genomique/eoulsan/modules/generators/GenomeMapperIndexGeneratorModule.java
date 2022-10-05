@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
@@ -49,10 +50,11 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.MapperIndexDataFormat;
+import fr.ens.biologie.genomique.eoulsan.data.storages.DataFileGenomeIndexStorage;
+import fr.ens.biologie.genomique.eoulsan.data.storages.DataFileGenomeMapperIndexer;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractFilterAndMapReadsModule;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsMapperModule;
@@ -61,6 +63,8 @@ import fr.ens.biologie.genomique.kenetre.bio.readmapper.Mapper;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperBuilder;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstance;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstanceBuilder;
+import fr.ens.biologie.genomique.kenetre.storage.GenomeIndexStorage;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 
 /**
  * This class define a module that generate a genome mapper index.
@@ -245,9 +249,19 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
     final int threads = threadCount < 1
         ? Runtime.getRuntime().availableProcessors() : threadCount;
 
+    // Get the genome index storage
+    String genomeMapperIndexStoragePath =
+        context.getSettings().getGenomeMapperIndexStoragePath();
+    GenomeIndexStorage genomeIndexStorage =
+        genomeMapperIndexStoragePath != null
+            ? DataFileGenomeIndexStorage.getInstance(
+                genomeMapperIndexStoragePath, EoulsanLogger.getGenericLogger())
+            : null;
+
     // Create indexer
-    final GenomeMapperIndexer indexer =
-        new GenomeMapperIndexer(mapperInstance, args, descriptions, threads);
+    final DataFileGenomeMapperIndexer indexer = new DataFileGenomeMapperIndexer(
+        mapperInstance, args, descriptions, threads, genomeIndexStorage,
+        context.getLocalTempDirectory(), EoulsanLogger.getGenericLogger());
 
     // Create index
     indexer.createIndex(genomeDataFile, desc, mapperIndexDataFile);

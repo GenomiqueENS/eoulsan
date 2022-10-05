@@ -20,7 +20,7 @@
 		<java.version>1.8</java.version>
 		<hadoop.version>2.3.0</hadoop.version>
 		<htsjdk.version>2.13.2</htsjdk.version>
-		<kenetre.version>0.7</kenetre.version>
+		<kenetre.version>0.8</kenetre.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -734,6 +734,13 @@
                 <dependency>
                         <groupId>fr.ens.biologie.genomique</groupId>
                         <artifactId>kenetre-translators</artifactId>
+			<version>${kenetre.version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+                <dependency>
+                        <groupId>fr.ens.biologie.genomique</groupId>
+                        <artifactId>kenetre-storages</artifactId>
 			<version>${kenetre.version}</version>
 			<scope>compile</scope>
 		</dependency>

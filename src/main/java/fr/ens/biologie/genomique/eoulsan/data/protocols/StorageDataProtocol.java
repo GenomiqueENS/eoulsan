@@ -28,13 +28,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
-import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import fr.ens.biologie.genomique.eoulsan.data.storages.DataFileStorage;
 
 /**
  * This abstract class define a storage protocol. It is useful to easily access
@@ -131,100 +130,16 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
    */
   public DataFile getUnderLyingData(final DataFile src) throws IOException {
 
-    final String basePath = getBasePath();
+    DataFileStorage storage =
+        new DataFileStorage(getBasePath(), getExtensions());
 
-    if (basePath == null) {
-      throw new IOException(getName() + " storage is not configured");
+    DataFile result = storage.getDataFile(src.getName());
+
+    if (result == null) {
+      throw new IOException("No " + getName() + " found for: " + src.getName());
     }
 
-    final DataFile baseDir = new DataFile(basePath);
-
-    if (!baseDir.exists()) {
-      throw new IOException(
-          getName() + " storage base path does not exists: " + baseDir);
-    }
-
-    // List the content of the directory if it can be listed
-    final List<DataFile> dirList;
-
-    if (baseDir.getProtocol().canList()) {
-      dirList = baseDir.list();
-    } else {
-      dirList = Collections.emptyList();
-    }
-
-    // Add no extension to the list of allowed extensions
-    final List<String> extensions = new ArrayList<>(getExtensions());
-    extensions.add("");
-
-    for (String extension : extensions) {
-
-      if (extension == null) {
-        throw new NullPointerException(
-            "One of the extensions of the storage protocol is null: "
-                + getName());
-      }
-
-      final String filename = src.getName().trim() + extension;
-
-      for (CompressionType c : CompressionType.values()) {
-
-        final DataFile file =
-            new DataFile(baseDir, filename + c.getExtension());
-
-        // Check if the file in the right case exists
-        if (file.exists()) {
-          return canonicalize(file);
-        }
-
-        // Insensitive case search file in the directory list
-        if (dirList.isEmpty()) {
-
-          // Compare filename in lower case
-          final String filenameLower = file.getName().toLowerCase();
-          for (DataFile f : dirList) {
-
-            if (f.getName().toLowerCase().equals(filenameLower) && f.exists()) {
-              return canonicalize(f);
-            }
-          }
-        } else {
-
-          // For non browsable base directory
-
-          // Check if the directory exists in lower case
-          final DataFile fileLower =
-              new DataFile(baseDir, file.getName().toLowerCase());
-          if (fileLower.exists()) {
-            return canonicalize(fileLower);
-          }
-
-          // Check if the directory exists in upper case
-          final DataFile fileUpper =
-              new DataFile(baseDir, file.getName().toUpperCase());
-          if (fileUpper.exists()) {
-            return canonicalize(fileUpper);
-          }
-        }
-      }
-    }
-
-    throw new IOException("No " + getName() + " found for: " + src.getName());
-  }
-
-  /**
-   * Canonicalize symbolic link.
-   * @param file the file to Canonicalize.
-   * @return a canonicalized file
-   * @throws IOException if an error occurs while canonicalize the file
-   */
-  private DataFile canonicalize(final DataFile file) throws IOException {
-
-    if (!file.isLocalFile()) {
-      return file;
-    }
-
-    return new DataFile(file.toFile().getCanonicalFile());
+    return result;
   }
 
 }

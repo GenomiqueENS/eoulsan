@@ -29,7 +29,7 @@ import java.io.IOException;
 import fr.ens.biologie.genomique.eoulsan.checkers.CheckStore;
 import fr.ens.biologie.genomique.eoulsan.checkers.GenomeChecker;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.storages.GenomeDescStorage;
+import fr.ens.biologie.genomique.eoulsan.data.storages.DataFileGenomeDescStorage;
 import fr.ens.biologie.genomique.kenetre.bio.BadBioEntryException;
 import fr.ens.biologie.genomique.kenetre.bio.GenomeDescription;
 
@@ -44,7 +44,7 @@ public class GenomeDescriptionCreator {
       GenomeChecker.GENOME_DESCRIPTION;
 
   private final CheckStore checkStore;
-  private final GenomeDescStorage storage;
+  private final DataFileGenomeDescStorage storage;
 
   /**
    * Create genome description object from the storage if already exists or
@@ -102,7 +102,7 @@ public class GenomeDescriptionCreator {
     }
 
     if (this.storage != null) {
-      desc = this.storage.get(genomeDataFile);
+      desc = this.storage.get(genomeDataFile.getSource());
     }
 
     if (desc == null) {
@@ -113,7 +113,7 @@ public class GenomeDescriptionCreator {
 
       // Store it if storage exists
       if (this.storage != null) {
-        this.storage.put(genomeDataFile, desc);
+        this.storage.put(genomeDataFile.getSource(), desc);
       }
     }
 
