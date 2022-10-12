@@ -3,7 +3,7 @@
 <suite name="SuiteIntegrationTest" verbose="1" thread-count="1">
   <test name="IntegrationTestAction">
     <classes>
-       <class name="fr.ens.biologie.genomique.eoulsan.it.ITFactory" />
+       <class name="fr.ens.biologie.genomique.kenetre.it.ITFactory" />
     </classes>
   </test>
   
