@@ -75,27 +75,27 @@
 	  </tr>
 	  <tr>
 	    <td>Operating system</td>
-	    <td>Currently Eoulsan runs only under Linux (due to mappers binaries dependencies). However Eoulsan core is 
+	    <td>Currently Eoulsan runs only under Linux (due to mappers binaries dependencies). However Eoulsan core is
 	    compatible with all *nix where Java is available.</td>
 	  </tr>
 	  <tr>
             <td>Memory</td>
             <td>By default 4096 MiB are allocated to the JVM for running Eoulsan.
             You can use another value with the <code>-m</code> parameter of <b>eoulsan.sh</b>.
-            However Eoulsan use external tools 
+            However Eoulsan use external tools
             like Bowtie that also need memory, 8 GiB seem to be
             a good amount of memory to run Eoulsan.</td>
           </tr>
 	  <tr>
             <td>Processor architecture</td>
-            <td>Currently Eoulsan can only run under x86-64 architecture (due to mappers requirements). 
+            <td>Currently Eoulsan can only run under x86-64 architecture (due to mappers requirements).
             Multi processors or multi cores system (SMP) are strongly recommended.</td>
           </tr>
 	  <tr>
-            <td>Java Runtime Environment (J2SE)</td>
-            <td>6.0 or above. We strongly recommend 
-            the sun/oracle version of the jre (or openJDK). 
-            You can check your installed jre version with: <source>$ java -version</source></td>
+            <td>Java Runtime Environment</td>
+            <td>11 or above. We recommend
+            the OpenJDK version of the JRE.
+            You can check your installed JRE version with: <source>$ java -version</source></td>
           </tr>
 	  <tr>
             <td>Hadoop</td>

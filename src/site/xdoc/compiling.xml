@@ -35,7 +35,7 @@
   
     <section name="How to compile Eoulsan">
 
-	  <p>To build Eoulsan, you need a <a href="http://java.sun.com/j2se/">Java 2 Standard Edition SDK</a> greater or equals to 6.0 and <a href="http://maven.apache.org">Maven</a> 3.x</p>
+	  <p>To build Eoulsan, you need a <a href="http://java.sun.com/j2se/">Java Standard Edition SDK</a> greater or equals to 11 and <a href="http://maven.apache.org">Maven</a> 3.x</p>
 	
 	  <p>The next commands works whatever your operating system and the "<code>$</code>" character represent the command line prompt.</p> 
           <p>To compile Eoulsan, the default memory allocated by Maven is not enough. Your must set the environment variable <b>MAVEN_OPTS</b> to do this. To change this variable using bash use the built-in command <b>export</b> (512MiB or 1GiB is a good amount of memory of Maven):</p>
