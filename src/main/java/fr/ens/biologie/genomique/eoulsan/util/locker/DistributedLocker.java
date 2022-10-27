@@ -9,9 +9,9 @@ import org.apache.zookeeper.ZooKeeper;
 
 /**
  * This class implements a locker using Zookeeper based on Twiter's
- * DistributedLock class. See {@link <a href=
+ * DistributedLock class. See @see <a href=
  * "https://github.com/twitter/commons/blob/master/src/java/com/twitter/common/zookeeper/DistributedLock.java">
- * Twitter Commons code</a>}
+ * Twitter Commons code</a>.
  * @author Laurent Jourdren
  * @since 2.0
  */

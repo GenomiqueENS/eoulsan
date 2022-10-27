@@ -51,15 +51,15 @@ public class DataFileGenomeMapperIndexer extends FileGenomeMapperIndexer {
    * @param mapperIndexDataFile output genome index archive
    * @throws IOException if an error occurs while creating the genome
    */
-  public void createIndex(final DataFile genomePath,
-      final GenomeDescription genomeDescription, final DataFile mapperIndexPath)
-      throws IOException {
+  public void createIndex(final DataFile genomeDataFile,
+      final GenomeDescription genomeDescription,
+      final DataFile mapperIndexDataFile) throws IOException {
 
-    requireNonNull(genomePath);
-    requireNonNull(genomePath);
+    requireNonNull(genomeDataFile);
+    requireNonNull(mapperIndexDataFile);
 
-    createIndex(new DataFileDataPath(genomePath), genomeDescription,
-        new DataFileDataPath(mapperIndexPath));
+    createIndex(new DataFileDataPath(genomeDataFile), genomeDescription,
+        new DataFileDataPath(mapperIndexDataFile));
   }
 
   //

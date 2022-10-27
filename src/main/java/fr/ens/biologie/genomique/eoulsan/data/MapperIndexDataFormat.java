@@ -235,7 +235,7 @@ public class MapperIndexDataFormat extends AbstractDataFormat
 
   /**
    * Public constructor.
-   * @param mapperName name of the mapper
+   * @param mapper the mapper
    */
   public MapperIndexDataFormat(Mapper mapper) {
 

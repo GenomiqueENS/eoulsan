@@ -80,13 +80,14 @@ public class DataFileGenomeIndexStorage extends AbstractFileGenomeIndexStorage {
    * @param additionalDescription description of the additional parameters
    * @param indexArchive the file that contains the index
    */
-  public void put(final MapperInstance mapper, final GenomeDescription genome,
+  public void put(final MapperInstance mapperInstance,
+      final GenomeDescription genome,
       final Map<String, String> additionalDescription,
       final DataFile indexArchive) {
 
     requireNonNull(indexArchive, "IndexArchive is null");
 
-    put(mapper, genome, additionalDescription,
+    put(mapperInstance, genome, additionalDescription,
         new DataFileDataPath(indexArchive));
   }
 
@@ -101,13 +102,13 @@ public class DataFileGenomeIndexStorage extends AbstractFileGenomeIndexStorage {
    * @return a GenomeIndexStorage object if the path contains an index storage
    *         or null if no index storage is found
    */
-  public static GenomeIndexStorage getInstance(final String dir,
+  public static GenomeIndexStorage getInstance(final String source,
       GenericLogger logger) {
 
-    requireNonNull(dir);
+    requireNonNull(source);
 
     try {
-      return new DataFileGenomeIndexStorage(new DataFileDataPath(dir), logger);
+      return new DataFileGenomeIndexStorage(new DataFileDataPath(source), logger);
     } catch (IOException | NullPointerException e) {
       return null;
     }

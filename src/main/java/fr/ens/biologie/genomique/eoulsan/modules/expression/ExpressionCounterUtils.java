@@ -22,7 +22,7 @@ public class ExpressionCounterUtils {
   /**
    * Initialize the counter.
    * @param counter the counter
-   * @param desc genome description
+   * @param genomeDesc genome description
    * @param annotationFile annotation file
    * @param gtfFormat true if the input format is in GTF format
    * @throws EoulsanException if an error occurs while initialize the counter
