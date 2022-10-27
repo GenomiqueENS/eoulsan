@@ -28,6 +28,7 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -236,15 +237,17 @@ public final class XMLDataFormat extends AbstractDataFormat
         return null;
       }
 
-      final Object o = result.newInstance();
+      final Object o = result.getDeclaredConstructor().newInstance();
 
       if (interf.isInstance(o)) {
-        return result.newInstance();
+        return o;
       }
 
       return null;
     } catch (ClassNotFoundException | InstantiationException
-        | IllegalAccessException e) {
+        | IllegalAccessException | IllegalArgumentException
+        | InvocationTargetException | NoSuchMethodException
+        | SecurityException e) {
       return null;
     }
   }
@@ -485,10 +488,9 @@ public final class XMLDataFormat extends AbstractDataFormat
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this)
-        .add("name", this.name).add("description", this.description)
-        .add("alias", this.alias).add("prefix", this.prefix)
-        .add("contentType", this.contentType)
+    return MoreObjects.toStringHelper(this).add("name", this.name)
+        .add("description", this.description).add("alias", this.alias)
+        .add("prefix", this.prefix).add("contentType", this.contentType)
         .add("defaultExtension", this.extensions.get(0))
         .add("extensions", this.extensions)
         .add("galaxyToolExtensions", this.galaxyFormatNames)
