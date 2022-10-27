@@ -1158,7 +1158,7 @@ o
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
-				<version>3.4</version>
+				<version>3.12.1</version>
 				<configuration>
 					<templateFile>${basedir}/src/site/site.vm</templateFile>
 					<outputEncoding>UTF-8</outputEncoding>
@@ -1247,10 +1247,21 @@ o
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
-				<version>2.9</version>
+				<version>3.4.1</version>
 				<configuration>
 					<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
 				</configuration>
+				<reportSets>
+					<reportSet>
+						<reports>
+							<report>team</report>
+							<report>mailing-lists</report>
+							<report>issue-management</report>
+							<report>licenses</report>
+							<report>scm</report>
+						</reports>
+					</reportSet>
+				</reportSets>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -1259,7 +1270,7 @@ o
 			</plugin>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.0.1</version>
+				<version>3.4.1</version>
 				<configuration>
 					<encoding>utf-8</encoding>
 					<doctitle>${project.name} ${project.version} API</doctitle>

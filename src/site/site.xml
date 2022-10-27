@@ -49,8 +49,8 @@
 
 		<menu name="About Eoulsan">
 			<item name="What is Eoulsan ?" href="/index.html" />
-			<item name="License" href="/license.html" />
-			<item name="People behind Eoulsan" href="/team-list.html" />
+			<item name="License" href="/licenses.html" />
+			<item name="People behind Eoulsan" href="/team.html" />
 			<item name="How to cite Eoulsan" href="/howtocite.html" />
 		</menu>
 
@@ -108,7 +108,7 @@
 			<item name="Data repositories configuration" href="/datarepositories.html"/>
 
 			<item name="Known bugs" href="/bugs.html" />
-			<item name="Mailing list" href="/mail-lists.html" />
+			<item name="Mailing list" href="/mailing-lists.html" />
 		</menu>
 
 		<menu name="Development">
