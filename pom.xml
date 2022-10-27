@@ -321,14 +321,9 @@
 				<enabled>true</enabled>
 			</snapshots>
 			<id>ens</id>
-			<name>ENS repository</name>
-			<!--url>https://maven-repository.dev.java.net/nonav/repository</url -->
-			<url>http://outils.genomique.biologie.ens.fr/maven2</url>
+			<name>GenomiqueENS repository</name>
+			<url>https://outils.genomique.biologie.ens.fr/maven2</url>
 		</repository>
-		<!--repository>
-			<id>cloudera</id>
-			<url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
-		</repository-->
 		<repository>
 			<snapshots>
 				<enabled>true</enabled>
