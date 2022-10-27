@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -225,7 +226,8 @@ public class TrackHubModule extends AbstractModule {
   private void writeHubFile(final File dir, final String date)
       throws IOException {
 
-    try (Writer w = new FileWriter(new File(dir, "hub.txt"))) {
+    try (Writer w =
+        new FileWriter(new File(dir, "hub.txt"), Charset.defaultCharset())) {
 
       w.write("hub " + date + '_' + this.shortLabel + '\n');
       w.write("shortLabel " + this.shortLabel + '\n');
@@ -242,7 +244,8 @@ public class TrackHubModule extends AbstractModule {
    */
   private void writeGenomeFile(final File dir) throws IOException {
 
-    try (Writer w = new FileWriter(new File(dir, "genomes.txt"))) {
+    try (Writer w = new FileWriter(new File(dir, "genomes.txt"),
+        Charset.defaultCharset())) {
       w.write("genome " + this.genome + '\n');
       w.write("trackDb ./" + this.genome + "/trackDb.txt");
     }
@@ -315,8 +318,9 @@ public class TrackHubModule extends AbstractModule {
     }
 
     // Write trackDb file
-    try (Writer writer =
-        new FileWriter(new File(genomeDirectory, "trackDb.txt"))) {
+    try (
+        Writer writer = new FileWriter(new File(genomeDirectory, "trackDb.txt"),
+            Charset.defaultCharset())) {
       writer.write(sb.toString());
     }
   }

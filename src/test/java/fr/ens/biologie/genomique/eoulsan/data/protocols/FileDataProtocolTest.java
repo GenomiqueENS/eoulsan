@@ -37,6 +37,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +56,7 @@ public class FileDataProtocolTest {
 
   private void writeFile(final File f, final String s) throws IOException {
 
-    Writer writer = new FileWriter(f);
+    Writer writer = new FileWriter(f, Charset.defaultCharset());
 
     writer.write(s);
     writer.close();

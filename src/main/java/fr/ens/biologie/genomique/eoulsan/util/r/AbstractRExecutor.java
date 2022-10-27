@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -167,7 +168,7 @@ public abstract class AbstractRExecutor implements RExecutor {
         description + (sweave ? SWEAVE_FILE_EXTENSION : R_FILE_EXTENSION));
 
     // Write R script in a File
-    Writer writer = new FileWriter(rScriptFile);
+    Writer writer = new FileWriter(rScriptFile, Charset.defaultCharset());
     writer.write(rScript);
     writer.close();
 

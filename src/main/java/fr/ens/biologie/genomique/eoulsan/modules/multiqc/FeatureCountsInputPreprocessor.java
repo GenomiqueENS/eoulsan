@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.charset.Charset;
 
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
@@ -66,8 +67,10 @@ public class FeatureCountsInputPreprocessor implements InputPreprocessor {
   private void rewriteSummaryFile(final File inputFile, final File outputFile,
       final String dataName) throws IOException {
 
-    try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-        Writer writer = new FileWriter(outputFile)) {
+    try (
+        BufferedReader reader = new BufferedReader(
+            new FileReader(inputFile, Charset.defaultCharset()));
+        Writer writer = new FileWriter(outputFile, Charset.defaultCharset())) {
 
       String line = null;
 

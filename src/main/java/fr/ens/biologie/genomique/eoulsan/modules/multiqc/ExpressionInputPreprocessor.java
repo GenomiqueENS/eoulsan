@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -149,8 +150,10 @@ public class ExpressionInputPreprocessor implements InputPreprocessor {
   private void enhanceExpressionFile(final File inFile, final File outFile,
       final Map<String, Integer> stats) throws IOException {
 
-    try (BufferedReader reader = new BufferedReader(new FileReader(inFile));
-        Writer writer = new FileWriter(outFile)) {
+    try (
+        BufferedReader reader = new BufferedReader(
+            new FileReader(inFile, Charset.defaultCharset()));
+        Writer writer = new FileWriter(outFile, Charset.defaultCharset())) {
 
       String line;
 
