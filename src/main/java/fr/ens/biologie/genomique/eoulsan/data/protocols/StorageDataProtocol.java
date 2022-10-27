@@ -130,8 +130,13 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
    */
   public DataFile getUnderLyingData(final DataFile src) throws IOException {
 
-    DataFileStorage storage =
-        new DataFileStorage(getBasePath(), getExtensions());
+    final String basePath = getBasePath();
+
+    if (basePath == null) {
+      throw new IOException(getName() + " storage is not configured");
+    }
+
+    DataFileStorage storage = new DataFileStorage(basePath, getExtensions());
 
     DataFile result = storage.getDataFile(src.getName());
 
