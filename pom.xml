@@ -20,7 +20,7 @@
 		<java.version>11</java.version>
 		<hadoop.version>2.3.0</hadoop.version>
 		<htsjdk.version>2.13.2</htsjdk.version>
-		<kenetre.version>0.9</kenetre.version>
+		<kenetre.version>0.11</kenetre.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
