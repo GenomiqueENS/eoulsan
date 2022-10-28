@@ -1948,6 +1948,10 @@ of reads that reject each filter like in local mode.
               Fix issue with Minimap 2.18 that did not work with Ubuntu 16.04.
             </action>
 
+            <action dev="jourdren" type="fix">
+              Fix issue FastQC and Java 17.
+            </action>
+
             <action dev="jourdren" type="add">
               Update Docker Manager API to allow manualy define the Docker client to use.
             </action>
@@ -1962,6 +1966,14 @@ of reads that reject each filter like in local mode.
 
             <action dev="jourdren" type="add">
               Add Minimap2 2.24 in addition of previous versions.
+            </action>
+
+            <action dev="jourdren" type="add">
+              Support of Illumina samplesheet v2 (NextSeq 1000/2000) in createdesign action.
+            </action>
+
+            <action dev="jourdren" type="add">
+              Add support for accounting groups with HTCondor.
             </action>
 
             <action dev="jourdren" type="update">
@@ -1990,6 +2002,14 @@ of reads that reject each filter like in local mode.
 
             <action dev="jourdren" type="update">
               Update the name and the logo of the IBENS genomics core facility.
+            </action>
+
+            <action dev="jourdren" type="update">
+              Eoulsan now requires Java 11 for both runtime and building. Update pom.xml for builds with Java 11.
+            </action>
+
+            <action dev="jourdren" type="update">
+              Big refactoring, move many parts of the code outside Eoulsan in a dedicated library name Kenetre.
             </action>
 
          </release>
