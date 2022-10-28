@@ -124,9 +124,13 @@
         <section name="What's new in Eoulsan @@@VERSION@@@? ">
 		<p>The Eoulsan @@@VERSION@@@ main new enhancements since its last version are: </p>
 		<ul>
+			<li>Eoulsan now requires Java 11</li>
+			<li>Big refactoring, move many parts of Eoulsan (e.g. the object model) outside Eoulsan in a dedicated library name Kenetre</li>
 			<li>Minimap 2.24 binary is now bundled in Eoulsan</li>
+			<li>Support of Illumina samplesheet v2 (NextSeq 1000/2000)</li>
 			<li>Update versions of many dependencies</li>
 			<li>Remove unused code and dependencies (e.g. AWS Elastic MapReduce support)</li>
+			<li>Add support for accounting groups with HTCondor.</li>
 		</ul>
 		<p>For the full change log, please report to the <a href="changes-report.html#a@@@VERSION@@@">dedicated page</a>.</p>
 	</section>
