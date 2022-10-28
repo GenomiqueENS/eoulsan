@@ -20,7 +20,8 @@
 		<java.version>11</java.version>
 		<hadoop.version>2.3.0</hadoop.version>
 		<htsjdk.version>2.13.2</htsjdk.version>
-		<kenetre.version>0.11</kenetre.version>
+		<kenetre.version>0.12</kenetre.version>
+		<poi.version>4.1.2</poi.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -475,19 +476,19 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>3.17</version>
+			<version>${poi.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
-			<version>3.17</version>
+			<version>${poi.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml-schemas</artifactId>
-			<version>3.17</version>
+			<version>${poi.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
