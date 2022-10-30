@@ -344,9 +344,9 @@
 	</repositories>
 
 	<scm>
-		<url>https://github.com/GenomicParisCentre/eoulsan</url>
-		<connection>scm:git:git://github.com/GenomicParisCentre/eoulsan.git</connection>
-		<developerConnection>scm:git:git@github.com:GenomicParisCentre/eoulsan.git</developerConnection>
+		<url>https://github.com/GenomiqueENS/eoulsan</url>
+		<connection>scm:git:git://github.com/GenomiqueENS/eoulsan.git</connection>
+		<developerConnection>scm:git:git@github.com:GenomiqueENS/eoulsan.git</developerConnection>
 	</scm>
 	<issueManagement>
 		<system>GitHub Issues</system>
