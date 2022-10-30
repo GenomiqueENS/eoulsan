@@ -1181,34 +1181,9 @@ o
 
 			<!-- PLUG-IN Findbugs to maven 3 -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>3.0.5</version>
-				<configuration>
-					<effort>Max</effort>
-					<xmlOutput>true</xmlOutput>
-				</configuration>
-			</plugin>
-
-			<!-- PLUG-IN PMD/CPD -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<version>3.10.0</version>
-				<configuration>
-					<!-- PMD options -->
-					<targetJdk>${java.version}</targetJdk>
-					<aggregate>true</aggregate>
-					<format>xml</format>
-					<rulesets>
-						<ruleset>./pmd-rules.xml</ruleset>
-					</rulesets>
-
-					<!-- CPD options -->
-					<minimumTokens>20</minimumTokens>
-					<ignoreIdentifiers>true</ignoreIdentifiers>
-					<configLocation>./checkstyle_google.xml</configLocation>
-				</configuration>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>4.7.2.1</version>
 			</plugin>
 
 			<!-- PLUG-in for static analysis code -->
