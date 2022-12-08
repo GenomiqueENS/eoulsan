@@ -966,6 +966,10 @@ if(diffanaTest==TRUE){
 				conditionLine <- subset(matCondition, Condition ==
 					unique_condition[i])
 
+				if (length(conditionLine$Reference) == 0){
+					next
+				}
+
 				refLine <- subset(matCondition, Condition == ref[j] )
 				if(conditionLine$Reference > refLine$Reference |
 					conditionLine$Reference == 0){
