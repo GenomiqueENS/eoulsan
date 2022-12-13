@@ -2014,6 +2014,14 @@ of reads that reject each filter like in local mode.
 
          </release>
 
+	 <release version="2.6.1" description="Eoulsan 2.6.1 release" date="2022-12-13">
+
+            <action dev="jourdren" type="fix">
+              In normDiffana.R, avoid error when trying to compare samples that must not be compared (reference is equals to -1 the design file).
+            </action>
+
+         </release>
+
     </body>
 
 </document>

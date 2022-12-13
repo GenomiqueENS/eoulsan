@@ -11,7 +11,7 @@ MAINTAINER Laurent Jourdren <jourdren@biologie.ens.fr>
 
 # Install Eoulsan 
 RUN cd /tmp && \
-    wget --quiet https://github.com/GenomicParisCentre/eoulsan/releases/download/v2.6/eoulsan-2.6.tar.gz && \
+    wget --quiet https://github.com/GenomiqueENS/eoulsan/releases/download/v2.6.1/eoulsan-2.6.1.tar.gz && \
     tar --directory /usr/local -xf /tmp/eoulsan-*.tar.gz && \
     ln -s /usr/local/eoulsan-*/eoulsan.sh /usr/local/bin/eoulsan.sh && \
     ln -s /usr/local/eoulsan-*/eoulsan.sh /usr/local/bin/eoulsan && \

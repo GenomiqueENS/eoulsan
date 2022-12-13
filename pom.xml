@@ -5,7 +5,7 @@
 	<groupId>fr.ens.biologie.genomique</groupId>
 	<artifactId>eoulsan</artifactId>
 	<packaging>jar</packaging>
-	<version>2.7-SNAPSHOT</version>
+	<version>2.6.1</version>
 	<name>Eoulsan</name>
 	<description>
 		A pipeline for NGS analysis.
