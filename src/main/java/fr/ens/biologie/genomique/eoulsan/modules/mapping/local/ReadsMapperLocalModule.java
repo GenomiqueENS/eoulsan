@@ -282,15 +282,9 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
     final MapperIndex mapperIndex =
         mapperInstance.newMapperIndex(archiveIndexFile.open(), indexDir);
 
-    // Get the number of threads to use
-    int mapperThreads = getMapperLocalThreads();
-    if (mapperThreads > Runtime.getRuntime().availableProcessors()
-        || mapperThreads < 1) {
-      mapperThreads = Runtime.getRuntime().availableProcessors();
-    }
-
-    final FileMapping mapping = mapperIndex.newFileMapping(format,
-        getMapperArguments(), mapperThreads, false, reporter, COUNTER_GROUP);
+    final FileMapping mapping =
+        mapperIndex.newFileMapping(format, getMapperArguments(),
+            threadCount(context), false, reporter, COUNTER_GROUP);
 
     // Delete the index directory at the end of the workflow
     context.getWorkflow()
@@ -421,6 +415,28 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
 
     return fileMapping.mapPE(readsFile1.open(), readsFile2.open(), errorFile,
         logFile);
+  }
+
+  /**
+   * Get the number of threads to use for the mapping.
+   * @param context task context
+   * @return the number of threads to use for the mapping
+   */
+  private int threadCount(final TaskContext context) {
+
+    // Required processors in step attributes
+    int requiredProcessors = context.getCurrentStep().getRequiredProcessors();
+
+    if (requiredProcessors > 0) {
+      return requiredProcessors;
+    }
+
+    int result = getMapperLocalThreads();
+    if (result > Runtime.getRuntime().availableProcessors() || result < 1) {
+      result = Runtime.getRuntime().availableProcessors();
+    }
+
+    return result;
   }
 
 }

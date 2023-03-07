@@ -135,8 +135,7 @@ public class Minimap2IndexGeneratorModule extends AbstractModule {
       // Create the index
       GenomeMapperIndexGeneratorModule.execute(this.mapper, context,
           this.indexerArguments,
-          Collections.singletonMap("indexer.arguments", this.indexerArguments),
-          context.getCurrentStep().getRequiredProcessors());
+          Collections.singletonMap("indexer.arguments", this.indexerArguments));
 
     } catch (IOException | EoulsanException e) {
 

@@ -208,7 +208,7 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
    */
   static void execute(final Mapper mapper, final TaskContext context,
       final String additionalArguments,
-      final Map<String, String> additionalDescription, final int threadCount)
+      final Map<String, String> additionalDescription)
       throws IOException, EoulsanException {
 
     requireNonNull(mapper, "mapper argument cannot be null");
@@ -245,10 +245,6 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
     final MapperInstance mapperInstance =
         searchMapperVersionAndFlavor(mapper, context);
 
-    // Set the number of thread to use
-    final int threads = threadCount < 1
-        ? Runtime.getRuntime().availableProcessors() : threadCount;
-
     // Get the genome index storage
     String genomeMapperIndexStoragePath =
         context.getSettings().getGenomeMapperIndexStoragePath();
@@ -259,9 +255,10 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
             : null;
 
     // Create indexer
-    final DataFileGenomeMapperIndexer indexer = new DataFileGenomeMapperIndexer(
-        mapperInstance, args, descriptions, threads, genomeIndexStorage,
-        context.getLocalTempDirectory(), EoulsanLogger.getGenericLogger());
+    final DataFileGenomeMapperIndexer indexer =
+        new DataFileGenomeMapperIndexer(mapperInstance, args, descriptions,
+            threadCount(context), genomeIndexStorage,
+            context.getLocalTempDirectory(), EoulsanLogger.getGenericLogger());
 
     // Create index
     indexer.createIndex(genomeDataFile, desc, mapperIndexDataFile);
@@ -276,7 +273,7 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
       status.setProgressMessage(this.mapper.getName() + " index creation");
 
       // Create the index
-      execute(this.mapper, context, null, null, 0);
+      execute(this.mapper, context, null, null);
 
     } catch (IOException | EoulsanException e) {
 
@@ -284,5 +281,22 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
     }
 
     return status.createTaskResult();
+  }
+
+  /**
+   * Get the number of threads to use for creating the index.
+   * @param context task context
+   * @return the number of threads to use for creating the index
+   */
+  private static int threadCount(final TaskContext context) {
+
+    // Required processors in step attributes
+    int requiredProcessors = context.getCurrentStep().getRequiredProcessors();
+
+    if (requiredProcessors > 0) {
+      return requiredProcessors;
+    }
+
+    return context.getSettings().getLocalThreadsNumber();
   }
 }

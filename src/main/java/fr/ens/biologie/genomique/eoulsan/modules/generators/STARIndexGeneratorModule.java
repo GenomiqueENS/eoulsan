@@ -377,8 +377,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
 
       // Create the index
       GenomeMapperIndexGeneratorModule.execute(this.mapper, context,
-          additionalArguments.toString(), additionalDescription,
-          context.getCurrentStep().getRequiredProcessors());
+          additionalArguments.toString(), additionalDescription);
 
       // Remove temporary files
       for (File temporaryFile : temporaryFiles) {
