@@ -1,6 +1,7 @@
 # Filter reads steps
 fr.ens.biologie.genomique.eoulsan.modules.mapping.local.ReadsFilterLocalModule
 fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsFilterHadoopModule
+fr.ens.biologie.genomique.eoulsan.modules.mapping.local.SplitReadsModule
 
 # Mapping reads steps
 fr.ens.biologie.genomique.eoulsan.modules.generators.Minimap2IndexGeneratorModule
