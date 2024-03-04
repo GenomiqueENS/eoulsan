@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 
 import fr.ens.biologie.genomique.eoulsan.core.Step;
@@ -62,6 +63,8 @@ public class StepStateDependencies implements Serializable {
 
   private final Set<AbstractStep> requiredSteps = new HashSet<>();
   private final Map<Integer, Boolean> dependenciesDone = new HashMap<>();
+
+  private boolean initizalized;
 
   /**
    * Add a dependency.
@@ -230,6 +233,22 @@ public class StepStateDependencies implements Serializable {
     getLogger().fine(msg);
   }
 
+  synchronized void init() {
+
+    if (this.initizalized) {
+      throw new IllegalStateException("Object has already been initialized");
+    }
+
+    // Register the observer
+    WorkflowEventBus.getInstance().register(this);
+
+    getLogger().fine("Step #"
+      + step.getNumber() + " " + step.getId() + " is now in state "
+      + this.stepState);
+
+    this.initizalized = true;
+  }
+
   //
   // Constructor
   //
@@ -238,17 +257,10 @@ public class StepStateDependencies implements Serializable {
    * Constructor.
    * @param step the step related to the instance
    */
-  public StepStateDependencies(final AbstractStep step) {
+  public StepStateDependencies(final KStep step) {
 
     requireNonNull(step, "step cannot be null");
 
-    this.step = step;
-
-    // Register the observer
-    WorkflowEventBus.getInstance().register(this);
-
-    getLogger().fine("Step #"
-        + this.step.getNumber() + " " + this.step.getId() + " is now in state "
-        + this.stepState);
+    this.step = step.getStep();
   }
 }
