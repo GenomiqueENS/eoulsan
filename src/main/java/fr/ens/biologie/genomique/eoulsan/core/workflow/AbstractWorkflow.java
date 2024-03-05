@@ -24,6 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.ABORTED;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.FAILED;
@@ -49,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -88,26 +90,14 @@ public abstract class AbstractWorkflow implements Workflow {
   private static final String WORKFLOW_GRAPHVIZ_FILENAME = "workflow.dot";
   private static final String WORKFLOW_IMAGE_FILENAME = "workflow.png";
 
-  private final DataFile localWorkingDir;
-  private final DataFile hadoopWorkingDir;
-  private final DataFile outputDir;
-  private final DataFile jobDir;
-  private final DataFile taskDir;
-  private final DataFile dataDir;
-  private final DataFile tmpDir;
+  private final KWorkflow workflow;
 
   private final Design design;
-  private final WorkflowContext workflowContext;
-  private final Set<String> stepIds = new HashSet<>();
-  private final Map<AbstractStep, StepState> steps = new HashMap<>();
-  private final Multimap<StepState, AbstractStep> states =
-      ArrayListMultimap.create();
+
   private final SerializableStopwatch stopwatch = new SerializableStopwatch();
 
-  private AbstractStep rootStep;
   private AbstractStep designStep;
   private AbstractStep checkerStep;
-  private AbstractStep firstStep;
 
   private final Set<DataFile> deleteOnExitFiles = new HashSet<>();
 
@@ -117,12 +107,23 @@ public abstract class AbstractWorkflow implements Workflow {
   // Getters
   //
 
+  public KConfiguration getConfiguration() {
+    return this.workflow.getConfiguration();
+  }
+
+  private DataFile getDataFileFromconfiguration(String key) {
+
+    String value = getConfiguration().get(key);
+
+    return value !=null ? new DataFile(value) : null;
+  }
+
   /**
    * Get the local working directory.
    * @return Returns the local working directory
    */
   DataFile getLocalWorkingDirectory() {
-    return this.localWorkingDir;
+    return getDataFileFromconfiguration("localWorkingDir");
   }
 
   /**
@@ -130,7 +131,7 @@ public abstract class AbstractWorkflow implements Workflow {
    * @return Returns the local working directory
    */
   DataFile getHadoopWorkingDirectory() {
-    return this.hadoopWorkingDir;
+    return getDataFileFromconfiguration("hadoopWorkingDir");
   }
 
   /**
@@ -138,7 +139,7 @@ public abstract class AbstractWorkflow implements Workflow {
    * @return Returns the output directory
    */
   DataFile getOutputDirectory() {
-    return this.outputDir;
+    return getDataFileFromconfiguration("outputDir");
   }
 
   /**
@@ -146,7 +147,7 @@ public abstract class AbstractWorkflow implements Workflow {
    * @return Returns the log directory
    */
   DataFile getJobDirectory() {
-    return this.jobDir;
+    return getDataFileFromconfiguration("jobDir");
   }
 
   /**
@@ -154,7 +155,7 @@ public abstract class AbstractWorkflow implements Workflow {
    * @return Returns the task directory
    */
   DataFile getTaskDirectory() {
-    return this.taskDir;
+    return getDataFileFromconfiguration("taskDir");
   }
 
   /**
@@ -162,7 +163,11 @@ public abstract class AbstractWorkflow implements Workflow {
    * @return Returns the data repository directory
    */
   DataFile getDataRepositoryDirectory() {
-    return this.dataDir;
+    return getDataFileFromconfiguration("dataDir");
+  }
+
+  private DataFile getTmpdir() {
+    return getDataFileFromconfiguration("tmpDir");
   }
 
   @Override
@@ -174,7 +179,10 @@ public abstract class AbstractWorkflow implements Workflow {
   @Override
   public Set<Step> getSteps() {
 
-    final Set<Step> result = new HashSet<>(this.steps.keySet());
+    final Set<Step> result = new HashSet<>();
+    for (KStep s : this.workflow.getSteps()) {
+      result.add(s.getStep());
+    }
 
     return Collections.unmodifiableSet(result);
   }
@@ -182,7 +190,7 @@ public abstract class AbstractWorkflow implements Workflow {
   @Override
   public Step getRootStep() {
 
-    return this.rootStep;
+    return this.workflow.getRootStep().getStep();
   }
 
   @Override
@@ -194,7 +202,7 @@ public abstract class AbstractWorkflow implements Workflow {
   @Override
   public Step getFirstStep() {
 
-    return this.firstStep;
+    return this.workflow.getFirstStep().getStep();
   }
 
   /**
@@ -213,7 +221,7 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   public WorkflowContext getWorkflowContext() {
 
-    return this.workflowContext;
+    return this.workflow.getWorkflowContext();
   }
 
   //
@@ -233,19 +241,9 @@ public abstract class AbstractWorkflow implements Workflow {
           "step cannot be part of more than one workflow");
     }
 
-    if (this.stepIds.contains(step.getId())) {
+    if (this.workflow.containsStepId(step.getId())) {
       throw new IllegalStateException(
           "2 step cannot had the same id: " + step.getId());
-    }
-
-    // Register root step
-    if (step.getType() == StepType.ROOT_STEP) {
-
-      if (this.rootStep != null && step != this.rootStep) {
-        throw new IllegalStateException(
-            "Cannot add 2 root steps to the workflow");
-      }
-      this.rootStep = step;
     }
 
     // Register design step
@@ -268,56 +266,7 @@ public abstract class AbstractWorkflow implements Workflow {
       this.checkerStep = step;
     }
 
-    // Register first step
-    if (step.getType() == StepType.FIRST_STEP) {
-
-      if (this.firstStep != null && step != this.firstStep) {
-        throw new IllegalStateException(
-            "Cannot add 2 first steps to the workflow");
-      }
-      this.firstStep = step;
-    }
-
-    synchronized (this) {
-      this.stepIds.add(step.getId());
-      this.steps.put(step, step.getState());
-      this.states.put(step.getState(), step);
-    }
-  }
-
-  /**
-   * Listen StepState events. Update the status of a step. This method is used
-   * by steps to inform the workflow object that the status of the step has been
-   * changed.
-   * @param event the event to handle
-   */
-  @Subscribe
-  public void stepStateEvent(final StepStateEvent event) {
-
-    if (event == null) {
-      return;
-    }
-
-    final AbstractStep step = event.getStep();
-    final StepState newState = event.getState();
-
-    if (step.getWorkflow() != this) {
-      throw new IllegalStateException("step is not part of the workflow");
-    }
-
-    synchronized (this) {
-
-      StepState oldState = this.steps.get(step);
-
-      // Test if the state has changed
-      if (oldState == newState) {
-        return;
-      }
-
-      this.states.remove(oldState, step);
-      this.states.put(newState, step);
-      this.steps.put(step, newState);
-    }
+    this.workflow.register(step.getKStep());
   }
 
   @Override
@@ -338,7 +287,7 @@ public abstract class AbstractWorkflow implements Workflow {
   private void checkExistingOutputFiles() throws EoulsanException {
 
     // For each step
-    for (AbstractStep step : this.steps.keySet()) {
+    for (AbstractStep step : kstepsToAbstractSteps(this.workflow.getSteps())) {
 
       // that is a standard step that is not skip
       if (step.getType() == StepType.STANDARD_STEP && !step.isSkip()) {
@@ -366,7 +315,7 @@ public abstract class AbstractWorkflow implements Workflow {
   private void checkExistingInputFiles() throws EoulsanException {
 
     // For each step
-    for (AbstractStep step : this.steps.keySet()) {
+    for (AbstractStep step : kstepsToAbstractSteps(this.workflow.getSteps())) {
 
       // that is a standard step that is not skip
       if (step.getType() == StepType.STANDARD_STEP && !step.isSkip()) {
@@ -403,7 +352,7 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   private void skipGeneratorsIfNotNeeded() {
 
-    for (AbstractStep step : this.steps.keySet()) {
+    for (AbstractStep step : kstepsToAbstractSteps(this.workflow.getSteps())) {
 
       // Search for generator steps
       if (step.getType() == StepType.GENERATOR_STEP) {
@@ -462,7 +411,7 @@ public abstract class AbstractWorkflow implements Workflow {
     WorkflowEventBus eventBus = WorkflowEventBus.getInstance();
 
     // Set Steps to WAITING state
-    for (AbstractStep step : this.steps.keySet()) {
+    for (AbstractStep step : kstepsToAbstractSteps(this.workflow.getSteps())) {
 
       // Create Token manager of each step
       registry.getTokenManager(step);
@@ -478,7 +427,7 @@ public abstract class AbstractWorkflow implements Workflow {
     // Start stop watch
     this.stopwatch.start();
 
-    while (!getSortedStepsByState(READY, WAITING, PARTIALLY_DONE, WORKING)
+    while (!kstepsToAbstractSteps(this.workflow.getSortedStepsByState(READY, WAITING, PARTIALLY_DONE, WORKING))
         .isEmpty()) {
 
       try {
@@ -500,7 +449,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
       // Get the step that had failed
       final List<AbstractStep> failedSteps =
-          getSortedStepsByState(StepState.FAILED);
+        kstepsToAbstractSteps(this.workflow.getSortedStepsByState(StepState.FAILED));
 
       if (!failedSteps.isEmpty()) {
 
@@ -557,7 +506,7 @@ public abstract class AbstractWorkflow implements Workflow {
   private void stop() {
 
     final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
-    for (AbstractStep step : this.steps.keySet()) {
+    for (AbstractStep step : kstepsToAbstractSteps(this.workflow.getSteps())) {
 
       // Stop Token manager dedicated thread
       final TokenManager tokenManager = registry.getTokenManager(step);
@@ -601,7 +550,7 @@ public abstract class AbstractWorkflow implements Workflow {
     WorkflowEventBus eventBus = WorkflowEventBus.getInstance();
 
     // Change working step state to aborted
-    for (AbstractStep step : getSortedStepsByState(PARTIALLY_DONE, WORKING)) {
+    for (AbstractStep step :  kstepsToAbstractSteps(this.workflow.getSortedStepsByState(PARTIALLY_DONE, WORKING))) {
       eventBus.postStepStateChange(step, ABORTED);
     }
 
@@ -611,12 +560,12 @@ public abstract class AbstractWorkflow implements Workflow {
     final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
 
     // Remove all outputs of failed steps
-    for (AbstractStep step : getSortedStepsByState(FAILED)) {
+    for (AbstractStep step :  kstepsToAbstractSteps(this.workflow.getSortedStepsByState(FAILED))) {
       registry.getTokenManager(step).removeAllOutputs();
     }
 
     // Remove all outputs of aborted steps
-    for (AbstractStep step : getSortedStepsByState(ABORTED)) {
+    for (AbstractStep step :  kstepsToAbstractSteps(this.workflow.getSortedStepsByState(ABORTED))) {
       registry.getTokenManager(step).removeAllOutputs();
     }
 
@@ -636,13 +585,45 @@ public abstract class AbstractWorkflow implements Workflow {
     Common.errorHalt(exception, errorMessage);
   }
 
+  private Set<AbstractStep> kstepsToAbstractSteps(Set<KStep> steps) {
+
+    if (steps.isEmpty()) {
+      return Collections.emptySet();
+    }
+
+    Set<AbstractStep> result = new HashSet<>(steps.size());
+
+    for (KStep s: steps) {
+      result.add(s.getStep());
+    }
+
+    return result;
+  }
+
+  private List<AbstractStep> kstepsToAbstractSteps(List<KStep> steps) {
+
+    if (steps.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    List<AbstractStep> result = new ArrayList<>(steps.size());
+
+    for (KStep s: steps) {
+      result.add(s.getStep());
+    }
+
+    return result;
+  }
+
   /**
    * Remove outputs to discard.
    */
   private void removeOutputsToDiscard() {
 
     final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
-    for (AbstractStep step : this.steps.keySet()) {
+    for (KStep kstep : this.workflow.getSteps()) {
+
+      AbstractStep step = kstep.getStep();
 
       // Stop Token manager dedicated thread
       final TokenManager tokenManager = registry.getTokenManager(step);
@@ -698,7 +679,7 @@ public abstract class AbstractWorkflow implements Workflow {
           new DataFile(jobDir, WORKFLOW_IMAGE_FILENAME));
 
       // Create an image or only the dot file
-      if (!this.workflowContext.getSettings().isSaveWorkflowImage()
+      if (!getWorkflowContext().getSettings().isSaveWorkflowImage()
           || !graphviz.saveImageFile()) {
         graphviz.saveDotFile();
       }
@@ -712,75 +693,18 @@ public abstract class AbstractWorkflow implements Workflow {
   }
 
   /**
-   * Get the steps which has some step status. The step are ordered.
-   * @param states step status to retrieve
-   * @return a sorted list with the steps
-   */
-  private List<AbstractStep> getSortedStepsByState(final StepState... states) {
-
-    requireNonNull(states, "states argument is null");
-
-    final List<AbstractStep> result = new ArrayList<>();
-
-    for (StepState state : states) {
-      result.addAll(getSortedStepsByState(state));
-    }
-
-    // Sort steps
-    sortListSteps(result);
-
-    return result;
-  }
-
-  /**
-   * Get the steps which has a step status. The step are ordered.
-   * @param state step status to retrieve
-   * @return a sorted list with the steps
-   */
-  private List<AbstractStep> getSortedStepsByState(final StepState state) {
-
-    requireNonNull(state, "state argument is null");
-
-    final List<AbstractStep> result;
-
-    synchronized (this) {
-      result = Lists.newArrayList(this.states.get(state));
-    }
-
-    sortListSteps(result);
-
-    return result;
-  }
-
-  /**
-   * Sort a list of step by priority and then by step number.
-   * @param list the list of step to sort
-   */
-  private static void sortListSteps(final List<AbstractStep> list) {
-
-    if (list == null) {
-      return;
-    }
-
-    list.sort(
-        Comparator.comparingInt((AbstractStep a) -> a.getType().getPriority())
-            .thenComparingInt(AbstractStep::getNumber));
-
-  }
-
-  /**
    * Create a DataFile object from a path.
    * @param path the path
    * @return null if the path is null or a new DataFile object with the required
    *         path
    */
-  private static DataFile newDataFile(final String path) {
+  private static String newDataFile(final String path) {
 
     if (path == null) {
       return null;
     }
 
-    return new DataFile(URI.create(path));
+    return new DataFile(URI.create(path)).toString();
   }
 
   /**
@@ -789,26 +713,26 @@ public abstract class AbstractWorkflow implements Workflow {
    */
   public void checkDirectories() throws EoulsanException {
 
-    requireNonNull(this.jobDir, "the job directory is null");
-    requireNonNull(this.taskDir, "the task directory is null");
-    requireNonNull(this.outputDir, "the output directory is null");
-    requireNonNull(this.localWorkingDir, "the local working directory is null");
+    checkArgument(getConfiguration().containsKey("jobDir"), "the job directory is null");
+    checkArgument(getConfiguration().containsKey("taskDir"), "the task directory is null");
+    checkArgument(getConfiguration().containsKey("outputDir"), "the output directory is null");
+    checkArgument(getConfiguration().containsKey("localWorkingDir"), "the local working directory is null");
 
     // Get Eoulsan settings
     final Settings settings = EoulsanRuntime.getSettings();
 
     // Define the list of directories to create
     final List<DataFile> dirsToCheck =
-        Lists.newArrayList(this.jobDir, this.outputDir, this.localWorkingDir,
-            this.hadoopWorkingDir, this.taskDir);
+        Lists.newArrayList(getJobDirectory(), getOutputDirectory(), getLocalWorkingDirectory(),
+            getHadoopWorkingDirectory(), getTaskDirectory());
 
     // If the temporary directory has not been defined by user
     if (!settings.isUserDefinedTempDirectory()) {
 
       // Set the temporary directory
-      requireNonNull(this.tmpDir, "The temporary directory is null");
-      settings.setTempDirectory(this.tmpDir.toFile().toString());
-      dirsToCheck.add(this.tmpDir);
+      requireNonNull(getTmpdir(), "The temporary directory is null");
+      settings.setTempDirectory(getTmpdir().toFile().toString());
+      dirsToCheck.add(getTmpdir());
     }
 
     try {
@@ -843,7 +767,7 @@ public abstract class AbstractWorkflow implements Workflow {
       // Create genome mapper index storage if not defined
       if (settings.getGenomeMapperIndexStoragePath() == null) {
 
-        DataFile mapperIndexDir = new DataFile(this.dataDir, "mapperindexes");
+        DataFile mapperIndexDir = new DataFile(getDataRepositoryDirectory(), "mapperindexes");
         settings.setGenomeMapperIndexStoragePath(mapperIndexDir.getSource());
         createDirectory(mapperIndexDir);
       }
@@ -852,7 +776,7 @@ public abstract class AbstractWorkflow implements Workflow {
       if (settings.getGenomeDescStoragePath() == null) {
 
         DataFile genomeDescriptionDir =
-            new DataFile(this.dataDir, "genomedescriptions");
+            new DataFile(getDataRepositoryDirectory(), "genomedescriptions");
         settings.setGenomeDescStoragePath(genomeDescriptionDir.getSource());
         createDirectory(genomeDescriptionDir);
       }
@@ -860,7 +784,7 @@ public abstract class AbstractWorkflow implements Workflow {
       // Define singularity directory
       if (settings.getDockerSingularityStoragePath() == null) {
 
-        DataFile singularityDir = new DataFile(this.dataDir, "singularity");
+        DataFile singularityDir = new DataFile(getDataRepositoryDirectory(), "singularity");
         settings.setDockerSingularityStoragePath(singularityDir.getSource());
       }
 
@@ -956,16 +880,16 @@ public abstract class AbstractWorkflow implements Workflow {
 
     final String mailSubject = "["
         + Globals.APP_NAME + "] " + successString + " end of your job "
-        + this.workflowContext.getJobId() + " on "
-        + this.workflowContext.getJobHost();
+        + getWorkflowContext().getJobId() + " on "
+        + getWorkflowContext().getJobHost();
 
     final String mailMessage = "THIS IS AN AUTOMATED MESSAGE.\n\n"
-        + successString + " end of your job " + this.workflowContext.getJobId()
-        + " on " + this.workflowContext.getJobHost() + ".\nJob finished at "
+        + successString + " end of your job " + getWorkflowContext().getJobId()
+        + " on " + getWorkflowContext().getJobHost() + ".\nJob finished at "
         + new Date(System.currentTimeMillis()) + " in "
         + StringUtils.toTimeHumanReadable(this.stopwatch.elapsed(MILLISECONDS))
         + " s.\n\nOutput files and logs can be found in the following location:\n"
-        + this.workflowContext.getOutputDirectory() + "\n\nThe "
+        + getWorkflowContext().getOutputDirectory() + "\n\nThe "
         + Globals.APP_NAME + "team.";
 
     // Send mail
@@ -1000,27 +924,26 @@ public abstract class AbstractWorkflow implements Workflow {
     requireNonNull(executionArguments, "Argument cannot be null");
     requireNonNull(design, "Design argument cannot be null");
 
+    this.workflow = new KWorkflow(this, new WorkflowContext(executionArguments, this));
+
     this.design = design;
 
-    this.jobDir = newDataFile(executionArguments.getJobPathname());
+    KConfiguration conf = this.workflow.getConfiguration();
+    conf.set("jobDir", newDataFile(executionArguments.getJobPathname()));
 
-    this.taskDir = newDataFile(executionArguments.getTaskPathname());
+    conf.set("taskDir", newDataFile(executionArguments.getTaskPathname()));
 
-    this.tmpDir = newDataFile(executionArguments.getTemporaryPathname());
+    conf.set("tmpDir", newDataFile(executionArguments.getTemporaryPathname()));
 
-    this.localWorkingDir =
-        newDataFile(executionArguments.getLocalWorkingPathname());
+    conf.set("localWorkingDir",
+        newDataFile(executionArguments.getLocalWorkingPathname()));
 
-    this.hadoopWorkingDir =
-        newDataFile(executionArguments.getHadoopWorkingPathname());
+    conf.set("hadoopWorkingDir",
+        newDataFile(executionArguments.getHadoopWorkingPathname()));
 
-    this.outputDir = newDataFile(executionArguments.getOutputPathname());
+    conf.set("outputDir", newDataFile(executionArguments.getOutputPathname()));
 
-    this.dataDir = newDataFile(executionArguments.getDataPathname());
+    conf.set("dataDir", newDataFile(executionArguments.getDataPathname()));
 
-    this.workflowContext = new WorkflowContext(executionArguments, this);
-
-    // Register the object in the event bus
-    WorkflowEventBus.getInstance().register(this);
   }
 }
