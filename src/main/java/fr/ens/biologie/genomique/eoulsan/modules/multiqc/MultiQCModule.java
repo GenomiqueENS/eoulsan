@@ -134,7 +134,10 @@ public class MultiQCModule extends AbstractModule {
     // Parse report parameter and set the formats to handle
     for (InputPreprocessor ip : parseReportParameter(reports,
         context.getCurrentStep().getId())) {
-      this.formats.put(ip.getDataFormat(), ip);
+      DataFormat df = ip.getDataFormat();
+      if (df != null) {
+        this.formats.put(df, ip);
+      }
     }
 
     // Define requirements
