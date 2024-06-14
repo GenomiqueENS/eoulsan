@@ -10,6 +10,7 @@
     <extension default="true">.fasta</extension>
     <extension>.fa</extension>
     <extension>.fna</extension>
+    <extension>.fsa</extension>
   </extensions>
   <galaxy>
     <formatname>fasta</formatname>
