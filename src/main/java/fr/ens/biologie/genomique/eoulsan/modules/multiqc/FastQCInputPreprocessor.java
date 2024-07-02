@@ -60,8 +60,8 @@ public class FastQCInputPreprocessor implements InputPreprocessor {
       // Define target log file
       DataFile fastQCReportFile = data.getDataFile(i);
 
-      // Create symbolic link
-      if (!fastQCReportFile.exists()) {
+      // Create output file
+      if (!outputFile.exists()) {
         DataFiles.copy(fastQCReportFile, outputFile);
       }
 

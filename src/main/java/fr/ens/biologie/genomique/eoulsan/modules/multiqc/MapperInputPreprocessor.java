@@ -63,7 +63,7 @@ public class MapperInputPreprocessor implements InputPreprocessor {
     // If STAR log exists create symbolic link to this log file
     if (starLog.exists()) {
       DataFile starLogSymlink =
-          new DataFile(multiQCInputDirectory, name + STAR_LOG_SUFFIX);
+          new DataFile(multiQCInputDirectory, name + '.' + STAR_LOG_SUFFIX);
       starLog.symlink(starLogSymlink);
     }
   }
