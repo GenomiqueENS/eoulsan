@@ -2,5 +2,5 @@ fr.ens.biologie.genomique.eoulsan.modules.multiqc.ExpressionInputPreprocessor
 fr.ens.biologie.genomique.eoulsan.modules.multiqc.FastQCInputPreprocessor
 fr.ens.biologie.genomique.eoulsan.modules.multiqc.FeatureCountsInputPreprocessor
 fr.ens.biologie.genomique.eoulsan.modules.multiqc.MapperInputPreprocessor
-fr.ens.biologie.genomique.eoulsan.modules.multiqc.RnaSeqMetricsPreprocessor
-fr.ens.biologie.genomique.eoulsan.modules.multiqc.CutAdaptPreprocessor
+fr.ens.biologie.genomique.eoulsan.modules.multiqc.RnaSeqMetricsInputPreprocessor
+fr.ens.biologie.genomique.eoulsan.modules.multiqc.CutAdaptInputPreprocessor
