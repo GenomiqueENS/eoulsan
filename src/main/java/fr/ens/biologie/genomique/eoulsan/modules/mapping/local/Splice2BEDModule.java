@@ -2,6 +2,7 @@ package fr.ens.biologie.genomique.eoulsan.modules.mapping.local;
 
 import static fr.ens.biologie.genomique.kenetre.bio.SAMUtils.parseIntervalsToBEDEntry;
 
+import java.io.File;
 import java.io.IOException;
 
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
@@ -14,7 +15,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractSplice2BEDModule;
 import fr.ens.biologie.genomique.kenetre.bio.BEDEntry;
 import fr.ens.biologie.genomique.kenetre.bio.EntryMetadata;
-import fr.ens.biologie.genomique.kenetre.bio.io.BEDWriter;
+import fr.ens.biologie.genomique.kenetre.bio.io.SortedBEDWriter;
 import fr.ens.biologie.genomique.kenetre.util.LocalReporter;
 import fr.ens.biologie.genomique.kenetre.util.Reporter;
 import htsjdk.samtools.SAMRecord;
@@ -56,7 +57,7 @@ public class Splice2BEDModule extends AbstractSplice2BEDModule {
       String trackColor = inData.getMetadata().get("TrackColor");
 
       convert(samFile, bedFile, trackName, trackDescription, trackColor,
-          reporter);
+          context.getLocalTempDirectory(), reporter);
 
       // Set the description of the context
       status.setDescription("Convert alignments to BED format ("
@@ -77,12 +78,16 @@ public class Splice2BEDModule extends AbstractSplice2BEDModule {
   private static void convert(final DataFile samDataFile,
       final DataFile bedDataFile, final String trackName,
       final String trackDescription, final String trackColor,
-      final Reporter reporter) throws IOException {
+      File temporaryDirectory, final Reporter reporter) throws IOException {
 
     try (
         final SamReader samReader = SamReaderFactory.makeDefault()
             .open(SamInputResource.of(samDataFile.open()));
-        final BEDWriter bedWriter = new BEDWriter(bedDataFile.create())) {
+        final SortedBEDWriter bedWriter =
+            new SortedBEDWriter(bedDataFile.create())) {
+
+      // Set the temporary directory for sorting data
+      bedWriter.setTemporaryDirectory(temporaryDirectory);
 
       // Define the metadata
       final EntryMetadata metadata = new EntryMetadata();
