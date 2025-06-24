@@ -54,8 +54,10 @@ import fr.ens.biologie.genomique.kenetre.util.ReporterIncrementer;
  */
 public abstract class AbstractReadsFilterModule extends AbstractModule {
 
+  /** Module name. */
   protected static final String MODULE_NAME = "filterreads";
 
+  /** Counter group used by this module. */
   protected static final String COUNTER_GROUP = "reads_filtering";
 
   private Map<String, String> readsFiltersParameters;

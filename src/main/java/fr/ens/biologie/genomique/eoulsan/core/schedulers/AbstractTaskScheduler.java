@@ -216,6 +216,7 @@ public abstract class AbstractTaskScheduler implements TaskScheduler {
   /**
    * Set the state of the context after executing a task.
    * @param context the context to execute
+   * @param result the task result
    */
   protected void afterExecuteTask(final TaskContextImpl context,
       final TaskResultImpl result) {

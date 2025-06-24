@@ -45,6 +45,9 @@ public abstract class AbstractEoulsanRuntime {
    */
   public enum EoulsanExecMode {
 
+    /**
+     * Execution modes.
+     */
     LOCAL, HADOOP, HADOOP_TASK, AMAZON, CLUSTER, CLUSTER_TASK, EXTERNAL_APP;
 
     /**
@@ -191,6 +194,10 @@ public abstract class AbstractEoulsanRuntime {
   // Constructor
   //
 
+  /**
+   * Protected constructor.
+   * @param settings settings of the runtime
+   */
   protected AbstractEoulsanRuntime(final Settings settings) {
 
     if (settings == null) {

@@ -147,6 +147,7 @@ public interface ClusterTaskScheduler extends TaskScheduler {
   /**
    * Get the status of a job.
    * @param jobId job id
+   * @return a StatusResult object
    * @throws IOException if an error occurs while getting the status of the job
    */
   StatusResult statusJob(final String jobId) throws IOException;

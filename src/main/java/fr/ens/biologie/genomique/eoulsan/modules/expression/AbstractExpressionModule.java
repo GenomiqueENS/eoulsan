@@ -66,12 +66,20 @@ import fr.ens.biologie.genomique.eoulsan.modules.CheckerModule;
  */
 public abstract class AbstractExpressionModule extends AbstractModule {
 
+  /** Module name. */
   public static final String MODULE_NAME = "expression";
+
+  /** Name of the counter group used by the module. */
   protected static final String COUNTER_GROUP = "expression";
 
+  /** Constant for counter parameter name. */
   public static final String COUNTER_PARAMETER_NAME = "counter";
+
+  /** Constant for file format parameter name. */
   public static final String FEATURES_FILE_FORMAT_PARAMETER_NAME =
       "features.file.format";
+
+  /** Constant for output file format parameter name. */
   public static final String OUTPUT_FILE_FORMAT_PARAMETER_NAME =
       "output.file.format";
 

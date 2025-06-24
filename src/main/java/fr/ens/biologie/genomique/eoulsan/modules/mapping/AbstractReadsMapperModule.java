@@ -55,6 +55,7 @@ import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
  */
 public abstract class AbstractReadsMapperModule extends AbstractModule {
 
+  /** Module name. */
   public static final String MODULE_NAME = "mapreads";
 
   protected static final String COUNTER_GROUP = "reads_mapping";

@@ -68,14 +68,21 @@ import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
  */
 public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
+  /** Module name. */
   public static final String MODULE_NAME = "filterandmap";
   private static final String COUNTER_GROUP = "filter_map_reads";
 
+  /** Reads port name. */
   protected static final String READS_PORT_NAME = "reads";
+
+  /** Mapper index port name. */
   protected static final String MAPPER_INDEX_PORT_NAME = "mapperindex";
+
+  /** Genome description index port name. */
   protected static final String GENOME_DESCRIPTION_PORT_NAME =
       "genomedescription";
 
+  /** Hadoop time out. */
   protected static final int HADOOP_TIMEOUT =
       AbstractReadsMapperModule.HADOOP_TIMEOUT;
 

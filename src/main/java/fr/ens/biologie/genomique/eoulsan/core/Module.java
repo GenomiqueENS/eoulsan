@@ -102,6 +102,7 @@ public interface Module {
    * Execute a task step.
    * @param context Execution context
    * @param status of the task
+   * @return a TaskResult object
    */
   TaskResult execute(TaskContext context, TaskStatus status);
 
