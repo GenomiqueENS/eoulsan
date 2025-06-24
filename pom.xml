@@ -5,7 +5,7 @@
 	<groupId>fr.ens.biologie.genomique</groupId>
 	<artifactId>eoulsan</artifactId>
 	<packaging>jar</packaging>
-	<version>2.6.2-SNAPSHOT</version>
+	<version>2.7-SNAPSHOT</version>
 	<name>Eoulsan</name>
 	<description>
 		A pipeline for NGS analysis.
@@ -20,7 +20,7 @@
 		<java.version>11</java.version>
 		<hadoop.version>2.3.0</hadoop.version>
 		<htsjdk.version>2.13.2</htsjdk.version>
-		<kenetre.version>0.33</kenetre.version>
+		<kenetre.version>0.37.0</kenetre.version>
 		<poi.version>4.1.2</poi.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -308,14 +308,14 @@
 	</mailingLists>
 
 	<repositories>
-		<repository>
+		<!--repository>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
 			<id>CHiBi</id>
 			<name>CHibi repository</name>
 			<url>http://www.chibi.ubc.ca/maven2</url>
-		</repository>
+		</repository-->
 
 		<repository>
 			<snapshots>
