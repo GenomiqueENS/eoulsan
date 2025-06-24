@@ -41,7 +41,6 @@ import org.testng.TestNG;
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.kenetre.it.ITFactory;
-import fr.ens.biologie.genomique.kenetre.it.ITSuite;
 import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 
 /**
@@ -298,25 +297,6 @@ public class IntegrationTestAction extends AbstractAction {
     // Launch integration tests using TestNG
     testng.run();
 
-    // Make a copy testNGReport in output test directory
-    final File reportDirectory = new File(testng.getOutputDirectory());
-
-    final File outputTestDirectory =
-        new File(ITSuite.getInstance().getOutputTestDirectoryPath());
-
-    if (reportDirectory.exists() && outputTestDirectory.exists()) {
-      // Build destination directory to copy TestNG report
-      final File destinationDirectory =
-          new File(outputTestDirectory, reportDirectory.getName());
-
-      // Copy TestNG directory
-      // try {
-      // FileUtils.copyDirectory(reportDirectory, destinationDirectory);
-      //
-      // } catch (final IOException e) {
-      // // Nothing to do
-      // }
-    }
   }
 
 }
