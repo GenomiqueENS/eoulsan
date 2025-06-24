@@ -1238,6 +1238,9 @@ o
 					<doctitle>${project.name} ${project.version} API</doctitle>
 					<overview>${basedir}/src/main/java/overview.html</overview>
 					<quiet>true</quiet>
+					<additionalOptions>
+						<additionalOption>-Xdoclint:all</additionalOption>
+					</additionalOptions>
 				</configuration>
 				<reportSets>
 					<reportSet>
