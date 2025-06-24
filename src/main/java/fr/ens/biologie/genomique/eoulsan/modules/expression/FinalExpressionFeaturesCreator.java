@@ -43,7 +43,6 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.kenetre.bio.expressioncounter.ExpressionCounter;
 import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import fr.ens.biologie.genomique.kenetre.util.StringUtils;
-import fr.ens.biologie.genomique.kenetre.util.Utils;
 
 /**
  * This class generates the final expression file after counting the alignments
@@ -102,7 +101,7 @@ public class FinalExpressionFeaturesCreator {
 
       final ExpressionFeature et = (ExpressionFeature) o;
 
-      if (Utils.equal(this.id, et.id)
+      if (Objects.equals(this.id, et.id)
           && this.alignmentCount == et.alignmentCount) {
         return true;
       }

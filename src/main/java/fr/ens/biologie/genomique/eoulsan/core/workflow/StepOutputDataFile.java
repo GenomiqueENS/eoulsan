@@ -26,11 +26,11 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toLetter;
-import static fr.ens.biologie.genomique.kenetre.util.Utils.equal;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
@@ -319,7 +319,7 @@ public final class StepOutputDataFile
 
     final StepOutputDataFile that = (StepOutputDataFile) o;
 
-    return equal(this.file, that.file);
+    return Objects.equals(this.file, that.file);
   }
 
   @Override
