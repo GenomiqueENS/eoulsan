@@ -308,15 +308,6 @@
 	</mailingLists>
 
 	<repositories>
-		<!--repository>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<id>CHiBi</id>
-			<name>CHibi repository</name>
-			<url>http://www.chibi.ubc.ca/maven2</url>
-		</repository-->
-
 		<repository>
 			<snapshots>
 				<enabled>true</enabled>
