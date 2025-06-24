@@ -35,10 +35,9 @@ import fr.ens.biologie.genomique.kenetre.util.ReporterIncrementer;
  * @since 1.0
  * @author Laurent Jourdren
  */
-@SuppressWarnings("unchecked")
 public class HadoopReporterIncrementer implements ReporterIncrementer {
 
-  private final TaskInputOutputContext context;
+  private final TaskInputOutputContext<?,?,?,?> context;
 
   @Override
   public void incrCounter(final String counterGroup, final String counterName,
@@ -55,7 +54,7 @@ public class HadoopReporterIncrementer implements ReporterIncrementer {
    * Constructor.
    * @param context context to use for counter incrementation
    */
-  public HadoopReporterIncrementer(final TaskInputOutputContext context) {
+  public HadoopReporterIncrementer(final TaskInputOutputContext<?,?,?,?> context) {
 
     requireNonNull(context, "Context is null");
 

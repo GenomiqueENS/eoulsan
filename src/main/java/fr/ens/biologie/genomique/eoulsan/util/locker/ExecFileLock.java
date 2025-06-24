@@ -42,6 +42,7 @@ public class ExecFileLock implements Locker {
   private FileChannel lockChannel;
   private boolean released;
 
+  @SuppressWarnings("resource")
   @Override
   public void lock() throws IOException {
 

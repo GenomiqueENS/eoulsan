@@ -55,7 +55,6 @@ import fr.ens.biologie.genomique.kenetre.util.process.SimpleProcess;
 @LocalOnly
 public class MACS2Module extends AbstractModule {
 
-  private static final String CALLER_NAME = "MACS2";
   private static final String CALLER_EXECUTABLE = "macs2";
 
   // Group for Hadoop counters.

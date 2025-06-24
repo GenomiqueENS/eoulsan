@@ -50,10 +50,10 @@ public class TicketSchedulerServer implements TicketScheduler {
   private final Map<Ticket, Ticket> tickets = new HashMap<>();
   private final Set<Ticket> toRemove = new HashSet<>();
 
-  private static final int maxWorkingTime = 2 * 60 * 1000;
-  private static final int deadTime = 30 * 1000;
+  private static final int MAX_WORKING_TIME = 2 * 60 * 1000;
+  private static final int DEAD_TIME = 30 * 1000;
 
-  private static final int checkingTime = 10 * 1000;
+  private static final int CHECKING_TIME = 10 * 1000;
   private long lastCheckingTime = 0;
 
   @Override
@@ -103,12 +103,12 @@ public class TicketSchedulerServer implements TicketScheduler {
   private void check() {
 
     final long currentTime = System.currentTimeMillis();
-    if (currentTime > this.lastCheckingTime + this.checkingTime) {
+    if (currentTime > this.lastCheckingTime + CHECKING_TIME) {
 
       // Check for waiting dead ticket
       for (Ticket t : this.tickets.values()) {
         if (!t.isWorking()
-            && currentTime > t.getLastActiveTime() + this.deadTime) {
+            && currentTime > t.getLastActiveTime() + DEAD_TIME) {
           this.toRemove.add(t);
         }
       }
@@ -116,7 +116,7 @@ public class TicketSchedulerServer implements TicketScheduler {
       // Check for active ticket dead
       if (this.currentActive != null
           && currentTime > this.currentActive.getLastActiveTime()
-              + this.maxWorkingTime) {
+              + MAX_WORKING_TIME) {
         this.toRemove.add(this.currentActive);
         this.currentActive = null;
       }

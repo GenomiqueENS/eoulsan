@@ -67,50 +67,51 @@ public final class Utils {
 	{
 		int pos = indent;
 
-		final Scanner words = new Scanner(str);
-
-		// Print the first word out here to avoid a spurious line break if it
-		// would wrap.
-		if (words.hasNext()) {
-			final String word = words.next();
-			out.print(word);
-			pos += word.length();
-		}
-		boolean addSpace = true;
-		while (words.hasNext()) {
-			final String word = words.next();
-			final int    wend = words.match().end();
-
-			pos += word.length();
-			if (addSpace)
-				++pos;
-
-			if (pos < wrapAt) {
-				if (addSpace)
-					out.print(' ');
+		try (Scanner words = new Scanner(str)) {
+			// Print the first word out here to avoid a spurious line break if it
+			// would wrap.
+			if (words.hasNext()) {
+				final String word = words.next();
 				out.print(word);
-			} else {
-				pos = indent + word.length();
-				out.print('\n');
-				for (int i = indent; i-- > 0;)
-					out.print(' ');
-				out.print(word);
+				pos += word.length();
 			}
+			boolean addSpace = true;
+			while (words.hasNext()) {
+				final String word = words.next();
+				final int    wend = words.match().end();
 
-			if (wend < str.length() && str.charAt(wend) == '\n') {
-				pos = indent;
-				addSpace = false;
+				pos += word.length();
+				if (addSpace)
+					++pos;
 
-				int i = wend;
-				do
+				if (pos < wrapAt) {
+					if (addSpace)
+						out.print(' ');
+					out.print(word);
+				} else {
+					pos = indent + word.length();
 					out.print('\n');
-				while (++i < str.length() && str.charAt(i) == '\n');
+					for (int i = indent; i-- > 0;)
+						out.print(' ');
+					out.print(word);
+				}
 
-				for (i = indent; i-- > 0;)
-					out.print(' ');
-			} else
-				addSpace = true;
+				if (wend < str.length() && str.charAt(wend) == '\n') {
+					pos = indent;
+					addSpace = false;
+
+					int i = wend;
+					do
+						out.print('\n');
+					while (++i < str.length() && str.charAt(i) == '\n');
+
+					for (i = indent; i-- > 0;)
+						out.print(' ');
+				} else
+					addSpace = true;
+			}
 		}
+
 		out.print('\n');
 	}
 

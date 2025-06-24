@@ -37,7 +37,6 @@ import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Progress;
 import fr.ens.biologie.genomique.eoulsan.util.EoulsanDockerManager;
 import fr.ens.biologie.genomique.kenetre.util.process.DockerImageInstance;
-import fr.ens.biologie.genomique.kenetre.util.process.DockerManager;
 
 /**
  * This class define a Docker requirement.

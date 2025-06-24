@@ -299,6 +299,8 @@ public class DistributedLock {
               String.format("Current ZK session expired![%s]", currentId));
           cancelAttempt();
           break;
+          default:
+            throw new IllegalStateException();
         }
       } else if (event.getType() == Event.EventType.NodeDeleted) {
         checkForLock();
