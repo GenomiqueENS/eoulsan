@@ -1237,6 +1237,7 @@ o
 					<encoding>utf-8</encoding>
 					<doctitle>${project.name} ${project.version} API</doctitle>
 					<overview>${basedir}/src/main/java/overview.html</overview>
+					<show>public</show>
 					<quiet>true</quiet>
 					<additionalOptions>
 						<additionalOption>-Xdoclint:all</additionalOption>
