@@ -17,7 +17,7 @@
 		<didyouknow>Did you know that eoulsan is the breton word for pipeline?
 		</didyouknow>
 
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 		<hadoop.version>2.3.0</hadoop.version>
 		<htsjdk.version>2.13.2</htsjdk.version>
 		<kenetre.version>0.37.0</kenetre.version>
