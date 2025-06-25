@@ -201,6 +201,7 @@ public interface DataProtocol {
 
   /**
    * Get the underlying File object for the DataFile if the protocol allow it.
+   * @param src source DataFile
    * @return a File object or null if the protocol does not allow it
    */
   File getSourceAsFile(DataFile src);

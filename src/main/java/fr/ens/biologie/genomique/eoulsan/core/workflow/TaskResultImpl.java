@@ -160,6 +160,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
   /**
    * Deserialize the TaskResult object.
    * @param file input DataFile
+   * @return a deserialized TaskResultImpl object
    * @throws IOException if an error occurs while reading the file
    */
   public static TaskResultImpl deserialize(final File file) throws IOException {
@@ -172,6 +173,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
   /**
    * Deserialize the TaskResult object.
    * @param file input DataFile
+   * @return a deserialized TaskResultImpl object
    * @throws IOException if an error occurs while reading the file
    */
   public static TaskResultImpl deserialize(final DataFile file)
@@ -185,6 +187,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
   /**
    * Deserialize the TaskResult object.
    * @param in input stream
+   * @return a deserialized TaskResultImpl object
    * @throws IOException if an error occurs while reading the file
    */
   public static TaskResultImpl deserialize(final InputStream in)

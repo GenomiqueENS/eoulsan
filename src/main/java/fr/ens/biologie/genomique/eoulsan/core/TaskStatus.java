@@ -74,12 +74,14 @@ public interface TaskStatus extends Progress {
 
   /**
    * Create a TaskResult object for a successful result.
+   * @return a TaskResult object
    */
   TaskResult createTaskResult();
 
   /**
    * Create a TaskResult object.
    * @param success true if the task is successful
+   * @return a TaskResult object
    */
   TaskResult createTaskResult(boolean success);
 
@@ -87,12 +89,14 @@ public interface TaskStatus extends Progress {
    * Create a TaskResult object.
    * @param exception exception of the error
    * @param exceptionMessage Error message
+   * @return a TaskResult object
    */
   TaskResult createTaskResult(Throwable exception, String exceptionMessage);
 
   /**
    * Create a TaskResult object.
    * @param exception exception of the error
+   * @return a TaskResult object
    */
   TaskResult createTaskResult(Throwable exception);
 

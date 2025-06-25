@@ -66,10 +66,11 @@ public class StepInstances {
   }
 
   /**
-   * Get a step instance.
+   * Get a module instance.
    * @param step workflow step
-   * @param moduleVersion step version
-   * @return a step instance
+   * @param moduleName module name
+   * @param moduleVersion module version
+   * @return a Module instance
    * @throws EoulsanException if an error occurs while loading the step
    */
   public Module getModule(final Step step, final String moduleName,

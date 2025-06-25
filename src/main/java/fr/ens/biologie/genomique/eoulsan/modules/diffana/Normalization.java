@@ -87,7 +87,9 @@ public class Normalization {
   //
 
   /**
-   * Run normalisation step
+   * Run normalisation step.
+   * @param context task context
+   * @param data data to process
    * @throws EoulsanException if the number of sample to analyze if lower than
    *           one
    */

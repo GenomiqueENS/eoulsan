@@ -277,6 +277,7 @@ public final class ProcessUtils {
    * Execute a command with the OS and return the output in a string.
    * @param cmd Command to execute
    * @param addStdErr add the output of stderr in the result
+   * @param checkExitCode if true exit code will be checked
    * @return a string with the output the command
    * @throws IOException if an error occurs while running the process
    */
@@ -390,6 +391,7 @@ public final class ProcessUtils {
 
   /**
    * Return a set withs pid of existing executable.
+   * @param executableName executable name
    * @return a set of integers with pid of existing executable
    */
   public static Set<Integer> getExecutablePids(final String executableName) {

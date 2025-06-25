@@ -127,6 +127,7 @@ public class DockerRequirement extends AbstractRequirement {
   /**
    * Create a new docker image as mandatory requirement.
    * @param dockerImage the docker image name.
+   * @return a new Requirement object
    * @throws EoulsanException if an error occurs while configuring the
    *           requirement
    */
@@ -140,6 +141,7 @@ public class DockerRequirement extends AbstractRequirement {
    * Create a new docker image requirement.
    * @param dockerImage the docker image
    * @param optional true if the docker image is a mandatory requirement
+   * @return a new Requirement object
    * @throws EoulsanException if an error occurs while configuring the
    *           requirement
    */

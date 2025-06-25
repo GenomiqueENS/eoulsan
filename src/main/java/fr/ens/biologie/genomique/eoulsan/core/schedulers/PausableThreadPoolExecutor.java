@@ -51,6 +51,7 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 
   /**
    * Submit a task.
+   * @param <T> result class
    * @param task the task to submmit
    * @param result the result
    * @param requiredProcessors the required processor number

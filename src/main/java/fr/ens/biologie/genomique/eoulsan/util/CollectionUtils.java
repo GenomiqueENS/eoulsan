@@ -36,7 +36,8 @@ import java.util.Collections;
 public class CollectionUtils {
 
   /**
-   * Return an empty collection if the input collection is null;
+   * Return an empty collection if the input collection is null.
+   * @param <E> collection type
    * @param c input collection
    * @return a collection
    */

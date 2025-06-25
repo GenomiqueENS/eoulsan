@@ -57,6 +57,8 @@ public class Modules {
    * Show a message for deprecated parameters.
    * @param context the step configuration context
    * @param parameter the deprecated parameter
+   * @param throwException if true, an exception will be thrown if the parameter
+   *          is deprecated
    * @throws EoulsanException throw an exception if required
    */
   public static void deprecatedParameter(final StepConfigurationContext context,
@@ -73,6 +75,8 @@ public class Modules {
    * Show a message for deprecated parameters.
    * @param stepId the step identifier
    * @param parameter the deprecated parameter
+   * @param throwException if true, an exception will be thrown if the parameter
+   *          is deprecated
    * @throws EoulsanException throw an exception if required
    */
   public static void deprecatedParameter(final String stepId,
@@ -160,6 +164,7 @@ public class Modules {
    * Throw a exception for removed parameters.
    * @param context the step configuration context
    * @param parameter the deprecated parameter
+   * @throws EoulsanException if the parameter has been removed
    */
   public static void removedParameter(final StepConfigurationContext context,
       final Parameter parameter) throws EoulsanException {
@@ -173,6 +178,7 @@ public class Modules {
    * Throw a exception for removed parameters.
    * @param stepId the step identifier
    * @param parameter the deprecated parameter
+   * @throws EoulsanException if the parameter has been removed
    */
   public static void removedParameter(final String stepId,
       final Parameter parameter) throws EoulsanException {
@@ -189,6 +195,7 @@ public class Modules {
    * Throw a exception for unknown parameters.
    * @param context the step configuration context
    * @param parameter the deprecated parameter
+   * @throws EoulsanException if the parameter is unknown
    */
   public static void unknownParameter(final StepConfigurationContext context,
       final Parameter parameter) throws EoulsanException {
@@ -202,6 +209,7 @@ public class Modules {
    * Throw a exception for unknown parameters.
    * @param stepId the step identifier
    * @param parameter the deprecated parameter
+   * @throws EoulsanException if the parameter is unknown
    */
   public static void unknownParameter(final String stepId,
       final Parameter parameter) throws EoulsanException {
@@ -218,6 +226,7 @@ public class Modules {
    * @param context the step configuration context
    * @param parameter the deprecated parameter
    * @param message error message
+   * @throws EoulsanException if the parameter value is invalid
    */
   public static void badParameterValue(final StepConfigurationContext context,
       final Parameter parameter, final String message) throws EoulsanException {
@@ -232,6 +241,7 @@ public class Modules {
    * @param stepId the step identifier
    * @param parameter the deprecated parameter
    * @param message error message
+   * @throws EoulsanException if the parameter value is invalid
    */
   public static void badParameterValue(final String stepId,
       final Parameter parameter, final String message) throws EoulsanException {
@@ -249,6 +259,7 @@ public class Modules {
    * Throw a exception for an invalid configuration.
    * @param context the step configuration context
    * @param message error message
+   * @throws EoulsanException if the configuration is invalid
    */
   public static void invalidConfiguration(
       final StepConfigurationContext context, final String message)
@@ -263,6 +274,7 @@ public class Modules {
    * Throw a exception for an invalid configuration.
    * @param stepId the step identifier
    * @param message error message
+   * @throws EoulsanException if the configuration is invalid
    */
   public static void invalidConfiguration(final String stepId,
       final String message) throws EoulsanException {

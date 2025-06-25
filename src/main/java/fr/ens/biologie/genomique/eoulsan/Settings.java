@@ -197,6 +197,7 @@ public final class Settings implements Serializable {
 
   /**
    * Test if a setting key exists.
+   * @param key key to test
    * @return true if the setting exist
    */
   public boolean isSetting(final String key) {
@@ -728,6 +729,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get a setting value.
+   * @param settingName setting name
    * @return settingName value as a String
    */
   public String getSetting(final String settingName) {
@@ -744,7 +746,8 @@ public final class Settings implements Serializable {
   }
 
   /**
-   * Get the value of the setting as a integer value
+   * Get the value of the setting as a integer value.
+   * @param settingName setting name
    * @return the value of the setting as an integer
    * @throws EoulsanException if the value is not an integer
    */
@@ -774,7 +777,8 @@ public final class Settings implements Serializable {
   }
 
   /**
-   * Get the value of the setting as a double value
+   * Get the value of the setting as a double value.
+   * @param settingName setting name
    * @return the value of the setting as an double
    * @throws EoulsanException if the value is not an double
    */
@@ -805,7 +809,8 @@ public final class Settings implements Serializable {
   }
 
   /**
-   * Get the value of the setting as a boolean value
+   * Get the value of the setting as a boolean value.
+   * @param settingName setting name
    * @return the value of the setting as an integer
    */
   public boolean getBooleanSetting(final String settingName) {
@@ -1213,7 +1218,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set if when use Docker, NFS roots must been mounted instead of file paths.
-   * param value the value of the parameter
+   * @param enable the value of the parameter
    */
   public void setDockerMountNFSRoots(final boolean enable) {
 

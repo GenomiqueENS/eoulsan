@@ -88,6 +88,7 @@ public class Parameter implements Serializable, Comparable<Parameter> {
   /**
    * Get the value of the parameter as a integer value.
    * @return the value as an integer
+   * @throws EoulsanException if the parameter if not an integer
    */
   public int getIntValue() throws EoulsanException {
 
@@ -108,6 +109,7 @@ public class Parameter implements Serializable, Comparable<Parameter> {
    * is greater or equals to the min parameter value.
    * @param min minimal value (included)
    * @return the value as an integer
+   * @throws EoulsanException if the parameter if not in the range
    */
   public int getIntValueGreaterOrEqualsTo(final int min)
       throws EoulsanException {
@@ -121,6 +123,7 @@ public class Parameter implements Serializable, Comparable<Parameter> {
    * @param min minimal value (included)
    * @param max maximal value (included)
    * @return the value as an integer
+   * @throws EoulsanException if the parameter if not in the range
    */
   public int getIntValueInRange(final int min, final int max)
       throws EoulsanException {
@@ -148,6 +151,7 @@ public class Parameter implements Serializable, Comparable<Parameter> {
   /**
    * Get the value of the parameter as a double value.
    * @return the value as an integer
+   * @throws EoulsanException if the parameter if not a double
    */
   public double getDoubleValue() throws EoulsanException {
 

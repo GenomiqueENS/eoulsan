@@ -56,12 +56,33 @@ import htsjdk.samtools.util.BlockCompressedStreamConstants;
 
 @SuppressWarnings("deprecation")
 public final class Utils {
+
+    /**
+     * Print wrapped.
+     * @param out print stream
+     * @param str string to write
+     */
 	public static void printWrapped(PrintStream out, String str) {
 		printWrapped(out, str, 0);
 	}
+
+    /**
+     * Print wrapped.
+     * @param out print stream
+     * @param str string to write
+     * @param indent indentation
+     */
 	public static void printWrapped(PrintStream out, String str, int indent) {
 		printWrapped(out, str, indent, 80);
 	}
+
+    /**
+     * Print wrapped.
+     * @param out print stream
+     * @param str string to write
+     * @param indent indentation
+     * @param wrapAt position to wrap
+     */
 	public static void printWrapped(
 		PrintStream out, String str, int indent, int wrapAt)
 	{
@@ -142,11 +163,23 @@ public final class Utils {
 
 		return argv0;
 	}
+
+	/**
+	 * Set the arg0 class.
+	 * @param cl the class to set
+	 */
 	public static void setArgv0Class(Class<?> cl) {
 		argv0Class = cl;
 		argv0 = null;
 	}
 
+	/**
+	 * Configure sampling.
+	 * @param workDir work directory
+	 * @param outName output name
+	 * @param conf Hadoop configuration
+	 * @throws IOException if an error occurs while configuring the sampling
+	 */
 	public static void configureSampling(
 			Path workDir, String outName, Configuration conf)
 		throws IOException
@@ -176,6 +209,12 @@ public final class Utils {
 	 * The filename is the value of WORK_FILENAME_PROPERTY surrounded by
 	 * basePrefix and basePostfix, followed by the part number and with the
 	 * given extension.
+	 * @param directory the directory
+	 * @param basePrefix base prefix
+	 * @param basePostfix base postfix
+	 * @param ctx task context
+	 * @param extension the extension
+	 * @return a Path
 	 */
 	public static Path getMergeableWorkFile(
 			Path directory, String basePrefix, String basePostfix,
@@ -195,6 +234,13 @@ public final class Utils {
 	 * getMergeableWorkFile() into out.
 	 *
 	 * Outputs progress reports if commandName is non-null.
+	 * @param out out stream
+	 * @param directory directory
+     * @param basePrefix base prefix
+     * @param basePostfix base postfix
+     * @param conf Hadoop configuration
+     * @param commandName command name
+     * @throws IOException if an error occurs while merging
 	 */
 	public static void mergeInto(
 			OutputStream out,
@@ -234,6 +280,11 @@ public final class Utils {
 	private static final String
 		HEADERMERGER_SORTORDER_PROP = "hadoopbam.headermerger.sortorder";
 
+	/**
+	 * Set Header merger order.
+	 * @param conf Hadoop configuration
+	 * @param order order to use
+	 */
 	public static void setHeaderMergerSortOrder(
 		Configuration conf, SAMFileHeader.SortOrder order)
 	{
@@ -252,6 +303,9 @@ public final class Utils {
 	 *
 	 * The result is cached locally to prevent it from being recomputed too
 	 * often.
+	 * @param conf Hadoop configuration
+	 * @return a SamFileHeaderMerger object
+	 * @throws IOException if an error occurs while getting the header
 	 */
 	public static SamFileHeaderMerger getSAMHeaderMerger(Configuration conf)
 		throws IOException
@@ -286,6 +340,9 @@ public final class Utils {
 
 	/** Changes the given SAMRecord as appropriate for being placed in a file
 	 * whose header is getSAMHeaderMerger(conf).getMergedHeader().
+	 * @param r SAM record
+	 * @param conf Hadoop configuration
+     * @throws IOException if an error occurs
 	 */
 	public static void correctSAMRecordForMerging(
 			SAMRecord r, Configuration conf)
@@ -333,6 +390,14 @@ public final class Utils {
 	 * getSAMHeaderMerger().getMergedHeader() as the header.
 	 *
 	 * Outputs progress reports if commandName is non-null.
+	 * @param out out stream
+     * @param directory directory
+     * @param basePrefix base prefix
+     * @param basePostfix base postfix
+     * @param format SAM format
+     * @param conf Hadoop configuration
+     * @param commandName command name
+     * @throws IOException if an error occurs while merging
 	 */
 	public static void mergeSAMInto(
 			Path out, Path directory, String basePrefix, String basePostfix,
@@ -366,6 +431,11 @@ public final class Utils {
 	}
 
 	private static String stringencyOptHelp = null;
+
+	/**
+	 * Get stringency option help
+	 * @return a string with the help
+	 */
 	public static String getStringencyOptHelp() {
 		if (stringencyOptHelp != null)
 			return stringencyOptHelp;

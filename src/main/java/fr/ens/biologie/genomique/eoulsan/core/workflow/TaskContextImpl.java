@@ -558,6 +558,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    * Deserialize the TaskContext object. Warning: this method update the values
    * of the settings of the Eoulsan runtime.
    * @param file input DataFile
+   * @return a deserialized TaskContextImpl object
    * @throws IOException if an error occurs while reading the file
    */
   public static TaskContextImpl deserialize(final File file)
@@ -574,6 +575,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    * Deserialize the TaskContext object. Warning: this method update the values
    * of the settings of the Eoulsan runtime.
    * @param file input DataFile
+   * @return a deserialized TaskContextImpl object
    * @throws IOException if an error occurs while reading the file
    */
   public static TaskContextImpl deserialize(final DataFile file)
@@ -590,6 +592,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
    * Deserialize the TaskContext object. Warning: this method update the values
    * of the settings of the Eoulsan runtime.
    * @param in input stream
+   * @return a deserialized TaskContextImpl object
    * @throws IOException if an error occurs while reading the file
    */
   public static TaskContextImpl deserialize(final InputStream in)

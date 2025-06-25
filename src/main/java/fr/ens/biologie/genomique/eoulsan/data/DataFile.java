@@ -169,6 +169,7 @@ public class DataFile implements Comparable<DataFile>, Serializable {
   /**
    * Get the protocol of this DataFile.
    * @return a DataProtocol
+   * @throws IOException if the protocol is unknown
    */
   public DataProtocol getProtocol() throws IOException {
 
@@ -689,6 +690,8 @@ public class DataFile implements Comparable<DataFile>, Serializable {
    * Deserialize the object.
    * @param in the object input stream
    * @throws IOException if an error occurs while deserializing the object
+   * @throws ClassNotFoundException if class not found while deserializing the
+   *           object
    */
   private void readObject(final ObjectInputStream in)
       throws IOException, ClassNotFoundException {

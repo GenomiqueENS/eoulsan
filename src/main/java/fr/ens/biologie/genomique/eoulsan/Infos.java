@@ -165,6 +165,7 @@ public class Infos {
      * Constructor.
      * @param name name of the info
      * @param values values of the info
+     * @param defaultValue defaultValue
      */
     public Info(final String name, final List<String> values,
         final String defaultValue) {
@@ -362,6 +363,8 @@ public class Infos {
   /**
    * Get information about the partition of a file.
    * @param partition a file in the partition
+   * @return a Info object with disk free information
+   * @throws IOException if en error occurs while getting disk information
    */
   public static Info diskFreeInfo(final File partition) throws IOException {
 

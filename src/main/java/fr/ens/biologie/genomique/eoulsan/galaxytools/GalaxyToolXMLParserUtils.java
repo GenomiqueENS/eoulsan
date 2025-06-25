@@ -164,6 +164,7 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Extract conditional param element.
+   * @param toolInfo tool info object
    * @param parent the parent
    * @return the map
    * @throws EoulsanException the Eoulsan exception
@@ -176,6 +177,7 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Extract conditional param element.
+   * @param toolInfo tool info object
    * @param parent the parent
    * @param stepParameters the step parameters
    * @return the map
@@ -209,6 +211,7 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Extract elements by tag name.
+   * @param toolInfo tool info object
    * @param doc the doc
    * @param tagName the tag name
    * @return the list
@@ -260,6 +263,7 @@ public final class GalaxyToolXMLParserUtils {
    * Create an EoulsanException.
    * @param toolInfo toolInfo object
    * @param message error message
+   * @return a new EoulsanException
    * @throws EoulsanException in any case
    */
   public static EoulsanException newEoulsanException(final ToolInfo toolInfo,
@@ -274,6 +278,7 @@ public final class GalaxyToolXMLParserUtils {
    * @param toolInfo toolInfo object
    * @param parameterName parameter name
    * @param message error message
+   * @return a new EoulsanException
    * @throws EoulsanException in any case
    */
   public static EoulsanException newEoulsanException(final ToolInfo toolInfo,

@@ -46,6 +46,7 @@ public interface StepObserver {
    * @param step step that the progress has been changed
    * @param contextId id of the context
    * @param contextName name of the context that has been changed
+   * @param progress progress value
    */
   void notifyStepState(Step step, int contextId, String contextName,
       double progress);
@@ -63,6 +64,7 @@ public interface StepObserver {
   /**
    * The note of the step has been changed.
    * @param step step that the note has been changed
+   * @param note the note content
    */
   void notifyStepState(Step step, String note);
 

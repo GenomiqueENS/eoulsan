@@ -25,8 +25,8 @@ public class ExpressionCounterUtils {
    * @param genomeDesc genome description
    * @param annotationFile annotation file
    * @param gtfFormat true if the input format is in GTF format
-   * @throws EoulsanException if an error occurs while initialize the counter
-   * @throws KenetreException if an error occurs while reading input files
+   * @throws KenetreException if an error occurs while initialize the counter
+   * @throws IOException if an error occurs while reading input files
    */
   public static void init(final ExpressionCounter counter,
       final GenomeDescription genomeDesc, final DataFile annotationFile,
@@ -64,9 +64,9 @@ public class ExpressionCounterUtils {
    * @param reporter the reporter
    * @param counterGroup the counter group of the reporter
    * @return a map with the counts
-   * @throws EoulsanException if an error occurs while counting
+   * @throws KenetreException if an error occurs while counting
    * @throws IOException if an error occurs while reading the input file
-   * @throws KenetreException
+   * @throws KenetreException if an errors occurs while counting
    */
   public static Map<String, Integer> count(final ExpressionCounter counter,
       final DataFile samFile, final ReporterIncrementer reporter,

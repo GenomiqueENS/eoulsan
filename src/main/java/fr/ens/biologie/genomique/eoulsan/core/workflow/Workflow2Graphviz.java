@@ -231,6 +231,7 @@ public class Workflow2Graphviz {
 
   /**
    * Convert and save the workflow as an image file.
+   * @return true if image successfully saved
    */
   public boolean saveImageFile() {
 

@@ -218,6 +218,7 @@ public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
    * Public constructor.
    * @param clazz the Class type of the resource to load @param resourcePath the
    *          path to the resource to load
+   * @param resourcePath ressource path
    */
   public FileResourceLoader(final Class<S> clazz, final DataFile resourcePath) {
 

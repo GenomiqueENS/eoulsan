@@ -134,6 +134,10 @@ public class ZooKeeperLocker implements Locker, Watcher {
 
   /**
    * Public constructor.
+   * @param connectString Zookeeper connection string
+   * @param sessionTimeout session time out
+   * @param lockBasePath lock base path
+   * @param lockName lock name
    * @throws IOException if an error occurs while creating the ZooKeeper
    *           connection
    */

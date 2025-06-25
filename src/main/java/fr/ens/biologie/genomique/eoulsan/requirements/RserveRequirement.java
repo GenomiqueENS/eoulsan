@@ -88,6 +88,7 @@ public class RserveRequirement extends AbstractRequirement {
   /**
    * Create a new mandatory Rserve requirement.
    * @param rserveServerName the Rserve server name
+   * @return a new Requirement object
    */
   public static Requirement newRserveRequirement(
       final String rserveServerName) {
@@ -99,6 +100,7 @@ public class RserveRequirement extends AbstractRequirement {
    * Create a new Rserve requirement.
    * @param rserveServerName the Rserve server name
    * @param optional true if the Rserve server is a mandatory requirement
+   * @return a new Requirement object
    */
   public static Requirement newRserveRequirement(final String rserveServerName,
       final boolean optional) {

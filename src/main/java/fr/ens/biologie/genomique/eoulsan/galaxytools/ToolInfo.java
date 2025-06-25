@@ -121,6 +121,7 @@ public class ToolInfo {
 
   /**
    * Get the interpreter.
+   * @param dockerEnabled enable docker container
    * @return the interpreter
    */
   public String getInterpreter(final boolean dockerEnabled) {

@@ -119,6 +119,7 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
   /**
    * Public constructor, initialize the runtime.
    * @param settings Settings of the application
+   * @return a local Eoulsan runtime
    */
   public static LocalEoulsanRuntime newEoulsanRuntime(final Settings settings) {
 

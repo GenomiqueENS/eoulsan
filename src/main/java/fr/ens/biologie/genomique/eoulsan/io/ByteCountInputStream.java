@@ -149,6 +149,7 @@ public class ByteCountInputStream extends FilterInputStream {
   /**
    * Public constructor
    * @param is inputStream
+   * @param attemptNRead attempt read count
    */
   public ByteCountInputStream(final InputStream is, final long attemptNRead) {
 

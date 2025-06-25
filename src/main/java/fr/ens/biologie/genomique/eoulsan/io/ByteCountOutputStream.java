@@ -152,6 +152,7 @@ public class ByteCountOutputStream extends FilterOutputStream {
   /**
    * Public constructor.
    * @param os output stream
+   * @param attemptedNWritten attempt write count
    */
   public ByteCountOutputStream(final OutputStream os,
       final long attemptedNWritten) {

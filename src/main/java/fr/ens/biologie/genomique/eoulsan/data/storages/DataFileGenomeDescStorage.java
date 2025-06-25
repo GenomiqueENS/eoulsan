@@ -91,6 +91,7 @@ public class DataFileGenomeDescStorage extends AbstractFileGenomeDescStorage {
   /**
    * Create a GenomeDescStorage
    * @param dir the path of the genome descriptions storage
+   * @param logger to use
    * @return a GenomeDescStorage object if the path contains an index storage or
    *         null if no index storage is found
    */

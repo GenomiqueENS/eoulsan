@@ -45,7 +45,8 @@ public interface Checker {
   String getName();
 
   /**
-   * Test if the Checker is a design checker
+   * Test if the Checker is a design checker.
+   * @return true if this a design checker
    */
   boolean isDesignChecker();
 
@@ -67,6 +68,7 @@ public interface Checker {
    * @param data data to check
    * @param checkInfo object that contains data shared between the checkers
    * @throws EoulsanException if an error occurs while executing step
+   * @return true if check pass
    */
   boolean check(Data data, CheckStore checkInfo) throws EoulsanException;
 

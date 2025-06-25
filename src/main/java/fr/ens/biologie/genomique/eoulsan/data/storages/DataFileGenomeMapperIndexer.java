@@ -71,6 +71,7 @@ public class DataFileGenomeMapperIndexer extends FileGenomeMapperIndexer {
    * @param mapperInstance Mapper to use for the index generator
    * @param additionalArguments additional indexer arguments
    * @param additionalDescription additional indexer arguments description
+   * @param threads thread count to use
    * @param storage the genome index storage
    * @param temporaryDirectory temporary directory for the indexer
    * @param logger the logger

@@ -37,6 +37,7 @@ public final class ContextUtils {
 
   /**
    * Get the job directory.
+   * @param context task context
    * @return Returns the job directory
    */
   public static DataFile getJobDirectory(final TaskContext context) {
@@ -54,6 +55,7 @@ public final class ContextUtils {
 
   /**
    * Get the application jar file.
+   * @param context task context
    * @return Returns the jar file
    */
   public static DataFile getJarPathname(final TaskContext context) {
@@ -71,6 +73,7 @@ public final class ContextUtils {
 
   /**
    * Get the local working directory.
+   * @param context task context
    * @return Returns the local working directory
    */
   public static DataFile getLocalWorkingDirectory(final TaskContext context) {
@@ -89,6 +92,7 @@ public final class ContextUtils {
 
   /**
    * Get the Hadoop working directory.
+   * @param context task context
    * @return Returns the Hadoop working directory
    */
   public static DataFile getHadoopWorkingDirectory(final TaskContext context) {
@@ -107,6 +111,7 @@ public final class ContextUtils {
 
   /**
    * Get the task output directory.
+   * @param context task context
    * @return Returns the task output directory
    */
   public static DataFile getTaskOutputDirectory(final TaskContext context) {

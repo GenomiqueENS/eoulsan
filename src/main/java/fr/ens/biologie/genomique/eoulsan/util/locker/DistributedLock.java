@@ -60,7 +60,6 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
  * but the zk-client thread is still alive. There could be an external monitor
  * client that ensures that alerts are triggered if the least-id ephemeral node
  * is present past a time-out.
- * <p/>
  * Note: Locking attempts will fail in case session expires!
  * @author Florian Leibert
  */

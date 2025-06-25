@@ -596,6 +596,7 @@ public class GalaxyToolInterpreter {
   /**
    * Public constructor.
    * @param in the input stream
+   * @param toolSource tool source
    * @throws EoulsanException the Eoulsan exception
    */
   public GalaxyToolInterpreter(final InputStream in, final String toolSource)

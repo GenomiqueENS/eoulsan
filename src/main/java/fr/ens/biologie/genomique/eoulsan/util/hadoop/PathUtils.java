@@ -267,6 +267,7 @@ public final class PathUtils {
    * @param srcPath Path of the file to copy
    * @param destFile Destination file
    * @param conf Configuration object * @return true if the copy is successful
+   * @return true if the copy is successful
    * @throws IOException if an error occurs while copying file
    */
   public static boolean copyFromPathToLocalFile(final Path srcPath,
@@ -726,6 +727,7 @@ public final class PathUtils {
    * @param directory parent directory of the temporary file to create
    * @param prefix Prefix of the temporary file
    * @param suffix suffix of the temporary file
+   * @param conf Configuration
    * @return the new temporary file
    * @throws IOException if there is an error creating the temporary directory
    */
@@ -784,6 +786,8 @@ public final class PathUtils {
    * @param paths list of path files to concat
    * @param dstPath destination path
    * @param conf Configuration
+   * @return true if the concatenation is successful
+   * @throws IOException if an error occurs
    */
   public static boolean concat(final List<Path> paths, final Path dstPath,
       final Configuration conf) throws IOException {
@@ -798,6 +802,8 @@ public final class PathUtils {
    * @param deleteSource true if the original files must be deleted
    * @param overwrite true if an existing destination file must be deleted
    * @param conf Configuration
+   * @return true if the concatenation is successful
+   * @throws IOException if an error occurs
    */
   public static boolean concat(final List<Path> paths, final Path dstPath,
       final boolean deleteSource, final boolean overwrite,
@@ -814,6 +820,8 @@ public final class PathUtils {
    * @param overwrite true if an existing destination file must be deleted
    * @param conf Configuration
    * @param addString string to add
+   * @return true if the concatenation is successful
+   * @throws IOException if an error occurs
    */
   public static boolean concat(final List<Path> paths, final Path dstPath,
       final boolean deleteSource, final boolean overwrite,
@@ -924,6 +932,7 @@ public final class PathUtils {
    * @param directory directory to test * @param conf Configuration
    * @param conf the configuration object
    * @return true is the directory exists
+   * @throws IOException if an error occurs
    */
   public static boolean isExistingDirectoryFile(final Path directory,
       final Configuration conf) throws IOException {
@@ -950,6 +959,7 @@ public final class PathUtils {
    * @param file file to test
    * @param conf Configuration
    * @return true is the directory exists
+   * @throws IOException if an unexpecting error occurs
    */
   public static boolean isFile(final Path file, final Configuration conf)
       throws IOException {
@@ -970,6 +980,7 @@ public final class PathUtils {
   /**
    * Check if a file exists
    * @param file File to test * @param conf Configuration
+   * @param conf Configuration
    * @param msgFileType message for the description of the file
    * @throws IOException if the file doesn't exists
    */
@@ -989,6 +1000,7 @@ public final class PathUtils {
   /**
    * Check if a file exists
    * @param file File to test * @param conf Configuration
+   * @param conf Configuration
    * @param msgFileType message for the description of the file
    * @throws IOException if the file doesn't exists
    */

@@ -296,6 +296,7 @@ public class RSConnection {
   /**
    * Remove a file on the RServer.
    * @param filename File to remove
+   * @throws REngineException if connection cannot be established
    */
   public void removeFile(final String filename) throws REngineException {
 

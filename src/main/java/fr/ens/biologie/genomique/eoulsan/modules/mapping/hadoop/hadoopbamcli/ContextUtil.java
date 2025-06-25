@@ -185,6 +185,9 @@ public class ContextUtil {
   /**
    * Creates JobContext from a JobConf and jobId using the correct constructor
    * for based on Hadoop version. <code>jobId</code> could be null.
+   * @param conf Hadoop configuration
+   * @param jobId job ID
+   * @return a JobContext object
    */
   public static JobContext newJobContext(Configuration conf, JobID jobId) {
     try {
@@ -202,6 +205,9 @@ public class ContextUtil {
   /**
    * Creates TaskAttempContext from a JobConf and jobId using the correct
    * constructor for based on Hadoop version.
+   * @param conf Hadoop configuration
+   * @param taskAttemptId task attempt ID
+   * @return a TaskAttemptContext object
    */
   public static TaskAttemptContext newTaskAttemptContext(
       Configuration conf, TaskAttemptID taskAttemptId) {
@@ -218,6 +224,10 @@ public class ContextUtil {
   }
 
   /**
+   * Create a new generic counter.
+   * @param name name of the counter
+   * @param displayName display name
+   * @param value the counter value
    * @return with Hadoop 2 : <code>new GenericCounter(args)</code>,<br>
    *         with Hadoop 1 : <code>new Counter(args)</code>
    */
@@ -235,8 +245,10 @@ public class ContextUtil {
   }
 
   /**
-   * Invoke getConfiguration() method on JobContext. Works with both
-   * Hadoop 1 and 2.
+   * Invoke getConfiguration() method on JobContext. Works with both Hadoop 1
+   * and 2.
+   * @param context job context
+   * @return a Configuration object
    */
   public static Configuration getConfiguration(JobContext context) {
     try {
@@ -248,6 +260,13 @@ public class ContextUtil {
     }
   }
 
+  /**
+   * Get counter.
+   * @param context task context
+   * @param groupName group name
+   * @param counterName counter name
+   * @return a Counter object
+   */
   public static Counter getCounter(TaskInputOutputContext context,
                                    String groupName, String counterName) {
     return (Counter) invoke(GET_COUNTER_METHOD, context, groupName, counterName);
@@ -266,6 +285,11 @@ public class ContextUtil {
     }
   }
 
+  /**
+   * Increment counter.
+   * @param counter counter to increment
+   * @param increment increment of the counter
+   */
   public static void incrementCounter(Counter counter, long increment) {
     invoke(INCREMENT_COUNTER_METHOD, counter, increment);
   }

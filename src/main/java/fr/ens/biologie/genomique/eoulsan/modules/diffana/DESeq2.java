@@ -607,6 +607,7 @@ public class DESeq2 {
 
   /**
    * Public constructor.
+   * @param executor RServe executor
    * @param stepId the step id
    * @param design the Eoulsan design
    * @param experiment the experiment
@@ -618,6 +619,7 @@ public class DESeq2 {
    * @param sizeFactorsType sizeFactorsType DESeq2 option
    * @param fitType fitType DESeq2 option
    * @param statisticTest statisticTest DESeq2 option
+   * @param saveRScripts save R scripts
    */
   public DESeq2(final RExecutor executor, final String stepId,
       final Design design, final Experiment experiment,

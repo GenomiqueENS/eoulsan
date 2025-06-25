@@ -148,6 +148,7 @@ public class CommandWorkflowParser {
 
   /**
    * Parse the workflow file.
+   * @return a CommandWorkflowModel object
    * @throws EoulsanException if an error occurs while parsing file
    */
   public CommandWorkflowModel parse() throws EoulsanException {

@@ -39,6 +39,7 @@ public class RModuleCommonConfiguration {
    * Parse the step parameter and create a configured RExecutor object.
    * @param context the step context
    * @param stepParameters the step parameters. Must be a mutable object
+   * @param requirements the requirements
    * @param defaultDockerImage default docker image
    * @return a configured RExecutor object
    * @throws EoulsanException if one or more parameter is invalid

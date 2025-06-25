@@ -55,6 +55,7 @@ public final class Common {
   /**
    * Write log data.
    * @param os OutputStream of the log file
+   * @param startTime startTime of Eoulsan
    * @param data data to write
    * @throws IOException if an error occurs while writing log file
    */
@@ -75,6 +76,7 @@ public final class Common {
   /**
    * Write log data.
    * @param file the log file
+   * @param startTime startTime of Eoulsan
    * @param data data to write
    * @throws IOException if an error occurs while writing log file
    */

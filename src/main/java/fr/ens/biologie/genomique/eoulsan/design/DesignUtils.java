@@ -747,7 +747,8 @@ public final class DesignUtils {
   }
 
   /**
-   * Test if an experiment contains reference fields
+   * Test if an experiment contains reference fields.
+   * @param experiment the experiment object
    * @return true if an experiment contains reference fields
    */
   public static boolean containsReferenceField(final Experiment experiment) {
@@ -817,6 +818,7 @@ public final class DesignUtils {
   /**
    * Convert a reference value to an integer.
    * @param value the reference value
+   * @param experiementReference experiment reference
    * @return an integer
    */
   public static int referenceValueToInt(final String value,

@@ -48,6 +48,7 @@ public class OutputPortsBuilder {
    * Add an output port.
    * @param name name of the port
    * @param format format of the port
+   * @return the instance of the builder
    */
   public OutputPortsBuilder addPort(final String name,
       final DataFormat format) {
@@ -60,6 +61,7 @@ public class OutputPortsBuilder {
    * @param name name of the port
    * @param list true if a list is excepted as port value
    * @param format format of the port
+   * @return the instance of the builder
    */
   public OutputPortsBuilder addPort(final String name, final boolean list,
       final DataFormat format) {
@@ -72,6 +74,7 @@ public class OutputPortsBuilder {
    * @param name name of the port
    * @param format format of the port
    * @param compression compression of the output
+   * @return the instance of the builder
    */
   public OutputPortsBuilder addPort(final String name, final DataFormat format,
       final CompressionType compression) {
@@ -85,6 +88,7 @@ public class OutputPortsBuilder {
    * @param list true if a list is excepted as port value
    * @param format format of the port
    * @param compression compression of the output
+   * @return the instance of the builder
    */
   public OutputPortsBuilder addPort(final String name, final boolean list,
       final DataFormat format, final CompressionType compression) {
@@ -112,6 +116,7 @@ public class OutputPortsBuilder {
 
   /**
    * Convenient method to create the ports with only one port.
+   * @param format format of the port
    * @return a new OutputPorts object
    */
   public static OutputPorts singleOutputPort(final DataFormat format) {
@@ -122,6 +127,8 @@ public class OutputPortsBuilder {
 
   /**
    * Convenient method to create the ports with only one port.
+   * @param name name of the port
+   * @param format format of the port
    * @return a new OutputPorts object
    */
   public static OutputPorts singleOutputPort(final String name,

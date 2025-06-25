@@ -91,6 +91,7 @@ public class DESeq2DesignChecker implements Checker, Serializable {
   /**
    * Check experiment design.
    * @param experiment experiment to check
+   * @return true if check pass
    * @throws EoulsanException if the experiment design is not correct
    */
   public static boolean checkExperimentDesign(final Experiment experiment)

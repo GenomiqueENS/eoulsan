@@ -47,6 +47,7 @@ public class InputPortsBuilder {
    * Add an input port.
    * @param name name of the port
    * @param format format of the port
+   * @return the instance of the builder
    */
   public InputPortsBuilder addPort(final String name, final DataFormat format) {
 
@@ -58,6 +59,7 @@ public class InputPortsBuilder {
    * @param name name of the port
    * @param list true if a list is excepted as port value
    * @param format format of the port
+   * @return the instance of the builder
    */
   public InputPortsBuilder addPort(final String name, final boolean list,
       final DataFormat format) {
@@ -70,6 +72,7 @@ public class InputPortsBuilder {
    * @param name name of the port
    * @param format format of the port
    * @param compressionsAccepted compression accepted
+   * @return the instance of the builder
    */
   public InputPortsBuilder addPort(final String name, final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted) {
@@ -83,6 +86,7 @@ public class InputPortsBuilder {
    * @param list true if a list is excepted as port value
    * @param format format of the port
    * @param compressionsAccepted compression accepted
+   * @return the instance of the builder
    */
   public InputPortsBuilder addPort(final String name, final boolean list,
       final DataFormat format,
@@ -97,6 +101,7 @@ public class InputPortsBuilder {
    * @param name name of the port
    * @param format format of the port
    * @param requiredInWorkingDirectory if data is required in working directory
+   * @return the instance of the builder
    */
   public InputPortsBuilder addPort(final String name, final DataFormat format,
       final boolean requiredInWorkingDirectory) {
@@ -111,6 +116,7 @@ public class InputPortsBuilder {
    * @param list true if a list is excepted as port value
    * @param format format of the port
    * @param requiredInWorkingDirectory if data is required in working directory
+   * @return the instance of the builder
    */
   public InputPortsBuilder addPort(final String name, final boolean list,
       final DataFormat format, final boolean requiredInWorkingDirectory) {
@@ -125,6 +131,7 @@ public class InputPortsBuilder {
    * @param format format of the port
    * @param compressionsAccepted compression accepted
    * @param requiredInWorkingDirectory if data is required in working directory
+   * @return the instance of the builder
    */
   public InputPortsBuilder addPort(final String name, final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted,
@@ -141,6 +148,7 @@ public class InputPortsBuilder {
    * @param format format of the port
    * @param compressionsAccepted compression accepted
    * @param requiredInWorkingDirectory if data is required in working directory
+   * @return the instance of the builder
    */
   public InputPortsBuilder addPort(final String name, final boolean list,
       final DataFormat format,
@@ -186,6 +194,7 @@ public class InputPortsBuilder {
 
   /**
    * Convenient method to create the ports with only one port.
+   * @param format format of the port
    * @return a new InputPorts object
    */
   public static InputPorts singleInputPort(final DataFormat format) {
@@ -196,6 +205,8 @@ public class InputPortsBuilder {
 
   /**
    * Convenient method to create the ports with only one port.
+   * @param name of the port
+   * @param format data format
    * @return a new InputPorts object
    */
   public static InputPorts singleInputPort(final String name,

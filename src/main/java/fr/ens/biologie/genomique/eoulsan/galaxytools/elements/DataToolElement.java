@@ -93,6 +93,7 @@ public class DataToolElement extends AbstractToolElement {
    * Instantiates a new tool outputs data.
    * @param toolInfo the ToolInfo object
    * @param param the param
+   * @param nameSpace name space
    * @throws EoulsanException if an error occurs while setting the value
    */
   public DataToolElement(final ToolInfo toolInfo, final Element param,

@@ -147,6 +147,7 @@ public class DataFormatConverter {
    * @param inFile input file
    * @param outFile output file
    * @param os outputStream
+   * @throws IOException if an error occurs while creating converter
    */
   public DataFormatConverter(final DataFile inFile, final DataFile outFile,
       final OutputStream os) throws IOException {
@@ -162,6 +163,7 @@ public class DataFormatConverter {
    * Constructor
    * @param inFile input file
    * @param outFile output file
+   * @throws IOException if an error occurs while creating converter
    */
   public DataFormatConverter(final DataFile inFile, final DataFile outFile)
       throws IOException {
@@ -174,6 +176,8 @@ public class DataFormatConverter {
    * @param inFile input file
    * @param outFile output file
    * @param outFormat output format
+   * @param os output stream
+   * @throws IOException if an error occurs while creating converter
    */
   public DataFormatConverter(final DataFile inFile, final DataFile outFile,
       final DataFormat outFormat, final OutputStream os) throws IOException {

@@ -49,6 +49,7 @@ public class WorkflowFileNaming extends FileNaming {
 
   /**
    * Create the glob for the port.
+   * @param port name of the port
    * @return a glob in a string
    */
   public static String glob(final StepOutputPort port) {
@@ -84,6 +85,7 @@ public class WorkflowFileNaming extends FileNaming {
   /**
    * Create the middle of a filename.
    * @param port output port that generate the file
+   * @param dataName data name
    * @param fileIndex file index
    * @param part file part
    * @return a String with the suffix of a file

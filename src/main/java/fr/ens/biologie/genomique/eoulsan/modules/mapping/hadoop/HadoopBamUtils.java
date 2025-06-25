@@ -32,6 +32,9 @@ public class HadoopBamUtils {
    * HEADERMERGER_INPUTS_PROPERTY. The sort order of the result is set according
    * to the last call to setHeaderMergerSortOrder, or otherwise to "unsorted".
    * The result is cached locally to prevent it from being recomputed too often.
+   * @param conf Hadoop configuration
+   * @return a SamFileHeaderMerger object
+   * @throws IOException if an error occurs while getting the Header
    */
   public static SamFileHeaderMerger getSAMHeaderMerger(Configuration conf)
       throws IOException {
@@ -65,6 +68,14 @@ public class HadoopBamUtils {
    * getMergeableWorkFile() into out in the given SAMFormat, using
    * getSAMHeaderMerger().getMergedHeader() as the header. Outputs progress
    * reports if commandName is non-null.
+   * @param out output file
+   * @param directory directory
+   * @param basePrefix base prefix
+   * @param basePostfix base postfix
+   * @param format SAM format
+   * @param conf Hadoop configuration
+   * @param commandName command name
+   * @throws IOException if an error occurs while merging
    */
   public static void mergeSAMInto(Path out, Path directory, String basePrefix,
       String basePostfix, SAMFormat format, Configuration conf,
@@ -93,6 +104,13 @@ public class HadoopBamUtils {
    * Merges the files in the given directory that have names given by
    * getMergeableWorkFile() into out. Outputs progress reports if commandName is
    * non-null.
+   * @param out output file
+   * @param directory directory
+   * @param basePrefix base prefix
+   * @param basePostfix base postfix
+   * @param conf Hadoop configuration
+   * @param commandName command name
+   * @throws IOException if an error occurs while merging
    */
   public static void mergeInto(OutputStream out, Path directory,
       String basePrefix, String basePostfix, Configuration conf,
