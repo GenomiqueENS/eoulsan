@@ -459,6 +459,7 @@ public class CommandWorkflowModel implements Serializable {
   /**
    * Convert the object in XML.
    * @return the object as String in XML format
+   * @throws EoulsanException if an error occurs while creating the XML
    */
   public String toXML() throws EoulsanException {
 

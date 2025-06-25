@@ -243,6 +243,7 @@ public class MultiQCModule extends AbstractModule {
    * Create the MultiQC report using docker.
    * @param dockerImage docker image to use
    * @param inputDirectory input directory
+   * @param sampleNamesFile sample names file
    * @param multiQCReportFile output report
    * @param projectName project name
    * @return the command line
@@ -294,6 +295,7 @@ public class MultiQCModule extends AbstractModule {
   /**
    * Create the MultiQC report using docker.
    * @param inputDirectory input directory
+   * @param sampleNamesFile sample names file
    * @param multiQCReportFile output report
    * @param projectName project name
    * @return command line
@@ -328,7 +330,9 @@ public class MultiQCModule extends AbstractModule {
   /**
    * Creating MultiQC command line.
    * @param inputDirectory input directory
+   * @param sampleNamesFile sample names file
    * @param multiQCReportFile output report
+   * @param sampleNamesFile sample names file
    * @param projectName project name
    * @return a list with the MultiQC arguments
    */
