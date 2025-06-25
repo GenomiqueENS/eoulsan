@@ -85,7 +85,7 @@ public class FastQCInputPreprocessor implements InputPreprocessor {
 
     String pathInZip = dataPathInZip(reportfile);
 
-    try (FileSystem fs = FileSystems.newFileSystem(reportfile, null)) {
+    try (FileSystem fs = FileSystems.newFileSystem(reportfile, (ClassLoader) null)) {
       Path source = fs.getPath(pathInZip);
       Path temp = fs.getPath("/___fastqc_data___.txt");
       Files.move(source, temp);
