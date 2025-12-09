@@ -527,9 +527,9 @@ public class CommandWorkflowModel implements Serializable {
     }
 
     // Keep empty tags in XML only if tag name is "value"
-     if ("".equals(tagValue.trim()) && !"value".equals(tagName)) {
-     return;
-     }
+    if ("".equals(tagValue.trim()) && !"value".equals(tagName)) {
+      return;
+    }
 
     Element e = document.createElement(tagName);
     e.appendChild(document.createTextNode(tagValue));
