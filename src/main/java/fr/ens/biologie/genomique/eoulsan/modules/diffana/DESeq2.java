@@ -24,6 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 
+import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.getAllSamplesMetadataKeys;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.getExperimentSampleAllMetadataKeys;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.referenceValueToInt;
@@ -37,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -532,11 +534,20 @@ public class DESeq2 {
           + "_" + this.experiment.getName() + "-buildcontrasts-"
           + toCompactTime(System.currentTimeMillis());
 
+      // Create R script arguments
+      String[] buildContrastScriptArgs = new String[] {deseq2DesignFileName,
+          this.model, comparisonFileName,
+          this.experiment.getName() + CONTRAST_FILE_SUFFIX, this.stepId + "_"};
+
+      // Log R Command line
+      getLogger().info("R script to execute:\n" + buildContrastScript);
+      getLogger().info(
+          "R script arguments: " + Arrays.toString(buildContrastScriptArgs));
+
       // Run buildContrast.R
       this.executor.executeRScript(buildContrastScript, false, null,
           this.saveRScripts, description, workflowOutputDir,
-          deseq2DesignFileName, this.model, comparisonFileName,
-          this.experiment.getName() + CONTRAST_FILE_SUFFIX, this.stepId + "_");
+          buildContrastScriptArgs);
     }
 
     // Run normalization and differential analysis
@@ -554,10 +565,19 @@ public class DESeq2 {
       // TODO Do not handle custom contrast files with
       // ExperimentMetadata.containsContrastFile()
 
+      // Create R script arguments
+      String[] normDiffanaScriptArgs =
+          createNormDiffanaCommandLine(deseq2DesignFileName, contrastFilename);
+
+      // Log R Command line
+      getLogger().info("R script to execute:\n" + normDiffanaScript);
+      getLogger().info(
+          "R script arguments: " + Arrays.toString(normDiffanaScriptArgs));
+
       // Run normDiffana.R
       this.executor.executeRScript(normDiffanaScript, false, null,
           this.saveRScripts, description, workflowOutputDir,
-          createNormDiffanaCommandLine(deseq2DesignFileName, contrastFilename));
+          normDiffanaScriptArgs);
     }
 
     // Remove input files
