@@ -72,7 +72,7 @@
 						<a href="installing.html#docker">Usage instructions</a>
 					</li>
 					<li>
-						<a href="https://registry.hub.docker.com/u/genomicpariscentre/eoulsan/">Eoulsan Docker page</a>
+						<a href="https://registry.hub.docker.com/r/genomicpariscentre/eoulsan/">Eoulsan Docker page</a>
 					</li>
 				</ul>
 				
