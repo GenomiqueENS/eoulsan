@@ -527,7 +527,7 @@ public abstract class Main {
     // Set the log level
     if (this.logLevel != null) {
       try {
-        this.handler.setLevel(Level.parse(this.logLevel.toUpperCase()));
+        this.handler.setLevel(Level.parse(this.logLevel.toUpperCase(Globals.DEFAULT_LOCALE)));
       } catch (IllegalArgumentException e) {
         Common.showErrorMessageAndExit("Unknown log level ("
             + this.logLevel
@@ -608,7 +608,7 @@ public abstract class Main {
   private void parseAction(final int optionsCount) {
 
     // Set action name and arguments
-    final String actionName = this.args.get(optionsCount).trim().toLowerCase();
+    final String actionName = this.args.get(optionsCount).trim().toLowerCase(Globals.DEFAULT_LOCALE);
     this.actionArgs = this.args.subList(optionsCount + 1, this.args.size());
 
     // Test if is in hadoop mode

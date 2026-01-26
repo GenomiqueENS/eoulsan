@@ -113,7 +113,7 @@ public final class MainCLI extends Main {
    * Constructor.
    * @param args command line arguments
    */
-  protected MainCLI(final String[] args) {
+  MainCLI(final String[] args) {
 
     super(LAUNCH_MODE_NAME, args);
   }

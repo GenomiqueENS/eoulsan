@@ -29,6 +29,7 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
 import fr.ens.biologie.genomique.kenetre.util.ServiceNameLoader;
 
@@ -87,7 +88,7 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
       return null;
     }
 
-    final String lower = serviceName.trim().toLowerCase();
+    final String lower = serviceName.trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
     if (lower.equals(this.defaultProtocolName)) {
       return this.defaultProtocol;
@@ -115,7 +116,7 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
       return false;
     }
 
-    final String lower = serviceName.trim().toLowerCase();
+    final String lower = serviceName.trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
     if (lower.equals(this.defaultProtocolName)) {
       return true;

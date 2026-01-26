@@ -89,8 +89,7 @@ public class ExpressionSplitter implements Splitter {
         readCount++;
       }
 
-      // Close reader and writer
-      reader.close();
+      // Close the writer
       if (writer != null) {
         writer.close();
       }

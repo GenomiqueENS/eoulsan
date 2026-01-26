@@ -26,6 +26,8 @@ package fr.ens.biologie.genomique.eoulsan.design;
 
 import java.io.Serializable;
 
+import fr.ens.biologie.genomique.eoulsan.Globals;
+
 /**
  * This class defines the default implementation of the experiment sample
  * metadata.
@@ -61,7 +63,7 @@ public class ExperimentSampleMetadataImpl extends AbstractMetadata
       return false;
     }
 
-    value = value.trim().toLowerCase();
+    value = value.trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
     return "t".equals(value)
         || "true".equals(value) || "y".equals(value) || "yes".equals(value);

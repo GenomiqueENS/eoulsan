@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 
 /**
  * This class define a parameter. The parameter name is always in lower case.
@@ -73,7 +74,7 @@ public class Parameter implements Serializable, Comparable<Parameter> {
    */
   public String getLowerStringValue() {
 
-    return this.value.toLowerCase();
+    return this.value.toLowerCase(Globals.DEFAULT_LOCALE);
   }
 
   /**
@@ -82,7 +83,7 @@ public class Parameter implements Serializable, Comparable<Parameter> {
    */
   public String getUpperStringValue() {
 
-    return this.value.toUpperCase();
+    return this.value.toUpperCase(Globals.DEFAULT_LOCALE);
   }
 
   /**
@@ -240,7 +241,7 @@ public class Parameter implements Serializable, Comparable<Parameter> {
       throw new NullPointerException("Parameter name can't be null");
     }
 
-    final String nameLower = name.toLowerCase().trim();
+    final String nameLower = name.toLowerCase(Globals.DEFAULT_LOCALE).trim();
 
     if (value == null) {
       throw new NullPointerException("Parameter value can't be null");

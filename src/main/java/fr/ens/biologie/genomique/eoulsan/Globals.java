@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
@@ -42,9 +43,9 @@ import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.io.FileCharsets;
 import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 
 /**
  * This class contains globals constants for the application.
@@ -60,7 +61,7 @@ public final class Globals {
   public static final String APP_NAME = "Eoulsan";
 
   /** The name of the application. */
-  public static final String APP_NAME_LOWER_CASE = APP_NAME.toLowerCase();
+  public static final String APP_NAME_LOWER_CASE = APP_NAME.toLowerCase(Globals.DEFAULT_LOCALE);
 
   /** The prefix of the parameters of the application. */
   public static final String PARAMETER_PREFIX =
@@ -411,6 +412,7 @@ public final class Globals {
       manifestAttributes = manifest.getMainAttributes();
 
     } catch (IOException e) {
+      throw new UncheckedIOException(e);
     }
   }
 

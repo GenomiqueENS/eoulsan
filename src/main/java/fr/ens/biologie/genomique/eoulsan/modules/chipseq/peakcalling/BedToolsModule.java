@@ -165,7 +165,7 @@ public class BedToolsModule extends AbstractModule {
             + "| rep : " + DesignUtils.getRepTechGroup(expSam));
 
         boolean isReference =
-            DesignUtils.getReference(expSam).toLowerCase().equals("true");
+            DesignUtils.getReference(expSam).toLowerCase(Globals.DEFAULT_LOCALE).equals("true");
 
         // if we have a control
 

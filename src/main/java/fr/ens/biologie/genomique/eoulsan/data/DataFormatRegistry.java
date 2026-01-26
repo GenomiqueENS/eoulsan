@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -231,7 +232,7 @@ public class DataFormatRegistry {
           "The DataFormat " + df.getClass().getName() + " as no name.");
     }
 
-    if (!df.getName().toLowerCase().trim().equals(df.getName())) {
+    if (!df.getName().toLowerCase(Globals.DEFAULT_LOCALE).trim().equals(df.getName())) {
       throw new EoulsanException(
           "The DataFormat name can't contains upper case character"
               + df.getClass().getName() + " as no name.");
@@ -430,7 +431,7 @@ public class DataFormatRegistry {
 
       final String alias = df.getAlias();
 
-      if (dataFormatAlias.toLowerCase().equals(alias)) {
+      if (dataFormatAlias.toLowerCase(Globals.DEFAULT_LOCALE).equals(alias)) {
         return df;
 
       }

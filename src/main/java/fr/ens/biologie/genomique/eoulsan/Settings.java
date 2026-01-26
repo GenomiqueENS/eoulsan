@@ -44,9 +44,11 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 
+import com.google.common.base.Splitter;
+
+import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import fr.ens.biologie.genomique.kenetre.util.Utils;
-import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 
 /**
  * This class define a settings class.
@@ -662,7 +664,7 @@ public final class Settings implements Serializable {
 
     List<String> result = new ArrayList<>();
 
-    for (String s : value.split(" ")) {
+    for (String s : Splitter.on(' ').split(value)) {
 
       if (!s.isEmpty()) {
         result.add(s);
@@ -686,7 +688,7 @@ public final class Settings implements Serializable {
 
     List<String> result = new ArrayList<>();
 
-    for (String s : value.split(" ")) {
+    for (String s : Splitter.on(' ').split(value)) {
 
       if (!s.isEmpty()) {
         result.add(s);
@@ -1340,7 +1342,7 @@ public final class Settings implements Serializable {
       return;
     }
 
-    final String key = settingName.toLowerCase();
+    final String key = settingName.toLowerCase(Globals.DEFAULT_LOCALE);
 
     if (FORBIDDEN_KEYS.contains(key)) {
       return;
@@ -1536,7 +1538,7 @@ public final class Settings implements Serializable {
       return null;
     }
 
-    final String trimmedKey = key.trim().toLowerCase();
+    final String trimmedKey = key.trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
     switch (trimmedKey) {
 

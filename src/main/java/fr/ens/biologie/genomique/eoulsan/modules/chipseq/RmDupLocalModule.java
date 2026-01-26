@@ -115,7 +115,7 @@ public class RmDupLocalModule extends AbstractModule {
 
     for (Parameter p : stepParameters) {
 
-      switch (p.getName().toLowerCase()) {
+      switch (p.getName().toLowerCase(Globals.DEFAULT_LOCALE)) {
 
       case "remove.marked":
         this.delete = p.getBooleanValue();

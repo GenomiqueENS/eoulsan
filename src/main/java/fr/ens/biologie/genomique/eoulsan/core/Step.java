@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
 
 /**
@@ -135,7 +136,7 @@ public interface Step extends Serializable {
         throw new NullPointerException("s argument cannot be null");
       }
 
-      switch (s.toLowerCase().trim()) {
+      switch (s.toLowerCase(Globals.DEFAULT_LOCALE).trim()) {
 
       case "no":
       case "false":

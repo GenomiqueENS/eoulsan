@@ -24,6 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.actions;
 
+import java.util.Locale;
+
 import fr.ens.biologie.genomique.eoulsan.Globals;
 
 /**
@@ -61,8 +63,8 @@ public abstract class AbstractAction implements Action {
    */
   public static boolean isApplicationAvailableForCurrentArch() {
 
-    final String os = System.getProperty("os.name").toLowerCase();
-    final String arch = System.getProperty("os.arch").toLowerCase();
+    final String os = System.getProperty("os.name").toLowerCase(Globals.DEFAULT_LOCALE);
+    final String arch = System.getProperty("os.arch").toLowerCase(Globals.DEFAULT_LOCALE);
 
     return Globals.AVAILABLE_BINARY_ARCH.contains(os + "\t" + arch);
   }

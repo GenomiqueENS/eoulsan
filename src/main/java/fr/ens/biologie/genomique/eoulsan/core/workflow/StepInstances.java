@@ -31,6 +31,7 @@ import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 
@@ -152,7 +153,7 @@ public class StepInstances {
       throw new EoulsanException("Step name is null");
     }
 
-    final String lower = moduleName.trim().toLowerCase();
+    final String lower = moduleName.trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
     final Module result =
         ModuleRegistry.getInstance().loadModule(lower, moduleVersion);

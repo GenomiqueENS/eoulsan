@@ -101,7 +101,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
   private static final String MAPPER_INDEX_DIR_PREFIX =
       Globals.APP_NAME + "-mapper-index-";
   private static final String MAPPER_LAST_USED_FILENAME =
-      Globals.APP_NAME.toUpperCase() + "_LAST_USED";
+      Globals.APP_NAME.toUpperCase(Globals.DEFAULT_LOCALE) + "_LAST_USED";
   private static final long DEFAULT_AGE_OF_UNUSED_MAPPER_INDEXES = 7;
   private static final String LOCK_SUFFIX = ".lock";
 

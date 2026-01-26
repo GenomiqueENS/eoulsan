@@ -128,7 +128,7 @@ public class MergeInputRepLocalModule extends AbstractModule {
           + anInputData.getMetadata().get("RepTechGroup"));
 
       boolean isReference = anInputData.getMetadata().get("Reference")
-          .toLowerCase().equals("true");
+          .toLowerCase(Globals.DEFAULT_LOCALE).equals("true");
 
       // Only treat reference files
       if (isReference) {

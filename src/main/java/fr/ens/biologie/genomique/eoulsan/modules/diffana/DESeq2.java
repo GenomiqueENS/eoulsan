@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.checkers.DESeq2DesignChecker;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -144,7 +145,7 @@ public class DESeq2 {
 
       for (SizeFactorsType dem : SizeFactorsType.values()) {
 
-        if (dem.name().toLowerCase().equals(lowerName)) {
+        if (dem.name().toLowerCase(Globals.DEFAULT_LOCALE).equals(lowerName)) {
           return dem;
         }
       }
@@ -160,7 +161,7 @@ public class DESeq2 {
      */
     public String toDESeq2Value() {
 
-      return this.name().toLowerCase();
+      return this.name().toLowerCase(Globals.DEFAULT_LOCALE);
     }
   }
 
@@ -182,11 +183,11 @@ public class DESeq2 {
 
       requireNonNull(name, "fitType argument cannot be null");
 
-      final String lowerName = name.trim().toLowerCase();
+      final String lowerName = name.trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
       for (FitType dem : FitType.values()) {
 
-        if (dem.name().toLowerCase().equals(lowerName)) {
+        if (dem.name().toLowerCase(Globals.DEFAULT_LOCALE).equals(lowerName)) {
           return dem;
         }
       }
@@ -201,7 +202,7 @@ public class DESeq2 {
      */
     public String toDESeq2Value() {
 
-      return this.name().toLowerCase();
+      return this.name().toLowerCase(Globals.DEFAULT_LOCALE);
     }
   }
 
@@ -231,11 +232,11 @@ public class DESeq2 {
 
       requireNonNull(name, "statisticTest cargument annot be null");
 
-      final String lowerName = name.trim().toLowerCase();
+      final String lowerName = name.trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
       for (StatisticTest dem : StatisticTest.values()) {
 
-        if (dem.toDESeq2Value().toLowerCase().equals(lowerName)) {
+        if (dem.toDESeq2Value().toLowerCase(Globals.DEFAULT_LOCALE).equals(lowerName)) {
           return dem;
         }
       }
@@ -472,7 +473,7 @@ public class DESeq2 {
    */
   private static String booleanParameter(boolean value) {
 
-    return Boolean.valueOf(value).toString().toUpperCase();
+    return Boolean.valueOf(value).toString().toUpperCase(Globals.DEFAULT_LOCALE);
   }
 
   /**

@@ -187,7 +187,7 @@ public class DistCp implements Tool {
     final char symbol;
 
     FileAttribute() {
-      this.symbol = toString().toLowerCase().charAt(0);
+      this.symbol = toString().toLowerCase(Globals.DEFAULT_LOCALE).charAt(0);
     }
 
     static EnumSet<FileAttribute> parse(final String s) {

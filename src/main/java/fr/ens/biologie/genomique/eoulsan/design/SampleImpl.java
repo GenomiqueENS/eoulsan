@@ -116,8 +116,8 @@ class SampleImpl implements Serializable, Sample {
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this)
-        .add("sampleId", this.sampleId).add("sampleNumber", this.sampleNumber)
+    return MoreObjects.toStringHelper(this).add("sampleId", this.sampleId)
+        .add("sampleNumber", this.sampleNumber)
         .add("sampleName", this.sampleName)
         .add("sampleMetadata", this.sampleMetadata).toString();
   }
@@ -125,8 +125,7 @@ class SampleImpl implements Serializable, Sample {
   @Override
   public int hashCode() {
 
-    return Objects.hash(this.sampleId, this.sampleNumber, this.sampleName,
-        this.sampleMetadata);
+    return Objects.hash(this.sampleId, this.sampleName, this.sampleMetadata);
   }
 
   @Override

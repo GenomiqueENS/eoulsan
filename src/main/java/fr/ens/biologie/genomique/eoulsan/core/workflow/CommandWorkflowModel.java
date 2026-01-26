@@ -76,6 +76,7 @@ import com.google.common.base.Strings;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
@@ -231,7 +232,7 @@ public class CommandWorkflowModel implements Serializable {
       throw new EoulsanException("The module of the step is null.");
     }
 
-    final String moduleLower = module.toLowerCase().trim();
+    final String moduleLower = module.toLowerCase(Globals.DEFAULT_LOCALE).trim();
 
     if ("".equals(moduleLower)) {
       throw new EoulsanException("The name of the step is empty.");
@@ -241,7 +242,7 @@ public class CommandWorkflowModel implements Serializable {
     if (stepId == null || "".equals(stepId.trim())) {
       stepIdLower = moduleLower;
     } else {
-      stepIdLower = stepId.toLowerCase().trim();
+      stepIdLower = stepId.toLowerCase(Globals.DEFAULT_LOCALE).trim();
     }
 
     if ("".equals(stepIdLower)) {
@@ -290,9 +291,9 @@ public class CommandWorkflowModel implements Serializable {
             + toPortName + " for step \"" + stepId);
       }
 
-      toPortName = toPortName.trim().toLowerCase();
-      fromStep = fromStep.trim().toLowerCase();
-      fromPortName = fromPortName.trim().toLowerCase();
+      toPortName = toPortName.trim().toLowerCase(Globals.DEFAULT_LOCALE);
+      fromStep = fromStep.trim().toLowerCase(Globals.DEFAULT_LOCALE);
+      fromPortName = fromPortName.trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
       if (!StepType.DESIGN_STEP.getDefaultStepId().equals(fromStep)
           && !this.moduleNames.containsKey(fromStep)) {

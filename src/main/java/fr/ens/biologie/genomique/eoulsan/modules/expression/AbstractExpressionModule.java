@@ -185,7 +185,7 @@ public abstract class AbstractExpressionModule extends AbstractModule {
     String counterName = counterParameter.getLowerStringValue();
 
     // Check if user wants to use the very old counter
-    if (OLD_EOULSAN_COUNTER_NAME.toLowerCase().equals(counterName)) {
+    if (OLD_EOULSAN_COUNTER_NAME.toLowerCase(Globals.DEFAULT_LOCALE).equals(counterName)) {
       getLogger().warning("The "
           + OLD_EOULSAN_COUNTER_NAME + " counter support has been removed");
     }

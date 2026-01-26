@@ -29,6 +29,7 @@ import static java.util.Objects.requireNonNull;
 import java.io.Serializable;
 import java.util.List;
 
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 
 /**
@@ -100,7 +101,7 @@ class SampleMetadataImpl extends AbstractMetadata
       return false;
     }
 
-    value = value.trim().toLowerCase();
+    value = value.trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
     return "t".equals(value)
         || "true".equals(value) || "y".equals(value) || "yes".equals(value);

@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 import org.w3c.dom.Element;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
 
 /**
@@ -92,7 +93,7 @@ public class BooleanParameterToolElement extends AbstractParameterToolElement {
       return;
     }
 
-    switch (value.trim().toLowerCase()) {
+    switch (value.trim().toLowerCase(Globals.DEFAULT_LOCALE)) {
 
     case "yes":
     case "on":

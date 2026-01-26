@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Set;
 
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 
 /**
@@ -87,7 +88,7 @@ public abstract class AbstractPort implements Port, Serializable {
         "Invalid port name (only ascii letters and digits are allowed): "
             + name.trim());
 
-    this.name = name.trim().toLowerCase();
+    this.name = name.trim().toLowerCase(Globals.DEFAULT_LOCALE);
     this.list = list;
     this.format = format;
   }

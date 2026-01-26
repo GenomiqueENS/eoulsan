@@ -88,7 +88,7 @@ public class MergePeaksModule extends AbstractModule {
           + anInputData.getMetadata().get("RepTechGroup"));
 
       boolean isReference = anInputData.getMetadata().get("Reference")
-          .toLowerCase().equals("true");
+          .toLowerCase(Globals.DEFAULT_LOCALE).equals("true");
 
       // if we have a control, add it along with the experiment name
       if (isReference) {

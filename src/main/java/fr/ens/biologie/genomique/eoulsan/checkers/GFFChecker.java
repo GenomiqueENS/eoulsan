@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
@@ -139,6 +140,7 @@ public class GFFChecker implements Checker {
 
           // Force exception
           try (InputStream in = featureFile.open()) {
+            in.read();
           }
         }
 
@@ -250,7 +252,6 @@ public class GFFChecker implements Checker {
           }
 
           if (Math.max(start, end) - 1 > sequenceLength) {
-            gffReader.close();
             throw new BadBioEntryException(
                 "GFF entry with end position ("
                     + Math.max(start, end)
@@ -346,17 +347,17 @@ public class GFFChecker implements Checker {
         continue;
       }
 
-      final String[] fields = sequenceRegion.trim().split(" ");
+      final List<String> fields = Splitter.on(' ').splitToList(sequenceRegion.trim());
 
-      if (fields.length != 3) {
+      if (fields.size() != 3) {
         throw new BadBioEntryException("Invalid GFF metadata",
             "##sequence-region " + sequenceRegion);
       }
 
       try {
-        final String sequenceName = fields[0].trim();
-        final long start = Integer.parseInt(fields[1]);
-        final long end = Integer.parseInt(fields[2]);
+        final String sequenceName = fields.get(0).trim();
+        final long start = Integer.parseInt(fields.get(1));
+        final long end = Integer.parseInt(fields.get(2));
 
         result.put(sequenceName, new long[] {start, end});
         final long len = desc.getSequenceLength(sequenceName);

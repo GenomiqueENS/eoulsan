@@ -571,7 +571,7 @@ public class Normalization {
       String repTechGroup = rRepTechGroup.get(i);
       String condition = rCondNames.get(i);
 
-      if (!repTechGroup.toLowerCase().equals("na")) {
+      if (!repTechGroup.toLowerCase(Globals.DEFAULT_LOCALE).equals("na")) {
         if (!condRepTGMap.containsKey(repTechGroup)) {
           condRepTGMap.put(repTechGroup, condition);
         } else if (!condRepTGMap.get(repTechGroup).equals(condition)) {
@@ -604,7 +604,7 @@ public class Normalization {
 
     for (int j = 0; j < rRepTechGroup.size(); j++) {
 
-      if (rRepTechGroup.get(j).toLowerCase().equals("na")) {
+      if (rRepTechGroup.get(j).toLowerCase(Globals.DEFAULT_LOCALE).equals("na")) {
         rRepTechGroup.set(j, rSampleNames.get(j));
       }
     }

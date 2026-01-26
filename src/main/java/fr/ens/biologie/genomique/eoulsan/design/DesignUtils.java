@@ -40,6 +40,7 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.design.io.DefaultDesignReader;
@@ -834,7 +835,7 @@ public final class DesignUtils {
       return 1;
     }
 
-    switch (s.toLowerCase()) {
+    switch (s.toLowerCase(Globals.DEFAULT_LOCALE)) {
     case "t":
     case "true":
     case "y":

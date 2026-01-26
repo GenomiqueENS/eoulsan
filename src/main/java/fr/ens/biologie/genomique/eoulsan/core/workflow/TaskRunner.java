@@ -444,7 +444,7 @@ public class TaskRunner {
     }
 
     // Set log level
-    handler.setLevel(Level.parse(logLevel.toUpperCase()));
+    handler.setLevel(Level.parse(logLevel.toUpperCase(Globals.DEFAULT_LOCALE)));
 
     return logger;
   }

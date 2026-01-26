@@ -117,7 +117,7 @@ public class HDFSDataDownloadModule extends AbstractModule {
     final String noDownloadValue =
         context.getSettings().getSetting(NO_HDFS_DOWNLOAD);
     if (noDownloadValue != null
-        && "true".equals(noDownloadValue.trim().toLowerCase())) {
+        && "true".equals(noDownloadValue.trim().toLowerCase(Globals.DEFAULT_LOCALE))) {
 
       status.setProgressMessage("Download step skipped in settings.");
       return status.createTaskResult();

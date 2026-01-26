@@ -46,6 +46,7 @@ import org.xml.sax.SAXException;
 import com.google.common.base.MoreObjects;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
@@ -298,7 +299,7 @@ public final class XMLDataFormat extends AbstractDataFormat
             "The name of the dataformat is null (source: " + source + ")");
       }
 
-      this.name = this.name.trim().toLowerCase();
+      this.name = this.name.trim().toLowerCase(Globals.DEFAULT_LOCALE);
       if (this.name.isEmpty()) {
         throw new EoulsanException(
             "The name of the dataformat is empty (source: " + source + ")");
@@ -353,7 +354,7 @@ public final class XMLDataFormat extends AbstractDataFormat
           final String defaultAttribute = e3.getAttribute("default");
 
           if (defaultAttribute != null
-              && "true".equals(defaultAttribute.trim().toLowerCase())) {
+              && "true".equals(defaultAttribute.trim().toLowerCase(Globals.DEFAULT_LOCALE))) {
             this.extensions.add(0, e3.getTextContent().trim());
           } else {
             this.extensions.add(e3.getTextContent().trim());
@@ -392,7 +393,7 @@ public final class XMLDataFormat extends AbstractDataFormat
     }
 
     if (this.alias != null) {
-      this.alias = this.alias.trim().toLowerCase();
+      this.alias = this.alias.trim().toLowerCase(Globals.DEFAULT_LOCALE);
     }
 
     if (this.contentType == null || "".equals(this.contentType.trim())) {

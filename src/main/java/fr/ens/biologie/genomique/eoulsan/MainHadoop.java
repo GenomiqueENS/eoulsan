@@ -136,7 +136,7 @@ public final class MainHadoop extends Main {
    * Constructor.
    * @param args command line arguments
    */
-  protected MainHadoop(final String[] args) {
+  MainHadoop(final String[] args) {
 
     super(LAUNCH_MODE_NAME, args);
   }
