@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -610,7 +611,7 @@ public class DESeq2 {
     String line = null;
 
     try (
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.defaultCharset()))) {
 
       while ((line = reader.readLine()) != null) {
 

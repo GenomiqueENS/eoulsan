@@ -32,6 +32,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -90,7 +91,7 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
 
       // Read output of the submit command
       final BufferedReader reader =
-          new BufferedReader(new InputStreamReader(process.getInputStream()));
+          new BufferedReader(new InputStreamReader(process.getInputStream(), Charset.defaultCharset()));
       final String jobId = reader.readLine();
       reader.close();
 
@@ -181,7 +182,7 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
       // Read output of the submit command
       final String jobStatus;
       try (BufferedReader reader =
-          new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+          new BufferedReader(new InputStreamReader(process.getInputStream(), Charset.defaultCharset()))) {
         jobStatus = reader.readLine();
       }
 
