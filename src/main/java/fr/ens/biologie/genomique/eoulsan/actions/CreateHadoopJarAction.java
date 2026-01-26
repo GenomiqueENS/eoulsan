@@ -29,10 +29,10 @@ import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -69,7 +69,7 @@ public class CreateHadoopJarAction extends AbstractAction {
   public void action(final List<String> arguments) {
 
     final Options options = makeOptions();
-    final CommandLineParser parser = new GnuParser();
+    final CommandLineParser parser = new DefaultParser();
 
     int argsOptions = 0;
 
@@ -133,9 +133,14 @@ public class CreateHadoopJarAction extends AbstractAction {
   private static void help(final Options options) {
 
     // Show help message
-    final HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(Globals.APP_NAME_LOWER_CASE + ".sh " + ACTION_NAME,
-        options);
+    final HelpFormatter formatter =
+        HelpFormatter.builder().setShowSince(false).get();
+    try {
+      formatter.printHelp(Globals.APP_NAME_LOWER_CASE + ".sh " + ACTION_NAME,
+          "", options, "", false);
+    } catch (IOException e) {
+      Common.errorExit(e, "Error while creating help message.");
+    }
 
     Common.exit(0);
   }

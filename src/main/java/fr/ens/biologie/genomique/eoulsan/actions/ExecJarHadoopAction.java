@@ -35,9 +35,9 @@ import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.hadoop.conf.Configuration;
@@ -130,7 +130,7 @@ public class ExecJarHadoopAction extends AbstractAction {
   public void action(final List<String> arguments) {
 
     final Options options = makeOptions();
-    final CommandLineParser parser = new GnuParser();
+    final CommandLineParser parser = new DefaultParser();
 
     String jobDescription = null;
     String jobEnvironment = null;
@@ -218,21 +218,19 @@ public class ExecJarHadoopAction extends AbstractAction {
     options.addOption("h", "help", false, "display this help");
 
     // Description option
-    options.addOption(OptionBuilder.withArgName("description").hasArg()
-        .withDescription("job description").withLongOpt("jobdesc").create('d'));
+    options.addOption(Option.builder("d").argName("description").hasArg()
+        .desc("job description").longOpt("jobdesc").get());
 
     // Environment option
-    options.addOption(OptionBuilder.withArgName("environment").hasArg()
-        .withDescription("environment description").withLongOpt("envdesc")
-        .create('e'));
+    options.addOption(Option.builder("e").argName("environment").hasArg()
+        .desc("environment description").longOpt("envdesc").get());
 
     // UploadOnly option
     options.addOption("upload", false, "upload only");
 
     // Parent job creation time
-    options.addOption(OptionBuilder.withArgName("parent-job-time").hasArg()
-        .withDescription("parent job time").withLongOpt("parent-job")
-        .create('p'));
+    options.addOption(Option.builder("p").argName("parent-job-time").hasArg()
+        .desc("parent job time").longOpt("parent-job").get());
 
     return options;
   }
@@ -244,10 +242,17 @@ public class ExecJarHadoopAction extends AbstractAction {
   private static void help(final Options options) {
 
     // Show help message
-    final HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp("hadoop -jar "
-        + Globals.APP_NAME_LOWER_CASE + ".jar  [options] " + ACTION_NAME
-        + " workflow.xml design.txt hdfs://server/path", options);
+    final HelpFormatter formatter =
+        HelpFormatter.builder().setShowSince(false).get();
+    try {
+      formatter.printHelp(
+          "hadoop -jar "
+              + Globals.APP_NAME_LOWER_CASE + ".jar  [options] " + ACTION_NAME
+              + " workflow.xml design.txt hdfs://server/path",
+          "", options, "", false);
+    } catch (IOException e) {
+      Common.errorExit(e, "Error while creating help message.");
+    }
 
     Common.exit(0);
   }

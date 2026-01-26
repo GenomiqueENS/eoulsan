@@ -29,15 +29,16 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -75,7 +76,7 @@ public class ExecAction extends AbstractAction {
   public void action(final List<String> arguments) {
 
     final Options options = makeOptions();
-    final CommandLineParser parser = new GnuParser();
+    final CommandLineParser parser = new DefaultParser();
 
     String jobDescription = null;
 
@@ -132,8 +133,8 @@ public class ExecAction extends AbstractAction {
     options.addOption("h", "help", false, "display this help");
 
     // Description option
-    options.addOption(OptionBuilder.withArgName("description").hasArg()
-        .withDescription("job description").withLongOpt("desc").create('d'));
+    options.addOption(Option.builder("d").argName("description").hasArg()
+        .desc("job description").longOpt("desc").get());
 
     return options;
   }
@@ -145,11 +146,16 @@ public class ExecAction extends AbstractAction {
   private static void help(final Options options) {
 
     // Show help message
-    final HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(
-        Globals.APP_NAME_LOWER_CASE
-            + ".sh " + ACTION_NAME + " [options] workflow.xml design.txt",
-        options);
+    final HelpFormatter formatter =
+        HelpFormatter.builder().setShowSince(false).get();
+    try {
+      formatter.printHelp(
+          Globals.APP_NAME_LOWER_CASE
+              + ".sh " + ACTION_NAME + " [options] workflow.xml design.txt",
+          "", options, "", false);
+    } catch (IOException e) {
+      Common.errorExit(e, "Error while creating help message.");
+    }
 
     Common.exit(0);
   }
