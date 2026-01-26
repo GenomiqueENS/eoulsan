@@ -458,9 +458,9 @@ public final class XMLDataFormat extends AbstractDataFormat
         && Objects.equals(this.description, that.description)
         && Objects.equals(this.alias, that.alias)
         && Objects.equals(this.prefix, that.prefix)
-        && Objects.equals(this.oneFilePerAnalysis, that.oneFilePerAnalysis)
-        && Objects.equals(this.dataFormatFromDesignFile,
-            that.dataFormatFromDesignFile)
+        && this.oneFilePerAnalysis == that.oneFilePerAnalysis
+        && this.dataFormatFromDesignFile ==
+            that.dataFormatFromDesignFile
         && Objects.equals(this.designMetadataKeyName,
             that.designMetadataKeyName)
         && Objects.equals(this.sampleMetadataKeyName,
@@ -472,7 +472,7 @@ public final class XMLDataFormat extends AbstractDataFormat
         && Objects.equals(this.checkerClassName, that.checkerClassName)
         && Objects.equals(this.splitterClassName, that.splitterClassName)
         && Objects.equals(this.mergerClassName, that.mergerClassName)
-        && Objects.equals(this.maxFilesCount, that.maxFilesCount);
+        && this.maxFilesCount == that.maxFilesCount;
   }
 
   @Override

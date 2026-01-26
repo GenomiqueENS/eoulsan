@@ -106,8 +106,8 @@ abstract class AbstractDataFormat implements DataFormat {
         && Objects.equals(this.getDefaultExtension(),
             that.getDefaultExtension())
         && Objects.equals(this.getExtensions(), that.getExtensions())
-        && Objects.equals(this.isGenerator(), that.isGenerator())
-        && Objects.equals(this.isChecker(), that.isChecker())
+        && this.isGenerator() == that.isGenerator()
+        && this.isChecker() == that.isChecker()
         && ((this.getGenerator() == null && that.getGenerator() == null)
             || (this.getGenerator() != null
                 && that.getGenerator() != null
@@ -118,7 +118,7 @@ abstract class AbstractDataFormat implements DataFormat {
                 && that.getChecker() != null
                 && Objects.equals(this.getChecker().getClass().getName(),
                     that.getChecker().getClass().getName())))
-        && Objects.equals(this.getMaxFilesCount(), that.getMaxFilesCount());
+        && this.getMaxFilesCount() == that.getMaxFilesCount();
   }
 
   @Override
