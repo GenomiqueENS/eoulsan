@@ -31,6 +31,7 @@ public class InfoAction extends AbstractInfoAction {
    * Show the information on stdout
    * @param settings the Eoulsan settings
    */
+  @Override
   protected void showInfo(final Settings settings) {
 
     // Map for all the sections

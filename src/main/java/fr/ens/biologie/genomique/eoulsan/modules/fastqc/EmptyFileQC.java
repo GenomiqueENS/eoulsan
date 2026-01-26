@@ -105,30 +105,37 @@ public class EmptyFileQC extends AbstractQCModule {
 
   }
 
+  @Override
   public void reset() {
     // Do nothing
   }
 
+  @Override
   public String name() {
     return "Basic Statistics";
   }
 
+  @Override
   public void processSequence(final Sequence sequence) {
     // Do nothing
   }
 
+  @Override
   public boolean raisesError() {
     return true;
   }
 
+  @Override
   public boolean raisesWarning() {
     return false;
   }
 
+  @Override
   public boolean ignoreInReport() {
     return false;
   }
 
+  @Override
   public void makeReport(final HTMLReportArchive report)
       throws XMLStreamException, IOException {
     super.writeTable(report, new ResultsTable());

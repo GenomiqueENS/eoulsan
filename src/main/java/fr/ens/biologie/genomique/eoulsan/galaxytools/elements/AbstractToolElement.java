@@ -93,6 +93,7 @@ public abstract class AbstractToolElement implements ToolElement {
    * Gets the short name.
    * @return the short name
    */
+  @Override
   public String getShortName() {
     return this.shortName;
   }
