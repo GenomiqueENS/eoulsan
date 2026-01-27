@@ -5,9 +5,11 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MULTIQC_REPORT_
 import static fr.ens.biologie.genomique.eoulsan.requirements.DockerRequirement.newDockerRequirement;
 import static fr.ens.biologie.genomique.eoulsan.requirements.PathRequirement.newPathRequirement;
 import static java.util.Collections.unmodifiableSet;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,6 +35,8 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.util.EoulsanDockerManager;
@@ -53,13 +57,14 @@ public class MultiQCModule extends AbstractModule {
   /** Module name */
   private static final String MODULE_NAME = "multiqc";
 
-  private static final String MULTIQC_DOCKER_IMAGE = "ewels/multiqc:v1.7";
+  private static final String MULTIQC_DOCKER_IMAGE = "multiqc/multiqc:v1.33";
   private static final String MULTIQC_EXECUTABLE = "multiqc";
 
   private boolean dockerMode;
   private String dockerImage = MULTIQC_DOCKER_IMAGE;
   private final Set<Requirement> requirements = new HashSet<>();
   private final Map<DataFormat, InputPreprocessor> formats = new HashMap<>();
+  private boolean keepTemporaryFiles;
 
   @Override
   public String getName() {
@@ -125,6 +130,10 @@ public class MultiQCModule extends AbstractModule {
         reports = p.getStringValue();
         break;
 
+      case "debug":
+        this.keepTemporaryFiles = p.getBooleanValue();
+        break;
+
       default:
         Modules.unknownParameter(context, p);
         break;
@@ -171,23 +180,33 @@ public class MultiQCModule extends AbstractModule {
         }
       }
 
+      // Create sample names file
+      File sampleNamesFile = new File(multiQCInputDir, "sample-names.tsv");
+      createSampleNamesFile(context.getWorkflow().getDesign(), sampleNamesFile);
+
       List<String> commandLine;
 
       // Launch MultiQC
       if (this.dockerMode) {
+        context.getLogger().info("Docker image: " + this.dockerImage);
+        status.setDockerImage(this.dockerImage);
         commandLine = createMultiQCReportWithDocker(this.dockerImage,
-            multiQCInputDir, multiQCReportFile, context.getCommandName(),
-            context.getLocalTempDirectory());
-      } else {
-        commandLine = createMultiQCReport(multiQCInputDir, multiQCReportFile,
+            multiQCInputDir, sampleNamesFile, multiQCReportFile,
             context.getCommandName(), context.getLocalTempDirectory());
+      } else {
+        commandLine = createMultiQCReport(multiQCInputDir, sampleNamesFile,
+            multiQCReportFile, context.getCommandName(),
+            context.getLocalTempDirectory());
       }
 
       // Set command line in status
       status.setCommandLine(String.join(" ", commandLine));
+      context.getLogger().info("Command line: " + commandLine);
 
       // Cleanup temporary directory
-      new DataFile(multiQCInputDir).delete(true);
+      if (!this.keepTemporaryFiles) {
+        new DataFile(multiQCInputDir).delete(true);
+      }
 
     } catch (IOException | EoulsanException e) {
       return status.createTaskResult(e);
@@ -214,7 +233,7 @@ public class MultiQCModule extends AbstractModule {
 
     for (String report : GuavaCompatibility.splitToList(
         Splitter.on(',').trimResults().omitEmptyStrings(),
-        reports.toLowerCase())) {
+        reports.toLowerCase(Globals.DEFAULT_LOCALE))) {
 
       // Only process each report type once
       if (result.containsKey(report)) {
@@ -251,9 +270,9 @@ public class MultiQCModule extends AbstractModule {
    * @throws EoulsanException if MultiQC execution fails
    */
   private List<String> createMultiQCReportWithDocker(final String dockerImage,
-      final File inputDirectory, final File multiQCReportFile,
-      final String projectName, final File temporaryDirectory)
-      throws IOException, EoulsanException {
+      final File inputDirectory, final File sampleNamesFile,
+      final File multiQCReportFile, final String projectName,
+      final File temporaryDirectory) throws IOException, EoulsanException {
 
     SimpleProcess process =
         EoulsanDockerManager.getInstance().createImageInstance(dockerImage);
@@ -277,8 +296,8 @@ public class MultiQCModule extends AbstractModule {
     }
 
     // Create command line
-    List<String> commandLine =
-        createCommandLine(inputDirectory, multiQCReportFile, projectName);
+    List<String> commandLine = createCommandLine(inputDirectory,
+        sampleNamesFile, multiQCReportFile, projectName);
 
     // Launch Docker container
     final int exitValue =
@@ -303,8 +322,9 @@ public class MultiQCModule extends AbstractModule {
    * @throws EoulsanException if MultiQC execution fails
    */
   private List<String> createMultiQCReport(final File inputDirectory,
-      final File multiQCReportFile, final String projectName,
-      final File temporaryDirectory) throws IOException, EoulsanException {
+      final File sampleNamesFile, final File multiQCReportFile,
+      final String projectName, final File temporaryDirectory)
+      throws IOException, EoulsanException {
 
     SimpleProcess process = new SystemSimpleProcess();
 
@@ -313,8 +333,8 @@ public class MultiQCModule extends AbstractModule {
     File stderrFile = new File(executionDirectory, "multiqc.stderr");
 
     // Create command line
-    List<String> commandLine =
-        createCommandLine(inputDirectory, multiQCReportFile, projectName);
+    List<String> commandLine = createCommandLine(inputDirectory,
+        sampleNamesFile, multiQCReportFile, projectName);
 
     // Launch Docker container
     int exitValue = process.execute(commandLine, executionDirectory,
@@ -337,7 +357,8 @@ public class MultiQCModule extends AbstractModule {
    * @return a list with the MultiQC arguments
    */
   private static List<String> createCommandLine(final File inputDirectory,
-      final File multiQCReportFile, final String projectName) {
+      final File sampleNamesFile, final File multiQCReportFile,
+      final String projectName) {
 
     List<String> result = new ArrayList<>();
 
@@ -347,6 +368,8 @@ public class MultiQCModule extends AbstractModule {
     // MultiQC options
     result.add("--title");
     result.add("Project " + projectName + " report");
+    result.add("--sample-names");
+    result.add(sampleNamesFile.getAbsolutePath());
     result.add("--filename");
     result.add(multiQCReportFile.getAbsolutePath());
 
@@ -354,6 +377,41 @@ public class MultiQCModule extends AbstractModule {
     result.add(inputDirectory.getAbsolutePath());
 
     return result;
+  }
+
+  /**
+   * Create a sample name file for MultiQC.
+   * @param design the Eoulsan design
+   * @param sampleNamesFile the file to create
+   * @throws IOException if an error occurs while creating the file
+   */
+  private static void createSampleNamesFile(final Design design,
+      final File sampleNamesFile) throws IOException {
+
+    requireNonNull(design);
+    requireNonNull(sampleNamesFile);
+
+    boolean isDescription = false;
+    for (Sample s : design.getSamples()) {
+      if (s.getMetadata().containsDescription()) {
+        isDescription = true;
+        break;
+      }
+    }
+
+    List<String> result = new ArrayList<>();
+    result
+        .add("MultiQC Names\tNames" + (isDescription ? "\tDescriptions" : ""));
+    for (Sample s : design.getSamples()) {
+      String description = s.getMetadata().getDescription();
+      if (description == null) {
+        description = "";
+      }
+      result.add(s.getId()
+          + '\t' + s.getName() + (isDescription ? '\t' + description : ""));
+    }
+
+    Files.write(sampleNamesFile.toPath(), result);
   }
 
 }
