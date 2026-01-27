@@ -36,6 +36,7 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URI;
 import java.nio.channels.FileLock;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
@@ -378,7 +379,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
 
       String line;
       try (BufferedReader readerResults =
-          new BufferedReader(new InputStreamReader(mp.getStout()))) {
+          new BufferedReader(new InputStreamReader(mp.getStout(), Charset.defaultCharset()))) {
         while ((line = readerResults.readLine()) != null) {
 
           queue.add(line);
