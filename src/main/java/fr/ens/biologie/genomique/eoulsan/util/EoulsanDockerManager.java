@@ -72,7 +72,7 @@ public class EoulsanDockerManager {
           .parseClientName(EoulsanRuntime.getSettings().getDockerBackend());
     }
 
-    return ClientType.DEFAULT;
+    return ClientType.FALLBACK;
   }
 
   //
