@@ -789,7 +789,7 @@
 						<args>-Xlint</args>
 						<args>-XDcompilePolicy=simple</args>
 						<arg>--should-stop=ifError=FLOW</arg>
-						<args>-Xplugin:ErrorProne</args>
+						<args>-Xplugin:ErrorProne -Xep:AlmostJavadoc:OFF -Xep:PatternMatchingInstanceof:OFF -Xep:StatementSwitchToExpressionSwitch:OFF</args>
 						<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
 						<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</arg>
 						<arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED</arg>
