@@ -66,6 +66,18 @@ public interface TaskStatus extends Progress {
   void setCommandLine(String commandLine);
 
   /**
+   * Get the context docker image.
+   * @return a String with the context docker image
+   */
+  String getDockerImage();
+
+  /**
+   * Set the context docker image.
+   * @param dockerImage the command line to set
+   */
+  void setDockerImage(String dockerImage);
+
+  /**
    * Set the context counters.
    * @param reporter the reporter
    * @param counterGroup counter group to use with the reporter

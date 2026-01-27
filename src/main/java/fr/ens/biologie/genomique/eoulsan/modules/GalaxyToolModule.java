@@ -157,6 +157,12 @@ public class GalaxyToolModule extends AbstractModule {
             + toolInfo.getToolName() + ", version " + toolInfo.getToolVersion()
             + " with interpreter " + toolInfo.getInterpreter(dockerEnabled));
 
+    // If Docker enable, log the Docker image used
+    if (dockerEnabled) {
+      context.getLogger().info("Docker image: " + toolInfo.getDockerImage());
+      status.setDockerImage(toolInfo.getDockerImage());
+    }
+
     final ToolExecutorResult result;
 
     try {

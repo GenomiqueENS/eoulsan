@@ -52,6 +52,7 @@ public class TaskStatusImpl implements TaskStatus {
   private final Map<String, Long> counters = new HashMap<>();
   private String taskDescription;
   private String taskCommandLine;
+  private String taskDockerImage;
   private double progress;
 
   private volatile boolean done;
@@ -89,6 +90,12 @@ public class TaskStatusImpl implements TaskStatus {
   }
 
   @Override
+  public String getDockerImage() {
+
+    return this.taskDockerImage;
+  }
+
+  @Override
   public double getProgress() {
 
     return this.progress;
@@ -123,6 +130,16 @@ public class TaskStatusImpl implements TaskStatus {
 
     synchronized (this) {
       this.taskCommandLine = commandLine;
+    }
+  }
+
+  @Override
+  public void setDockerImage(final String dockerImage) {
+
+    requireNonNull(dockerImage, "the dockerImage argument cannot be null");
+
+    synchronized (this) {
+      this.taskDockerImage = dockerImage;
     }
   }
 
@@ -227,7 +244,8 @@ public class TaskStatusImpl implements TaskStatus {
     return new TaskResultImpl(this.context, this.startDate, this.endDate,
         duration, this.message,
         this.taskDescription == null ? "" : this.taskDescription,
-        this.taskCommandLine == null ? "" : this.taskCommandLine, this.counters,
+        this.taskCommandLine == null ? "" : this.taskCommandLine,
+        this.taskDockerImage == null ? "" : this.taskDockerImage, this.counters,
         success);
   }
 

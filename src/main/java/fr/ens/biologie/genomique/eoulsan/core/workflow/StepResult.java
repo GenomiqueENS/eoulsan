@@ -76,6 +76,7 @@ public class StepResult {
   private static final String TASK_MESSAGE_TAG = "Task message";
   private static final String TASK_DESCRIPTION_TAG = "Task description";
   private static final String TASK_COMMAND_LINE_TAG = "Task command line";
+  private static final String TASK_DOCKER_IMAGE_TAG = "Task Docker image";
   private static final String TASK_NAME_TAG = "Task name";
   private static final String TASK_ID_TAG = "Task id";
   private static final String TASKS_TAG = "Tasks";
@@ -118,6 +119,7 @@ public class StepResult {
   private final Map<Integer, String> taskDescriptions = new HashMap<>();
   private final Map<Integer, String> taskMessages = new HashMap<>();
   private final Map<Integer, String> taskCommandLines = new HashMap<>();
+  private final Map<Integer, String> taskDockerImages = new HashMap<>();
   private final Map<String, Long> stepCounters = new HashMap<>();
   private String stepMessage;
 
@@ -281,6 +283,7 @@ public class StepResult {
     this.taskCounters.put(contextId, result.getCounters());
     this.taskDescriptions.put(contextId, result.getDescription());
     this.taskCommandLines.put(contextId, result.getCommandLine());
+    this.taskDockerImages.put(contextId, result.getDockerImage());
     addCounters(taskName, result.getCounters());
 
     // Set success (Keep only the first error)
@@ -423,6 +426,8 @@ public class StepResult {
       jg.write(TASK_DESCRIPTION_TAG,
           nullToEmpty(this.taskDescriptions.get(contextId)));
       jg.write(TASK_MESSAGE_TAG, nullToEmpty(this.taskMessages.get(contextId)));
+      jg.write(TASK_DOCKER_IMAGE_TAG,
+          nullToEmpty(this.taskDockerImages.get(contextId)));
       jg.write(TASK_COMMAND_LINE_TAG,
           nullToEmpty(this.taskCommandLines.get(contextId)));
 

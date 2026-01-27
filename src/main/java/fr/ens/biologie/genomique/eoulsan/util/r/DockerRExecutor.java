@@ -26,6 +26,14 @@ public class DockerRExecutor extends ProcessRExecutor {
     return REXECUTOR_NAME;
   }
 
+  /**
+   * Get the Docker image used.
+   * @return the Docker image used
+   */
+  public String getDockerImage() {
+    return this.dockerImage;
+  }
+
   @Override
   protected void putFile(final DataFile inputFile, final String outputFilename)
       throws IOException {

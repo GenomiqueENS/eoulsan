@@ -62,6 +62,7 @@ import fr.ens.biologie.genomique.eoulsan.modules.diffana.DESeq2.FitType;
 import fr.ens.biologie.genomique.eoulsan.modules.diffana.DESeq2.SizeFactorsType;
 import fr.ens.biologie.genomique.eoulsan.modules.diffana.DESeq2.StatisticTest;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
+import fr.ens.biologie.genomique.eoulsan.util.r.DockerRExecutor;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 import fr.ens.biologie.genomique.kenetre.bio.io.TSVCountsReader;
 
@@ -211,6 +212,10 @@ public class DESeq2Module extends AbstractModule {
   @Override
   public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
+
+    if (DockerRExecutor.REXECUTOR_NAME.equals(this.executor.getName())) {
+      status.setDockerImage(((DockerRExecutor) executor).getDockerImage());
+    }
 
     // Get the design
     final Design design = context.getWorkflow().getDesign();

@@ -66,6 +66,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
   private final String taskMessage;
   private final String taskDescription;
   private final String taskCommandLine;
+  private final String taskDockerImage;
 
   TaskContextImpl getContext() {
     return this.context;
@@ -89,6 +90,10 @@ public class TaskResultImpl implements TaskResult, Serializable {
 
   String getCommandLine() {
     return this.taskCommandLine;
+  }
+
+  String getDockerImage() {
+    return this.taskDockerImage;
   }
 
   String getMessage() {
@@ -212,7 +217,8 @@ public class TaskResultImpl implements TaskResult, Serializable {
   TaskResultImpl(final TaskContextImpl context, final Date startTime,
       final Date endTime, final long duration, final String contextMessage,
       final String contextDescription, final String contextCommandLine,
-      final Map<String, Long> counters, final boolean success) {
+      final String contextDockerImage, final Map<String, Long> counters,
+      final boolean success) {
 
     requireNonNull(context, "context argument cannot be null");
     requireNonNull(startTime, "startTime argument cannot be null");
@@ -231,6 +237,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
     this.taskMessage = contextMessage;
     this.taskDescription = contextDescription;
     this.taskCommandLine = contextCommandLine;
+    this.taskDockerImage = contextDockerImage;
     this.counters.putAll(counters);
     this.exception = null;
     this.errorMessage = null;
@@ -250,6 +257,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
     this.taskMessage = null;
     this.taskDescription = null;
     this.taskCommandLine = null;
+    this.taskDockerImage = null;
     this.exception = exception;
     this.errorMessage = errorMessage;
   }
