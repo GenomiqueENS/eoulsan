@@ -794,7 +794,7 @@ public class FileNaming {
         && Objects.equals(fn1.portName, fn2.portName)
         && Objects.equals(fn1.format, fn2.format)
         && Objects.equals(fn1.dataName, fn2.dataName)
-        && Objects.equals(fn1.part, fn2.part);
+        && fn1.part == fn2.part;
   }
 
   /**

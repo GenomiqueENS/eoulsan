@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
@@ -91,11 +92,11 @@ public class DiffAna extends Normalization {
         return null;
       }
 
-      final String lowerName = name.trim().toLowerCase();
+      final String lowerName = name.trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
       for (DispersionMethod dem : DispersionMethod.values()) {
 
-        if (dem.getName().toLowerCase().equals(lowerName)) {
+        if (dem.getName().toLowerCase(Globals.DEFAULT_LOCALE).equals(lowerName)) {
           return dem;
         }
       }
@@ -145,11 +146,11 @@ public class DiffAna extends Normalization {
         return null;
       }
 
-      final String lowerName = name.trim().toLowerCase();
+      final String lowerName = name.trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
       for (DispersionSharingMode desm : DispersionSharingMode.values()) {
 
-        if (desm.getName().toLowerCase().equals(lowerName)) {
+        if (desm.getName().toLowerCase(Globals.DEFAULT_LOCALE).equals(lowerName)) {
           return desm;
         }
       }
@@ -199,11 +200,11 @@ public class DiffAna extends Normalization {
         return null;
       }
 
-      final String lowerName = name.trim().toLowerCase();
+      final String lowerName = name.trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
       for (DispersionFitType deft : DispersionFitType.values()) {
 
-        if (deft.getName().toLowerCase().equals(lowerName)) {
+        if (deft.getName().toLowerCase(Globals.DEFAULT_LOCALE).equals(lowerName)) {
           return deft;
         }
       }

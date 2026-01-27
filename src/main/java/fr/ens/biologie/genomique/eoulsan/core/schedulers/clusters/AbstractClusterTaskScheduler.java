@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -223,7 +224,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
       final File taskResultFile =
           new File(this.taskDir, this.taskPrefix + TASK_JOB_ID);
 
-      try (PrintWriter out = new PrintWriter(taskResultFile)) {
+      try (PrintWriter out = new PrintWriter(taskResultFile, Charset.defaultCharset())) {
         out.println(this.jobId);
       }
     }

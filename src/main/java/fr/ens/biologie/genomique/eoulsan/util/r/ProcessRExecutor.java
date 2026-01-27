@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -101,7 +102,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
       throw new IOException("The output file already exists: " + outputFile);
     }
 
-    try (Writer writer = new OutputStreamWriter(outputFile.create())) {
+    try (Writer writer = new OutputStreamWriter(outputFile.create(), Charset.defaultCharset())) {
       writer.write(content);
     }
   }

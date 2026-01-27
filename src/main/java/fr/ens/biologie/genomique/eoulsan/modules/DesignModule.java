@@ -322,7 +322,7 @@ public class DesignModule extends AbstractModule {
     // Get the design field name for the port
     String fieldName = null;
     for (String f : sample.getMetadata().keySet()) {
-      if (port.getName().equals(f.trim().toLowerCase())) {
+      if (port.getName().equals(f.trim().toLowerCase(Globals.DEFAULT_LOCALE))) {
         fieldName = f;
         break;
       }
@@ -355,7 +355,7 @@ public class DesignModule extends AbstractModule {
     // Get the design field name for the port
     String fieldName = null;
     for (String f : design.getMetadata().keySet()) {
-      if (port.getName().equals(f.trim().toLowerCase())) {
+      if (port.getName().equals(f.trim().toLowerCase(Globals.DEFAULT_LOCALE))) {
         fieldName = f;
         break;
       }

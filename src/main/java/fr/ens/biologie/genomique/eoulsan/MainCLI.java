@@ -30,7 +30,7 @@ import java.net.URI;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 
-import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 /**
@@ -54,22 +54,20 @@ public final class MainCLI extends Main {
     final Options options = super.makeOptions();
 
     // eoulsan.sh shell script options
-    options.addOption(OptionBuilder.withArgName("path").hasArg()
-        .withDescription("JAVA_HOME path").create('j'));
+    options.addOption(Option.builder("j").argName("path").hasArg()
+        .desc("JAVA_HOME path").get());
 
-    options.addOption(OptionBuilder.withArgName("size").hasArg()
-        .withDescription("maximal memory usage for JVM in MB (4096 by default)")
-        .create('m'));
+    options.addOption(Option.builder("m").argName("size").hasArg()
+        .desc("maximal memory usage for JVM in MB (4096 by default)").get());
 
-    options.addOption(OptionBuilder.withArgName("args").hasArg()
-        .withDescription("JVM arguments (-server by default)").create('J'));
+    options.addOption(Option.builder("J").argName("args").hasArg()
+        .desc("JVM arguments (-server by default)").get());
 
-    options.addOption(OptionBuilder.withArgName("path").hasArg()
-        .withDescription("JVM working directory").create('w'));
+    options.addOption(Option.builder("w").argName("path").hasArg()
+        .desc("JVM working directory").get());
 
-    options.addOption(OptionBuilder.withArgName("classpath").hasArg()
-        .withDescription("additional classpath for eoulsan plugins")
-        .create('p'));
+    options.addOption(Option.builder("p").argName("classpath").hasArg()
+        .desc("additional classpath for eoulsan plugins").get());
 
     return options;
   }
@@ -115,7 +113,7 @@ public final class MainCLI extends Main {
    * Constructor.
    * @param args command line arguments
    */
-  protected MainCLI(final String[] args) {
+  MainCLI(final String[] args) {
 
     super(LAUNCH_MODE_NAME, args);
   }

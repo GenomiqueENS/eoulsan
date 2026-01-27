@@ -29,9 +29,9 @@ import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.help.HelpFormatter;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.testng.ITestResult;
@@ -40,8 +40,8 @@ import org.testng.TestNG;
 
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.kenetre.it.ITFactory;
 import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import fr.ens.biologie.genomique.kenetre.it.ITFactory;
 
 /**
  * This class launch integration test with Testng class.
@@ -65,7 +65,7 @@ public class IntegrationTestAction extends AbstractAction {
   public void action(final List<String> arguments) {
 
     final Options options = makeOptions();
-    final CommandLineParser parser = new GnuParser();
+    final CommandLineParser parser = new DefaultParser();
 
     File testNGReportDirectory = null;
     File testOutputDirectory = null;
@@ -196,37 +196,34 @@ public class IntegrationTestAction extends AbstractAction {
     options.addOption("h", "help", false, "display this help");
 
     // Path to test configuration
-    options.addOption(OptionBuilder.withArgName("file").hasArg(true)
-        .withDescription("configuration file").create("testconf"));
+    options.addOption(Option.builder("testconf").argName("file").hasArg(true)
+        .desc("configuration file").get());
 
     // Path to application version to execute
-    options.addOption(OptionBuilder.withArgName("appliPath").hasArg()
-        .withDescription("application path to launch").create("exec"));
+    options.addOption(Option.builder("exec").argName("appliPath").hasArg()
+        .desc("application path to launch").get());
 
     // Optional, path to file with list name tests to treat
-    options.addOption(OptionBuilder.withArgName("file").hasArg(true)
-        .withDescription("optional: files with tests name to launch")
-        .withLongOpt("file").create('f'));
+    options.addOption(Option.builder("f").argName("file").hasArg(true)
+        .desc("optional: files with tests name to launch").longOpt("file")
+        .get());
 
     // Optional, the name of the test to execute
-    options.addOption(OptionBuilder.withArgName("test").hasArg(true)
-        .withDescription("optional: test name to launch").withLongOpt("test")
-        .create('t'));
+    options.addOption(Option.builder("t").argName("test").hasArg(true)
+        .desc("optional: test name to launch").longOpt("test").get());
 
     // Optional, force generated expected data
-    options.addOption(OptionBuilder.withArgName("mode").hasArg()
-        .withDescription(
-            "optional: mode for generate data expected: all (remove existing) or mode to generate no exists directory new")
-        .create("expected"));
+    options.addOption(Option.builder("expected").argName("mode").hasArg().desc(
+        "optional: mode for generate data expected: all (remove existing) or mode to generate no exists directory new")
+        .get());
 
     // Optional, the test output directory
-    options.addOption(OptionBuilder.withArgName("outputdir").hasArg(true)
-        .withDescription("optional: test output directory").withLongOpt("dir")
-        .create('d'));
+    options.addOption(Option.builder("d").argName("outputdir").hasArg(true)
+        .desc("optional: test output directory").longOpt("dir").get());
 
     // Optional, path to TestNG report directory
-    options.addOption(OptionBuilder.withArgName("file").hasArg(true)
-        .withDescription("TestNG report directory").create('o'));
+    options.addOption(Option.builder("o").argName("file").hasArg(true)
+        .desc("TestNG report directory").get());
 
     return options;
   }
@@ -238,11 +235,15 @@ public class IntegrationTestAction extends AbstractAction {
   private void help(final Options options) {
 
     // Show help message
-    final HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(
-        Globals.APP_NAME_LOWER_CASE + ".sh " + getName() + " [options]",
-        options);
-
+    final HelpFormatter formatter =
+        HelpFormatter.builder().setShowSince(false).get();
+    try {
+      formatter.printHelp(
+          Globals.APP_NAME_LOWER_CASE + ".sh " + getName() + " [options]", "",
+          options, "", false);
+    } catch (IOException e) {
+      Common.errorExit(e, "Error while creating help message.");
+    }
     Common.exit(0);
   }
 
@@ -281,7 +282,7 @@ public class IntegrationTestAction extends AbstractAction {
     final TestNG testng = new TestNG();
     try {
       // Create and configure TestNG
-      testng.setTestClasses(new Class[] {ITFactory.class});
+      testng.setTestClasses(new Class<?>[] {ITFactory.class});
       testng.addListener(tla);
 
       if (testNGReportDirectory != null) {

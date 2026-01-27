@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Collections;
@@ -537,7 +538,7 @@ public class StepResult {
     requireNonNull(in);
     checkImmutableState();
 
-    final JsonReader reader = Json.createReader(new InputStreamReader(in));
+    final JsonReader reader = Json.createReader(new InputStreamReader(in, Charset.defaultCharset()));
     final JsonObject obj = reader.readObject();
 
     this.jobId = obj.getString(JOB_ID_TAG);

@@ -110,15 +110,20 @@ public class FailModule extends AbstractModule {
       Modules.invalidConfiguration(context,
           "Delay cannot be lower than 0: " + this.delay);
     }
+    if (this.delay * 1000L > Integer.MAX_VALUE) {
+      Modules.invalidConfiguration(context,
+          "Delay cannot be greater than " + Integer.MAX_VALUE + " ms");
+    }
 
   }
 
+  @SuppressWarnings("NarrowCalculation")
   @Override
   public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
     try {
-      Thread.sleep(delay * 1000);
+      Thread.sleep(this.delay * 1000);
     } catch (InterruptedException e) {
       context.getLogger()
           .warning("Thread.sleep() interrupted: " + e.getMessage());

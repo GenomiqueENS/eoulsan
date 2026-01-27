@@ -34,6 +34,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.InputPort;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 
@@ -61,7 +62,7 @@ class DefaultDataProduct implements DataProduct, Serializable {
 
     checkState(dataproduct == null, "configure() has been already called");
 
-    final String s = Strings.nullToEmpty(conf).trim().toLowerCase();
+    final String s = Strings.nullToEmpty(conf).trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
     switch (s) {
 

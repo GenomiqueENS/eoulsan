@@ -3,6 +3,8 @@ package fr.ens.biologie.genomique.eoulsan.util.r;
 import java.io.File;
 import java.io.IOException;
 
+import fr.ens.biologie.genomique.eoulsan.Globals;
+
 /**
  * This class define a factory to create RExecutor objects.
  * @author Laurent Jourdren
@@ -30,7 +32,7 @@ public class RExecutorFactory {
 
       for (Mode m : values()) {
 
-        if (m.name().toLowerCase().equals(name.toLowerCase().trim())) {
+        if (m.name().toLowerCase(Globals.DEFAULT_LOCALE).equals(name.toLowerCase(Globals.DEFAULT_LOCALE).trim())) {
           return m;
         }
       }

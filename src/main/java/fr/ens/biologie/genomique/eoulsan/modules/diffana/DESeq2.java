@@ -24,6 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 
+import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.getAllSamplesMetadataKeys;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.getExperimentSampleAllMetadataKeys;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.referenceValueToInt;
@@ -36,12 +37,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.checkers.DESeq2DesignChecker;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -142,7 +146,7 @@ public class DESeq2 {
 
       for (SizeFactorsType dem : SizeFactorsType.values()) {
 
-        if (dem.name().toLowerCase().equals(lowerName)) {
+        if (dem.name().toLowerCase(Globals.DEFAULT_LOCALE).equals(lowerName)) {
           return dem;
         }
       }
@@ -158,7 +162,7 @@ public class DESeq2 {
      */
     public String toDESeq2Value() {
 
-      return this.name().toLowerCase();
+      return this.name().toLowerCase(Globals.DEFAULT_LOCALE);
     }
   }
 
@@ -180,11 +184,11 @@ public class DESeq2 {
 
       requireNonNull(name, "fitType argument cannot be null");
 
-      final String lowerName = name.trim().toLowerCase();
+      final String lowerName = name.trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
       for (FitType dem : FitType.values()) {
 
-        if (dem.name().toLowerCase().equals(lowerName)) {
+        if (dem.name().toLowerCase(Globals.DEFAULT_LOCALE).equals(lowerName)) {
           return dem;
         }
       }
@@ -199,7 +203,7 @@ public class DESeq2 {
      */
     public String toDESeq2Value() {
 
-      return this.name().toLowerCase();
+      return this.name().toLowerCase(Globals.DEFAULT_LOCALE);
     }
   }
 
@@ -229,11 +233,11 @@ public class DESeq2 {
 
       requireNonNull(name, "statisticTest cargument annot be null");
 
-      final String lowerName = name.trim().toLowerCase();
+      final String lowerName = name.trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
       for (StatisticTest dem : StatisticTest.values()) {
 
-        if (dem.toDESeq2Value().toLowerCase().equals(lowerName)) {
+        if (dem.toDESeq2Value().toLowerCase(Globals.DEFAULT_LOCALE).equals(lowerName)) {
           return dem;
         }
       }
@@ -470,7 +474,7 @@ public class DESeq2 {
    */
   private static String booleanParameter(boolean value) {
 
-    return Boolean.valueOf(value).toString().toUpperCase();
+    return Boolean.valueOf(value).toString().toUpperCase(Globals.DEFAULT_LOCALE);
   }
 
   /**
@@ -532,11 +536,20 @@ public class DESeq2 {
           + "_" + this.experiment.getName() + "-buildcontrasts-"
           + toCompactTime(System.currentTimeMillis());
 
+      // Create R script arguments
+      String[] buildContrastScriptArgs = new String[] {deseq2DesignFileName,
+          this.model, comparisonFileName,
+          this.experiment.getName() + CONTRAST_FILE_SUFFIX, this.stepId + "_"};
+
+      // Log R Command line
+      getLogger().info("R script to execute:\n" + buildContrastScript);
+      getLogger().info(
+          "R script arguments: " + Arrays.toString(buildContrastScriptArgs));
+
       // Run buildContrast.R
       this.executor.executeRScript(buildContrastScript, false, null,
           this.saveRScripts, description, workflowOutputDir,
-          deseq2DesignFileName, this.model, comparisonFileName,
-          this.experiment.getName() + CONTRAST_FILE_SUFFIX, this.stepId + "_");
+          buildContrastScriptArgs);
     }
 
     // Run normalization and differential analysis
@@ -554,10 +567,19 @@ public class DESeq2 {
       // TODO Do not handle custom contrast files with
       // ExperimentMetadata.containsContrastFile()
 
+      // Create R script arguments
+      String[] normDiffanaScriptArgs =
+          createNormDiffanaCommandLine(deseq2DesignFileName, contrastFilename);
+
+      // Log R Command line
+      getLogger().info("R script to execute:\n" + normDiffanaScript);
+      getLogger().info(
+          "R script arguments: " + Arrays.toString(normDiffanaScriptArgs));
+
       // Run normDiffana.R
       this.executor.executeRScript(normDiffanaScript, false, null,
           this.saveRScripts, description, workflowOutputDir,
-          createNormDiffanaCommandLine(deseq2DesignFileName, contrastFilename));
+          normDiffanaScriptArgs);
     }
 
     // Remove input files
@@ -589,7 +611,7 @@ public class DESeq2 {
     String line = null;
 
     try (
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.defaultCharset()))) {
 
       while ((line = reader.readLine()) != null) {
 

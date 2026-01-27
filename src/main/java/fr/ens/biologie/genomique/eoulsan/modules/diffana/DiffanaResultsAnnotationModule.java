@@ -174,6 +174,7 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
 
       case "outputformat":
         Modules.renamedParameter(context, p, "output.format");
+        // fall through
       case "output.format":
 
         // Set output format

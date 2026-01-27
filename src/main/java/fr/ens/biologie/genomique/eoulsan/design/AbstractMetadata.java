@@ -36,6 +36,7 @@ import java.util.Set;
 
 import com.google.common.base.MoreObjects;
 
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 
 /**
@@ -137,7 +138,7 @@ public abstract class AbstractMetadata implements Metadata, Serializable {
     if (value == null) {
       return false;
     }
-    return Boolean.parseBoolean(value.toLowerCase());
+    return Boolean.parseBoolean(value.toLowerCase(Globals.DEFAULT_LOCALE));
   }
 
   @Override

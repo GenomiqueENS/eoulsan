@@ -66,6 +66,7 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
     this.recordDelimiterBytes = recordDelimiter;
   }
 
+  @Override
   public void initialize(InputSplit genericSplit, TaskAttemptContext context)
       throws IOException {
     FileSplit split = (FileSplit) genericSplit;
@@ -220,6 +221,7 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
   /**
    * Get the progress within the split
    */
+  @Override
   public float getProgress() throws IOException {
     if (start == end) {
       return 0.0f;
@@ -229,6 +231,7 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
     }
   }
 
+  @Override
   public synchronized void close() throws IOException {
     try {
       if (in != null) {

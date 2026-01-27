@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -75,7 +76,7 @@ public class RnaSeqMetricsInputPreprocessor implements InputPreprocessor {
     for (String line : lines) {
 
       if (line.contains("INPUT")
-          && line.toLowerCase().contains("rnaseqmetrics")) {
+          && line.toLowerCase(Globals.DEFAULT_LOCALE).contains("rnaseqmetrics")) {
 
         Pattern pattern = Pattern.compile("INPUT(?:=|\\s+)([^\\s]+)",
             Pattern.CASE_INSENSITIVE);

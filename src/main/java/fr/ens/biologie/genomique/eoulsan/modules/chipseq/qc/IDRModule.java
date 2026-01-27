@@ -274,7 +274,7 @@ public class IDRModule extends AbstractModule {
           + anInputData.getMetadata().get("RepTechGroup"));
 
       boolean isReference = anInputData.getMetadata().get("Reference")
-          .toLowerCase().equals("true");
+          .toLowerCase(Globals.DEFAULT_LOCALE).equals("true");
       String experimentName = anInputData.getMetadata().get("Experiment");
 
       // if we have a control, add it along with the experiment name
@@ -335,7 +335,7 @@ public class IDRModule extends AbstractModule {
 
         // Case where we have no replicate, just one sample
         if (nbSameReplicates == 1) {
-          Data tmp = (Data) replicatesList.get(0);
+          Data tmp = replicatesList.get(0);
           getLogger().info("Will not call IDR on 1 sample, for experiment "
               + tmp.getMetadata().get("Experiment") + " in replicate group "
               + tmp.getMetadata().get("RepTechGroup"));

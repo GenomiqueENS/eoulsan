@@ -35,6 +35,7 @@ import java.util.Objects;
 import com.google.common.base.MoreObjects;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
@@ -250,7 +251,7 @@ public class MapperIndexDataFormat extends AbstractDataFormat
 
     requireNonNull(mapperName);
 
-    String mapperNameLowerCase = mapperName.toLowerCase();
+    String mapperNameLowerCase = mapperName.toLowerCase(Globals.DEFAULT_LOCALE);
 
     this.mapperName = mapperNameLowerCase;
     this.formatName = mapperNameLowerCase + "_index_zip";

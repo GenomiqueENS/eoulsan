@@ -34,11 +34,11 @@ import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 
 import com.google.common.base.Joiner;
 
@@ -73,7 +73,7 @@ public class HadoopExecAction extends AbstractAction {
   public void action(final List<String> arguments) {
 
     final Options options = makeOptions();
-    final CommandLineParser parser = new GnuParser();
+    final CommandLineParser parser = new DefaultParser();
 
     String jobDescription = null;
 
@@ -131,8 +131,8 @@ public class HadoopExecAction extends AbstractAction {
     options.addOption("h", "help", false, "display this help");
 
     // Description option
-    options.addOption(OptionBuilder.withArgName("description").hasArg()
-        .withDescription("job description").withLongOpt("desc").create('d'));
+    options.addOption(Option.builder("d").argName("description").hasArg()
+        .desc("job description").longOpt("desc").get());
 
     return options;
   }
@@ -144,10 +144,17 @@ public class HadoopExecAction extends AbstractAction {
   private static void help(final Options options) {
 
     // Show help message
-    final HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(Globals.APP_NAME_LOWER_CASE
-        + ".sh " + ACTION_NAME
-        + " [options] workflow.xml design.txt hdfs://server/path", options);
+    final HelpFormatter formatter =
+        HelpFormatter.builder().setShowSince(false).get();
+    try {
+      formatter.printHelp(
+          Globals.APP_NAME_LOWER_CASE
+              + ".sh " + ACTION_NAME
+              + " [options] workflow.xml design.txt hdfs://server/path",
+          "", options, "", false);
+    } catch (IOException e) {
+      Common.errorExit(e, "Error while creating help message.");
+    }
 
     Common.exit(0);
   }

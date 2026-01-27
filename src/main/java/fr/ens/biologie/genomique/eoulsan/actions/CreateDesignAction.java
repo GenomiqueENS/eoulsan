@@ -32,11 +32,11 @@ import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
@@ -82,7 +82,7 @@ public class CreateDesignAction extends AbstractAction {
   public void action(final List<String> arguments) {
 
     final Options options = makeOptions();
-    final CommandLineParser parser = new GnuParser();
+    final CommandLineParser parser = new DefaultParser();
     String filename = "design.txt";
     int argsOptions = 0;
     boolean pairedEndMode = false;
@@ -248,27 +248,24 @@ public class CreateDesignAction extends AbstractAction {
     options.addOption("h", "help", false, "Display this help");
 
     // Bcl2fastq samplesheet path option
-    options.addOption(OptionBuilder.withArgName("file").hasArg()
-        .withDescription("Illumina samplesheet file").withLongOpt("samplesheet")
-        .create('s'));
+    options.addOption(Option.builder("s").argName("file").hasArg()
+        .desc("Illumina samplesheet file").longOpt("samplesheet").get());
 
     // Bcl2fastq project option
-    options.addOption(OptionBuilder.withArgName("name").hasArg()
-        .withDescription("Illumina project name").withLongOpt("project-name")
-        .create('n'));
+    options.addOption(Option.builder("s").argName("name").hasArg()
+        .desc("Illumina project name").longOpt("project-name").get());
 
     // Create symbolic links
     options.addOption("l", "symlinks", false,
         "Create symbolic links in design file directory");
 
     // Output option
-    options.addOption(OptionBuilder.withArgName("file").hasArg()
-        .withDescription("Output file").withLongOpt("output").create('o'));
+    options.addOption(Option.builder("o").argName("file").hasArg()
+        .desc("Output file").longOpt("output").get());
 
     // Eoulsan design format version
-    options.addOption(OptionBuilder.withArgName("version").hasArg()
-        .withDescription("Eoulsan design format version")
-        .withLongOpt("format-version").create('f'));
+    options.addOption(Option.builder("f").argName("version").hasArg()
+        .desc("Eoulsan design format version").longOpt("format-version").get());
 
     return options;
   }
@@ -280,11 +277,16 @@ public class CreateDesignAction extends AbstractAction {
   private static void help(final Options options) {
 
     // Show help message
-    final HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(
-        Globals.APP_NAME_LOWER_CASE
-            + ".sh " + ACTION_NAME + " [options] file1 file2 ... fileN",
-        options);
+    final HelpFormatter formatter =
+        HelpFormatter.builder().setShowSince(false).get();
+    try {
+      formatter.printHelp(
+          Globals.APP_NAME_LOWER_CASE
+              + ".sh " + ACTION_NAME + " [options] file1 file2 ... fileN",
+          "", options, "", false);
+    } catch (IOException e) {
+      Common.errorExit(e, "Error while creating help message.");
+    }
 
     Common.exit(0);
   }

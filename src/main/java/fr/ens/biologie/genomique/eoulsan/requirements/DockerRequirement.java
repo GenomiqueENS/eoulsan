@@ -104,8 +104,8 @@ public class DockerRequirement extends AbstractRequirement {
     try {
 
       // Create Docker connection
-      final DockerImageInstance connnection =
-          EoulsanDockerManager.getInstance().createImageInstance(this.dockerImage);
+      final DockerImageInstance connnection = EoulsanDockerManager.getInstance()
+          .createImageInstance(this.dockerImage);
 
       // Pull image
       connnection.pullImageIfNotExists(progress::setProgress);

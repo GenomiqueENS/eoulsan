@@ -114,6 +114,4 @@ public interface Metadata {
    */
   void remove(String key);
 
-  boolean equals(Object o);
-
 }

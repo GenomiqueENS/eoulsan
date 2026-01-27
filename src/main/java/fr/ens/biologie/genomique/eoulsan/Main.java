@@ -41,11 +41,11 @@ import java.util.logging.Level;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.python.google.common.base.Strings;
 
 import fr.ens.biologie.genomique.eoulsan.actions.Action;
@@ -260,9 +260,15 @@ public abstract class Main {
   protected void help(final Options options) {
 
     // Show help message
-    final HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp(getHelpEoulsanCommand() + " [options] action arguments",
-        options);
+    final HelpFormatter formatter =
+        HelpFormatter.builder().setShowSince(false).get();
+    try {
+      formatter.printHelp(
+          getHelpEoulsanCommand() + " [options] action arguments", "", options,
+          "", false);
+    } catch (IOException e) {
+      Common.errorExit(e, "Error while creating help message.");
+    }
 
     System.out.println("Available actions:");
     for (Action action : ActionService.getInstance().getActions()) {
@@ -295,19 +301,18 @@ public abstract class Main {
     options.addOption("license", false,
         "display information about the license of this software");
 
-    options.addOption(OptionBuilder.withArgName("file").hasArg()
-        .withDescription("configuration file to use").create("conf"));
+    options.addOption(Option.builder("conf").argName("file").hasArg()
+        .desc("configuration file to use").get());
 
-    options.addOption(OptionBuilder.withArgName("property=value").hasArg()
-        .withDescription("set a configuration setting. This "
-            + "option can be used several times")
-        .create('s'));
+    options.addOption(Option.builder("s").argName("property=value").hasArg()
+        .desc("set a configuration setting. This "
+            + "option can be used several times").get());
 
-    options.addOption(OptionBuilder.withArgName("file").hasArg()
-        .withDescription("external log file").create("log"));
+    options.addOption(Option.builder("log").argName("file").hasArg()
+        .desc("external log file").get());
 
-    options.addOption(OptionBuilder.withArgName("level").hasArg()
-        .withDescription("log level").create("loglevel"));
+    options.addOption(Option.builder("loglevel").argName("level").hasArg()
+        .desc("log level").get());
 
     return options;
   }
@@ -319,7 +324,7 @@ public abstract class Main {
   private int parseCommandLine() {
 
     final Options options = makeOptions();
-    final CommandLineParser parser = new GnuParser();
+    final CommandLineParser parser = new DefaultParser();
     final String[] argsArray = this.args.toArray(new String[0]);
 
     int argsOptions = 0;
@@ -522,7 +527,7 @@ public abstract class Main {
     // Set the log level
     if (this.logLevel != null) {
       try {
-        this.handler.setLevel(Level.parse(this.logLevel.toUpperCase()));
+        this.handler.setLevel(Level.parse(this.logLevel.toUpperCase(Globals.DEFAULT_LOCALE)));
       } catch (IllegalArgumentException e) {
         Common.showErrorMessageAndExit("Unknown log level ("
             + this.logLevel
@@ -603,7 +608,7 @@ public abstract class Main {
   private void parseAction(final int optionsCount) {
 
     // Set action name and arguments
-    final String actionName = this.args.get(optionsCount).trim().toLowerCase();
+    final String actionName = this.args.get(optionsCount).trim().toLowerCase(Globals.DEFAULT_LOCALE);
     this.actionArgs = this.args.subList(optionsCount + 1, this.args.size());
 
     // Test if is in hadoop mode

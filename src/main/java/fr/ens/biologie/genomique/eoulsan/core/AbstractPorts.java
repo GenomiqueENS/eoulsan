@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 
 /**
@@ -61,7 +62,7 @@ public abstract class AbstractPorts<E extends Port>
       return null;
     }
 
-    return this.ports.get(name.trim().toLowerCase());
+    return this.ports.get(name.trim().toLowerCase(Globals.DEFAULT_LOCALE));
   }
 
   @Override
@@ -71,7 +72,7 @@ public abstract class AbstractPorts<E extends Port>
       return false;
     }
 
-    return this.ports.containsKey(name.trim().toLowerCase());
+    return this.ports.containsKey(name.trim().toLowerCase(Globals.DEFAULT_LOCALE));
   }
 
   @Override

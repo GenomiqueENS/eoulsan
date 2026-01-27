@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.ServiceConfigurationError;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 
@@ -154,7 +155,7 @@ public abstract class FileResourceLoader<S> extends AbstractResourceLoader<S> {
         final String filename = file.getName();
 
         if (!filename.startsWith(".")
-            && filename.toLowerCase().endsWith(extension.toLowerCase())) {
+            && filename.toLowerCase(Globals.DEFAULT_LOCALE).endsWith(extension.toLowerCase(Globals.DEFAULT_LOCALE))) {
           result.add(file.getName());
         }
       }

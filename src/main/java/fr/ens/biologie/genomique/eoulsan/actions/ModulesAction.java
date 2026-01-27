@@ -9,13 +9,14 @@ import java.util.List;
 
 import com.google.common.base.Strings;
 
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUtils;
 import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.ModuleRegistry;
 import fr.ens.biologie.genomique.eoulsan.modules.GalaxyToolModule;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 
 /**
  * This class define an action that show the list of available formats.
@@ -107,7 +108,7 @@ public class ModulesAction extends AbstractInfoAction {
 
     // Add Execution mode
     ExecutionMode mode = ExecutionMode.getExecutionMode(module.getClass());
-    result.add(mode.toString().replace('_', ' ').toLowerCase());
+    result.add(mode.toString().replace('_', ' ').toLowerCase(Globals.DEFAULT_LOCALE));
 
     // Get description
     result.add(null2Empty(module.getDescription()));

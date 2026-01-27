@@ -353,6 +353,7 @@ public abstract class AbstractReadsMapperModule extends AbstractModule {
     case "mapperarguments":
       Modules.renamedParameter(context, parameter,
           MAPPER_ARGUMENTS_PARAMETER_NAME, true);
+      // fall through
 
     case MAPPER_NAME_PARAMETER_NAME:
       if ("soap".equals(parameter.getLowerStringValue())) {

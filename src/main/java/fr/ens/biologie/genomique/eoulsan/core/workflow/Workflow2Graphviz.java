@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -224,7 +225,7 @@ public class Workflow2Graphviz {
    */
   private void saveDotFile(final DataFile outputFile) throws IOException {
 
-    final Writer writer = new OutputStreamWriter(outputFile.create());
+    final Writer writer = new OutputStreamWriter(outputFile.create(), Charset.defaultCharset());
     writer.write(convert());
     writer.close();
   }

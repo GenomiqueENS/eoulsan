@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
@@ -278,7 +279,7 @@ public class SAM2BAMHadoopModule extends AbstractSAM2BAMModule {
     DataFile out = new DataFile(indexFile.getParent(),
         indexFile.getName() + ".submitfile");
 
-    Writer writer = new OutputStreamWriter(out.create());
+    Writer writer = new OutputStreamWriter(out.create(), Charset.defaultCharset());
     writer.write(bamFile.getSource() + '\t' + indexFile.getSource());
     writer.close();
 

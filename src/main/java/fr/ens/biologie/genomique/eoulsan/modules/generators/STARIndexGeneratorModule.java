@@ -155,6 +155,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
 
       case "gtf.file":
         Modules.renamedParameter(context, p, "use.gtf.file");
+        // fall through
       case "use.gtf.file":
         this.gtfFile = p.getBooleanValue();
         break;

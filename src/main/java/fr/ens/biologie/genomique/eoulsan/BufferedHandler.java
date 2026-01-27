@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.logging.Formatter;
@@ -41,7 +41,7 @@ import java.util.logging.LogRecord;
 public class BufferedHandler extends Handler {
 
   private final List<Handler> handlers = new ArrayList<>();
-  private final Queue<LogRecord> records = new LinkedList<>();
+  private final Queue<LogRecord> records = new ArrayDeque<>();
   private boolean flushed = false;
 
   /**

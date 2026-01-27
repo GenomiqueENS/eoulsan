@@ -267,7 +267,7 @@ public class ContextUtil {
    * @param counterName counter name
    * @return a Counter object
    */
-  public static Counter getCounter(TaskInputOutputContext context,
+  public static Counter getCounter(TaskInputOutputContext<?,?,?,?> context,
                                    String groupName, String counterName) {
     return (Counter) invoke(GET_COUNTER_METHOD, context, groupName, counterName);
   }

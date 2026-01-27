@@ -35,6 +35,7 @@ import static java.util.Objects.requireNonNull;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.Queue;
 
 import org.apache.hadoop.conf.Configuration;
@@ -153,7 +154,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
       final DataFile submitFile =
           new DataFile(taskContextFile.getParent(), SUBMIT_FILE_NAME);
 
-      final Writer writer = new OutputStreamWriter(submitFile.create());
+      final Writer writer = new OutputStreamWriter(submitFile.create(), Charset.defaultCharset());
       writer.write(taskContextFile.getSource());
       writer.close();
 

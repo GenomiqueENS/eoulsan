@@ -40,7 +40,7 @@ class StepOutputDirectory {
       }
 
       final OutputTreeType result =
-          OutputTreeType.valueOf(type.toUpperCase().trim());
+          OutputTreeType.valueOf(type.toUpperCase(Globals.DEFAULT_LOCALE).trim());
 
       if (result == null) {
         return OutputTreeType.valueOf(Globals.OUTPUT_TREE_TYPE_DEFAULT);
