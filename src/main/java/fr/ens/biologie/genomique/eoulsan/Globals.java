@@ -25,7 +25,6 @@
 package fr.ens.biologie.genomique.eoulsan;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
@@ -45,6 +44,7 @@ import java.util.logging.LogRecord;
 
 import fr.ens.biologie.genomique.eoulsan.io.FileCharsets;
 import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
+import fr.ens.biologie.genomique.kenetre.util.Utils;
 import fr.ens.biologie.genomique.kenetre.util.Version;
 
 /**
@@ -57,11 +57,14 @@ public final class Globals {
   private static Attributes manifestAttributes;
   private static final String MANIFEST_FILE = "/META-INF/MANIFEST.MF";
 
+  /** Default locale of the application. */
+  public static final Locale DEFAULT_LOCALE = Locale.US;
+
   /** The name of the application. */
   public static final String APP_NAME = "Eoulsan";
 
   /** The name of the application. */
-  public static final String APP_NAME_LOWER_CASE = APP_NAME.toLowerCase(Globals.DEFAULT_LOCALE);
+  public static final String APP_NAME_LOWER_CASE = APP_NAME.toLowerCase(DEFAULT_LOCALE);
 
   /** The prefix of the parameters of the application. */
   public static final String PARAMETER_PREFIX =
@@ -120,9 +123,6 @@ public final class Globals {
   public static final Map<String, String> AVAILABLE_BINARY_ARCH_ALIAS =
       Collections.unmodifiableMap(
           Collections.singletonMap("linux\tx86_64", "linux\tamd64"));
-
-  /** Default locale of the application. */
-  public static final Locale DEFAULT_LOCALE = Locale.US;
 
   /** Format of the log. */
   public static final Formatter LOG_FORMATTER = new Formatter() {
@@ -412,7 +412,9 @@ public final class Globals {
       manifestAttributes = manifest.getMainAttributes();
 
     } catch (IOException e) {
-      throw new UncheckedIOException(e);
+      // Do nothing when Manifest file does not exist (tests when building the
+      // application)
+      Utils.nop();
     }
   }
 
