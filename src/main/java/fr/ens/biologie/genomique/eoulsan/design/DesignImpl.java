@@ -281,7 +281,7 @@ class DesignImpl implements Serializable, Design {
   @Override
   public int hashCode() {
 
-    return Objects.hash(this.designNumber, this.designName, this.samples,
+    return Objects.hash(this.designName, this.samples,
         this.experiments, this.designMetadata);
   }
 

@@ -223,8 +223,8 @@ public class ExperimentImpl implements Serializable, Experiment {
   @Override
   public int hashCode() {
 
-    return Objects.hash(this.experimentId, this.experimentNumber,
-        this.experimentName, this.metadata, this.samples);
+    return Objects.hash(this.experimentId, this.experimentName, this.metadata,
+        this.samples);
   }
 
   @Override
