@@ -32,6 +32,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.UUID;
 
 import com.google.common.base.MoreObjects;
@@ -403,45 +405,55 @@ public class ExecutorArguments {
    */
   public ExecutorArguments(final File workflowFile, final File designFile) {
 
+    this(workflowFile.toPath(), designFile.toPath());
+  }
+
+  /**
+   * Public constructor.
+   * @param workflowFile workflow file
+   * @param designFile design file
+   */
+  public ExecutorArguments(final Path workflowFile, final Path designFile) {
+
     this();
 
     requireNonNull(workflowFile, "The workflow file is null");
     requireNonNull(designFile, "The design file is null");
-    checkArgument(workflowFile.exists(), "The workflow file does not exists");
-    checkArgument(designFile.exists(), "The design file does not exists");
+    checkArgument(Files.exists(workflowFile), "The workflow file does not exists");
+    checkArgument(Files.exists(designFile), "The design file does not exists");
 
-    final File outputDir = new File(designFile.getAbsoluteFile().getParent());
+    final Path outputDir = designFile.toAbsolutePath().getParent();
 
-    final File jobDir = new File(outputDir, getJobId());
-    final File workingDir = new File(jobDir, "working");
-    final File taskDir = new File(jobDir, "tasks");
-    final File dataDir =
-        new File(outputDir, Globals.APP_NAME_LOWER_CASE + "-data");
-    final File tmpDir = new File(jobDir, "tmp");
+    final Path jobDir = outputDir.resolve(getJobId());
+    final Path workingDir = jobDir.resolve("working");
+    final Path taskDir = jobDir.resolve("tasks");
+    final Path dataDir =
+        outputDir.resolve(Globals.APP_NAME_LOWER_CASE + "-data");
+    final Path tmpDir = jobDir.resolve("tmp");
 
     // Set the local working path
-    setLocalWorkingPathname(workingDir.getAbsolutePath());
+    setLocalWorkingPathname(workingDir.toAbsolutePath().toString());
 
     // Set the design path
-    setDesignPathname(designFile.getAbsolutePath());
+    setDesignPathname(designFile.toAbsolutePath().toString());
 
     // Set the parameter path
-    setWorkflowPathname(workflowFile.getAbsolutePath());
+    setWorkflowPathname(workflowFile.toAbsolutePath().toString());
 
     // Set the output path
-    setOutputPathname(outputDir.getAbsolutePath());
+    setOutputPathname(outputDir.toAbsolutePath().toString());
 
     // Set the job path
-    setJobPathname(jobDir.getAbsolutePath());
+    setJobPathname(jobDir.toAbsolutePath().toString());
 
     // Set the tasks path
-    setTaskPathname(taskDir.getAbsolutePath());
+    setTaskPathname(taskDir.toAbsolutePath().toString());
 
     // Set the data path
-    setDataPathname(dataDir.getAbsolutePath());
+    setDataPathname(dataDir.toAbsolutePath().toString());
 
     // Set the temporary directory
-    setTemporaryPathname(tmpDir.getAbsolutePath());
+    setTemporaryPathname(tmpDir.toAbsolutePath().toString());
   }
 
 }

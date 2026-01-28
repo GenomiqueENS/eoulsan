@@ -28,9 +28,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -252,32 +250,32 @@ public class RSConnection {
    * @throws REngineException if an error occurs while downloading the file
    */
   public void getFilesIntoZip(final List<String> rServeFilenames,
-      final File zipFile) throws REngineException {
+      final Path zipFile) throws REngineException {
 
-    try {
-      ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile));
+    try (ZipOutputStream out =
+        new ZipOutputStream(Files.newOutputStream(zipFile))) {
 
       final byte[] buf = new byte[BUFFER_SIZE];
 
       for (String f : rServeFilenames) {
-        final InputStream is = getFileInputStream(f);
+        try (InputStream is = getFileInputStream(f)) {
 
-        // Add Zip entry to output stream.
-        out.putNextEntry(new ZipEntry(f));
+          // Add Zip entry to output stream.
+          out.putNextEntry(new ZipEntry(f));
 
-        int i = 0;
+          int i = 0;
 
-        while ((i = is.read(buf)) != -1) {
-          out.write(buf, 0, i);
+          while ((i = is.read(buf)) != -1) {
+            out.write(buf, 0, i);
+          }
+
+          // Complete the entry
+          out.closeEntry();
         }
-
-        // Complete the entry
-        out.closeEntry();
-        is.close();
       }
 
       // Complete the Zip file
-      out.close();
+      // out.close();
 
     } catch (REngineException e) {
       throw new REngineException(getRConnection(), "Unable to get file");

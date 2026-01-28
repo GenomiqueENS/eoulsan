@@ -27,6 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.data.protocols;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -102,6 +103,16 @@ abstract class AbstractDataProtocol implements DataProtocol {
 
   @Override
   public File getSourceAsFile(final DataFile src) {
+
+    if (src == null || src.getSource() == null) {
+      throw new NullPointerException("The source is null.");
+    }
+
+    return null;
+  }
+
+  @Override
+  public Path getSourceAsPath(final DataFile src) {
 
     if (src == null || src.getSource() == null) {
       throw new NullPointerException("The source is null.");

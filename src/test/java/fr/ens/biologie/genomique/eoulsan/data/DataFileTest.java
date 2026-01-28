@@ -30,10 +30,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Path;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -271,19 +271,19 @@ public class DataFileTest {
 
     String filename = "toto.txt";
     DataFile df = new DataFile(filename);
-    assertEquals(new File(filename), df.toFile());
+    assertEquals(Path.of(filename).toFile(), df.toFile());
 
     filename = "/home/toto/toto.txt";
     df = new DataFile(filename);
-    assertEquals(new File(filename), df.toFile());
+    assertEquals(Path.of(filename).toFile(), df.toFile());
 
     filename = "file:///home/toto/toto.txt";
     df = new DataFile(filename);
-    assertEquals(new File(new URI(filename)), df.toFile());
+    assertEquals(Path.of(new URI(filename)).toFile(), df.toFile());
 
     filename = "file:/home/toto/toto.txt";
     df = new DataFile(filename);
-    assertEquals(new File(new URI(filename)), df.toFile());
+    assertEquals(Path.of(new URI(filename)).toFile(), df.toFile());
   }
 
   @Test

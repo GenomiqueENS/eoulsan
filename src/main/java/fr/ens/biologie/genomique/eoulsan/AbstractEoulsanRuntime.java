@@ -187,7 +187,7 @@ public abstract class AbstractEoulsanRuntime {
    */
   public File createFileInTempDir(final String filename) {
 
-    return new File(getTempDirectory(), filename);
+    return getTempDirectory().toPath().resolve(filename).toFile();
   }
 
   //

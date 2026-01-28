@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileStore;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -723,11 +724,11 @@ public class Infos {
 
       if (p != null) {
 
-        File f = new File(p);
+        Path f = Path.of(p);
 
-        if (f.exists()) {
+        if (Files.exists(f)) {
           try {
-            set.add(diskFreeInfo(f));
+            set.add(diskFreeInfo(f.toFile()));
           } catch (IOException e) {
             // Do nothing
           }

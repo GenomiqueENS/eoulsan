@@ -50,7 +50,6 @@ import java.util.Set;
 import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import fr.ens.biologie.genomique.kenetre.util.Utils;
 
 /**
@@ -345,7 +344,7 @@ public final class Settings implements Serializable {
    */
   public File getTempDirectoryFile() {
 
-    return new File(getTempDirectory());
+    return Path.of(getTempDirectory()).toFile();
   }
 
   /**
@@ -373,7 +372,7 @@ public final class Settings implements Serializable {
    */
   public File getExecutablesTempDirectoryFile() {
 
-    return new File(getExecutablesTempDirectory());
+    return Path.of(getExecutablesTempDirectory()).toFile();
   }
 
   /**
@@ -1411,7 +1410,7 @@ public final class Settings implements Serializable {
    */
   public void saveSettings() throws IOException {
 
-    saveSettings(new File(getConfigurationFilePath()));
+    saveSettings(Path.of(getConfigurationFilePath()));
   }
 
   /**
@@ -1421,13 +1420,24 @@ public final class Settings implements Serializable {
    */
   public void saveSettings(final File file) throws IOException {
 
-    final OutputStream os = FileUtils.createOutputStream(file);
+    requireNonNull(file);
+    saveSettings(file.toPath());
+  }
 
-    this.properties.store(os,
-        " "
-            + Globals.APP_NAME + " version " + Globals.APP_VERSION_STRING
-            + " configuration file");
-    os.close();
+  /**
+   * Save application options.
+   * @param file File to save
+   * @throws IOException if an error occurs while writing settings
+   */
+  public void saveSettings(final Path file) throws IOException {
+
+    try (OutputStream os = Files.newOutputStream(file)) {
+
+      this.properties.store(os,
+          " "
+              + Globals.APP_NAME + " version " + Globals.APP_VERSION_STRING
+              + " configuration file");
+    }
   }
 
   /**
@@ -1437,8 +1447,8 @@ public final class Settings implements Serializable {
    */
   public void loadSettings() throws IOException, EoulsanException {
 
-    final File confFile = new File(getConfigurationFilePath());
-    if (confFile.exists()) {
+    final Path confFile = Path.of(getConfigurationFilePath());
+    if (Files.exists(confFile)) {
       loadSettings(confFile);
     } else {
       getLogger().config("No configuration file found.");

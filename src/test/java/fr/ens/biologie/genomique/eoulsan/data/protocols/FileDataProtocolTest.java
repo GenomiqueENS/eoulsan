@@ -30,7 +30,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -38,6 +37,8 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -56,7 +57,7 @@ public class FileDataProtocolTest {
 
   private void writeFile(final File f, final String s) throws IOException {
 
-    Writer writer = new FileWriter(f, Charset.defaultCharset());
+    Writer writer = Files.newBufferedWriter(f.toPath(), Charset.defaultCharset());
 
     writer.write(s);
     writer.close();
@@ -150,7 +151,7 @@ public class FileDataProtocolTest {
 
     DataFormatRegistry.getInstance().register(DataFormats.READS_FASTQ);
 
-    f = new File(new File(System.getProperty("java.io.tmpdir")), "reads_1.fq");
+    f = Path.of(System.getProperty("java.io.tmpdir")).resolve("reads_1.fq").toFile();
     writeFile(f, fileContent);
     md = new DataFile(f.getAbsolutePath()).getMetaData();
     assertEquals(DataFormats.READS_FASTQ, md.getDataFormat());
@@ -158,8 +159,7 @@ public class FileDataProtocolTest {
     assertEquals("", md.getContentEncoding());
     f.delete();
 
-    f = new File(new File(System.getProperty("java.io.tmpdir")),
-        "reads_1.fq.bz2");
+    f = Path.of(System.getProperty("java.io.tmpdir")).resolve("reads_1.fq.bz2").toFile();
     writeFile(f, fileContent);
     md = new DataFile(f.getAbsolutePath()).getMetaData();
     assertEquals(DataFormats.READS_FASTQ, md.getDataFormat());
@@ -172,7 +172,7 @@ public class FileDataProtocolTest {
   @Test
   public void testExists() throws IOException {
 
-    File f = new File("/tmp/toto.txt");
+    File f = Path.of("/tmp/toto.txt").toFile();
     DataFile df = new DataFile(f.getAbsolutePath());
 
     assertFalse(f.exists());
@@ -193,7 +193,7 @@ public class FileDataProtocolTest {
   @Test
   public void testGetFile() throws IOException {
 
-    File f = new File("/tmp/toto.txt");
+    File f = Path.of("/tmp/toto.txt").toFile();
     DataFile df = new DataFile(f.getAbsolutePath());
     FileDataProtocol p = (FileDataProtocol) df.getProtocol();
 

@@ -28,7 +28,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;

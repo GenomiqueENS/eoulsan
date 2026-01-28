@@ -29,11 +29,10 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
-import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,7 +91,7 @@ public class FileConcatInputStreamTest {
 
     File f = File.createTempFile("junit-", ".txt");
 
-    Writer writer = new FileWriter(f, Charset.defaultCharset());
+    Writer writer = Files.newBufferedWriter(f.toPath());
 
     for (int i = 0; i < lines; i++) {
       final int r = i % mod;

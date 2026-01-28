@@ -23,17 +23,18 @@
  */
 package fr.ens.biologie.genomique.eoulsan.actions;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
@@ -67,8 +68,8 @@ public class IntegrationTestAction extends AbstractAction {
     final Options options = makeOptions();
     final CommandLineParser parser = new DefaultParser();
 
-    File testNGReportDirectory = null;
-    File testOutputDirectory = null;
+    Path testNGReportDirectory = null;
+    Path testOutputDirectory = null;
     int argsOptions = 0;
 
     try {
@@ -85,7 +86,7 @@ public class IntegrationTestAction extends AbstractAction {
       if (line.hasOption("testconf")) {
         final String val = line.getOptionValue("testconf").trim();
 
-        if (!(new File(val).exists() && new File(val).canRead())) {
+        if (!(Files.exists(Path.of(val)) && Files.isReadable(Path.of(val)))) {
           Common.errorExit(null,
               "Integration test configuration file doesn't exists");
         }
@@ -144,11 +145,11 @@ public class IntegrationTestAction extends AbstractAction {
       // Optional argument
       if (line.hasOption("d")) {
         // List all test to launch
-        testOutputDirectory = new File(line.getOptionValue("d").trim());
+        testOutputDirectory = Path.of(line.getOptionValue("d").trim());
 
         // Add property for test output directory
         System.setProperty(ITFactory.IT_OUTPUT_DIR_SYSTEM_KEY,
-            testOutputDirectory.getAbsolutePath());
+            testOutputDirectory.toAbsolutePath().toString());
 
         argsOptions += 2;
       }
@@ -156,10 +157,10 @@ public class IntegrationTestAction extends AbstractAction {
       if (line.hasOption("o")) {
 
         // List all test to launch
-        testNGReportDirectory = new File(line.getOptionValue("o").trim());
+        testNGReportDirectory = Path.of(line.getOptionValue("o").trim());
 
         try {
-          FileUtils.checkExistingDirectoryFile(testNGReportDirectory,
+          FileUtils.checkExistingDirectoryFile(testNGReportDirectory.toFile(),
               "Output TestNG report");
         } catch (IOException e) {
 
@@ -256,7 +257,7 @@ public class IntegrationTestAction extends AbstractAction {
    * @param testNGReportDirectory TestNG report directory, if it is null use the
    *          default directory
    */
-  private void runIT(final File testNGReportDirectory) {
+  private void runIT(final Path testNGReportDirectory) {
 
     // Define a listener that print information about the results of the
     // integration tests
@@ -287,7 +288,7 @@ public class IntegrationTestAction extends AbstractAction {
 
       if (testNGReportDirectory != null) {
         // Replace default output directory
-        testng.setOutputDirectory(testNGReportDirectory.getAbsolutePath());
+        testng.setOutputDirectory(testNGReportDirectory.toAbsolutePath().toString());
       }
 
     } catch (final Throwable e) {

@@ -27,9 +27,10 @@ package fr.ens.biologie.genomique.eoulsan.actions;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -108,8 +109,8 @@ public class ExecAction extends AbstractAction {
       help(options);
     }
 
-    final File paramFile = new File(arguments.get(argsOptions));
-    final File designFile = new File(arguments.get(argsOptions + 1));
+    final Path paramFile = Path.of(arguments.get(argsOptions));
+    final Path designFile = Path.of(arguments.get(argsOptions + 1));
 
     // Execute program in local mode
     run(paramFile, designFile, jobDescription);
@@ -170,7 +171,7 @@ public class ExecAction extends AbstractAction {
    * @param designFile design file
    * @param jobDescription job description
    */
-  private static void run(final File workflowFile, final File designFile,
+  private static void run(final Path workflowFile, final Path designFile,
       final String jobDescription) {
 
     requireNonNull(workflowFile, "paramFile is null");
@@ -190,12 +191,12 @@ public class ExecAction extends AbstractAction {
     try {
 
       // Test if workflow file exists
-      if (!workflowFile.exists()) {
+      if (!Files.exists(workflowFile)) {
         throw new FileNotFoundException(workflowFile.toString());
       }
 
       // Test if design file exists
-      if (!designFile.exists()) {
+      if (!Files.exists(designFile)) {
         throw new FileNotFoundException(designFile.toString());
       }
 
