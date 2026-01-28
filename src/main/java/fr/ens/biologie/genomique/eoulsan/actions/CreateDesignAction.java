@@ -252,7 +252,7 @@ public class CreateDesignAction extends AbstractAction {
         .desc("Illumina samplesheet file").longOpt("samplesheet").get());
 
     // Bcl2fastq project option
-    options.addOption(Option.builder("s").argName("name").hasArg()
+    options.addOption(Option.builder("n").argName("name").hasArg()
         .desc("Illumina project name").longOpt("project-name").get());
 
     // Create symbolic links
