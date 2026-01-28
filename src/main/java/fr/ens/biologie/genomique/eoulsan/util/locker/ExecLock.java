@@ -288,12 +288,11 @@ public class ExecLock implements Locker {
 
     this.execName = execName;
     this.tmpDir = tmpDir;
-    this.lockFile =
-        Path.of(this.tmpDir.toString() + '/' + this.execName + LOCK_EXTENSION);
-    this.pidLockFile = Path.of(this.tmpDir.toString()
-        + '/' + this.execName + "-" + pid + PID_LOCK_EXTENSION);
-    this.pidFile = Path.of(this.tmpDir.toString()
-        + '/' + this.execName + "-" + pid + PID_EXTENSION);
+    this.lockFile = this.tmpDir.resolve(this.execName + LOCK_EXTENSION);
+    this.pidLockFile =
+        this.tmpDir.resolve(this.execName + "-" + pid + PID_LOCK_EXTENSION);
+    this.pidFile =
+        this.tmpDir.resolve(this.execName + "-" + pid + PID_EXTENSION);
   }
 
   /**

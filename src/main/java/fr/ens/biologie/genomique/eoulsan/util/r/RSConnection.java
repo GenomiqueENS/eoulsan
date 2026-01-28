@@ -599,7 +599,7 @@ public class RSConnection {
     }
 
     for (String file : listFiles()) {
-      getFile(file, Path.of(outPath.toString() + '/' + file));
+      getFile(file, outPath.resolve(file));
     }
   }
 

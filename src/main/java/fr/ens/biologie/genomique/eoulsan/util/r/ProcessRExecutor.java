@@ -117,7 +117,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
       return;
     }
 
-    Path file = Path.of(getOutputDirectory().toString() + '/' + filename);
+    Path file = getOutputDirectory().resolve(filename);
     try {
       Files.delete(file);
     } catch (IOException e) {
@@ -219,7 +219,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
         StringUtils.filenameWithoutExtension(file.getFileName().toString())
             + newExtension;
 
-    return Path.of(file.getParent().toString() + '/' + newFilename);
+    return file.getParent().resolve(newFilename);
   }
 
   @Override

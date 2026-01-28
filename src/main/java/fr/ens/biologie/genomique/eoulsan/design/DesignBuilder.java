@@ -491,13 +491,13 @@ public class DesignBuilder {
             + "/Project_" + sampleProject + "/Sample_" + sampleId);
       } else {
 
-        dataDir = Path.of(bcl2fastqOutputDir.toString() + "/" + sampleProject);
+        dataDir = bcl2fastqOutputDir.resolve(sampleProject);
 
         // Check if a sample sub directory may exist
         String subdir = defineSampleSubDirName(sampleId, sampleName);
 
         if (!"".equals(subdir)) {
-          dataDir = Path.of(dataDir.toString() + '/' + subdir);
+          dataDir = dataDir.resolve(subdir);
         }
       }
       // Test if the directory with fastq files exists

@@ -178,7 +178,7 @@ public abstract class UploadModule extends AbstractModule {
     // The path to the jar file
     if (!context.getRuntime().getMode().isHadoopMode()) {
       fullContext.setJarFile(new DataFile(
-          getDest().toString() + "/" + repackagedJarFile.getFileName()));
+          getDest(), repackagedJarFile.getFileName().toString()));
     }
 
     status.setProgressMessage(log.toString());

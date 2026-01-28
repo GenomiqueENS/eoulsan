@@ -99,10 +99,8 @@ public class ToolExecutor {
     final Path logDirectory = context.getTaskOutputDirectory().toPath();
     final File tempDirectory = context.getLocalTempDirectory();
 
-    final File stdoutFile = Path.of(logDirectory.toString()
-        + '/' + context.getTaskFilePrefix() + STDOUT_SUFFIX).toFile();
-    final File stderrFile = Path.of(logDirectory.toString()
-        + '/' + context.getTaskFilePrefix() + STDERR_SUFFIX).toFile();
+    final File stdoutFile = logDirectory.resolve(context.getTaskFilePrefix() + STDOUT_SUFFIX).toFile();
+    final File stderrFile = logDirectory.resolve(context.getTaskFilePrefix() + STDERR_SUFFIX).toFile();
 
     getLogger().info("Interpreter: " + interpreter);
     getLogger().info("Command: " + command);

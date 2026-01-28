@@ -48,7 +48,7 @@ public class RserveRExecutor extends AbstractRExecutor {
 
         // Retrieve the file
         this.rConnection.getFile(filename,
-            Path.of(getOutputDirectory().toString() + '/' + filename));
+            getOutputDirectory().resolve(filename));
 
         // Delete the file
         removeFile(filename);

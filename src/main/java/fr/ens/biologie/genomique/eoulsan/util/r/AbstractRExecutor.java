@@ -163,7 +163,7 @@ public abstract class AbstractRExecutor implements RExecutor {
       throw new NullPointerException("description argument cannot be null");
     }
 
-    final Path rScriptFile = Path.of(this.outputDirectory.toString() + '/' +
+    final Path rScriptFile = this.outputDirectory.resolve(
         description + (sweave ? SWEAVE_FILE_EXTENSION : R_FILE_EXTENSION));
 
     // Write R script in a File
