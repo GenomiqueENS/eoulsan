@@ -33,6 +33,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -160,7 +162,7 @@ public abstract class Main {
       throw new NullPointerException("Unknown install path of Eoulsan");
     }
 
-    return new File(eoulsanPath);
+    return Path.of(eoulsanPath).toFile();
   }
 
   /**
@@ -472,15 +474,15 @@ public abstract class Main {
 
     // Load the setting file if has been defined in command line
     if (this.conf != null) {
-      return new Settings(new File(this.conf));
+      return new Settings(Path.of(this.conf));
     }
 
     // Define the default configuration file
-    final File defaultConfFile = new File(Settings.getConfigurationFilePath());
+    final Path defaultConfFile = Path.of(Settings.getConfigurationFilePath());
 
     // Test if default configuration file exists
-    if (defaultConfFile.exists()) {
-      this.conf = defaultConfFile.getAbsolutePath();
+    if (Files.exists(defaultConfFile)) {
+      this.conf = defaultConfFile.toAbsolutePath().toString();
       return new Settings(defaultConfFile);
     }
 
@@ -541,7 +543,7 @@ public abstract class Main {
     if (this.logFile != null) {
       try {
         this.handler.addHandler(
-            getLogHandler(new File(this.logFile).getAbsoluteFile().toURI()));
+            getLogHandler(Path.of(this.logFile).toFile().getAbsoluteFile().toURI()));
       } catch (IOException e) {
         Common.errorExit(e, "Error while creating log file: " + e.getMessage());
       }
@@ -576,7 +578,7 @@ public abstract class Main {
   public void createOtherLog(final URI logFilename) {
 
     OtherLogConfigurator.configureLog4J(null,
-        new File(logFilename).getAbsolutePath());
+        Path.of(logFilename).toFile().getAbsolutePath());
   }
 
   /**

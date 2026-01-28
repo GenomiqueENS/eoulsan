@@ -27,6 +27,7 @@
 package fr.ens.biologie.genomique.eoulsan;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +36,8 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -1451,13 +1454,26 @@ public final class Settings implements Serializable {
   public void loadSettings(final File file)
       throws IOException, EoulsanException {
 
-    getLogger().info("Load configuration file: " + file.getAbsolutePath());
-    final InputStream is = FileUtils.createInputStream(file);
+    requireNonNull(file);
+    loadSettings(file.toPath());
+  }
+
+  /**
+   * Load application options.
+   * @param file file to save
+   * @throws IOException if an error occurs while reading the file
+   * @throws EoulsanException if an invalid key is found in configuration file
+   */
+  public void loadSettings(final Path file)
+      throws IOException, EoulsanException {
+
+    getLogger().info("Load configuration file: " + file.toAbsolutePath());
 
     // Load properties in a temporary object
     final Properties tmpProperties = new Properties();
-    tmpProperties.load(FileUtils.createInputStream(file));
-    is.close();
+    try (InputStream in = Files.newInputStream(file)) {
+      tmpProperties.load(in);
+    }
 
     for (String key : tmpProperties.stringPropertyNames()) {
 
@@ -1613,6 +1629,18 @@ public final class Settings implements Serializable {
    * @throws EoulsanException if an invalid key is found in configuration file
    */
   Settings(final File file) throws IOException, EoulsanException {
+
+    init();
+    loadSettings(file);
+  }
+
+  /**
+   * Public constructor. Load application options.
+   * @param file file to save
+   * @throws IOException if an error occurs while reading the file
+   * @throws EoulsanException if an invalid key is found in configuration file
+   */
+  Settings(final Path file) throws IOException, EoulsanException {
 
     init();
     loadSettings(file);

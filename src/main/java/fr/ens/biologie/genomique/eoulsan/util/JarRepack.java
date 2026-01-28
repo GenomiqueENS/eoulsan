@@ -25,14 +25,13 @@
 package fr.ens.biologie.genomique.eoulsan.util;
 
 import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 
 /**
  * This class allow to repackage a jar file.
@@ -46,10 +45,10 @@ public class JarRepack {
 
   private final ZipOutputStream zos;
 
-  private void copy(final File file) throws IOException {
+  private void copy(final Path file) throws IOException {
 
     final ZipInputStream zin =
-        new ZipInputStream(FileUtils.createInputStream(file));
+        new ZipInputStream(Files.newInputStream(file));
     final byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
 
     ZipEntry entry = zin.getNextEntry();
@@ -82,7 +81,7 @@ public class JarRepack {
    * @param destDir destination in the jar file
    * @throws IOException if an error occurs while adding the file
    */
-  public void addFile(final File file, final String destDir)
+  public void addFile(final Path file, final String destDir)
       throws IOException {
 
     if (file == null) {
@@ -93,8 +92,8 @@ public class JarRepack {
 
     final byte[] data = new byte[DEFAULT_BUFFER_SIZE];
 
-    this.zos.putNextEntry(new ZipEntry(destDir + file.getName()));
-    final FileInputStream fis = new FileInputStream(file);
+    this.zos.putNextEntry(new ZipEntry(destDir + file.getFileName()));
+    final InputStream fis = Files.newInputStream(file);
 
     origin = new BufferedInputStream(fis, DEFAULT_BUFFER_SIZE);
 
@@ -105,10 +104,10 @@ public class JarRepack {
       count += n;
     }
 
-    if (file.length() != count) {
+    if (Files.size(file) != count) {
       origin.close();
       throw new IOException("Copied size of zip entry "
-          + count + " is not as excepted: " + file.length());
+          + count + " is not as excepted: " + Files.size(file));
     }
 
     origin.close();
@@ -134,7 +133,7 @@ public class JarRepack {
    * @param outFile the path to the new repackaged file
    * @throws IOException if an error occurs while opening the source jar file
    */
-  public JarRepack(final File inFile, final File outFile) throws IOException {
+  public JarRepack(final Path inFile, final Path outFile) throws IOException {
 
     if (inFile == null) {
       throw new NullPointerException("the inFile argument is null.");
@@ -144,7 +143,7 @@ public class JarRepack {
       throw new NullPointerException("the outFile argument is null.");
     }
 
-    this.zos = new ZipOutputStream(FileUtils.createOutputStream(outFile));
+    this.zos = new ZipOutputStream(Files.newOutputStream(outFile));
     copy(inFile);
   }
 

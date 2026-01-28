@@ -27,12 +27,11 @@ package fr.ens.biologie.genomique.eoulsan.util;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 
 /**
  * This class define a linux info file parser.
@@ -47,13 +46,11 @@ public abstract class LinuxInfo {
    * Get the file to parse.
    * @return the file to parse
    */
-  public abstract File getInfoFile();
+  public abstract Path getInfoFile();
 
   protected void parse() {
 
-    try {
-
-      final BufferedReader br = FileUtils.createBufferedReader(getInfoFile());
+    try (BufferedReader br = Files.newBufferedReader(getInfoFile())) {
 
       String line = null;
 
@@ -67,7 +64,6 @@ public abstract class LinuxInfo {
 
       }
 
-      br.close();
     } catch (IOException e) {
 
       getLogger()

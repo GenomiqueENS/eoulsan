@@ -30,6 +30,7 @@ import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toLetter;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Objects;
 
 import fr.ens.biologie.genomique.eoulsan.data.Data;
@@ -524,6 +525,18 @@ public class FileNaming {
    * @param file the file
    * @return a new FileNaming object
    */
+  public static FileNaming parse(final Path file) {
+
+    requireNonNull(file, "file argument cannot be null");
+
+    return parse(file.getFileName().toString());
+  }
+
+  /**
+   * Create a FileNaming object from a File object.
+   * @param file the file
+   * @return a new FileNaming object
+   */
   public static FileNaming parse(final File file) {
 
     requireNonNull(file, "file argument cannot be null");
@@ -726,6 +739,18 @@ public class FileNaming {
 
   /**
    * Test if a filename is valid.
+   * @param file the file to test.
+   * @return true if the filename is valid
+   */
+  public static boolean isFilenameValid(final Path file) {
+
+    requireNonNull(file, "file argument cannot be null");
+
+    return isFilenameValid(file.getFileName().toString());
+  }
+
+  /**
+   * Test if a filename is valid.
    * @param filename the file to test.
    * @return true if the filename is valid
    */
@@ -738,6 +763,21 @@ public class FileNaming {
     }
 
     return true;
+  }
+
+  /**
+   * Test if two files are related to the same data.
+   * @param file1 the first file
+   * @param file2 the second file
+   * @return true if the two files are related to the same data
+   */
+  public static boolean dataEquals(final Path file1, final Path file2) {
+
+    requireNonNull(file1, "file1 argument cannot be null");
+    requireNonNull(file2, "file2 argument cannot be null");
+
+    return dataEquals(file1.getFileName().toString(),
+        file2.getFileName().toString());
   }
 
   /**
@@ -793,8 +833,7 @@ public class FileNaming {
     return Objects.equals(fn1.stepId, fn2.stepId)
         && Objects.equals(fn1.portName, fn2.portName)
         && Objects.equals(fn1.format, fn2.format)
-        && Objects.equals(fn1.dataName, fn2.dataName)
-        && fn1.part == fn2.part;
+        && Objects.equals(fn1.dataName, fn2.dataName) && fn1.part == fn2.part;
   }
 
   /**

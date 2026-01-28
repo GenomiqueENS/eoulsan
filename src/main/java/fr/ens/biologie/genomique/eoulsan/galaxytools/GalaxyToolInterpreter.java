@@ -34,6 +34,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -585,12 +587,24 @@ public class GalaxyToolInterpreter {
    * Public constructor.
    * @param file the Galaxy tool file
    * @throws EoulsanException the Eoulsan exception
-   * @throws FileNotFoundException if the file cannot be load
+   * @throws IOException if the file cannot be load
    */
   public GalaxyToolInterpreter(final File file)
-      throws EoulsanException, FileNotFoundException {
+      throws EoulsanException, IOException {
 
-    this(new FileInputStream(file), file.getName());
+    this(Files.newInputStream(file.toPath()), file.getName());
+  }
+
+  /**
+   * Public constructor.
+   * @param file the Galaxy tool file
+   * @throws EoulsanException the Eoulsan exception
+   * @throws IOException if the file cannot be load
+   */
+  public GalaxyToolInterpreter(final Path file)
+      throws EoulsanException, IOException {
+
+    this(Files.newInputStream(file), file.getFileName().toString());
   }
 
   /**

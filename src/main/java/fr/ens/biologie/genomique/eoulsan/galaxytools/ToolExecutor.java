@@ -29,6 +29,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -95,13 +96,13 @@ public class ToolExecutor {
 
     final File executionDirectory = context.getStepOutputDirectory().toFile();
     final File workflowOutputDirectory = context.getOutputDirectory().toFile();
-    final File logDirectory = context.getTaskOutputDirectory().toFile();
+    final Path logDirectory = context.getTaskOutputDirectory().toPath();
     final File tempDirectory = context.getLocalTempDirectory();
 
-    final File stdoutFile =
-        new File(logDirectory, context.getTaskFilePrefix() + STDOUT_SUFFIX);
-    final File stderrFile =
-        new File(logDirectory, context.getTaskFilePrefix() + STDERR_SUFFIX);
+    final File stdoutFile = Path.of(logDirectory.toString()
+        + '/' + context.getTaskFilePrefix() + STDOUT_SUFFIX).toFile();
+    final File stderrFile = Path.of(logDirectory.toString()
+        + '/' + context.getTaskFilePrefix() + STDERR_SUFFIX).toFile();
 
     getLogger().info("Interpreter: " + interpreter);
     getLogger().info("Command: " + command);

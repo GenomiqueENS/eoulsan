@@ -33,6 +33,8 @@ import static java.util.regex.Pattern.compile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -443,9 +445,8 @@ public class DesignBuilder {
               + bcl2fastqOutputDir);
     }
 
-    final boolean Bcl2Fastq1 =
-        new File(bcl2fastqOutputDir.getPath() + "/Project_" + projectName)
-            .isDirectory();
+    final boolean Bcl2Fastq1 = Files.isDirectory(
+        Path.of(bcl2fastqOutputDir.getPath() + "/Project_" + projectName));
 
     for (fr.ens.biologie.genomique.kenetre.illumina.samplesheet.Sample sample : samplesheet) {
 
@@ -468,23 +469,23 @@ public class DesignBuilder {
       if (projectName != null && !projectName.equals(sampleProject)) {
         continue;
       }
-      File dataDir;
+      Path dataDir;
       if (Bcl2Fastq1) {
-        dataDir = new File(bcl2fastqOutputDir.getPath()
+        dataDir = Path.of(bcl2fastqOutputDir.getPath()
             + "/Project_" + sampleProject + "/Sample_" + sampleId);
       } else {
 
-        dataDir = new File(bcl2fastqOutputDir.getPath() + "/" + sampleProject);
+        dataDir = Path.of(bcl2fastqOutputDir.getPath() + "/" + sampleProject);
 
         // Check if a sample sub directory may exist
         String subdir = defineSampleSubDirName(sampleId, sampleName);
 
         if (!"".equals(subdir)) {
-          dataDir = new File(dataDir, subdir);
+          dataDir = Path.of(dataDir.toString() + '/' + subdir);
         }
       }
       // Test if the directory with fastq files exists
-      if (!dataDir.exists() || !dataDir.isDirectory()) {
+      if (!Files.exists(dataDir) || !Files.isDirectory(dataDir)) {
         continue;
       }
 
@@ -492,7 +493,7 @@ public class DesignBuilder {
           sampleLane == -1 ? "_L" : String.format("_L%03d_", sampleLane);
 
       // List the input FASTQ files
-      final File[] files = dataDir.listFiles(f -> {
+      final File[] files = dataDir.toFile().listFiles(f -> {
 
         final String filename =
             StringUtils.filenameWithoutCompressionExtension(f.getName());

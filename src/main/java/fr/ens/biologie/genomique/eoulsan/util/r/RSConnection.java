@@ -29,13 +29,14 @@ import static java.util.Objects.requireNonNull;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -168,15 +169,15 @@ public class RSConnection {
    * @param rServeFilename filename of the file to put
    * @throws REngineException if an error occurs while downloading the file
    */
-  public void putFile(final File inputFile, final String rServeFilename)
+  public void putFile(final Path inputFile, final String rServeFilename)
       throws REngineException {
 
     requireNonNull(inputFile, "inputFile argument cannot be null");
     requireNonNull(rServeFilename, "rServeFilename argument cannot be null");
 
     try {
-      putFile(new FileInputStream(inputFile), rServeFilename);
-    } catch (FileNotFoundException e) {
+      putFile(Files.newInputStream(inputFile), rServeFilename);
+    } catch (IOException e) {
       throw new REngineException(getRConnection(),
           "file not found: " + e.getMessage());
     }
@@ -224,12 +225,11 @@ public class RSConnection {
    * @param outputFile output file of the file to retrieve
    * @throws REngineException if an error occurs while downloading the file
    */
-  public void getFile(final String rServeFilename, final File outputFile)
+  public void getFile(final String rServeFilename, final Path outputFile)
       throws REngineException {
 
-    try {
-      InputStream is = getFileInputStream(rServeFilename);
-      OutputStream os = new FileOutputStream(outputFile);
+    try (InputStream is = Files.newInputStream(Path.of(rServeFilename));
+        OutputStream os = Files.newOutputStream(outputFile)) {
 
       byte[] buf = new byte[BUFFER_SIZE];
       int i = 0;
@@ -238,11 +238,6 @@ public class RSConnection {
         os.write(buf, 0, i);
       }
 
-      is.close();
-      os.close();
-
-    } catch (REngineException e) {
-      throw new REngineException(getRConnection(), "Unable to get file");
     } catch (FileNotFoundException e) {
       throw new REngineException(getRConnection(), "file not found");
     } catch (IOException e) {
@@ -598,7 +593,7 @@ public class RSConnection {
    * @throws REngineException if an error occurs while retrieving the files
    * @throws REXPMismatchException if an error occurs while retrieving the files
    */
-  public void getAllFiles(final File outPath)
+  public void getAllFiles(final Path outPath)
       throws REngineException, REXPMismatchException {
 
     if (outPath == null) {
@@ -606,7 +601,7 @@ public class RSConnection {
     }
 
     for (String file : listFiles()) {
-      getFile(file, new File(outPath, file));
+      getFile(file, Path.of(outPath.toString() + '/' + file));
     }
   }
 

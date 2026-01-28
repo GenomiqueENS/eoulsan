@@ -28,11 +28,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -458,13 +458,25 @@ public class Eoulsan2DesignReader implements DesignReader {
   /**
    * Public constructor.
    * @param file file to read
-   * @throws FileNotFoundException if the file cannot be found
+   * @throws IOException if file cannot be opened
    */
-  public Eoulsan2DesignReader(final File file) throws FileNotFoundException {
+  public Eoulsan2DesignReader(final Path file) throws IOException {
 
     requireNonNull(file, "the file argument cannot be null");
 
-    this.is = new FileInputStream(file);
+    this.is = Files.newInputStream(file);
+  }
+
+  /**
+   * Public constructor.
+   * @param file file to read
+   * @throws IOException if file cannot be opened
+   */
+  public Eoulsan2DesignReader(final File file) throws IOException {
+
+    requireNonNull(file, "the file argument cannot be null");
+
+    this.is = Files.newInputStream(file.toPath());
   }
 
   /**
@@ -494,14 +506,14 @@ public class Eoulsan2DesignReader implements DesignReader {
   /**
    * Public constructor.
    * @param filename File to read
-   * @throws FileNotFoundException if the file doesn't exist
+   * @throws IOException if file cannot be opened
    */
   public Eoulsan2DesignReader(final String filename)
-      throws FileNotFoundException {
+      throws IOException {
 
     requireNonNull(filename, "the filename argument cannot be null");
 
-    this.is = new FileInputStream(filename);
+    this.is = Files.newInputStream(Path.of(filename));
   }
 
 }
