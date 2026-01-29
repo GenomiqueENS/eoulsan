@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -103,7 +102,7 @@ public class FastQCInputPreprocessor implements InputPreprocessor {
   private static String dataPathInZip(Path reportfile) throws IOException {
 
     try (ZipInputStream zipIn =
-        new ZipInputStream(new FileInputStream(reportfile.toFile()))) {
+        new ZipInputStream(Files.newInputStream(reportfile))) {
       ZipEntry entry = zipIn.getNextEntry();
 
       // iterates over entries in the zip file

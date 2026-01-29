@@ -35,12 +35,13 @@ import static java.util.Objects.requireNonNull;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.logging.Logger;
 
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -55,12 +56,8 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.MapperIndexDataFormat;
-import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsMapperModule;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters;
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
-import fr.ens.biologie.genomique.kenetre.util.StringUtils;
-import fr.ens.biologie.genomique.kenetre.io.UnSynchronizedBufferedWriter;
 import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.FileMapping;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.Mapper;
@@ -70,8 +67,12 @@ import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstance;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstanceBuilder;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperProcess;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.STARMapperProvider;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import fr.ens.biologie.genomique.kenetre.io.UnSynchronizedBufferedWriter;
 import fr.ens.biologie.genomique.kenetre.util.LocalReporter;
 import fr.ens.biologie.genomique.kenetre.util.Reporter;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 
 /**
  * This class define a module for reads mapping.
@@ -122,8 +123,8 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
       final DataFile archiveIndexFile = context
           .getInputData(new MapperIndexDataFormat(getMapper())).getDataFile();
 
-      final File indexDir = new File(StringUtils
-          .filenameWithoutExtension(archiveIndexFile.toUri().getPath()));
+      final File indexDir = Path.of(StringUtils
+          .filenameWithoutExtension(archiveIndexFile.toUri().getPath())).toFile();
 
       // Get input data
       final Data inData = context.getInputData(READS_FASTQ);
@@ -145,9 +146,9 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
           STARMapperProvider.MAPPER_NAME.equals(getMapperName()) ? "." : ".log";
 
       // Define mapper log file
-      final File logFile = new File(samFile.getParentFile(),
+      final File logFile = samFile.toPath().getParent().resolve(
           StringUtils.filenameWithoutExtension(errorFile.getName())
-              + logExtension);
+              + logExtension).toFile();
 
       // Get FASTQ format
       final FastqFormat fastqFormat = inData.getMetadata().getFastqFormat();
@@ -310,7 +311,7 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
         FileUtils.createBufferedReader(samFileInputStream);
     final Writer writer =
         new UnSynchronizedBufferedWriter(new OutputStreamWriter(
-            new FileOutputStream(samFile), StandardCharsets.ISO_8859_1));
+            Files.newOutputStream(samFile.toPath()), StandardCharsets.ISO_8859_1));
 
     int entriesParsed = 0;
 

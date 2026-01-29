@@ -354,9 +354,9 @@ public class ExecutorArguments {
    */
   public URI logPath(final String logFilename) {
 
-    final File logDir = new File(URI.create(getJobPathname()).getPath());
+    final Path logDir = Path.of(getJobPathname());
 
-    return new File(logDir, logFilename).getAbsoluteFile().toURI();
+    return logDir.resolve(logFilename).toAbsolutePath().toUri();
   }
 
   @Override

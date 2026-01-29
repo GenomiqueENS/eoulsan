@@ -51,12 +51,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.Stack;
 import java.util.StringTokenizer;
 
 import org.apache.hadoop.conf.Configuration;
@@ -1147,8 +1148,8 @@ public class DistCp implements Tool {
           ++srcCount;
         }
 
-        Stack<FileStatus> pathstack = new Stack<>();
-        for (pathstack.push(srcfilestat); !pathstack.empty();) {
+        Deque<FileStatus> pathstack = new ArrayDeque<>();
+        for (pathstack.push(srcfilestat); !pathstack.isEmpty();) {
           FileStatus cur = pathstack.pop();
           FileStatus[] children = srcfs.listStatus(cur.getPath());
           for (int i = 0; i < children.length; i++) {
@@ -1316,7 +1317,7 @@ public class DistCp implements Tool {
             dstroot.getClass(), SequenceFile.CompressionType.NONE);
     try {
       // do lsr to get all file statuses in dstroot
-      final Stack<FileStatus> lsrstack = new Stack<>();
+      final Deque<FileStatus> lsrstack = new ArrayDeque<>();
       for (lsrstack.push(dstroot); !lsrstack.isEmpty();) {
         final FileStatus status = lsrstack.pop();
         if (status.isDir()) {

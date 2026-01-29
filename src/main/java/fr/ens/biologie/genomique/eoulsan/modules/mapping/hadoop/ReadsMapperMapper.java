@@ -30,13 +30,14 @@ import static fr.ens.biologie.genomique.kenetre.util.StringUtils.unDoubleQuotes;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URI;
+import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
@@ -57,7 +58,6 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
-import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopReporter;
 import fr.ens.biologie.genomique.eoulsan.util.locker.DistributedLocker;
 import fr.ens.biologie.genomique.eoulsan.util.locker.Locker;
@@ -68,6 +68,7 @@ import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperIndex;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstance;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstanceBuilder;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperProcess;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 
 /**
  * This class defines a generic mapper for reads mapping.
@@ -107,7 +108,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
   private static final String LOCK_SUFFIX = ".lock";
 
   private String counterGroup = this.getClass().getName();
-  private File mapperIndexDir;
+  private java.nio.file.Path mapperIndexDir;
 
   private Locker lock;
 
@@ -238,16 +239,17 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
         + archiveIndexFile);
 
     // Set index directory
-    this.mapperIndexDir = new File(
-        EoulsanRuntime.getRuntime().getTempDirectory(), MAPPER_INDEX_DIR_PREFIX
-            + mapper.getName() + "-index-" + conf.get(INDEX_CHECKSUM_KEY));
+    this.mapperIndexDir =
+        EoulsanRuntime.getRuntime().getTempDirectory().toPath()
+            .resolve(MAPPER_INDEX_DIR_PREFIX
+                + mapper.getName() + "-index-" + conf.get(INDEX_CHECKSUM_KEY));
 
     getLogger()
         .info("Genome index directory where decompressed: " + mapperIndexDir);
 
     // Create the MapperIndex object
     final MapperIndex mapperIndex =
-        mapperInstance.newMapperIndex(archiveIndexFile.open(), mapperIndexDir);
+        mapperInstance.newMapperIndex(archiveIndexFile.open(), mapperIndexDir.toFile());
 
     getLogger().info("Fastq format: " + fastqFormat);
 
@@ -464,18 +466,19 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
    * Update the last usage of the current mapper index.
    * @param mapperIndexDir the mapper index directory
    */
-  private void updateLastUsedMapperIndex(final File mapperIndexDir) {
+  private void updateLastUsedMapperIndex(final java.nio.file.Path mapperIndexDir) {
 
-    final File lockFile = new File(mapperIndexDir.getParentFile(),
-        mapperIndexDir.getName() + LOCK_SUFFIX);
+    final java.nio.file.Path lockFile = mapperIndexDir.getParent().resolve(
+        mapperIndexDir.getFileName() + LOCK_SUFFIX);
 
-    try (FileOutputStream out = new FileOutputStream(lockFile)) {
+    try (FileChannel channel = FileChannel.open(lockFile,
+        StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
 
       // Lock the mapper directory
-      FileLock lock = out.getChannel().lock();
+      FileLock lock = channel.lock();
 
       final File lastMapperUsedFile =
-          new File(mapperIndexDir, MAPPER_LAST_USED_FILENAME);
+          mapperIndexDir.resolve(MAPPER_LAST_USED_FILENAME).toFile();
 
       if (lastMapperUsedFile.exists()) {
         if (!lastMapperUsedFile.setLastModified(System.currentTimeMillis())) {
@@ -500,11 +503,11 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
    */
   private void removeUnusedMapperIndexes(final Configuration conf) {
 
-    final File mapperIndexesDir = this.mapperIndexDir.getParentFile();
+    final File mapperIndexesDir = this.mapperIndexDir.getParent().toFile();
 
     for (File dir : mapperIndexesDir.listFiles((dir, name) -> {
 
-      final File f = new File(dir, name);
+      final File f = dir.toPath().resolve(name).toFile();
 
       return f.isDirectory() && name.startsWith(MAPPER_INDEX_DIR_PREFIX);
     })) {
@@ -524,7 +527,7 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
   private boolean isMapperIndexMustBeRemoved(final File mapperIndexDir) {
 
     final File lastModifiedFile =
-        new File(mapperIndexDir, MAPPER_LAST_USED_FILENAME);
+        mapperIndexDir.toPath().resolve(MAPPER_LAST_USED_FILENAME).toFile();
 
     if (!lastModifiedFile.exists())
       return false;
@@ -543,13 +546,14 @@ public class ReadsMapperMapper extends Mapper<Text, Text, Text, Text> {
   private void removeUnusedMapperIndex(final File mapperIndexDir,
       final Configuration conf) {
 
-    final File lockFile = new File(mapperIndexDir.getParentFile(),
-        mapperIndexDir.getName() + LOCK_SUFFIX);
+    final java.nio.file.Path lockFile = mapperIndexDir.toPath().getParent()
+        .resolve(mapperIndexDir.getName() + LOCK_SUFFIX);
 
-    try (FileOutputStream out = new FileOutputStream(lockFile)) {
+    try (FileChannel channel = FileChannel.open(lockFile,
+        StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
 
       // Lock the mapper directory
-      FileLock lock = out.getChannel().lock();
+      FileLock lock = channel.lock();
 
       // Second check with lock on the mapper index directory
       if (isMapperIndexMustBeRemoved(mapperIndexDir)) {

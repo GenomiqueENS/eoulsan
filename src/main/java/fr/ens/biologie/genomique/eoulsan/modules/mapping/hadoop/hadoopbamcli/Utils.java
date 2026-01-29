@@ -22,7 +22,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.hadoopbamcli;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -158,7 +157,7 @@ public final class Utils {
 			argv0 = argv0Class.getSimpleName();
 		} else {
 			// Typically (always?) a .jar file.
-			argv0 = new File(path).getName();
+			argv0 = java.nio.file.Path.of(path).getFileName().toString();
 		}
 
 		return argv0;

@@ -4,11 +4,11 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -225,9 +225,9 @@ public class DataMetadataStorage {
       return;
     }
 
-    try (PrintWriter out = new PrintWriter(new OutputStreamWriter(
-        new FileOutputStream(this.metadataFile.toFile(), true),
-        Globals.DEFAULT_CHARSET))) {
+    try (PrintWriter out =
+        new PrintWriter(Files.newBufferedWriter(this.metadataFile.toPath(),
+            StandardOpenOption.CREATE, StandardOpenOption.APPEND))) {
 
       // Write entry
       out.println(s);

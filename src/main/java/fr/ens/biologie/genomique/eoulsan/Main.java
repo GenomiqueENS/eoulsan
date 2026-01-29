@@ -543,7 +543,7 @@ public abstract class Main {
     if (this.logFile != null) {
       try {
         this.handler.addHandler(
-            getLogHandler(Path.of(this.logFile).toFile().getAbsoluteFile().toURI()));
+            getLogHandler(Path.of(this.logFile).toAbsolutePath().toUri()));
       } catch (IOException e) {
         Common.errorExit(e, "Error while creating log file: " + e.getMessage());
       }

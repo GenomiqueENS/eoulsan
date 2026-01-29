@@ -149,10 +149,10 @@ public class ImportModule extends AbstractModule {
      * @param workingDirectory the working directory
      * @param pattern the file matching pattern
      */
-    Finder(final File workingDirectory, final String pattern) {
+    Finder(final Path workingDirectory, final String pattern) {
 
       String finalPattern = !pattern.startsWith("/")
-          ? workingDirectory.getAbsolutePath() + '/' + pattern : pattern;
+          ? workingDirectory.toAbsolutePath().toString() + '/' + pattern : pattern;
 
       this.matcher =
           FileSystems.getDefault().getPathMatcher("glob:" + finalPattern);
@@ -373,19 +373,19 @@ public class ImportModule extends AbstractModule {
    */
   private static Path getMinExistingPath(final String path) {
 
-    File result = new File("/");
+    Path result = Path.of("/");
 
-    for (Path p : new File(path).toPath()) {
+    for (Path p : Path.of(path)) {
 
-      File f = new File(result, p.toString());
-      if (f.exists()) {
+      Path f = result.resolve(p.toString());
+      if (Files.exists(f)) {
         result = f;
       } else {
         break;
       }
     }
 
-    return result.toPath();
+    return result;
   }
 
   /**
@@ -402,19 +402,19 @@ public class ImportModule extends AbstractModule {
         "workingDirectory argument cannot be null");
     Objects.requireNonNull(pattern, "pattern argument cannot be null");
 
-    File dir = workingDirectory.toFile();
+    Path dir = workingDirectory.toPath();
     String finalPattern = pattern;
     String dirSuffix = patternPrefix(pattern);
 
     if (!dirSuffix.isEmpty()) {
-      dir = new File(dir, dirSuffix);
+      dir = dir.resolve(dirSuffix);
       finalPattern = finalPattern.substring(dirSuffix.length() + 1);
     }
 
     Finder finder = new Finder(dir, finalPattern);
 
     Path baseDir = finalPattern.startsWith("/")
-        ? getMinExistingPath(finalPattern) : dir.toPath();
+        ? getMinExistingPath(finalPattern) : dir;
 
     Files.walkFileTree(baseDir, finder);
     return finder.getFiles();

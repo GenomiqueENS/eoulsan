@@ -3,11 +3,10 @@ package fr.ens.biologie.genomique.eoulsan.modules.chipseq;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.BIGBED;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.BIGWIG;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -25,13 +24,13 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 
 /**
  * This class construct TrackHub for genome browser visualization.
@@ -157,7 +156,7 @@ public class TrackHubModule extends AbstractModule {
     // Trackhub folder creation. Use of the current date and the shortLabel.name
     // parameter to
     // name the folder.
-    File dir = new File(date + '_' + this.shortLabel);
+    Path dir = Path.of(date + '_' + this.shortLabel);
 
     try {
       createTrack(dir, design, date, nameMapBigWig, nameMapBIGBED);
@@ -181,28 +180,28 @@ public class TrackHubModule extends AbstractModule {
    * @param nameMapBigBed map of BigBed data
    * @throws IOException if an error occurs while creating the output files
    */
-  private void createTrack(final File dir, final Design design,
+  private void createTrack(final Path dir, final Design design,
       final String date, Map<String, Data> nameMapBigWig,
       Map<String, Data> nameMapBigBed) throws IOException {
 
     // If the folder already exist the step is stopped.
-    if (dir.exists()) {
+    if (Files.exists(dir)) {
       throw new IOException(
-          "The output folder " + dir.getAbsolutePath() + " already exists");
+          "The output folder " + dir.toAbsolutePath() + " already exists");
     }
 
     // Create the directory
-    if (!dir.mkdir()) {
+    if (!dir.toFile().mkdir()) {
       throw new IOException(
-          "Fail to create the folder : " + dir.getAbsolutePath());
+          "Fail to create the folder : " + dir.toAbsolutePath());
     }
 
     // Create a folder with the name of the genome.
-    File genomeDirectory = new File(dir, this.genome);
+    Path genomeDirectory = dir.resolve(this.genome);
 
-    if (!genomeDirectory.mkdir()) {
+    if (!genomeDirectory.toFile().mkdir()) {
       throw new IOException(
-          "Fail to create the folder : " + dir.getAbsolutePath());
+          "Fail to create the folder : " + dir.toAbsolutePath());
     }
 
     // In this folder, create a hub.txt file where we write all the necessary
@@ -223,11 +222,10 @@ public class TrackHubModule extends AbstractModule {
    * @param date the current date as a string
    * @throws IOException if an error occurs while creating the file
    */
-  private void writeHubFile(final File dir, final String date)
+  private void writeHubFile(final Path dir, final String date)
       throws IOException {
 
-    try (Writer w =
-        new FileWriter(new File(dir, "hub.txt"), Charset.defaultCharset())) {
+    try (Writer w = Files.newBufferedWriter(dir.resolve("hub.txt"))) {
 
       w.write("hub " + date + '_' + this.shortLabel + '\n');
       w.write("shortLabel " + this.shortLabel + '\n');
@@ -242,10 +240,9 @@ public class TrackHubModule extends AbstractModule {
    * @param dir output directory
    * @throws IOException if an error occurs while creating the file
    */
-  private void writeGenomeFile(final File dir) throws IOException {
+  private void writeGenomeFile(final Path dir) throws IOException {
 
-    try (Writer w = new FileWriter(new File(dir, "genomes.txt"),
-        Charset.defaultCharset())) {
+    try (Writer w = Files.newBufferedWriter(dir.resolve("genomes.txt"))) {
       w.write("genome " + this.genome + '\n');
       w.write("trackDb ./" + this.genome + "/trackDb.txt");
     }
@@ -259,7 +256,7 @@ public class TrackHubModule extends AbstractModule {
    * @param nameMapBigBed map of BigBed data
    * @throws IOException if an error occurs while creating the output file
    */
-  private void writeTrackDb(File genomeDirectory, Design design,
+  private void writeTrackDb(Path genomeDirectory, Design design,
       Map<String, Data> nameMapBigWig, Map<String, Data> nameMapBigBed)
       throws IOException {
 
@@ -319,8 +316,7 @@ public class TrackHubModule extends AbstractModule {
 
     // Write trackDb file
     try (
-        Writer writer = new FileWriter(new File(genomeDirectory, "trackDb.txt"),
-            Charset.defaultCharset())) {
+        Writer writer = Files.newBufferedWriter(genomeDirectory.resolve("trackDb.txt"))) {
       writer.write(sb.toString());
     }
   }

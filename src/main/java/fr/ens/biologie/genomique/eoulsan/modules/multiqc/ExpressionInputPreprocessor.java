@@ -2,11 +2,10 @@ package fr.ens.biologie.genomique.eoulsan.modules.multiqc;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,7 +64,7 @@ public class ExpressionInputPreprocessor implements InputPreprocessor {
     // If expression file exists, create a copy of the expression file enhanced
     // with HTSeq-count statistics entries
     if (expressionFile.exists()) {
-      enhanceExpressionFile(expressionFile.toFile(), newFile.toFile(),
+      enhanceExpressionFile(expressionFile.toPath(), newFile.toPath(),
           this.sampleStats.get(name));
     }
   }
@@ -147,13 +146,11 @@ public class ExpressionInputPreprocessor implements InputPreprocessor {
    * @param stats sample expression statistics
    * @throws IOException if an error occurs while reading or writing the files
    */
-  private void enhanceExpressionFile(final File inFile, final File outFile,
+  private void enhanceExpressionFile(final Path inFile, final Path outFile,
       final Map<String, Integer> stats) throws IOException {
 
-    try (
-        BufferedReader reader = new BufferedReader(
-            new FileReader(inFile, Charset.defaultCharset()));
-        Writer writer = new FileWriter(outFile, Charset.defaultCharset())) {
+    try (BufferedReader reader = Files.newBufferedReader(inFile);
+        Writer writer = Files.newBufferedWriter(outFile)) {
 
       String line;
 

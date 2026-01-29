@@ -5,6 +5,7 @@ import static fr.ens.biologie.genomique.eoulsan.modules.chipseq.ChIPSeqDataForma
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -280,7 +281,7 @@ public class BedToolsModule extends AbstractModule {
       // The outputFile will contain the standard output of the process.
       File outputFile = peakData.getDataFile().toFile();
 
-      final File stderrFile = new File("docker.err");
+      final File stderrFile = Path.of("docker.err").toFile();
 
       String cmd2 = Joiner.on(' ').join(cmd);
       getLogger().info("Run command line : " + cmd2);

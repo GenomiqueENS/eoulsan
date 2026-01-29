@@ -28,14 +28,14 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +57,8 @@ import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.kenetre.log.GenericLogger;
 import fr.ens.biologie.genomique.eoulsan.util.ClassLoaderObjectInputStream;
+import fr.ens.biologie.genomique.kenetre.log.GenericLogger;
 
 /**
  * This class define a task context.
@@ -515,13 +515,25 @@ public class TaskContextImpl implements TaskContext, Serializable {
    * @param file output DataFile
    * @throws IOException if an error occurs while creating the file
    */
+  public void serialize(final Path file) throws IOException {
+
+    requireNonNull(file, "file argument cannot be null");
+
+    try (OutputStream out = Files.newOutputStream(file)) {
+      serialize(out);
+    }
+  }
+
+  /**
+   * Serialize the TaskContext object.
+   * @param file output DataFile
+   * @throws IOException if an error occurs while creating the file
+   */
   public void serialize(final File file) throws IOException {
 
     requireNonNull(file, "file argument cannot be null");
 
-    try (OutputStream out = new FileOutputStream(file)) {
-      serialize(out);
-    }
+    serialize(file.toPath());
   }
 
   /**
@@ -562,14 +574,29 @@ public class TaskContextImpl implements TaskContext, Serializable {
    * @return a deserialized TaskContextImpl object
    * @throws IOException if an error occurs while reading the file
    */
+  public static TaskContextImpl deserialize(final Path file)
+      throws IOException {
+
+    requireNonNull(file, "file argument cannot be null");
+
+    try (InputStream in = Files.newInputStream(file)) {
+      return deserialize(in);
+    }
+  }
+
+  /**
+   * Deserialize the TaskContext object. Warning: this method update the values
+   * of the settings of the Eoulsan runtime.
+   * @param file input DataFile
+   * @return a deserialized TaskContextImpl object
+   * @throws IOException if an error occurs while reading the file
+   */
   public static TaskContextImpl deserialize(final File file)
       throws IOException {
 
     requireNonNull(file, "file argument cannot be null");
 
-    try (InputStream in = new FileInputStream(file)) {
-      return deserialize(in);
-    }
+    return deserialize(file.toPath());
   }
 
   /**
@@ -624,11 +651,23 @@ public class TaskContextImpl implements TaskContext, Serializable {
    * @param file output file
    * @throws IOException if an error occurs while creating the file
    */
+  public void serializeOutputData(final Path file) throws IOException {
+
+    requireNonNull(file, "file argument cannot be null");
+
+    serializeOutputData(Files.newOutputStream(file));
+  }
+
+  /**
+   * Serialize output data.
+   * @param file output file
+   * @throws IOException if an error occurs while creating the file
+   */
   public void serializeOutputData(final File file) throws IOException {
 
     requireNonNull(file, "file argument cannot be null");
 
-    serializeOutputData(new FileOutputStream(file));
+    serializeOutputData(file.toPath());
   }
 
   /**
@@ -675,11 +714,24 @@ public class TaskContextImpl implements TaskContext, Serializable {
    * @param file input file
    * @throws IOException if an error occurs while reading the file
    */
+  public void deserializeOutputData(final Path file) throws IOException {
+
+    requireNonNull(file, "file argument cannot be null");
+
+    deserializeOutputData(Files.newInputStream(file));
+  }
+
+
+  /**
+   * Deserialize output data.
+   * @param file input file
+   * @throws IOException if an error occurs while reading the file
+   */
   public void deserializeOutputData(final File file) throws IOException {
 
     requireNonNull(file, "file argument cannot be null");
 
-    deserializeOutputData(new FileInputStream(file));
+    deserializeOutputData(file.toPath());
   }
 
   /**

@@ -32,9 +32,9 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATED_EXPRE
 import static fr.ens.biologie.genomique.eoulsan.util.EoulsanTranslatorUtils.getLinksFileFromSettings;
 import static fr.ens.biologie.genomique.eoulsan.util.EoulsanTranslatorUtils.loadTranslator;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -293,7 +293,7 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
 
       // Filter files to convert
       for (DataFile f : files) {
-        if (this.pathMatcher.matches(new File(f.getName()).toPath())) {
+        if (this.pathMatcher.matches(Path.of(f.getName()))) {
           filesToConvert.add(f);
         }
       }

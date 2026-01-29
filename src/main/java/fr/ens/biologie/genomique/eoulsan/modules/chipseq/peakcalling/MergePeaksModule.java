@@ -3,7 +3,7 @@ package fr.ens.biologie.genomique.eoulsan.modules.chipseq.peakcalling;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.modules.chipseq.ChIPSeqDataFormats.PEAK;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -17,10 +17,10 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 
 /**
  * This class defines the peak merging step. It merges peak files created by a
@@ -131,13 +131,13 @@ public class MergePeaksModule extends AbstractModule {
       }
 
       try {
-        File outputFile = new File(String.format("%s/mergedpeaks_output_%s.bed",
+        Path outputFile = Path.of(String.format("%s/mergedpeaks_output_%s.bed",
             expDataList.get(0).getDataFile().getParent().getSource(),
             experimentName));
 
         getLogger().info(String.format("Running : %s with output: %s",
             cmd.toString(), outputFile));
-        ProcessUtils.execWriteOutput(cmd.toString(), outputFile);
+        ProcessUtils.execWriteOutput(cmd.toString(), outputFile.toFile());
 
       } catch (java.io.IOException e) {
         getLogger().severe(e.toString());

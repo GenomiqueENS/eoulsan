@@ -1,8 +1,8 @@
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.local;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
@@ -92,7 +92,7 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
 
     // Open sam file
     final SamReader samReader = SamReaderFactory.makeDefault()
-        .open(SamInputResource.of(new FileInputStream(samDataFile)));
+        .open(SamInputResource.of(Files.newInputStream(samDataFile.toPath())));
 
     // Open fastq file
     final FastqWriter fastqWriter1 = new FastqWriter(fastqDataFile1.create());

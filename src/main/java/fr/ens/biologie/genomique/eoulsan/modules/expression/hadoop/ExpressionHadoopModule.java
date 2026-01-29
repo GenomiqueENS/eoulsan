@@ -33,11 +33,11 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_DESC_TXT
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
+import java.nio.file.Files;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
@@ -55,8 +55,6 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
-import fr.ens.biologie.genomique.kenetre.KenetreException;
-import fr.ens.biologie.genomique.kenetre.bio.expressioncounter.ExpressionCounter;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.ExpressionOutputFormat;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.SAMInputFormat;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.SAMOutputFormat;
@@ -72,11 +70,13 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounterUtils;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.FinalExpressionFeaturesCreator;
-import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.MapReduceUtils;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.PathUtils;
 import fr.ens.biologie.genomique.eoulsan.util.locker.Locker;
 import fr.ens.biologie.genomique.eoulsan.util.locker.ZooKeeperLocker;
+import fr.ens.biologie.genomique.kenetre.KenetreException;
+import fr.ens.biologie.genomique.kenetre.bio.expressioncounter.ExpressionCounter;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 import htsjdk.samtools.SAMRecordIterator;
 import htsjdk.samtools.SamInputResource;
 import htsjdk.samtools.SamReader;
@@ -486,7 +486,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
     }
 
     try (ObjectOutputStream oos = new ObjectOutputStream(
-        new FileOutputStream(counterSerializationFile))) {
+        Files.newOutputStream(counterSerializationFile.toPath()))) {
 
       oos.writeObject(counter);
     }

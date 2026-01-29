@@ -32,6 +32,8 @@ import static java.util.Collections.singletonList;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -390,26 +392,27 @@ public class FastQCModule extends AbstractModule {
         DataFormats.FASTQC_REPORT_HTML.getDefaultExtension();
 
     // Define the temporary output file
-    final File reportTempFile =
-        File.createTempFile("reportfile-", reportExtension, tempDirectory);
+    final Path reportTempFile =
+        File.createTempFile("reportfile-", reportExtension, tempDirectory).toPath();
 
     // Create the output report
     new HTMLReportArchive(seqFile, modules.toArray(new QCModule[0]),
-        reportTempFile);
+        reportTempFile.toFile());
 
     // Report zip filename
     final String baseFilename =
-        StringUtils.filenameWithoutExtension(reportTempFile.getName());
+        StringUtils.filenameWithoutExtension(reportTempFile.getFileName().toString());
 
     // Define the path of the ZIP directory
-    final File zipDir = new File(reportTempFile.getParentFile(), baseFilename);
+    final Path zipDir =
+        reportTempFile.getParent().resolve(baseFilename);
 
     // Define the path of the ZIP file
-    final File zipFile =
-        new File(zipDir.getParentFile(), baseFilename + ".zip");
+    final Path zipFile =
+        zipDir.getParent().resolve(baseFilename + ".zip");
 
     // Remove original zip file
-    if (!zipFile.delete()) {
+    if (!zipFile.toFile().delete()) {
       getLogger().warning(
           "Unable to remove original FastQC output zip file: " + zipFile);
     }
@@ -419,7 +422,7 @@ public class FastQCModule extends AbstractModule {
         StringUtils.filenameWithoutExtension(htmlReportFile.getName()));
 
     // Remove directory file
-    if (!FileUtils.recursiveDelete(zipDir)) {
+    if (!FileUtils.recursiveDelete(zipDir.toFile())) {
       getLogger()
           .warning("Unable to remove FastQC output directory: " + zipDir);
     }
@@ -429,13 +432,13 @@ public class FastQCModule extends AbstractModule {
     DataFiles.copy(new DataFile(zipFile), zipOutputFile);
 
     // Remove rezipped zip file
-    if (!zipFile.delete()) {
+    if (!zipFile.toFile().delete()) {
       getLogger().warning(
           "Unable to remove rezipped FastQC output zip file: " + zipFile);
     }
 
     // Remove the temporary file
-    if (!reportTempFile.delete()) {
+    if (!reportTempFile.toFile().delete()) {
       getLogger().warning(
           "Unable to remove FastQC temporary output file: " + reportTempFile);
     }
@@ -449,13 +452,13 @@ public class FastQCModule extends AbstractModule {
    * @param subdirName the name of the directory to zip in the ZIP file
    * @throws IOException if an error occurs while zipping the file
    */
-  private static void zipDirectory(final File directory, final File zipFile,
+  private static void zipDirectory(final Path directory, final Path zipFile,
       final String subdirName) throws IOException {
 
     final ZipOutputStream out =
-        new ZipOutputStream(new FileOutputStream(zipFile));
+        new ZipOutputStream(Files.newOutputStream(zipFile));
 
-    FileUtils.zipFolder(directory, subdirName + '/', out, false);
+    FileUtils.zipFolder(directory.toFile(), subdirName + '/', out, false);
     out.close();
   }
 

@@ -85,8 +85,7 @@ public class RnaSeqMetricsInputPreprocessor implements InputPreprocessor {
           String oldPath = matcher.group(1);
           String extension = StringUtils.extension(oldPath);
           String newPath =
-              new File(new File(oldPath).getParent(), name + extension)
-                  .getPath();
+              Path.of(oldPath).getParent().resolve(name + extension).toString();
           line = line.replace(oldPath, newPath);
         }
       }

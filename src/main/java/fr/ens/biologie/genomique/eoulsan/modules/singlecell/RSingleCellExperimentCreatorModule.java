@@ -9,10 +9,10 @@ import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,7 +33,6 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
@@ -56,6 +55,7 @@ import fr.ens.biologie.genomique.kenetre.bio.io.TSVAnnotationMatrixReader;
 import fr.ens.biologie.genomique.kenetre.bio.io.TSVAnnotationMatrixWriter;
 import fr.ens.biologie.genomique.kenetre.bio.io.TSVCountsReader;
 import fr.ens.biologie.genomique.kenetre.bio.io.TSVExpressionMatrixWriter;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 
 /**
  * This class define a class that allow to create a SingleCellExperiment
@@ -193,18 +193,18 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
       Data rdsData = this.mergeMatrices
           ? context.getOutputData(SINGLE_CELL_EXPERMIMENT_RDS, "matrix")
           : context.getOutputData(SINGLE_CELL_EXPERMIMENT_RDS, inputData);
-      File rdsFile = rdsData.getDataFile().toFile();
+      Path rdsFile = rdsData.getDataFile().toPath();
 
       // Define R script input files
-      File temporaryDirectory = context.getLocalTempDirectory();
-      File outputDir = context.getStepOutputDirectory().toFile();
-      File matrixFile =
-          new File(outputDir, "matrix-" + rdsData.getName() + ".tsv");
-      File featuresFile = this.useAdditionalAnnotation
-          ? new File(outputDir, "features-" + rdsData.getName() + ".tsv")
+      Path temporaryDirectory = context.getLocalTempDirectory().toPath();
+      Path outputDir = context.getStepOutputDirectory().toPath();
+      Path matrixFile =
+          outputDir.resolve("matrix-" + rdsData.getName() + ".tsv");
+      Path featuresFile = this.useAdditionalAnnotation
+          ? outputDir.resolve("features-" + rdsData.getName() + ".tsv")
           : null;
-      File cellsFile = this.designPrefix.isEmpty()
-          ? null : new File(outputDir, "cells-" + rdsData.getName() + ".tsv");
+      Path cellsFile = this.designPrefix.isEmpty()
+          ? null : outputDir.resolve("cells-" + rdsData.getName() + ".tsv");
 
       // Save R script ?
       boolean saveRScript = context.getSettings().isSaveRscripts();
@@ -226,7 +226,7 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
   }
 
   private void createRInputFiles(final TaskContext context, final Data matrices,
-      final File matrixFile, final File featuresFile, final File cellsFile)
+      final Path matrixFile, final Path featuresFile, final Path cellsFile)
       throws IOException {
 
     AnnotationMatrix featureAnnotations = null;
@@ -268,7 +268,7 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
     // Save matrix data
     context.getLogger().fine("Save matrix");
     try (ExpressionMatrixWriter writer =
-        new TSVExpressionMatrixWriter(matrixFile)) {
+        new TSVExpressionMatrixWriter(matrixFile.toFile())) {
       writer.write(matrix);
     }
 
@@ -276,7 +276,7 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
     if (featureAnnotations != null) {
       context.getLogger().fine("Save feature annotations");
       try (AnnotationMatrixWriter writer =
-          new TSVAnnotationMatrixWriter(featuresFile)) {
+          new TSVAnnotationMatrixWriter(featuresFile.toFile())) {
         writer.write(featureAnnotations, matrix.getRowNames());
       }
     }
@@ -285,7 +285,7 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
     if (cellAnnotations != null) {
       context.getLogger().fine("Save cell annotations");
       try (AnnotationMatrixWriter writer =
-          new TSVAnnotationMatrixWriter(cellsFile)) {
+          new TSVAnnotationMatrixWriter(cellsFile.toFile())) {
         writer.write(cellAnnotations, matrix.getColumnNames());
       }
     }
@@ -505,9 +505,9 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
    * @param scriptName script name
    * @throws IOException if an error occurs while executing the command
    */
-  private void createRDS(final File matrixFile, final File cellsFile,
-      final File featuresFile, final File rdsFile,
-      final File temporaryDirectory, final boolean saveRScript,
+  private void createRDS(final Path matrixFile, final Path cellsFile,
+      final Path featuresFile, final Path rdsFile,
+      final Path temporaryDirectory, final boolean saveRScript,
       final DataFile RExecutionDirectory, final String scriptName)
       throws IOException {
 
@@ -580,25 +580,25 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
    * @param rdsFile output file
    * @return an array with the R script arguments
    */
-  private static String[] createCommandLineArguments(final File matrixFile,
-      final File cellsFile, final File featuresFile, final File rdsFile) {
+  private static String[] createCommandLineArguments(final Path matrixFile,
+      final Path cellsFile, final Path featuresFile, final Path rdsFile) {
 
     List<String> result = new ArrayList<>();
-    result.add(matrixFile.getName());
-    result.add(rdsFile.getName());
+    result.add(matrixFile.getFileName().toString());
+    result.add(rdsFile.getFileName().toString());
 
     if (cellsFile == null) {
       result.add("FALSE");
     } else {
       result.add("TRUE");
-      result.add(cellsFile.getName());
+      result.add(cellsFile.getFileName().toString());
     }
 
     if (featuresFile == null) {
       result.add("FALSE");
     } else {
       result.add("TRUE");
-      result.add(featuresFile.getName());
+      result.add(featuresFile.getFileName().toString());
     }
 
     return result.toArray(new String[0]);
