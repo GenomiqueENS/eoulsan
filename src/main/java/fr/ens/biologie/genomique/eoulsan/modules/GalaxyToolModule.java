@@ -132,11 +132,11 @@ public class GalaxyToolModule extends AbstractModule {
 
     // If the interpreter of the tool is Docker, add the Docker image to the
     // list of the Docker image to fetch
-    final ToolInfo toolData = this.toolInterpreter.getToolInfo();
+    final ToolInfo toolInfo = this.toolInterpreter.getToolInfo();
     if (DockerExecutorInterpreter.INTERPRETER_NAME
-        .equals(toolData.getInterpreter(dockerEnabled))) {
+        .equals(toolInfo.getInterpreter(dockerEnabled))) {
 
-      this.requirements.add(newDockerRequirement(toolData.getDockerImage()));
+      this.requirements.add(newDockerRequirement(toolInfo.getDockerImage()));
     }
   }
 
@@ -158,7 +158,8 @@ public class GalaxyToolModule extends AbstractModule {
             + " with interpreter " + toolInfo.getInterpreter(dockerEnabled));
 
     // If Docker enable, log the Docker image used
-    if (dockerEnabled) {
+    if (DockerExecutorInterpreter.INTERPRETER_NAME
+        .equals(toolInfo.getInterpreter(dockerEnabled))) {
       context.getLogger().info("Docker image: " + toolInfo.getDockerImage());
       status.setDockerImage(toolInfo.getDockerImage());
     }
