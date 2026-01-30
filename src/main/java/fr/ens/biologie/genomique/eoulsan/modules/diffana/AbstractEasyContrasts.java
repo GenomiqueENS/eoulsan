@@ -24,12 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 
-import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.getAllSamplesMetadataKeys;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.getExperimentSampleAllMetadataKeys;
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.referenceValueToInt;
-import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toCompactTime;
-import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
@@ -38,8 +35,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,12 +59,7 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
  * @author Xavier Bauquet
  * @since 2.0
  */
-public class DESeq2 {
-
-  // R scripts path in JAR file
-  private static final String SCRIPTS_PATH_IN_JAR_FILE = "/DESeq2/";
-  private static final String NORM_DIFFANA_SCRIPT = "normDiffana.R";
-  private static final String BUILD_CONTRAST_SCRIPT = "buildContrast.R";
+public abstract class AbstractEasyContrasts {
 
   // Suffix for output files from DEseq2
   private static final String DESEQ_DESIGN_FILE_SUFFIX = "-deseq2Design.txt";
@@ -97,9 +87,9 @@ public class DESeq2 {
   private final boolean diffanaFig;
   private final boolean normDiffana;
   private final boolean diffana;
-  private final DESeq2.SizeFactorsType sizeFactorsType;
-  private final DESeq2.FitType fitType;
-  private final DESeq2.StatisticTest statisticTest;
+  private final AbstractEasyContrasts.SizeFactorsType sizeFactorsType;
+  private final AbstractEasyContrasts.FitType fitType;
+  private final AbstractEasyContrasts.StatisticTest statisticTest;
 
   // Design options for DEseq2
   private final String model;
@@ -110,7 +100,7 @@ public class DESeq2 {
   private final boolean expHeader = true;
 
   // Files and file names
-  private final RExecutor executor;
+  protected final RExecutor executor;
   private final boolean saveRScripts;
 
   private final String stepId;
@@ -237,7 +227,8 @@ public class DESeq2 {
 
       for (StatisticTest dem : StatisticTest.values()) {
 
-        if (dem.toDESeq2Value().toLowerCase(Globals.DEFAULT_LOCALE).equals(lowerName)) {
+        if (dem.toDESeq2Value().toLowerCase(Globals.DEFAULT_LOCALE)
+            .equals(lowerName)) {
           return dem;
         }
       }
@@ -257,11 +248,107 @@ public class DESeq2 {
 
   }
 
+  //
+  // Getters
+  //
+
+  protected String experimentName() {
+    return this.experiment.getName();
+  }
+
+  protected String model() {
+    return this.model;
+  }
+
+  protected boolean isSaveRScripts() {
+    return this.saveRScripts;
+  }
+
+  protected String stepId() {
+    return this.stepId;
+  }
+
+  protected boolean isBuildContrast() {
+    return this.buildContrast;
+  }
+
+  protected boolean isNormDiffana() {
+    return this.normDiffana;
+  }
+
+  protected boolean isContrast() {
+    return this.contrast;
+  }
+
+  protected boolean isNormFig() {
+    return this.normFig;
+  }
+
+  protected boolean isDiffana() {
+    return this.diffana;
+  }
+
+  protected boolean isDiffanaFig() {
+    return this.diffanaFig;
+  }
+
+  protected boolean isExpHeader() {
+    return this.expHeader;
+  }
+
+  protected AbstractEasyContrasts.SizeFactorsType sizeFactorsType() {
+    return this.sizeFactorsType;
+  }
+
+  protected AbstractEasyContrasts.FitType fitType() {
+    return this.fitType;
+  }
+
+  protected AbstractEasyContrasts.StatisticTest statisticTest() {
+    return this.statisticTest;
+  }
+
+  //
+  // Filenames
+  //
+
+  /**
+   * Define design filename.
+   * @param prefix
+   * @return the design filename
+   */
+  protected static String deseq2DesignFileName(String prefix) {
+
+    return prefix + DESEQ_DESIGN_FILE_SUFFIX;
+  }
+
+  /**
+   * Define comparison filename.
+   * @param prefix
+   * @return comparison filename
+   */
+  protected static String comparisonFileName(String prefix) {
+    return prefix + COMPARISON_FILE_SUFFIX;
+  }
+
+  /**
+   * Define contrast filename.
+   * @param prefix
+   * @return the contrast filename
+   */
+  protected static String contrastFilename(String prefix) {
+    return prefix + CONTRAST_FILE_SUFFIX;
+  }
+
+  //
+  // File writers
+  //
+
   /**
    * Put sample files.
    * @throws IOException if an error occurs while putting sample files
    */
-  private void putSampleFiles() throws IOException {
+  protected void putSampleFiles() throws IOException {
 
     for (Sample sample : experiment.getSamples()) {
 
@@ -279,6 +366,27 @@ public class DESeq2 {
       this.sampleFilenames.put(key, outputFilename);
     }
   }
+
+  protected void writeDESeq2Design(String prefix) throws IOException {
+    this.executor.writerFile(generateDeseq2Design(),
+        deseq2DesignFileName(prefix));
+  }
+
+  protected void writeContrastFile(String prefix) throws IOException {
+    if (this.contrastFile != null) {
+      this.executor.putInputFile(this.contrastFile, contrastFilename(prefix));
+    }
+  }
+
+  protected void writeComparisonFile(String prefix)
+      throws IOException, EoulsanException {
+    this.executor.writerFile(generateComparisonFileContent(),
+        comparisonFileName(prefix));
+  }
+
+  //
+  // File content generators
+  //
 
   /**
    * Generate DESeq2 design.
@@ -417,7 +525,7 @@ public class DESeq2 {
    * @throws EoulsanException if the format of one of the comparison entries of
    *           the design file is invalid
    */
-  private String generateComparisonFileContent() throws EoulsanException {
+  protected String generateComparisonFileContent() throws EoulsanException {
 
     final StringBuilder sb = new StringBuilder();
 
@@ -439,179 +547,22 @@ public class DESeq2 {
   }
 
   /**
-   * Create the command line to run normDiffana.R.
-   * @return the command line to run normDiffana.R
-   */
-  private String[] createNormDiffanaCommandLine(
-      final String deseq2DesignFileName, final String contrastFilename) {
-
-    final List<String> command =
-        new ArrayList<>(asList(booleanParameter(normFig),
-            booleanParameter(diffana), booleanParameter(diffanaFig)));
-
-    // Define contrast file
-    if (contrast) {
-      // add the default name of the contrast file if not an other is define
-      command.add(booleanParameter(contrast));
-    } else {
-      // add FALSE if the contrast parameter is at false
-      command.add(booleanParameter(false));
-    }
-
-    command.addAll(asList(deseq2DesignFileName, this.model,
-        this.experiment.getName(), booleanParameter(this.expHeader),
-        this.sizeFactorsType.toDESeq2Value(), this.fitType.toDESeq2Value(),
-        this.statisticTest.toDESeq2Value(), contrastFilename,
-        this.stepId + "_"));
-
-    return command.toArray(new String[0]);
-  }
-
-  /**
-   * Transform boolean for DEseq2 command line.
-   * @param value boolean
-   * @return boolean for DEseq2 command line
-   */
-  private static String booleanParameter(boolean value) {
-
-    return Boolean.valueOf(value).toString().toUpperCase(Globals.DEFAULT_LOCALE);
-  }
-
-  /**
-   * Method to run DESeq2.
-   * @param workflowOutputDir workflow output directory
-   * @throws IOException if writeDeseq2Design fails
-   * @throws EoulsanException if the comparisons value is not correct
-   */
-  public void runDEseq2(final DataFile workflowOutputDir)
-      throws IOException, EoulsanException {
-
-    final String prefix = this.stepId + "_" + this.experiment.getName();
-
-    // Define design filename
-    final String deseq2DesignFileName = prefix + DESEQ_DESIGN_FILE_SUFFIX;
-
-    // Define comparison filename
-    final String comparisonFileName = prefix + COMPARISON_FILE_SUFFIX;
-
-    // Define contrast filename
-    final String contrastFilename = prefix + CONTRAST_FILE_SUFFIX;
-
-    // Check experiment design
-    DESeq2DesignChecker.checkExperimentDesign(this.experiment);
-
-    // Open executor connection
-    this.executor.openConnection();
-
-    // Put Sample files
-    putSampleFiles();
-
-    // Write the deseq2 design
-    this.executor.writerFile(generateDeseq2Design(), deseq2DesignFileName);
-
-    // Copy contrast file
-    if (this.contrastFile != null) {
-      this.executor.putInputFile(this.contrastFile, contrastFilename);
-    }
-
-    // Build the contrast file
-    if (this.buildContrast) {
-
-      if (!this.experiment.getMetadata().containsComparisons()) {
-        throw new EoulsanException(
-            "No comparison defined to build the constrasts in experiment: "
-                + this.experiment.getName());
-      }
-
-      // Write the comparison file from the Eoulsan design (experiment metadata)
-      this.executor.writerFile(generateComparisonFileContent(),
-          comparisonFileName);
-
-      // Read build contrast R script
-      final String buildContrastScript =
-          readFromJar(SCRIPTS_PATH_IN_JAR_FILE + BUILD_CONTRAST_SCRIPT);
-
-      // Set the description of the analysis
-      final String description = this.stepId
-          + "_" + this.experiment.getName() + "-buildcontrasts-"
-          + toCompactTime(System.currentTimeMillis());
-
-      // Create R script arguments
-      String[] buildContrastScriptArgs = new String[] {deseq2DesignFileName,
-          this.model, comparisonFileName,
-          this.experiment.getName() + CONTRAST_FILE_SUFFIX, this.stepId + "_"};
-
-      // Log R Command line
-      getLogger().info("R script to execute:\n" + buildContrastScript);
-      getLogger().info(
-          "R script arguments: " + Arrays.toString(buildContrastScriptArgs));
-
-      // Run buildContrast.R
-      this.executor.executeRScript(buildContrastScript, false, null,
-          this.saveRScripts, description, workflowOutputDir,
-          buildContrastScriptArgs);
-    }
-
-    // Run normalization and differential analysis
-    if (this.normDiffana) {
-
-      // Read build contrast R script
-      final String normDiffanaScript =
-          readFromJar(SCRIPTS_PATH_IN_JAR_FILE + NORM_DIFFANA_SCRIPT);
-
-      // Set the description of the analysis
-      final String description = this.stepId
-          + "_" + this.experiment.getName() + "-normdiffana-"
-          + toCompactTime(System.currentTimeMillis());
-
-      // TODO Do not handle custom contrast files with
-      // ExperimentMetadata.containsContrastFile()
-
-      // Create R script arguments
-      String[] normDiffanaScriptArgs =
-          createNormDiffanaCommandLine(deseq2DesignFileName, contrastFilename);
-
-      // Log R Command line
-      getLogger().info("R script to execute:\n" + normDiffanaScript);
-      getLogger().info(
-          "R script arguments: " + Arrays.toString(normDiffanaScriptArgs));
-
-      // Run normDiffana.R
-      this.executor.executeRScript(normDiffanaScript, false, null,
-          this.saveRScripts, description, workflowOutputDir,
-          normDiffanaScriptArgs);
-    }
-
-    // Remove input files
-    this.executor.removeInputFiles();
-
-    // Retrieve output files
-    this.executor.getOutputFiles();
-
-    // Close executor connection
-    this.executor.closeConnection();
-  }
-
-  //
-  // Static methods
-  //
-
-  /**
    * Read a file from the Jar.
    * @param filePathInJar, path to the file to copy from the Jar
    * @return a String with the content of the file
    * @throws IOException if reading fails
    */
-  private static String readFromJar(final String filePathInJar)
+  protected static String readFromJar(final String filePathInJar)
       throws IOException {
 
-    final InputStream is = DESeq2.class.getResourceAsStream(filePathInJar);
+    final InputStream is =
+        AbstractEasyContrasts.class.getResourceAsStream(filePathInJar);
 
     final StringBuilder sb = new StringBuilder();
     String line = null;
 
-    try (
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is, Charset.defaultCharset()))) {
+    try (BufferedReader reader = new BufferedReader(
+        new InputStreamReader(is, Charset.defaultCharset()))) {
 
       while ((line = reader.readLine()) != null) {
 
@@ -624,7 +575,68 @@ public class DESeq2 {
   }
 
   //
-  // Construtors
+  // Execution methods
+  //
+
+  private void check() throws EoulsanException {
+
+    // Check experiment design
+    DESeq2DesignChecker.checkExperimentDesign(this.experiment);
+
+    if (this.buildContrast) {
+      if (!this.experiment.getMetadata().containsComparisons()) {
+        throw new EoulsanException(
+            "No comparison defined to build the constrasts in experiment: "
+                + experimentName());
+      }
+    }
+  }
+
+  /**
+   * Method to run DESeq2.
+   * @param workflowOutputDir workflow output directory
+   * @throws IOException if writeDeseq2Design fails
+   * @throws EoulsanException if the comparisons value is not correct
+   */
+
+  public void runDEseq2(final DataFile workflowOutputDir)
+      throws IOException, EoulsanException {
+
+    final String prefix = stepId() + "_" + experimentName();
+
+    // Check
+    check();
+
+    // Open executor connection
+    this.executor.openConnection();
+
+    // Put Sample files
+    putSampleFiles();
+
+    // Write the deseq2 design
+    writeDESeq2Design(prefix);
+
+    // Copy contrast file
+    writeContrastFile(prefix);
+
+    // Execute the R scripts
+    execute(prefix, workflowOutputDir);
+
+    // Remove input files
+    this.executor.removeInputFiles();
+
+    // Retrieve output files
+    this.executor.getOutputFiles();
+
+    // Close executor connection
+    this.executor.closeConnection();
+  }
+
+  protected abstract void execute(String prefix, DataFile workflowOutputDir)
+      throws IOException, EoulsanException;
+
+  //
+  // Constructor
   //
 
   /**
@@ -643,7 +655,7 @@ public class DESeq2 {
    * @param statisticTest statisticTest DESeq2 option
    * @param saveRScripts save R scripts
    */
-  public DESeq2(final RExecutor executor, final String stepId,
+  protected AbstractEasyContrasts(final RExecutor executor, final String stepId,
       final Design design, final Experiment experiment,
       final Map<String, File> sampleFiles, final boolean normFig,
       final boolean diffanaFig, final boolean normDiffana,

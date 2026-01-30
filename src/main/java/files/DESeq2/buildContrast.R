@@ -312,7 +312,7 @@ for(i in 1:nrow(contrastData)){
 finalData <- finalData[2:nrow(finalData),]
 
 # Saving of the contrast matrix
-write.table(finalData, paste(prefix, contrastFile, sep=""),sep="\t",row.names=F, quote=F)
+write.table(finalData, contrastFile, sep="\t", row.names=F, quote=F)
 
 
     # Print date, hours
