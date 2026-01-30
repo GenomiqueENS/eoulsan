@@ -21,7 +21,7 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 public class EasyContrasts1 extends AbstractEasyContrasts {
 
   // R scripts path in JAR file
-  private static final String SCRIPTS_PATH_IN_JAR_FILE = "/DESeq2/";
+  private static final String SCRIPTS_PATH_IN_JAR_FILE = "/easy-contrasts1-DESeq2/";
   private static final String NORM_DIFFANA_SCRIPT = "normDiffana.R";
   private static final String BUILD_CONTRAST_SCRIPT = "buildContrast.R";
 
@@ -69,9 +69,6 @@ public class EasyContrasts1 extends AbstractEasyContrasts {
         + toCompactTime(System.currentTimeMillis());
 
     // Create R script arguments
-    // String[] buildContrastScriptArgs = new String[] {
-    // deseq2DesignFileName(prefix), model(), comparisonFileName(prefix),
-    // experimentName() + CONTRAST_FILE_SUFFIX, stepId() + "_"};
     String[] buildContrastScriptArgs = new String[] {
         deseq2DesignFileName(prefix), model(), comparisonFileName(prefix),
         contrastFilename(prefix), stepId() + "_"};
