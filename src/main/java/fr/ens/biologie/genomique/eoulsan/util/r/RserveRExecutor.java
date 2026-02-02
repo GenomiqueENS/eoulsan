@@ -112,7 +112,7 @@ public class RserveRExecutor extends AbstractRExecutor {
   }
 
   @Override
-  public void writerFile(final String content, final String outputFilename)
+  public void writeFile(final String content, final String outputFilename)
       throws IOException {
 
     checkConnection();
@@ -171,6 +171,18 @@ public class RserveRExecutor extends AbstractRExecutor {
 
     // Remove the R script on the server
     removeFile(rScriptOnRservePath);
+  }
+
+  @Override
+  public void executeR(String code, File workflowOutputDir)
+      throws IOException {
+
+    try {
+      this.rConnection.executeR(code);
+      ;
+    } catch (REngineException e) {
+      throw new IOException(e);
+    }
   }
 
   //

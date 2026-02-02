@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -84,7 +85,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
   }
 
   @Override
-  public void writerFile(final String content, final String outputFilename)
+  public void writeFile(final String content, final String outputFilename)
       throws IOException {
 
     if (content == null) {
@@ -102,7 +103,8 @@ public class ProcessRExecutor extends AbstractRExecutor {
       throw new IOException("The output file already exists: " + outputFile);
     }
 
-    try (Writer writer = new OutputStreamWriter(outputFile.create(), Charset.defaultCharset())) {
+    try (Writer writer =
+        new OutputStreamWriter(outputFile.create(), Charset.defaultCharset())) {
       writer.write(content);
     }
   }
@@ -193,6 +195,28 @@ public class ProcessRExecutor extends AbstractRExecutor {
 
     ProcessUtils.throwExitCodeException(exitValue,
         Joiner.on(' ').join(commandLine));
+  }
+
+  @Override
+  public void executeR(String code, File workflowOutputDir)
+      throws IOException {
+
+    final SimpleProcess process = createSimpleProcess();
+
+    final List<String> commandLine =
+        Arrays.asList(RSCRIPT_EXECUTABLE, "-e", code);
+
+    final File stdoutFile = workflowOutputDir.toPath()
+        .resolve("R-" + System.currentTimeMillis() + ".out").toFile();
+
+    final int exitValue = process.execute(commandLine, getOutputDirectory(),
+        Collections.singletonMap(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG),
+        getTemporaryDirectory(), stdoutFile, stdoutFile, true,
+        workflowOutputDir);
+
+    ProcessUtils.throwExitCodeException(exitValue,
+        Joiner.on(' ').join(commandLine));
+
   }
 
   /**

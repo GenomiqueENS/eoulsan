@@ -368,7 +368,7 @@ public abstract class AbstractEasyContrasts {
   }
 
   protected void writeDESeq2Design(String prefix) throws IOException {
-    this.executor.writerFile(generateDeseq2Design(),
+    this.executor.writeFile(generateDeseq2Design(),
         deseq2DesignFileName(prefix));
   }
 
@@ -380,7 +380,7 @@ public abstract class AbstractEasyContrasts {
 
   protected void writeComparisonFile(String prefix)
       throws IOException, EoulsanException {
-    this.executor.writerFile(generateComparisonFileContent(),
+    this.executor.writeFile(generateComparisonFileContent(),
         comparisonFileName(prefix));
   }
 

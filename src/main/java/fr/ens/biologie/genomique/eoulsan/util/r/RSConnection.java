@@ -380,12 +380,26 @@ public class RSConnection {
       return;
     }
 
+    executeR("source(\"" + source + "\")");
+  }
+
+  /**
+   * Execute a R code.
+   * @param source code to execute
+   * @throws REngineException if an error while executing the code
+   */
+  public void executeR(final String code) throws REngineException {
+
+    if (code == null) {
+      return;
+    }
+
     final RConnection c = getRConnection();
 
     try {
 
       // Execute the source
-      c.voidEval("source(\"" + source + "\")");
+      c.voidEval(code);
 
     } catch (RserveException e) {
       throw new REngineException(c, "RServe exception: " + e);

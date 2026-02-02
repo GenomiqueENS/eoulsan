@@ -58,6 +58,14 @@ public abstract class AbstractRExecutor implements RExecutor {
       throws IOException;
 
   /**
+   * Execute a R script.
+   * @param code The R code to execute
+   * @throws IOException if an error occurs while executing the script
+   */
+  protected abstract void executeR(String code, File workflowOutputDir)
+      throws IOException;
+
+  /**
    * Get the output directory of the analysis.
    * @return the output directory of the analysis
    */
@@ -185,6 +193,22 @@ public abstract class AbstractRExecutor implements RExecutor {
       }
     }
 
+  }
+
+  @Override
+  public void executeRScript(String code, String description,
+      DataFile workflowOutputDir) throws IOException {
+
+    if (code == null) {
+      throw new NullPointerException("code argument cannot be null");
+    }
+
+    if (description == null) {
+      throw new NullPointerException("description argument cannot be null");
+    }
+
+    // Execute R script
+    executeR(code, workflowOutputDir.toFile());
   }
 
   //

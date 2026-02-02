@@ -52,7 +52,7 @@ public interface RExecutor {
    * @param outputFilename the output filename
    * @throws IOException if an exception occurs while writing a file
    */
-  void writerFile(String content, String outputFilename) throws IOException;
+  void writeFile(String content, String outputFilename) throws IOException;
 
   /**
    * Execute a R script.
@@ -68,6 +68,16 @@ public interface RExecutor {
   void executeRScript(String rScript, boolean sweave, String sweaveOutput,
       boolean saveRscript, String description, DataFile workflowOutputDir,
       String... scriptArguments) throws IOException;
+
+  /**
+   * Execute a R script.
+   * @param code code to execute
+   * @param description description of the R script
+   * @param workflowOutputDir workflow output directory
+   * @throws IOException if an error occurs while executing the script
+   */
+  void executeRScript(String code, String description,
+      DataFile workflowOutputDir) throws IOException;
 
   /**
    * Remove input files.
