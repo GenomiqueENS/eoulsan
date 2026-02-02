@@ -40,9 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.checkers.DESeq2DesignChecker;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
@@ -83,21 +81,13 @@ public abstract class AbstractEasyContrasts {
   private final Design design;
 
   // Workflow options for DEseq2
-  private final boolean normFig;
-  private final boolean diffanaFig;
-  private final boolean normDiffana;
-  private final boolean diffana;
-  private final AbstractEasyContrasts.SizeFactorsType sizeFactorsType;
-  private final AbstractEasyContrasts.FitType fitType;
-  private final AbstractEasyContrasts.StatisticTest statisticTest;
+  private final DESeq2Parameters parameters;
 
   // Design options for DEseq2
   private final String model;
   private final boolean contrast;
   private final boolean buildContrast;
   private final DataFile contrastFile;
-
-  private final boolean expHeader = true;
 
   // Files and file names
   protected final RExecutor executor;
@@ -109,148 +99,12 @@ public abstract class AbstractEasyContrasts {
   private final Map<String, String> sampleFilenames = new HashMap<>();
 
   //
-  // Enums
-  //
-
-  /***
-   * Enum for the sizeFactorsType option in DESeq2 related to the estimation of
-   * the size factor.
-   */
-  public enum SizeFactorsType {
-
-    RATIO, ITERATE;
-
-    /**
-     * Get the size factors type to be used in DESeq2.
-     * @param parameter Eoulsan parameter
-     * @return the size factors type value
-     * @throws EoulsanException if the size factors type value is different from
-     *           ratio or iterate
-     */
-    public static SizeFactorsType get(final Parameter parameter)
-        throws EoulsanException {
-
-      requireNonNull(parameter, "parameter argument cannot be null");
-
-      final String lowerName = parameter.getLowerStringValue().trim();
-
-      for (SizeFactorsType dem : SizeFactorsType.values()) {
-
-        if (dem.name().toLowerCase(Globals.DEFAULT_LOCALE).equals(lowerName)) {
-          return dem;
-        }
-      }
-
-      throw new EoulsanException("The value: "
-          + parameter.getValue() + " is not an acceptable value for the "
-          + parameter.getName() + " parameter.");
-    }
-
-    /**
-     * Convert the enum name into DESeq2 value.
-     * @return DESeq2 value
-     */
-    public String toDESeq2Value() {
-
-      return this.name().toLowerCase(Globals.DEFAULT_LOCALE);
-    }
-  }
-
-  /**
-   * Enum for the fitType option in DESeq2 related to the dispersion estimation.
-   */
-  public enum FitType {
-
-    PARAMETRIC, LOCAL, MEAN;
-
-    /**
-     * Get the fit type to be used in DESeq2.
-     * @param name name of the enum
-     * @return the fit type value
-     * @throws EoulsanException if the fit type value is different from
-     *           parametric, local or mean
-     */
-    public static FitType get(final String name) throws EoulsanException {
-
-      requireNonNull(name, "fitType argument cannot be null");
-
-      final String lowerName = name.trim().toLowerCase(Globals.DEFAULT_LOCALE);
-
-      for (FitType dem : FitType.values()) {
-
-        if (dem.name().toLowerCase(Globals.DEFAULT_LOCALE).equals(lowerName)) {
-          return dem;
-        }
-      }
-
-      throw new EoulsanException("The value: "
-          + name + " is not an acceptable value for the fitType option.");
-    }
-
-    /**
-     * Convert the enum name into DESeq2 value.
-     * @return DESeq2 value
-     */
-    public String toDESeq2Value() {
-
-      return this.name().toLowerCase(Globals.DEFAULT_LOCALE);
-    }
-  }
-
-  /**
-   * Enum for the statisticTest option in DESeq2 related to the statistic test
-   * to be used during the differential expression analysis
-   */
-  public enum StatisticTest {
-
-    WALD("Wald"), LRT("LRT");
-
-    private final String name;
-
-    public String toDESeq2Value() {
-
-      return name;
-    }
-
-    /**
-     * Get the statistic test to be used in DESeq2.
-     * @param name name of the enum
-     * @return the statistic test value
-     * @throws EoulsanException if the statistic test value is different from
-     *           Wald or LRT
-     */
-    public static StatisticTest get(final String name) throws EoulsanException {
-
-      requireNonNull(name, "statisticTest cargument annot be null");
-
-      final String lowerName = name.trim().toLowerCase(Globals.DEFAULT_LOCALE);
-
-      for (StatisticTest dem : StatisticTest.values()) {
-
-        if (dem.toDESeq2Value().toLowerCase(Globals.DEFAULT_LOCALE)
-            .equals(lowerName)) {
-          return dem;
-        }
-      }
-
-      throw new EoulsanException("The value: "
-          + name + " is not an acceptable value for the statisticTest option.");
-    }
-
-    /**
-     * Constructor.
-     * @param method, dispersion estimation method
-     */
-    StatisticTest(final String method) {
-
-      this.name = method;
-    }
-
-  }
-
-  //
   // Getters
   //
+
+  protected DESeq2Parameters getParameters() {
+    return this.parameters;
+  }
 
   protected String experimentName() {
     return this.experiment.getName();
@@ -272,40 +126,8 @@ public abstract class AbstractEasyContrasts {
     return this.buildContrast;
   }
 
-  protected boolean isNormDiffana() {
-    return this.normDiffana;
-  }
-
   protected boolean isContrast() {
     return this.contrast;
-  }
-
-  protected boolean isNormFig() {
-    return this.normFig;
-  }
-
-  protected boolean isDiffana() {
-    return this.diffana;
-  }
-
-  protected boolean isDiffanaFig() {
-    return this.diffanaFig;
-  }
-
-  protected boolean isExpHeader() {
-    return this.expHeader;
-  }
-
-  protected AbstractEasyContrasts.SizeFactorsType sizeFactorsType() {
-    return this.sizeFactorsType;
-  }
-
-  protected AbstractEasyContrasts.FitType fitType() {
-    return this.fitType;
-  }
-
-  protected AbstractEasyContrasts.StatisticTest statisticTest() {
-    return this.statisticTest;
   }
 
   //
@@ -657,10 +479,7 @@ public abstract class AbstractEasyContrasts {
    */
   protected AbstractEasyContrasts(final RExecutor executor, final String stepId,
       final Design design, final Experiment experiment,
-      final Map<String, File> sampleFiles, final boolean normFig,
-      final boolean diffanaFig, final boolean normDiffana,
-      final boolean diffana, final SizeFactorsType sizeFactorsType,
-      final FitType fitType, final StatisticTest statisticTest,
+      final Map<String, File> sampleFiles, final DESeq2Parameters parameters,
       boolean saveRScripts) {
 
     requireNonNull(stepId, "stepId argument cannot be null");
@@ -669,9 +488,7 @@ public abstract class AbstractEasyContrasts {
     requireNonNull(experiment, "experiment argument cannot be null");
     requireNonNull(sampleFiles, "sampleFiles argument cannot be null");
 
-    requireNonNull(sizeFactorsType, "sizeFactorsType argument cannot be null");
-    requireNonNull(fitType, "fitType argument cannot be null");
-    requireNonNull(statisticTest, "statisticTest argument cannot be null");
+    requireNonNull(parameters, "parameters argument cannot be null");
 
     this.stepId = stepId;
 
@@ -680,6 +497,7 @@ public abstract class AbstractEasyContrasts {
     this.design = design;
     this.experiment = experiment;
     this.sampleFiles = sampleFiles;
+    this.parameters = parameters;
 
     ExperimentMetadata expMD = experiment.getMetadata();
 
@@ -713,14 +531,5 @@ public abstract class AbstractEasyContrasts {
         this.buildContrast = false;
       }
     }
-
-    // Workflow options for DEseq2
-    this.normFig = normFig;
-    this.diffanaFig = diffanaFig;
-    this.normDiffana = normDiffana;
-    this.diffana = diffana;
-    this.sizeFactorsType = sizeFactorsType;
-    this.fitType = fitType;
-    this.statisticTest = statisticTest;
   }
 }

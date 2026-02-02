@@ -21,7 +21,8 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 public class EasyContrasts1 extends AbstractEasyContrasts {
 
   // R scripts path in JAR file
-  private static final String SCRIPTS_PATH_IN_JAR_FILE = "/easy-contrasts1-DESeq2/";
+  private static final String SCRIPTS_PATH_IN_JAR_FILE =
+      "/easy-contrasts1-DESeq2/";
   private static final String NORM_DIFFANA_SCRIPT = "normDiffana.R";
   private static final String BUILD_CONTRAST_SCRIPT = "buildContrast.R";
 
@@ -32,9 +33,12 @@ public class EasyContrasts1 extends AbstractEasyContrasts {
   private String[] createNormDiffanaCommandLine(
       final String deseq2DesignFileName, final String contrastFilename) {
 
+    final DESeq2Parameters parameters = getParameters();
+
     final List<String> command =
-        new ArrayList<>(asList(booleanParameter(isNormFig()),
-            booleanParameter(isDiffana()), booleanParameter(isDiffanaFig())));
+        new ArrayList<>(asList(booleanParameter(parameters.isNormFig()),
+            booleanParameter(parameters.isDiffana()),
+            booleanParameter(parameters.isDiffanaFig())));
 
     // Define contrast file
     if (isContrast()) {
@@ -46,9 +50,11 @@ public class EasyContrasts1 extends AbstractEasyContrasts {
     }
 
     command.addAll(asList(deseq2DesignFileName, model(), experimentName(),
-        booleanParameter(isExpHeader()), sizeFactorsType().toDESeq2Value(),
-        fitType().toDESeq2Value(), statisticTest().toDESeq2Value(),
-        contrastFilename, stepId() + "_"));
+        booleanParameter(parameters.isExpHeader()),
+        parameters.getSizeFactorsType().toDESeq2Value(),
+        parameters.getFitType().toDESeq2Value(),
+        parameters.getStatisticTest().toDESeq2Value(), contrastFilename,
+        stepId() + "_"));
 
     return command.toArray(new String[0]);
   }
@@ -143,7 +149,7 @@ public class EasyContrasts1 extends AbstractEasyContrasts {
     }
 
     // Run normalization and differential analysis
-    if (isNormDiffana()) {
+    if (getParameters().isNormDiffana()) {
       normDiffana(prefix, workflowOutputDir);
     }
   }
@@ -154,15 +160,11 @@ public class EasyContrasts1 extends AbstractEasyContrasts {
 
   EasyContrasts1(final RExecutor executor, final String stepId,
       final Design design, final Experiment experiment,
-      final Map<String, File> sampleFiles, final boolean normFig,
-      final boolean diffanaFig, final boolean normDiffana,
-      final boolean diffana, final SizeFactorsType sizeFactorsType,
-      final FitType fitType, final StatisticTest statisticTest,
+      final Map<String, File> sampleFiles, final DESeq2Parameters parameters,
       boolean saveRScripts) {
 
-    super(executor, stepId, design, experiment, sampleFiles, normFig,
-        diffanaFig, normDiffana, diffana, sizeFactorsType, fitType,
-        statisticTest, saveRScripts);
+    super(executor, stepId, design, experiment, sampleFiles, parameters,
+        saveRScripts);
   }
 
 }
