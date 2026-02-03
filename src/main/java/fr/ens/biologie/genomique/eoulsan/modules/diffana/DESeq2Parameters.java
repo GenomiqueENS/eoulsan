@@ -22,7 +22,12 @@ public class DESeq2Parameters {
   private FitType fitType = FitType.PARAMETRIC;
   private StatisticTest statisticTest = StatisticTest.WALD;
   private boolean expHeader = true;
-  private int easyContrastVersion = 1;
+  private boolean weightContrast = false;
+  private String logoUrl;
+  private String authorName;
+  private String authorEmail;
+
+  private int easyContrastVersion = 2;
 
   private boolean frozen = false;
 
@@ -242,6 +247,38 @@ public class DESeq2Parameters {
     return this.easyContrastVersion;
   }
 
+  /**
+   * Get the weight contrast.
+   * @return the weightContrast
+   */
+  public boolean isWeightContrast() {
+    return weightContrast;
+  }
+
+  /**
+   * Get the URL of the logo.
+   * @return the logoUrl
+   */
+  public String getLogoUrl() {
+    return logoUrl;
+  }
+
+  /**
+   * Get the author Name.
+   * @return the author name
+   */
+  public String getAuthorName() {
+    return authorName;
+  }
+
+  /**
+   * Get the author email
+   * @return the author email
+   */
+  public String getAuthorEmail() {
+    return authorEmail;
+  }
+
   //
   // Setters
   //
@@ -354,12 +391,74 @@ public class DESeq2Parameters {
   }
 
   /**
-   * Set the easy contrasts version to use
+   * Set the easy contrasts version to use.
    * @param version the version
    */
   public void setEasyContrastsVersion(int version) {
 
+    if (this.frozen) {
+      throw new IllegalStateException();
+    }
+
     this.easyContrastVersion = version;
+  }
+
+  /**
+   * Set the weight contrast to use.
+   * @param weightContrast the weightContrast to set
+   */
+  public void setWeightContrast(boolean weightContrast) {
+
+    if (this.frozen) {
+      throw new IllegalStateException();
+    }
+
+    this.weightContrast = weightContrast;
+  }
+
+  /**
+   * Set the URL of the logo to use.
+   * @param logoUrl the logoUrl to set
+   */
+  public void setLogoUrl(String logoUrl) {
+
+    requireNonNull(authorEmail);
+
+    if (this.frozen) {
+      throw new IllegalStateException();
+    }
+
+    this.logoUrl = logoUrl;
+  }
+
+  /**
+   * Set the author name.
+   * @param authorName the authorName to set
+   */
+  public void setAuthorName(String authorName) {
+
+    requireNonNull(authorEmail);
+
+    if (this.frozen) {
+      throw new IllegalStateException();
+    }
+
+    this.authorName = authorName;
+  }
+
+  /**
+   * Set the author email.
+   * @param authorEmail the authormail to set
+   */
+  public void setAuthorEmail(String authorEmail) {
+
+    requireNonNull(authorEmail);
+
+    if (this.frozen) {
+      throw new IllegalStateException();
+    }
+
+    this.authorEmail = authorEmail;
   }
 
   /**

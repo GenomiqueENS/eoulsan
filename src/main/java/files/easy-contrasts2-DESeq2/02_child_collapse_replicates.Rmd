@@ -1,0 +1,100 @@
+
+<!--
+Child document for 01_normDiffana.Rmd.
+The environment is inherited from the parent file.
+-->
+
+# Collapsing technical replicates
+
+The aim of this section is to pool the technical replicates. The raw counts for samples bearing the same value in the `RepTechGroup` column are summed.
+
+```{r dl_02, echo = FALSE, results = "asis"}
+dl_file = "./02_child_collapse_replicates.Rmd"
+
+cat(sprintf('The code behind this section can be downloaded at:
+    <a download="%s" href="data:%s;base64,%s">
+    <button class="btn-custom">Collapse Replicates file (Rmd)</button>
+    </a>',
+    basename(dl_file),
+    "text/csv",
+    base64enc::base64encode(dl_file)))
+```
+
+## Data handling
+
+We collapse the technical replicates by summing their raw count for each gene. We display the top left corner of this matrix, meaning 5 genes and 5 samples. As for the raw counts, collapsed count data are integer values.
+
+```{r collapse_replicates_deseq2}
+dds = DESeq2::collapseReplicates(dds,
+                                 groupby = dds$RepTechGroup)
+
+DESeq2::counts(dds)[c(1:5), c(1:5)] %>%
+  knitr::kable("html") %>%
+  kableExtra::kable_styling(full_width = FALSE)
+```
+
+We update the design matrix accordingly.
+
+```{r collapse_design}
+design = design %>%
+  dplyr::filter(!duplicated(RepTechGroup)) %>%
+  base::droplevels()
+```
+
+We save the pooled count matrix as a TSV file.
+
+```{r save_pooled_count_matrix}
+filename = paste0(prefix, projectName,
+                  "-normalisation_rawPooledCountMatrix.tsv")
+
+saveTable(DESeq2::counts(dds),
+          fileName = filename)
+```
+
+Output file name:<br>*`r filename`*
+
+## Visualisation
+
+### Pooled counts barplot
+
+This figure displays the total number of reads per sample, where technical replicates have been pooled.
+
+```{r fig-normalisation_barplot_counts_pooled, fig.width = 10, fig.height = 6}
+colSums(DESeq2::counts(dds)) %>%
+  data.frame(sample = factor(names(.), levels = levels(design$RepTechGroup)),
+             read_counts = .) %>%
+  dplyr::left_join(x = .,
+                   y = design[, c("RepTechGroup", "Condition")],
+                   by = c("sample" = "RepTechGroup")) %>%
+  # Plot
+  plotBarplot(.,
+              y_column = "read_counts",
+              y_title = "Total read counts",
+              fig_title = paste0("Pooled read counts - ", projectName))
+```
+
+### Pooled counts boxplot
+
+This figure displays, as a boxplot, the number of counts for each gene, per sample, where technical replicates have been pooled.
+
+```{r fig-normalisation_boxplot_count_pooled, fig.width = 10, fig.height = 6}
+log2(DESeq2::counts(dds)+1) %>%
+  reshape2::melt() %>%
+  `colnames<-`(c("gene_ID", "sample", "log2_counts")) %>%
+  dplyr::mutate(sample = factor(sample, levels = levels(design$RepTechGroup))) %>%
+  dplyr::left_join(x = .,
+                   y = unique(design[, c("RepTechGroup", "Condition")]),
+                   by = c("sample" = "RepTechGroup")) %>%
+  # Plot
+  plotBoxplot(.,
+              y_column = "log2_counts",
+              y_title = "log_2 (counts+1)",
+              fig_title = paste0("Pooled count distribution - ", projectName))
+```
+
+------------------------------------------------------------------------
+
+<!--
+End of the child file.
+Coming back to the parent file.
+-->

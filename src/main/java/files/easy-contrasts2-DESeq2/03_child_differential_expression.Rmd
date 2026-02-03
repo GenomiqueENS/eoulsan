@@ -1,0 +1,429 @@
+
+<!--
+Child document for 01_normDiffana.Rmd.
+The environment is inherited from the parent file.
+-->
+
+# Differential analysis
+
+The aim of this section is to perform the differential expression analysis.
+
+```{r dl_03, echo = FALSE, results = "asis"}
+dl_file = "./03_child_differential_expression.Rmd"
+
+cat(sprintf('The code behind this section can be downloaded at:
+    <a download="%s" href="data:%s;base64,%s">
+    <button class="btn-custom">Differential Expression Analysis file (Rmd)</button>
+    </a>',
+    basename(dl_file),
+    "text/csv",
+    base64enc::base64encode(dl_file)))
+```
+
+## Dispersion estimates
+
+After the normalisation, the first step of the differential expression analysis is the estimation of gene-wise dispersion. The dispersion estimates reflect the variability in the expression of a given gene across samples.
+
+```{r estimateDispersions}
+dds = DESeq2::estimateDispersions(dds,
+                                  fitType = fitType)
+```
+
+## Dispersion plot
+
+We visualise the dispersion estimates of each gene (black dots) as a function of the mean of normalised counts across samples. The red curve corresponds to the expected dispersion value for genes, based on their mean normalised counts. Then, a shrinkage of the gene-wise dispersion estimates consists in computed a final dispersion value for each gene (blue dots). This is important to reduce the false positives in the differential expression analysis.
+
+```{r fig-diffana_plot_disp, fig.width = 6, fig.height = 6}
+DESeq2::plotDispEsts(
+  dds,
+  main = paste0("Dispersion estimation scatter plot\n", projectName))
+```
+
+For more details, please visit:
+
+[https://hbctraining.github.io/DGE_workshop/lessons/04_DGE_DESeq2_analysis.html](https://hbctraining.github.io/DGE_workshop/lessons/04_DGE_DESeq2_analysis.html)
+
+## Generalized linear model
+
+The last step of the differential expression analysis pipeline is to fit a model to each gene to compute their log<sub>2</sub> fold change. A **`r statisticTest`** statistical test is then used to evaluate if the values are distinct from 0, meaning if the genes are differentially expressed or not.
+
+```{r contrast_deseq_analysis}
+dds = DESeq2::DESeq(dds,
+                    test = statisticTest,
+                    fitType = fitType,
+                    betaPrior = FALSE)
+```
+
+# Results
+
+The aim of this section is to extract the results for each paired comparison and build relevant figures.
+
+## List of comparisons {-}
+
+The table below is a summary of the conditions of interest.
+
+```{r get_comparisons_COMPLEX, class.source = "fold-hide", echo = FALSE, eval = complexMode}
+comparisonFile = read.table(comparisonPath,
+                            sep = "\t",
+                            header = FALSE,
+                            dec = ".",
+                            stringsAsFactors = FALSE)
+colnames(comparisonFile) = c("name", "pairwise_comparison")
+
+#------ Get all the columns of interest in the model
+# eg:
+# sexe, genotype
+columns_in_model = deseqModel %>%
+  # Remove the tilde
+  gsub(x = .,
+       pattern = "~",
+       replacement = "") %>%
+  # Remplace non-alphanumeric by a comma
+  gsub(x = .,
+       pattern = "[^A-Za-z0-9]",
+       replacement = ",") %>%
+  # Split by comma
+  stringr::str_split(string = .,
+                     pattern = ",") %>%
+  unlist() %>%
+  unique()
+
+#------ Get all the values of interest from these columns
+# eg:
+#   column_name column_value      nameValue
+# 1        sexe            F          sexeF
+# 2        sexe            M          sexeM
+# 3    genotype       HETERO genotypeHETERO
+# 4    genotype         HOMO   genotypeHOMO
+all_values_by_column = lapply(columns_in_model, FUN = function(one_column) {
+  # All values in this column (eg. M, F)
+  all_values = design[, one_column] %>%
+    as.character() %>%
+    unique()
+
+  # Paste the column name (eg. sexeM, sexeF)
+  all_values = data.frame(column_name = one_column,
+                          column_value = all_values) %>%
+    dplyr::mutate(nameValue = paste0(column_name,
+                                     column_value))
+
+  return(all_values)
+}) %>% do.call(rbind.data.frame, .)
+
+#------ Cartesian product of the rows
+tracking_table = base::merge(all_values_by_column,
+                             all_values_by_column,
+                             by = NULL,
+                             suffixes = c("_1","_2")) %>%
+  dplyr::filter(nameValue_1 != nameValue_2)
+
+#------ Pairwise comparison
+# eg:
+#                          group1               group2     pairwise_comparison
+# 1          list(c('sexe', 'M')) list(c('sexe', 'F'))          sexeM_vs_sexeF
+# 2 list(c('genotype', 'HETERO')) list(c('sexe', 'F')) genotypeHETERO_vs_sexeF
+# 3   list(c('genotype', 'HOMO')) list(c('sexe', 'F'))   genotypeHOMO_vs_sexeF
+# 4          list(c('sexe', 'F')) list(c('sexe', 'M'))          sexeF_vs_sexeM
+pairwise_comp_simple = tracking_table %>%
+  dplyr::mutate(pairwise_comparison = paste0(nameValue_1, "_vs_", nameValue_2)) %>%
+  dplyr::mutate(group1 = paste0("list(c('", column_name_1, "', '",
+                                column_value_1, "'))")) %>%
+  dplyr::mutate(group2 = paste0("list(c('", column_name_2, "', '",
+                                column_value_2, "'))")) %>%
+  dplyr::select(group1, group2, pairwise_comparison)
+
+#------ Pairwise comparison level 2
+# eg:
+#                                          group1                               group2                 pairwise_comparison
+# 1 list(c('genotype', 'HETERO'), c('sexe', 'F')) list(c('sexe', 'M'), c('sexe', 'F')) genotypeHETERO%sexeF_vs_sexeM%sexeF
+# 2   list(c('genotype', 'HOMO'), c('sexe', 'F')) list(c('sexe', 'M'), c('sexe', 'F'))   genotypeHOMO%sexeF_vs_sexeM%sexeF
+# 3          list(c('sexe', 'F'), c('sexe', 'M')) list(c('sexe', 'M'), c('sexe', 'F'))          sexeF%sexeM_vs_sexeM%sexeF
+# 4 list(c('genotype', 'HETERO'), c('sexe', 'M')) list(c('sexe', 'M'), c('sexe', 'F')) genotypeHETERO%sexeM_vs_sexeM%sexeF
+# 5   list(c('genotype', 'HOMO'), c('sexe', 'M')) list(c('sexe', 'M'), c('sexe', 'F'))   genotypeHOMO%sexeM_vs_sexeM%sexeF
+# 6 list(c('sexe', 'F'), c('genotype', 'HETERO')) list(c('sexe', 'M'), c('sexe', 'F')) sexeF%genotypeHETERO_vs_sexeM%sexeF
+tracking_table_combined_1 = base::merge(all_values_by_column,
+                                        all_values_by_column,
+                                        by = NULL,
+                                        suffixes = c("_1.1","_1.2")) %>%
+  dplyr::filter(nameValue_1.1 != nameValue_1.2) %>%
+  dplyr::mutate(combination_1 = paste0(nameValue_1.1, "%", nameValue_1.2))
+tracking_table_combined_2 = base::merge(all_values_by_column,
+                                        all_values_by_column,
+                                        by = NULL,
+                                        suffixes = c("_2.1","_2.2")) %>%
+  dplyr::filter(nameValue_2.1 != nameValue_2.2) %>%
+  dplyr::mutate(combination_2 = paste0(nameValue_2.1, "%", nameValue_2.2))
+
+pairwise_comp_complex = base::merge(tracking_table_combined_1,
+                                    tracking_table_combined_2,
+                                    by = NULL,
+                                    suffixes = NULL) %>%
+  dplyr::filter(combination_1 != combination_2) %>%
+  dplyr::mutate(pairwise_comparison = paste0(combination_1, "_vs_", combination_2)) %>%
+  dplyr::mutate(group1 = paste0("list(c('", column_name_1.1, "', '",
+                                column_value_1.1, "'), c('",
+                                column_name_1.2, "', '",
+                                column_value_1.2, "'))")) %>%
+  dplyr::mutate(group2 = paste0("list(c('", column_name_2.1, "', '",
+                                column_value_2.1, "'), c('",
+                                column_name_2.2, "', '",
+                                column_value_2.2, "'))")) %>%
+  dplyr::select(group1, group2, pairwise_comparison)
+
+#------ Merge table
+comparison_df = rbind.data.frame(pairwise_comp_simple,
+                                 pairwise_comp_complex) %>%
+  # Subset the comparison of interest
+  dplyr::filter(pairwise_comparison %in% comparisonFile$pairwise_comparison) %>%
+  # Add name
+  dplyr::left_join(., comparisonFile, by = "pairwise_comparison")
+
+#------ Add more details
+comparison_df[, c("contrast", "samples_group1", "samples_group2")] =
+  apply(comparison_df, 1, FUN = function(one_row) {
+    group1 = one_row[["group1"]]
+    group2 = one_row[["group2"]]
+
+    # Returns a list of length 3 (contrast vector, samples in group1, 2)
+    contrast_res = buildContrast(dds = dds,
+                                 group1 = eval(parse(text = group1)),
+                                 group2 = eval(parse(text = group2)),
+                                 weighted = weightContrast)
+    contrast_res$contrast = paste0(contrast_res$contrast, collapse = ",")
+    contrast_res$samples_group1 = paste0(contrast_res$samples_group1, collapse = ",")
+    contrast_res$samples_group2 = paste0(contrast_res$samples_group2, collapse = ",")
+
+    # As vector
+    contrast_res = unlist(contrast_res)
+
+    return(contrast_res)
+  }) %>% t() %>% as.data.frame()
+
+#------ Print
+comparison_df %>%
+  dplyr::select(name, pairwise_comparison) %>%
+  `colnames<-`(c("", "Formal definition")) %>%
+  knitr::kable("html") %>%
+  kableExtra::kable_styling(full_width = FALSE)
+```
+
+```{r get_comparisons_SIMPLE, class.source = "fold-hide", echo = FALSE, eval = !complexMode, results = 'asis'}
+#------ Summary of Condition and Reference
+condition_reference = design %>%
+  dplyr::select(Condition, Reference) %>%
+  # Unique rows (precautionary measure)
+  unique() %>%
+  # Keep the max Reference numeric value for each condition (precautionary measure)
+  dplyr::group_by(Condition) %>%
+  dplyr::filter(Reference == max(Reference)) %>%
+  # Arrange
+  dplyr::arrange(Reference, Condition) %>%
+  as.data.frame()
+
+#------ Print
+condition_reference %>%
+  knitr::kable("html") %>%
+  kableExtra::kable_styling(full_width = FALSE)
+
+#------ Text
+cat("The values in the `Reference` column are used to define the pairwise comparisons:\n\n")
+cat("- **Reference < 0**: the samples were considered by the normalisation step but not by the differential expression analysis\n")
+cat("- **Reference = 0**: the condition associated with these samples is considered as a reference in the differential expression analysis\n")
+cat("- **Reference > 0**: the condition associated with these samples is compared to each condition having a lower reference value\n\n")
+cat("The table below summarised the paired comparisons (condition1 vs condition2) of interest.\n\n")
+
+#------ Remove conditions to be ignored (Reference < 0)
+condition_reference = condition_reference %>%
+  dplyr::filter(Reference >= 0)
+
+#------ Build the pairwise comparison dataframe
+comparison_df = data.frame(
+  condition1 = rep(condition_reference$Condition,
+                   nrow(condition_reference)) %>% sort(),
+  condition2 = rep(condition_reference$Condition,
+                   nrow(condition_reference))) %>%
+  # Add the Reference value for condition1
+  dplyr::left_join(.,
+                   y = condition_reference,
+                   by = c("condition1" = "Condition")) %>%
+  # Add the Reference value for condition2
+  dplyr::left_join(.,
+                   y = condition_reference,
+                   by = c("condition2" = "Condition")) %>%
+  `colnames<-`(c("condition1", "condition2", "reference1", "reference2")) %>%
+  # Keep only the comparisons with reference1 < reference2
+  dplyr::filter(reference1 > reference2 | reference2 == 0) %>%
+  # Remove comparisons when reference1 == 0
+  dplyr::filter(reference1 != 0) %>%
+  # Arrange
+  dplyr::arrange(reference2, condition2, reference1, condition1) %>%
+  # Style
+  dplyr::select(condition1, condition2)
+
+if (nrow(comparison_df) > 0) {
+  rownames(comparison_df) = paste0("Comparison ", c(1:nrow(comparison_df)))
+}
+
+#------ Print
+comparison_df %>%
+  knitr::kable("html") %>%
+  kableExtra::kable_styling(full_width = FALSE)
+```
+
+```{r maybe_last_chunk, eval = (nrow(comparison_df) == 0), echo = FALSE, results = 'asis'}
+cat("There is no pairwise comparison to make the figures for.\n")
+```
+
+```{r comparison_checker, echo = FALSE, results = 'asis', eval = complexMode}
+# Check if any comparison from the comparisonFile is missing
+missing_comparison = comparisonFile$pairwise_comparison[
+  !(comparisonFile$pairwise_comparison %in%
+      comparison_df$pairwise_comparison)]
+
+if (length(missing_comparison) > 0) {
+  if (leaveOnError) {
+    stop(c("Some comparison(s) from the comparison file cannot be interpreted!\n",
+           paste0(missing_comparison, sep = "\n"), "\n"))
+  } else {
+    cat(c("Some comparison(s) from the comparison file cannot be interpreted!<br>
+        <span style='color:red; font-weight:bold;'>",
+        paste0(missing_comparison, sep = "<br>"),
+        "</span><br>"))
+  }
+}
+
+# Check if there are duplicated contrast vectors
+dup_contrasts = duplicated(comparison_df$contrast)
+if (any(dup_contrasts)) {
+  # All duplicated values, including the first occurrence
+  all_dup = dup_contrasts |
+    duplicated(comparison_df$contrast, fromLast = TRUE)
+
+  # Message to display
+  to_display = lapply(c(1:nrow(comparison_df)), FUN = function(row_i) {
+    # Get values
+    pairwise_comparison_i = comparison_df[row_i, "pairwise_comparison"]
+    contrast_i = comparison_df[row_i, "contrast"]
+    problem_i = ifelse(all_dup[row_i], yes = " <-------", no = "")
+
+    # Build message
+    if (leaveOnError) {
+      msg_i = paste0("*", pairwise_comparison_i, ": ",
+                     contrast_i, problem_i, "\n")
+    } else {
+      msg_i = paste0("*", pairwise_comparison_i, ": ",
+                     contrast_i, problem_i, "<br>")
+    }
+
+    return(msg_i)
+  }) %>% unlist()
+
+  if (leaveOnError) {
+    stop(c("ERROR - There are duplicated contrast vectors.\n",
+           "The design model might be wrong regarding the comparison to analyse.\n",
+           "Below is the list of comparisons and associated contrast vectors.\n\n",
+           paste0(to_display), "\n"))
+  } else {
+    cat(c("<span style='color:red; font-weight:bold;'>ISSUE</span> -
+          There are duplicated contrast vectors.<br>",
+          "The design model might be wrong regarding the comparison to analyse.<br>",
+          "Below is the list of comparisons and associated contrast vectors.<br><br>",
+          paste0(to_display), "<br>"))
+  }
+}
+```
+
+------------------------------------------------------------------------
+
+```{r dl_04, echo = FALSE, results = "asis", eval = (nrow(comparison_df) > 0)}
+dl_file = "./04_child_pairwise_comparison.Rmd"
+
+cat(sprintf('The code behind each section below can be downloaded at:
+    <a download="%s" href="data:%s;base64,%s">
+    <button class="btn-custom">Pairwise Comparison Results file (Rmd)</button>
+    </a>',
+    basename(dl_file),
+    "text/csv",
+    base64enc::base64encode(dl_file)))
+```
+
+<a id="results_subsection"></a>
+
+<!-- Loop -->
+```{r loop_anadiff, echo = FALSE, results = 'asis', eval = (nrow(comparison_df) > 0)}
+options(knitr.duplicate.label = "allow")
+
+for(i in c(1:nrow(comparison_df))) {
+  # Parameters
+  if (complexMode) {
+    #-------------------------------- Mode complex
+    #-- Condition of interest
+    comparison_name = as.character(comparison_df[i, "name"]) # section and figures title
+
+    comparison_name_parts = stringr::str_split(string = comparison_name,
+                                               pattern = "_vs_")[[1]]
+    condition1 = comparison_name_parts[1]
+    condition2 = comparison_name_parts[2]
+    rm(comparison_name_parts)
+
+    #-- Contrast vector definition (complex design)
+    comparison_contrast = stringr::str_split(
+      string = comparison_df[i, "contrast"],
+      pattern = ",")[[1]]
+    comparison_contrast = setNames(nm = DESeq2::resultsNames(dds),
+                                   as.numeric(comparison_contrast))
+
+    #-- To filter the expression matrix
+    comparison_samples_group1 = stringr::str_split(
+      string = comparison_df[i, "samples_group1"],
+      pattern = ",")[[1]]
+    comparison_samples_group2 = stringr::str_split(
+      string = comparison_df[i, "samples_group2"],
+      pattern = ",")[[1]]
+  } else {
+    #-------------------------------- Mode simple
+    #-- Condition of interest
+    condition1 = as.character(comparison_df[i, "condition1"])
+    condition2 = as.character(comparison_df[i, "condition2"])
+    comparison_name = paste0(condition1, "_vs_", condition2)
+
+    #-- Contrast vector definition (simple design)
+    comparison_contrast = c("Condition", condition1, condition2)
+
+    #-- To filter the expression matrix
+    comparison_samples_group1 = design %>%
+      dplyr::filter(Condition %in% condition1) %>%
+      dplyr::pull(RepTechGroup) %>%
+      as.character()
+    comparison_samples_group2 = design %>%
+      dplyr::filter(Condition %in% condition2) %>%
+      dplyr::pull(RepTechGroup) %>%
+      as.character()
+  }
+
+  # Figure subtitle
+  comparison_subtitle = stringr::str_replace(string = comparison_name,
+                                             pattern = "_",
+                                             replacement = " ")
+
+  # Section title
+  cat("\n##", comparison_subtitle, "\n")
+
+  # Unique name for the save section
+  save_results_table = paste0("this_title_is_unique_", i)
+
+  # Content
+  res = knitr::knit_child(
+    input = '04_child_pairwise_comparison.Rmd',
+    quiet = TRUE,
+    options = list(fig.path = paste0(prefix, "figures/", comparison_name, "/")))
+
+  # Linebreak
+  cat(res, sep = '\n')
+}
+```
+
+<!--
+End of the child file.
+Coming back to the parent file.
+-->

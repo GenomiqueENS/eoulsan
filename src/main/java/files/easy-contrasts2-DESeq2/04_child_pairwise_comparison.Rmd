@@ -1,0 +1,542 @@
+
+<!--
+Child document for 03_child_differential_expression.Rmd
+The environment is inherited from the parent file.
+The title of this section is a level 2 header.
+High-level leaders here should therefore by level 3.
+-->
+
+Details:
+
+* number of samples in the **`r condition1`** condition: **`r length(comparison_samples_group1)`**
+* number of samples in the **`r condition2`** condition: **`r length(comparison_samples_group2)`**
+
+```{r display_comparison_contrast, echo = FALSE, results = 'asis', eval = complexMode}
+cat("* contrast matrix to extract the results:\n")
+
+comparison_contrast %>%
+  t() %>% as.data.frame() %>%
+  knitr::kable("html") %>%
+  kableExtra::kable_styling(full_width = FALSE)
+
+cat("\n")
+```
+
+### Results table
+
+We extract the dataframe containing the differential analysis results between condition **`r condition1`** and condition **`r condition2`**. We display the 6 first rows of this table. The complete table is saved as a TSV file ([quick access](#`r save_results_table`)).
+
+```{r extract_res}
+res = DESeq2::results(dds,
+                      contrast = comparison_contrast) %>%
+  as.data.frame() %>%
+  dplyr::mutate(ID = rownames(.)) %>%
+  dplyr::relocate(ID)
+
+head(res[, -1]) %>%
+  knitr::kable("html") %>%
+  kableExtra::kable_styling(full_width = FALSE)
+```
+
+
+Description of the columns:
+
+- The rownames correspond to the gene identifiers.
+- **`baseMean`**: Average normalised expression of the gene across all samples, after correcting for sequencing depth (size factors). It informs about how much the gene is expressed overall.
+- **`log2FoldChange`**: log<sub>2</sub> of the ratio of the average expression of samples from the condition **`r condition1`** to samples from the condition **`r condition2`**. Positive values correspond to a higher expression in the condition **`r condition1`**, and conversely. A value of 1 means that the gene is twice more expression in the condition **`r condition1`** compared to the condition **`r condition2`**.
+- **`lfcSE`**: Standard error of the log<sub>2</sub> fold change. It reflects the uncertainty in the estimated fold change.
+- **`stat`**: Test statistic, corresponding to the ratio between `log2FoldChange` and `lfcSE`.
+- **`pvalue`**: Raw p-value assessing if the log<sub>2</sub> fold change is different from 0 or not, meaning if the gene is differentially expressed or not.
+- **`padj`**: Adjusted p-value, corrected for multiple testing using the Benjamini-Hochberg method. It controls the false discovery rate and must be used to decide significance.
+
+### p-value distribution
+
+```{r stats_pvalue, echo = FALSE}
+nb_pval = table(is.na(res$pvalue))
+prop_pval = 100*round(prop.table(nb_pval), 2)
+```
+
+Among **`r nrow(res)`** genes, there are **`r nb_pval[1]`** (**`r prop_pval[1]`**%) genes with an available p-value and **`r nb_pval[2]`** (**`r prop_pval[2]`**%) with a non-available (NA) p-value. Below is the summary for the available values and a figure depicting the distribution of the **raw** p-values.
+
+:::::: {.cols data-latex=""}
+::: {.col-center data-latex="{0.20\textwidth}"}
+```{r summary_pvalue, echo = FALSE}
+options(scipen = 999)
+
+summary(res$pvalue) %>%
+  t() %>%
+  as.data.frame() %>%
+  dplyr::select(Var2, Freq) %>%
+  dplyr::filter(Var2 != "NA's") %>%
+  `colnames<-`(c("", "Value")) %>%
+  knitr::kable("html",
+               align = c("l", "c")) %>%
+  kableExtra::kable_styling(full_width = FALSE)
+```
+:::
+
+::: {.col-right data-latex="{0.75\textwidth}"}
+```{r fig-diffana_plot_pvalue, fig.width = 6, fig.height = 4}
+ggplot2::ggplot(res, aes(x = pvalue)) +
+  ggplot2::geom_histogram(col = "black", fill = "#A20F58", bins = 50) +
+  # Style
+  ggplot2::labs(x = "Adjusted p-value",
+                y = "Number of genes",
+                title = "Raw p-value distribution",
+                subtitle = comparison_subtitle) +
+  ggplot2::scale_y_continuous(expand = c(0,0)) +
+  ggplot2::theme_classic() +
+  ggplot2::theme(plot.title = element_text(hjust = 0.5),
+                 plot.subtitle = element_text(hjust = 0.5),
+                 # Transparent background
+                 panel.background = ggplot2::element_blank(),
+                 plot.background = ggplot2::element_blank(),
+                 legend.background = ggplot2::element_blank())
+```
+:::
+::::::
+
+
+### Adjusted p-value distribution
+
+```{r stats_padj, echo = FALSE}
+nb_padj = table(is.na(res$padj))
+prop_padj = 100*round(prop.table(nb_padj), 2)
+```
+
+Among **`r nrow(res)`** genes, there are **`r nb_padj[1]`** (**`r prop_padj[1]`**%) genes with an available adjusted p-value and **`r nb_padj[2]`** (**`r prop_padj[2]`**%) with a non-available (NA) adjusted p-value. Below is the summary for the available values and a figure depicting the distribution of the **adjusted** p-values.
+
+:::::: {.cols data-latex=""}
+::: {.col-center data-latex="{0.20\textwidth}"}
+```{r summary_padj, echo = FALSE}
+options(scipen = 999)
+
+summary(res$padj) %>%
+  t() %>%
+  as.data.frame() %>%
+  dplyr::select(Var2, Freq) %>%
+  dplyr::filter(Var2 != "NA's") %>%
+  `colnames<-`(c("", "Value")) %>%
+  knitr::kable("html",
+               align = c("l", "c")) %>%
+  kableExtra::kable_styling(full_width = FALSE)
+```
+:::
+
+::: {.col-right data-latex="{0.75\textwidth}"}
+```{r fig-diffana_plot_padj, fig.width = 6, fig.height = 4}
+ggplot2::ggplot(res, aes(x = padj)) +
+  ggplot2::geom_histogram(col = "black", fill = "#77B241", bins = 50) +
+  # Style
+  ggplot2::labs(x = "Adjusted p-value",
+                y = "Number of genes",
+                title = "Adjusted p-value distribution",
+                subtitle = comparison_subtitle) +
+  ggplot2::scale_y_continuous(expand = c(0,0)) +
+  ggplot2::theme_classic() +
+  ggplot2::theme(plot.title = element_text(hjust = 0.5),
+                 plot.subtitle = element_text(hjust = 0.5),
+                 # Transparent background
+                 panel.background = ggplot2::element_blank(),
+                 plot.background = ggplot2::element_blank(),
+                 legend.background = ggplot2::element_blank())
+```
+:::
+::::::
+
+
+### MA plot
+
+The MA plot represents the log<sub>2</sub> fold change of each gene (dot) as a function of their mean normalised expression value across all samples. Dots are colored based on the significance of the statistical test, using a significant threshold of 0.05 for the adjusted p-value (`padj`).
+
+```{r fig-diffana_MA_plot, fig.width = 10, fig.height = 6}
+ggplot2::ggplot(res, aes(x = baseMean, y = log2FoldChange,
+                         col = padj < 0.05)) +
+  ggplot2::geom_point(size = 1) +
+  ggplot2::geom_hline(yintercept = 0, lty = 1, col = "lightgray") +
+  ggplot2::scale_color_manual(name = "padj < 0.05",
+                              breaks = c(FALSE, TRUE, NA),
+                              values = c("black", "#D32A24", "lightgray"),
+                              na.value = "lightgray") +
+  # Style
+  ggplot2::scale_x_log10() +
+  ggplot2::labs(x = "Mean of normalised counts",
+                y = "Log_2 fold change",
+                title = "MA plot",
+                subtitle = comparison_subtitle) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = element_text(hjust = 0.5),
+                 plot.subtitle = element_text(hjust = 0.5),
+                 # Transparent background
+                 panel.background = ggplot2::element_blank(),
+                 plot.background = ggplot2::element_blank(),
+                 legend.background = ggplot2::element_blank())
+```
+
+For more details, please visit:
+
+[https://hbctraining.github.io/DGE_workshop/lessons/05_DGE_DESeq2_analysis2.html](https://hbctraining.github.io/DGE_workshop/lessons/05_DGE_DESeq2_analysis2.html)
+
+
+### Number of differentially expressed genes
+
+We compute the number of significantly differentially expressed genes for varying significant adjusted p-value thresholds.
+
+```{r nb_DE_genes}
+signif_limit_vec = c(1e-6, 1e-5, 1e-4, 1e-3, 0.01, 0.05)
+nb_DE_genes = lapply(signif_limit_vec, FUN = function(signif_limit) {
+  nb_genes = res %>%
+    # Differentially expressed genes
+    dplyr::filter(abs(log2FoldChange) > 1) %>%
+    # Significantly, based on the threshold
+    dplyr::filter(padj < signif_limit) %>%
+    # Number of genes
+    nrow()
+
+  return(nb_genes)
+}) %>% unlist() %>%
+  data.frame(signif_limit = signif_limit_vec,
+             nb_genes = .)
+```
+
+The barplot indicates the number of significantly differentially expressed genes according to the significant adjusted p-value threshold. Only genes with a log<sub>2</sub> fold change greater than 1 or smaller than -1 are considered.
+
+```{r echo = FALSE, results = "asis"}
+min_genes = min(nb_DE_genes$nb_genes)
+max_genes = max(nb_DE_genes$nb_genes)
+
+# Cases on the number of genes for the lowest p-value
+if (min_genes == 0) {
+  if (max_genes == 0) {
+    text_to_print = "Regardless the p-value threshold, there is no significantly differentially expressed genes."
+  } else {
+    text_to_print = "Considering an adjusted p-value threshold of 1e-6, there is no significantly differentially expressed genes."
+  }
+} else if (min_genes == 1) {
+  text_to_print = paste0("Considering an adjusted p-value threshold of 1e-6, **",
+                         min_genes, "** gene is significantly differentially expressed.")
+} else {
+  text_to_print = paste0("Considering an adjusted p-value threshold of 1e-6, **",
+                         min_genes, "** genes are significantly differentially expressed.")
+}
+
+# Cases on the number of genes for the highest p-value
+if (max_genes == min_genes & min_genes != 0) {
+  text_to_print = paste(c(text_to_print,
+                          "This number does not change when considering a p-value of 0.05."))
+} else if (max_genes == 1) {
+  text_to_print = paste(c(text_to_print,
+                          "When considering an adjusted p-value threshold of 0.05, **",
+                          max_genes, "** gene is significantly differentially expressed."))
+} else {
+  text_to_print = paste(c(text_to_print,
+                          "When considering an adjusted p-value threshold of 0.05, **",
+                          max_genes, "** genes are significantly differentially expressed, meaning, **",
+                          max_genes - min_genes,
+                          "** additional genes."))
+}
+
+cat(paste0(text_to_print, "\n"))
+```
+
+```{r fig-diffana_plot_differentially_expressed_genes, fig.width = 10, fig.height = 6}
+p = ggplot2::ggplot(nb_DE_genes, aes(x = signif_limit, y = nb_genes)) +
+  ggplot2::geom_bar(stat = "identity", col = "black", fill = "#A3ADB8") +
+  ggplot2::geom_label(aes(x = signif_limit,
+                          y = nb_genes + 0.03*nb_DE_genes[6, 2],
+                          label = nb_genes),
+                      linewidth = 0, size = 5, fill = NA) +
+  # Style
+  ggplot2::scale_x_log10(breaks = signif_limit_vec,
+                         labels = signif_limit_vec) +
+  ggplot2::labs(x = "Adjusted p-value threshold",
+                y = "Number of differentially expressed genes",
+                title = "Impact of the adjusted p-value threshold on the number of differentially expressed genes",
+                subtitle = comparison_subtitle) +
+  ggplot2::theme_classic() +
+  ggplot2::theme(plot.title = element_text(hjust = 0.5),
+                 plot.subtitle = element_text(hjust = 0.5),
+                 # Transparent background
+                 panel.background = ggplot2::element_blank(),
+                 plot.background = ggplot2::element_blank(),
+                 legend.background = ggplot2::element_blank())
+
+if (nb_DE_genes[6, 2] != 0) {
+  p = p +
+    ggplot2::scale_y_continuous(expand = c(0,0),
+                                limits = c(0, 1.1*nb_DE_genes[6, 2]))
+}
+
+p
+```
+
+### Volcano plot {.tabset}
+
+The volcano plot represents the adjusted p-value as a function of the log<sub>2</sub> fold change between condition **`r condition1`** and condition **`r condition2`**. We label a maximum of 10 genes in both directions. We identify such genes.
+
+```{r genes_for_volcano_plot}
+padj_threshold = 0.05
+log2FC_threshold = 2
+
+genes_up = res %>%
+  dplyr::filter(padj < padj_threshold) %>%
+  dplyr::filter(log2FoldChange > 0) %>%
+  dplyr::top_n(n = 10, wt = log2FoldChange) %>%
+  dplyr::pull(ID)
+
+genes_dn = res %>%
+  dplyr::filter(padj < padj_threshold) %>%
+  dplyr::filter(log2FoldChange < 0) %>%
+  dplyr::top_n(n = 10, wt = -log2FoldChange) %>%
+  dplyr::pull(ID)
+```
+
+We label **`r length(genes_up)`** significantly over-regulated and **`r length(genes_dn)`** significantly down-regulated genes, considering an adjusted p-value of `r padj_threshold`.
+
+```{r volcano_prep, class.source = "fold-hide"}
+p = ggplot2::ggplot(res %>% dplyr::filter(!is.na(padj)),
+                    aes(x = log2FoldChange, y = -log10(padj), label = ID,
+                        text = paste0(ID, "<br>",
+                                      "log_2 (fold change): ", round(log2FoldChange, 2), "<br>",
+                                      "adjusted p-value: ", round(padj, 4)))) +
+  # Lines
+  ggplot2::geom_hline(yintercept = 0, col = "lightgray") +
+  ggplot2::geom_hline(yintercept = -log10(padj_threshold), lty = 2, col = "#A3ADB8") +
+  ggplot2::geom_vline(xintercept = log2FC_threshold, lty = 2, col = "#A3ADB8") +
+  ggplot2::geom_vline(xintercept = -log2FC_threshold, lty = 2, col = "#A3ADB8") +
+  # Points
+  ggplot2::geom_point(data = res %>%
+                        dplyr::filter(padj >= padj_threshold),
+                      mapping = aes(col = "Others")) +
+  ggplot2::geom_point(data = res %>%
+                        dplyr::filter(log2FoldChange > -log2FC_threshold &
+                                        log2FoldChange < log2FC_threshold),
+                      mapping = aes(col = "Others")) +
+  ggplot2::geom_point(data = res %>%
+                        dplyr::filter(padj < padj_threshold) %>%
+                        dplyr::filter(log2FoldChange >= log2FC_threshold),
+                      mapping = aes(col = "Significantly up-regulated")) +
+  ggplot2::geom_point(data = res %>%
+                        dplyr::filter(padj < padj_threshold) %>%
+                        dplyr::filter(log2FoldChange <= -log2FC_threshold),
+                      mapping = aes(col = "Significantly down-regulated")) +
+  ggplot2::scale_color_manual(name = "genes",
+                              values = c("#D32A24", "#224897", "#A3ADB8"),
+                              breaks = c("Significantly up-regulated",
+                                         "Significantly down-regulated",
+                                         "Others")) +
+  # Labels
+  ggplot2::labs(x = "log_2 (fold change)",
+                y = "-log10 (adjusted p-value)",
+                title = "Volcano plot",
+                subtitle = comparison_subtitle) +
+  # Style
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = element_text(hjust = 0.5),
+                 plot.subtitle = element_text(hjust = 0.5),
+                 legend.position = "bottom",
+                 legend.direction = "horizontal",
+                 legend.text = element_text(margin = margin(l = 0.5)),
+                 # Transparent background
+                 panel.background = ggplot2::element_blank(),
+                 plot.background = ggplot2::element_blank(),
+                 legend.background = ggplot2::element_blank())
+```
+
+#### Static {-}
+
+```{r fig-diffana_volcano_plot, fig.width = 10, fig.height = 6}
+p + ggrepel::geom_label_repel(data = res %>% dplyr::filter(ID %in% c(genes_up, genes_dn)),
+                              fill = NA, label.size = 0,
+                              size = 3, max.overlaps = 50)
+```
+
+#### Interactive {-}
+
+```{r no_volcano_interactive, echo = FALSE, results = "asis", eval = !plotInteractive}
+cat("Interactive plots are disabled.\n")
+```
+
+```{r volcano_interactive, fig.width = 8.5, fig.height = 5, eval = plotInteractive}
+p = p + ggplot2::theme(legend.position = "none")
+
+plotly::ggplotly(p, tooltip = "text") %>%
+  plotly::layout(paper_bgcolor = "rgba(0,0,0,0)",
+                 plot_bgcolor  = "rgba(0,0,0,0)")
+```
+
+### Heatmap
+
+We draw a heatmap for the **`r length(genes_up) + length(genes_dn)`** gene(s) presented above. We compute Z-scores from the normalised count matrix and visualise the top left corner of the resulting table, meaning the **`r length(genes_up) + length(genes_dn)`** gene(s) and their Z-scores in two samples. The Z-scores are only used for visualisation. The Z-score matrix is not saved.
+
+```{r zscore_mat}
+samples_of_interest = c(comparison_samples_group1,
+                        comparison_samples_group2)
+
+# if-else in case on 0 differential expression gene
+nb_genes = length(c(genes_up, genes_dn))
+if (nb_genes < 1) {
+  zscore_mat = matrix(data = 0,
+                      nrow = 1,
+                      ncol = length(samples_of_interest),
+                      dimnames = list(c(""),
+                                      samples_of_interest))
+} else {
+  zscore_mat = DESeq2::counts(dds, normalized = TRUE)[c(genes_up, genes_dn), samples_of_interest]
+
+  # Special case if there is only one gene: vector instead of matrix
+  if (nb_genes == 1) {
+    zscore_mat = matrix(zscore_mat,
+                        nrow = nb_genes,
+                        dimnames = list(row_names = c(genes_up, genes_dn),
+                                        col_names = samples_of_interest))
+  }
+
+  # Z-score
+  zscore_mat = zscore_mat %>%
+    t() %>% scale() %>% t()
+}
+
+# The code below is compatible with 1 gene
+# Otherwise, zscore_mat[, c(1:2)] would have sufficed and been much simpler
+matrix(zscore_mat[, c(1:2)],
+       nrow = max(1, nb_genes),
+       dimnames = list(row_names = c(genes_up, genes_dn),
+                       col_names = samples_of_interest[c(1:2)])) %>%
+  knitr::kable("html") %>%
+  kableExtra::kable_styling(full_width = FALSE)
+```
+
+On the heatmap, each gene is one row and each sample is one column. Samples are annotated for their condition. The sample dendrogram is calculated based on the distances between samples considering only the genes represented on the heatmap. The condition associated to each sample is not considered by the method (unsupervised method). The genes dendrogram is calculated based on the Z-score of that gene among all samples.
+
+```{r heatmap_height, echo = FALSE}
+genes_weight = nb_genes/2
+samples_height = max(nchar(colnames(zscore_mat)))
+samples_padding = 1.25*samples_height
+samples_weight = samples_height/10
+
+# Heatmap height
+heatmap_height = genes_weight + samples_weight
+heatmap_height = max(5, heatmap_height)
+```
+
+
+```{r fig-heatmap, class.source = "fold-hide", fig.width = 10, fig.height = heatmap_height}
+# Heatmap top annotation
+sub_design = design %>%
+  dplyr::select(RepTechGroup, Condition) %>%
+  dplyr::filter(RepTechGroup %in% samples_of_interest) %>%
+  unique() %>%
+  `rownames<-`(.$RepTechGroup)
+
+if (complexMode) {
+  sub_design = sub_design %>%
+    # Add the complex condition
+    `colnames<-`(c("RepTechGroup", "SubCondition")) %>%
+    dplyr::mutate(Condition = ifelse(RepTechGroup %in% comparison_samples_group1,
+                                     yes = condition1,
+                                     no = condition2)) %>%
+    dplyr::select(Condition, SubCondition)
+  sub_design = sub_design[samples_of_interest, ] #re-order
+
+  # Annotation
+  ha_top = ComplexHeatmap::HeatmapAnnotation(
+    df = sub_design,
+    col = list(Condition = setNames(nm = c(condition1, condition2),
+                                    c("#3AA5C1", "#FF6800")),
+               SubCondition = colors_condition[unique(sub_design$SubCondition)]),
+    na_col = "#F7F7F7")
+} else {
+  # Re-order
+  sub_design = sub_design %>%
+    dplyr::select(Condition)
+  sub_design = sub_design[samples_of_interest, ] # re-order
+
+  # Annotation
+  ha_top = ComplexHeatmap::HeatmapAnnotation(
+    df = sub_design,
+    col = list(Condition = colors_condition[c(condition1, condition2)]),
+    na_col = "#F7F7F7")
+}
+
+# Heatmap title
+if (nb_genes > 1) {
+  ht_title = paste0("Heatmap of ", nb_genes,
+                    " differentially expressed genes\n",
+                    comparison_subtitle)
+} else {
+  ht_title = paste0("Heatmap of ", nb_genes,
+                    " differentially expressed gene\n",
+                    comparison_subtitle)
+}
+
+# Heatmap main
+ht = ComplexHeatmap::Heatmap(
+  as.matrix(zscore_mat),
+  # Expression colors
+  col = expressionColors(range(zscore_mat)),
+  heatmap_legend_param = list(title = "Z-score"),
+  # Annotation
+  top_annotation = ha_top,
+  # Sample order
+  cluster_columns = TRUE,
+  # gene order
+  cluster_rows = TRUE,
+  # Visual aspect
+  show_heatmap_legend = TRUE,
+  border = TRUE,
+  use_raster = FALSE,
+  # Title
+  column_title = ht_title)
+
+# Draw
+ComplexHeatmap::draw(ht,
+                     merge_legend = TRUE,
+                     heatmap_legend_side = "left",
+                     annotation_legend_side = "left",
+                     padding = unit(c(samples_padding, 2, 2, 5), "mm"),
+                     background = "transparent")
+```
+
+Note: The clustering of samples may change, depending on the genes that are considered.
+
+### Save {#`r save_results_table`}
+
+We re-order the genes based on the adjusted p-value and edit the column names for enhanced readability. We display the 6 first rows of this table.
+
+```{r reshape_results}
+res = res %>%
+  dplyr::mutate(dispersions.dds. = DESeq2::dispersions(dds)) %>%
+  dplyr::arrange(padj) %>%
+  `colnames<-`( c("ID",
+                  "baseMean",
+                  paste0("log2foldchange ", condition1, " vs ", condition2),
+                  "standard error",
+                  "Wald statistic",
+                  "Wald test p-value",
+                  "BH adjusted p-values",
+                  "dispersions.dds.") )
+
+head(res[, -1]) %>%
+  knitr::kable("html") %>%
+  kableExtra::kable_styling(full_width = FALSE)
+```
+
+We save the table as a TSV file.
+
+```{r save_de_results}
+filename = paste0(prefix, projectName, "-diffana_",
+                  condition1, "_vs_", condition2,".tsv")
+
+saveTable(dataframe = res,
+          fileName = filename)
+```
+
+Output file name:<br>*`r filename`*
+
+------------------------------------------------------------------------
+
+<!--
+End of the child file.
+Coming back to the parent file.
+-->

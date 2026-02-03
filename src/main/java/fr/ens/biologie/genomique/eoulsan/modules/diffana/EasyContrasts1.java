@@ -18,6 +18,11 @@ import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 
+/**
+ * This class allow to execute easy contrasts 1.
+ * @author Laurent Jourdren
+ * @since 2.7
+ */
 public class EasyContrasts1 extends AbstractEasyContrasts {
 
   // R scripts path in JAR file
@@ -59,8 +64,16 @@ public class EasyContrasts1 extends AbstractEasyContrasts {
     return command.toArray(new String[0]);
   }
 
-  private void buildContrasts(String prefix, final DataFile workflowOutputDir)
-      throws IOException, EoulsanException {
+  /**
+   * Execute the build contrast script.
+   * @param prefix the prefix to use
+   * @param workflowOutputDir output directory
+   * @throws IOException if an error occurs while reading or writing input files
+   *           for the script
+   * @throws EoulsanException if an error occurs while executing the script
+   */
+  private void executeBuildContrasts(String prefix,
+      final DataFile workflowOutputDir) throws IOException, EoulsanException {
 
     // Write the comparison file from the Eoulsan design (experiment metadata)
     writeComparisonFile(prefix);
@@ -90,8 +103,16 @@ public class EasyContrasts1 extends AbstractEasyContrasts {
         buildContrastScriptArgs);
   }
 
-  private void normDiffana(String prefix, final DataFile workflowOutputDir)
-      throws IOException {
+  /**
+   * Execute the norm diffana script.
+   * @param prefix the prefix to use
+   * @param workflowOutputDir output directory
+   * @throws IOException if an error occurs while reading or writing input files
+   *           for the script
+   * @throws EoulsanException if an error occurs while executing the script
+   */
+  private void executeNormDiffana(String prefix,
+      final DataFile workflowOutputDir) throws IOException {
 
     // Read build contrast R script
     final String normDiffanaScript =
@@ -145,12 +166,12 @@ public class EasyContrasts1 extends AbstractEasyContrasts {
 
     // Build the contrast file
     if (isBuildContrast()) {
-      buildContrasts(prefix, workflowOutputDir);
+      executeBuildContrasts(prefix, workflowOutputDir);
     }
 
     // Run normalization and differential analysis
     if (getParameters().isNormDiffana()) {
-      normDiffana(prefix, workflowOutputDir);
+      executeNormDiffana(prefix, workflowOutputDir);
     }
   }
 
@@ -158,6 +179,16 @@ public class EasyContrasts1 extends AbstractEasyContrasts {
   // Constructor
   //
 
+  /**
+   * Constructor.
+   * @param executor RServe executor
+   * @param stepId the step id
+   * @param design the Eoulsan design
+   * @param experiment the experiment
+   * @param sampleFiles the list of expression files
+   * @param parameters DESeq2 parameters
+   * @param saveRScripts save R scripts
+   */
   EasyContrasts1(final RExecutor executor, final String stepId,
       final Design design, final Experiment experiment,
       final Map<String, File> sampleFiles, final DESeq2Parameters parameters,

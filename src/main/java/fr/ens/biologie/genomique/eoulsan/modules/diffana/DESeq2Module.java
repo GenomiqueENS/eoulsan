@@ -27,6 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static java.util.Collections.unmodifiableSet;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,6 +37,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -72,8 +74,9 @@ public class DESeq2Module extends AbstractModule {
   // Module name
   public static final String MODULE_NAME = "deseq2";
 
-  static final String DESEQ2_DOCKER_IMAGE =
-      "bioconductor/release_sequencing:3.1";
+  private static final String[] EASY_CONTRASTS_DEFAULT_DOCKER_IMAGES =
+      new String[] {"genomicpariscentre/bioconductor:release_sequencing_3.1",
+          "genomicpariscentre/easycontrasts:2.0"};
 
   // DEseq2 options names
   private static final String NORMALIZATION_FIGURES = "norm.fig";
@@ -83,6 +86,11 @@ public class DESeq2Module extends AbstractModule {
   private static final String SIZE_FACTORS_TYPE = "size.factors.type";
   private static final String FIT_TYPE = "fit.type";
   private static final String STATISTIC_TEST = "statistical.test";
+  private static final String WEIGHT_CONTRAST = "weight.contrast";
+  private static final String LOGO_URL = "logo.url";
+  private static final String AUTHOR_NAME = "author.name";
+  private static final String AUTHOR_MAIL = "author.email";
+
   private static final String VERSION = "easy.contrasts.version";
 
   // Default value for DEseq options
@@ -127,30 +135,65 @@ public class DESeq2Module extends AbstractModule {
     return new DESeq2DesignChecker();
   }
 
+  private String defaultDockerImage(Set<Parameter> parameters)
+      throws EoulsanException {
+
+    // Get Easy contrast version
+    for (Parameter p : new HashSet<>(parameters)) {
+
+      switch (p.getName()) {
+      case VERSION:
+        this.deseq2Parameters
+            .setEasyContrastsVersion(p.getIntValueInRange(1, 2));
+        parameters.remove(p);
+        break;
+
+      default:
+        break;
+      }
+    }
+
+    return EASY_CONTRASTS_DEFAULT_DOCKER_IMAGES[this.deseq2Parameters
+        .getEasyContrastsVersion() - 1];
+  }
+
   @Override
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
 
-    // Parse R executor parameters
     final Set<Parameter> parameters = new HashSet<>(stepParameters);
+    final int version = this.deseq2Parameters.getEasyContrastsVersion();
+
+    context.getLogger().info("Easy contrast version: "
+        + this.deseq2Parameters.getEasyContrastsVersion());
+
+    context.getLogger().info("Docker image: " + defaultDockerImage(parameters));
+
+    context.getLogger().info("Easy contrast version: " + version);
+
+    // Parse R executor parameters
     this.executor = RModuleCommonConfiguration.parseRExecutorParameter(context,
-        parameters, this.requirements, DESEQ2_DOCKER_IMAGE);
+        parameters, this.requirements, defaultDockerImage(parameters));
+
+    context.getLogger().info("Docker image: " + defaultDockerImage(parameters));
 
     for (Parameter p : parameters) {
 
       switch (p.getName()) {
 
       case NORMALIZATION_FIGURES:
+        notRelevantParameterV2(context, p);
         this.deseq2Parameters.setNormFig(parseBoolean(p));
         break;
 
       case DIFFANA_FIGURES:
+        notRelevantParameterV2(context, p);
         this.deseq2Parameters.setDiffanaFig(parseBoolean(p));
         break;
 
       case NORM_DIFFANA:
+        notRelevantParameterV2(context, p);
         this.deseq2Parameters.setNormDiffana(parseBoolean(p));
-        ;
         break;
 
       case DIFFANA:
@@ -163,16 +206,31 @@ public class DESeq2Module extends AbstractModule {
 
       case FIT_TYPE:
         this.deseq2Parameters.setFitType(p);
-
         break;
 
       case STATISTIC_TEST:
         this.deseq2Parameters.setStatisticTest(p);
         break;
 
-      case VERSION:
-        this.deseq2Parameters
-            .setEasyContrastsVersion(p.getIntValueInRange(1, 2));
+      // Modules
+      case WEIGHT_CONTRAST:
+        notRelevantParameterV1(context, p);
+        this.deseq2Parameters.setWeightContrast(p.getBooleanValue());
+        break;
+
+      case LOGO_URL:
+        notRelevantParameterV1(context, p);
+        this.deseq2Parameters.setLogoUrl(p.getStringValue());
+        break;
+
+      case AUTHOR_NAME:
+        notRelevantParameterV1(context, p);
+        this.deseq2Parameters.setAuthorName(p.getStringValue());
+        break;
+
+      case AUTHOR_MAIL:
+        notRelevantParameterV1(context, p);
+        this.deseq2Parameters.setAuthorEmail(p.getStringValue());
         break;
 
       default:
@@ -249,6 +307,11 @@ public class DESeq2Module extends AbstractModule {
 
         case 1:
           ec = new EasyContrasts1(this.executor, stepId, design, e, sampleFiles,
+              this.deseq2Parameters, context.getSettings().isSaveRscripts());
+          break;
+
+        case 2:
+          ec = new EasyContrasts2(this.executor, stepId, design, e, sampleFiles,
               this.deseq2Parameters, context.getSettings().isSaveRscripts());
           break;
 
@@ -364,6 +427,37 @@ public class DESeq2Module extends AbstractModule {
       }
     }
 
+  }
+
+  private static void notRelevantParameterV1(StepConfigurationContext context,
+      Parameter parameter) throws EoulsanException {
+    notRelevantParameter(context, parameter, 1);
+  }
+
+  private static void notRelevantParameterV2(StepConfigurationContext context,
+      Parameter parameter) throws EoulsanException {
+    notRelevantParameter(context, parameter, 2);
+  }
+
+  /**
+   * Show a message for not relevant parameters.
+   * @param stepId the step identifier
+   * @param parameter the deprecated parameter
+   * @throws EoulsanException throw an exception if required
+   */
+  private static void notRelevantParameter(StepConfigurationContext context,
+      Parameter parameter, int version) throws EoulsanException {
+
+    requireNonNull(context, "context argument cannot be null");
+    requireNonNull(parameter, "parameter argument cannot be null");
+
+    String stepId = context.getCurrentStep().getId();
+    String message = "The parameter \""
+        + parameter.getName() + "\" in the \"" + stepId
+        + "\" step is not handled by the version " + version
+        + " of Easy contrats";
+
+    Common.printWarning(message);
   }
 
 }

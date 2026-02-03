@@ -88,6 +88,7 @@ public abstract class AbstractEasyContrasts {
   private final boolean contrast;
   private final boolean buildContrast;
   private final DataFile contrastFile;
+  private final boolean complexMode;
 
   // Files and file names
   protected final RExecutor executor;
@@ -130,6 +131,10 @@ public abstract class AbstractEasyContrasts {
     return this.contrast;
   }
 
+  protected boolean isComplexMode() {
+    return this.complexMode;
+  }
+
   //
   // Filenames
   //
@@ -162,6 +167,25 @@ public abstract class AbstractEasyContrasts {
     return prefix + CONTRAST_FILE_SUFFIX;
   }
 
+  private boolean determineComplexMode() {
+
+    // Get the common column names
+    final List<String> sampleMDKeys = getAllSamplesMetadataKeys(design);
+
+    // Get the experiment column names
+    final List<String> experimentMDKeys =
+        getExperimentSampleAllMetadataKeys(experiment);
+
+    // Get Experiment reference
+    final String experimentReference = experiment.getMetadata().getReference();
+
+    final boolean referenceColumn = experimentReference != null
+        || sampleMDKeys.contains(SampleMetadata.REFERENCE_KEY)
+        || experimentMDKeys.contains(ExperimentSampleMetadata.REFERENCE_KEY);
+
+    return !referenceColumn;
+  }
+
   //
   // File writers
   //
@@ -189,17 +213,32 @@ public abstract class AbstractEasyContrasts {
     }
   }
 
+  /**
+   * Write DESeq2 design file.
+   * @param prefix prefix of the output file
+   * @throws IOException if an error occurs while creating the file
+   */
   protected void writeDESeq2Design(String prefix) throws IOException {
     this.executor.writeFile(generateDeseq2Design(),
         deseq2DesignFileName(prefix));
   }
 
+  /**
+   * Write contrast file.
+   * @param prefix prefix of the output file
+   * @throws IOException if an error occurs while creating the file
+   */
   protected void writeContrastFile(String prefix) throws IOException {
     if (this.contrastFile != null) {
       this.executor.putInputFile(this.contrastFile, contrastFilename(prefix));
     }
   }
 
+  /**
+   * Write comparison file.
+   * @param prefix prefix of the output file
+   * @throws IOException if an error occurs while creating the file
+   */
   protected void writeComparisonFile(String prefix)
       throws IOException, EoulsanException {
     this.executor.writeFile(generateComparisonFileContent(),
@@ -400,6 +439,10 @@ public abstract class AbstractEasyContrasts {
   // Execution methods
   //
 
+  /**
+   * Check the experiment design.
+   * @throws EoulsanException if the experiment design is not valid
+   */
   private void check() throws EoulsanException {
 
     // Check experiment design
@@ -462,19 +505,13 @@ public abstract class AbstractEasyContrasts {
   //
 
   /**
-   * Public constructor.
+   * Constructor.
    * @param executor RServe executor
    * @param stepId the step id
    * @param design the Eoulsan design
    * @param experiment the experiment
    * @param sampleFiles the list of expression files
-   * @param normFig normFig DESeq2 option
-   * @param diffanaFig diffanaFig DESeq2 option
-   * @param normDiffana normDiffana DESeq2 option
-   * @param diffana diffana DESeq2 option
-   * @param sizeFactorsType sizeFactorsType DESeq2 option
-   * @param fitType fitType DESeq2 option
-   * @param statisticTest statisticTest DESeq2 option
+   * @param parameters DESeq2 parameters
    * @param saveRScripts save R scripts
    */
   protected AbstractEasyContrasts(final RExecutor executor, final String stepId,
@@ -531,5 +568,7 @@ public abstract class AbstractEasyContrasts {
         this.buildContrast = false;
       }
     }
+
+    this.complexMode = determineComplexMode();
   }
 }
