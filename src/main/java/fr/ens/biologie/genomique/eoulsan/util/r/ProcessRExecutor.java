@@ -206,7 +206,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
     final List<String> commandLine =
         Arrays.asList(RSCRIPT_EXECUTABLE, "-e", code);
 
-    final File stdoutFile = workflowOutputDir.toPath()
+    final File stdoutFile = getOutputDirectory().toPath()
         .resolve("R-" + System.currentTimeMillis() + ".out").toFile();
 
     final int exitValue = process.execute(commandLine, getOutputDirectory(),
