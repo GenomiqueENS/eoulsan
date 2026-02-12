@@ -49,8 +49,9 @@
 
 	<table>
 		<tr><th>Parameter</th><th>Type</th><th>Default value</th><th>Description</th></tr>
-		<tr><td>main.tmp.dir</td><td>string</td><td>/tmp usually</td><td>Path to the temporary directory</td></tr>
+		<tr><td>main.tmp.dir</td><td>string</td><td>&lt;job directory%gt;/tmp</td><td>Path to the temporary directory</td></tr>
 		<tr><td>main.executables.tmp.dir</td><td>string</td><td>The value of the <tt>main.tmp.dir</tt> parameter</td><td>Path to the temporary directory for binaries extracted from Eoulsan Jar</td></tr>
+		<tr><td>main.working.dir</td><td>string</td><td>&lt;job directory%gt;/working</td><td>Path to the working directory (intermediate files of the workflow)</td></tr>
 		<tr><td>main.debug</td><td>boolean</td><td>false</td><td>Enable debugging information</td></tr>
 		<tr><td>main.printstacktrace</td><td>boolean</td><td>false</td><td>Enable print stack trace when error occurs</td></tr>
 		<!--tr><td>main.bypass.platform.checking</td><td>boolean</td><td>false</td><td>Bypass platform checking</td></tr-->

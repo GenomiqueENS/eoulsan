@@ -356,6 +356,14 @@ public class Executor {
     this.arguments = arguments;
     this.design = loadDesign(arguments);
     this.command = loadCommand(arguments, this.design);
+
+    // Change the working directory if needed
+    for (Parameter p : this.command.getGlobalParameters()) {
+      if ("main.working.dir".equalsIgnoreCase(p.getName())) {
+        arguments.setLocalWorkingPathname(p.getValue());
+      }
+    }
+
   }
 
 }
