@@ -27,7 +27,7 @@ public class EasyContrasts1 extends AbstractEasyContrasts {
 
   // R scripts path in JAR file
   private static final String SCRIPTS_PATH_IN_JAR_FILE =
-      "/easy-contrasts1-DESeq2/";
+      "/easy-contrasts-DESeq2-v1/";
   private static final String NORM_DIFFANA_SCRIPT = "normDiffana.R";
   private static final String BUILD_CONTRAST_SCRIPT = "buildContrast.R";
 

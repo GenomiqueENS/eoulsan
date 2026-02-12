@@ -21,7 +21,7 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 public class EasyContrasts2 extends AbstractEasyContrasts {
 
   private static final String SCRIPTS_PATH_IN_JAR_FILE =
-      "/easy-contrasts2-DESeq2/";
+      "/easy-contrasts-DESeq2-v2/";
   private static final String[] R_SCRIPTS =
       new String[] {"01_normDiffana.Rmd", "02_child_collapse_replicates.Rmd",
           "03_child_differential_expression.Rmd",
