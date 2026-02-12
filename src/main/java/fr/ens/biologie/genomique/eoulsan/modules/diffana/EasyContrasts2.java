@@ -81,7 +81,7 @@ public class EasyContrasts2 extends AbstractEasyContrasts {
     }
 
     if (parameters.getAuthorEmail() != null) {
-      addParameter(result, "authorMail", parameters.getAuthorEmail());
+      addParameter(result, "authorEmail", parameters.getAuthorEmail());
     }
 
     //

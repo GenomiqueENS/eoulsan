@@ -43,7 +43,7 @@ Description of the columns:
 
 - The rownames correspond to the gene identifiers.
 - **`baseMean`**: Average normalised expression of the gene across all samples, after correcting for sequencing depth (size factors). It informs about how much the gene is expressed overall.
-- **`log2FoldChange`**: log<sub>2</sub> of the ratio of the average expression of samples from the condition **`r condition1`** to samples from the condition **`r condition2`**. Positive values correspond to a higher expression in the condition **`r condition1`**, and conversely. A value of 1 means that the gene is twice more expression in the condition **`r condition1`** compared to the condition **`r condition2`**.
+- **`log2FoldChange`**: log<sub>2</sub> of the ratio of the average expression of samples from the condition **`r condition1`** to samples from the condition **`r condition2`**. Positive values correspond to a higher expression in the condition **`r condition1`**, and conversely. A value of 1 means that the gene is twice more expressed in the condition **`r condition1`** compared to the condition **`r condition2`**.
 - **`lfcSE`**: Standard error of the log<sub>2</sub> fold change. It reflects the uncertainty in the estimated fold change.
 - **`stat`**: Test statistic, corresponding to the ratio between `log2FoldChange` and `lfcSE`.
 - **`pvalue`**: Raw p-value assessing if the log<sub>2</sub> fold change is different from 0 or not, meaning if the gene is differentially expressed or not.
@@ -294,8 +294,14 @@ genes_dn = res %>%
 We label **`r length(genes_up)`** significantly over-regulated and **`r length(genes_dn)`** significantly down-regulated genes, considering an adjusted p-value of `r padj_threshold`.
 
 ```{r volcano_prep, class.source = "fold-hide"}
+non_zero_min = min(res$padj[res$padj != 0], na.rm = TRUE)
+
 p = ggplot2::ggplot(res %>% dplyr::filter(!is.na(padj)),
-                    aes(x = log2FoldChange, y = -log10(padj), label = ID,
+                    aes(x = log2FoldChange,
+                        y = ifelse(padj == 0, # -log10(0) = Inf
+                                   yes = -log10(non_zero_min),
+                                   no = -log10(padj)),
+                        label = ID,
                         text = paste0(ID, "<br>",
                                       "log_2 (fold change): ", round(log2FoldChange, 2), "<br>",
                                       "adjusted p-value: ", round(padj, 4)))) +
@@ -437,7 +443,7 @@ if (complexMode) {
                                      yes = condition1,
                                      no = condition2)) %>%
     dplyr::select(Condition, SubCondition)
-  sub_design = sub_design[samples_of_interest, ] #re-order
+  sub_design = sub_design[samples_of_interest, ] # re-order
 
   # Annotation
   ha_top = ComplexHeatmap::HeatmapAnnotation(
