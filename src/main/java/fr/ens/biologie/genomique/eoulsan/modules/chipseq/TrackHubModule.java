@@ -8,8 +8,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -25,13 +27,13 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 
 /**
  * This class construct TrackHub for genome browser visualization.
@@ -130,7 +132,8 @@ public class TrackHubModule extends AbstractModule {
     final Design design = context.getWorkflow().getDesign();
 
     // Define the current date as a string
-    final String date = new SimpleDateFormat("yyyy_MM_dd").format(new Date());
+    final String date = Instant.now().atZone(ZoneId.systemDefault())
+        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd"));
 
     // Get input data (BIGWIG format)
     final Data BigWigData = context.getInputData(BIGWIG);

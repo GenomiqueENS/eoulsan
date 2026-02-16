@@ -28,8 +28,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
+import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -57,8 +57,8 @@ public class TaskStatusImpl implements TaskStatus {
 
   private volatile boolean done;
 
-  private Date startDate;
-  private Date endDate;
+  private Instant startDate;
+  private Instant endDate;
   private final SerializableStopwatch stopwatch = new SerializableStopwatch();
 
   //
@@ -215,7 +215,7 @@ public class TaskStatusImpl implements TaskStatus {
       this.stopwatch.stop();
 
       // Get the end Date
-      this.endDate = new Date(System.currentTimeMillis());
+      this.endDate = Instant.now();
 
       // The step is completed
       setProgress(1.0);
@@ -308,7 +308,7 @@ public class TaskStatusImpl implements TaskStatus {
   void durationStart() {
 
     // Get the start date
-    this.startDate = new Date(System.currentTimeMillis());
+    this.startDate =  Instant.now();
 
     // Start stopWatch
     this.stopwatch.start();

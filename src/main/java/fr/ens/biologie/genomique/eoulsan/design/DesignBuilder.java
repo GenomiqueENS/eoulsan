@@ -33,11 +33,12 @@ import static java.util.regex.Pattern.compile;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -54,7 +55,6 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
-import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 import fr.ens.biologie.genomique.kenetre.KenetreException;
 import fr.ens.biologie.genomique.kenetre.bio.BadBioEntryException;
 import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
@@ -62,6 +62,7 @@ import fr.ens.biologie.genomique.kenetre.bio.IlluminaReadId;
 import fr.ens.biologie.genomique.kenetre.bio.io.FastqReader;
 import fr.ens.biologie.genomique.kenetre.illumina.samplesheet.SampleSheet;
 import fr.ens.biologie.genomique.kenetre.illumina.samplesheet.io.SampleSheetCSVReader;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 
 /**
  * This class allow to easily build Design object from files paths.
@@ -124,7 +125,8 @@ public class DesignBuilder {
       try {
         long last = file.getMetaData().getLastModified();
 
-        return new SimpleDateFormat(DATE_FORMAT).format(new Date(last));
+        return Instant.ofEpochMilli(last).atZone(ZoneId.systemDefault())
+            .format(DateTimeFormatter.ofPattern(DATE_FORMAT));
 
       } catch (IOException e) {
         return null;

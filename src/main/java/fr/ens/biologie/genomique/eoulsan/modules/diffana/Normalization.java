@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.datetoString;
 import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toCompactTime;
 import static java.util.Objects.requireNonNull;
 
@@ -32,7 +33,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,9 +48,9 @@ import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 import fr.ens.biologie.genomique.eoulsan.util.r.RSConnection;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 
 /**
  * This class create and launch an R script to compute normalisation of
@@ -405,7 +405,7 @@ public class Normalization {
     sb.append(" ");
     sb.append(Globals.APP_VERSION_STRING);
     sb.append(" on ");
-    sb.append(new Date(System.currentTimeMillis()));
+    sb.append(datetoString(System.currentTimeMillis()));
     sb.append(" ###\n\n");
     // Add function part to string builder
     try {

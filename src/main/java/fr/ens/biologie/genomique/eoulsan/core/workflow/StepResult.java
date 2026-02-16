@@ -37,11 +37,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.ParseException;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -61,10 +63,10 @@ import javax.json.stream.JsonGeneratorFactory;
 import com.google.common.collect.Lists;
 
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import fr.ens.biologie.genomique.kenetre.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 
 /**
  * This class define a step result.
@@ -109,8 +111,8 @@ public class StepResult {
   private String stepName;
   private String stepClass;
   private Version stepVersion;
-  private Date startTime;
-  private Date endTime;
+  private Instant startTime;
+  private Instant endTime;
   private long duration;
   private Set<Parameter> parameters;
 
@@ -130,8 +132,8 @@ public class StepResult {
 
   private boolean immutable;
 
-  private final DateFormat dateFormat = DateFormat.getDateTimeInstance(
-      DateFormat.LONG, DateFormat.LONG, Locale.getDefault());
+  private DateTimeFormatter dateFormat = DateTimeFormatter
+      .ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.getDefault());
 
   //
   // Getters
@@ -265,17 +267,17 @@ public class StepResult {
       this.endTime = result.getEndTime();
     } else {
 
-      if (result.getStartTime().before(this.startTime)) {
+      if (result.getStartTime().isBefore(this.startTime)) {
         this.startTime = result.getStartTime();
       }
 
-      if (result.getEndTime().after(this.endTime)) {
+      if (result.getEndTime().isAfter(this.endTime)) {
         this.endTime = result.getEndTime();
       }
     }
 
     // Compute duration
-    this.duration = this.endTime.getTime() - this.startTime.getTime();
+    this.duration =  Duration.between(startTime, endTime).toMillis();
 
     final String taskName = context.getContextName();
     this.taskNames.put(contextId, taskName);
@@ -648,17 +650,13 @@ public class StepResult {
    * @param s the string to parse
    * @return a Date object or null if the date cannot be parsed
    */
-  private Date parseDate(final String s) {
+  private Instant parseDate(final String s) {
 
     if (s == null) {
       return null;
     }
 
-    try {
-      return this.dateFormat.parse(s);
-    } catch (ParseException e) {
-      return null;
-    }
+    return ZonedDateTime.parse(s, dateFormat).toInstant();
   }
 
   //

@@ -25,12 +25,14 @@
 package fr.ens.biologie.genomique.eoulsan;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.datetoString;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Properties;
 
@@ -67,7 +69,7 @@ public final class Common {
 
     final Writer writer = new OutputStreamWriter(os, Globals.DEFAULT_CHARSET);
     writer.write("Start time: "
-        + new Date(startTime) + "\nEnd time: " + new Date(endTime)
+        + datetoString(startTime) + "\nEnd time: " + datetoString(endTime)
         + "\nDuration: " + StringUtils.toTimeHumanReadable(duration) + "\n");
     writer.write(data);
     writer.close();
@@ -254,7 +256,7 @@ public final class Common {
       InternetAddress[] address = {new InternetAddress(userMail)};
       msg.setRecipients(Message.RecipientType.TO, address);
       msg.setSubject(subject);
-      msg.setSentDate(new Date());
+      msg.setSentDate(Date.from(Instant.now()));
 
       // Set message content
       msg.setText(message);

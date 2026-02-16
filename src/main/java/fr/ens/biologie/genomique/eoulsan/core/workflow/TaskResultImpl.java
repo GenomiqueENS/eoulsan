@@ -35,8 +35,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,8 +56,8 @@ public class TaskResultImpl implements TaskResult, Serializable {
 
   private final TaskContextImpl context;
 
-  private final Date startTime;
-  private final Date endTime;
+  private final Instant startTime;
+  private final Instant endTime;
   private final long duration;
   private final boolean success;
   private final Throwable exception;
@@ -72,11 +72,11 @@ public class TaskResultImpl implements TaskResult, Serializable {
     return this.context;
   }
 
-  Date getStartTime() {
+  Instant getStartTime() {
     return this.startTime;
   }
 
-  Date getEndTime() {
+  Instant getEndTime() {
     return this.endTime;
   }
 
@@ -214,8 +214,8 @@ public class TaskResultImpl implements TaskResult, Serializable {
   // Constructor
   //
 
-  TaskResultImpl(final TaskContextImpl context, final Date startTime,
-      final Date endTime, final long duration, final String contextMessage,
+  TaskResultImpl(final TaskContextImpl context, final Instant startTime,
+      final Instant endTime, final long duration, final String contextMessage,
       final String contextDescription, final String contextCommandLine,
       final String contextDockerImage, final Map<String, Long> counters,
       final boolean success) {
@@ -243,15 +243,15 @@ public class TaskResultImpl implements TaskResult, Serializable {
     this.errorMessage = null;
   }
 
-  public TaskResultImpl(final TaskContextImpl context, final Date startTime,
-      final Date endTime, final long duration, final Throwable exception,
+  public TaskResultImpl(final TaskContextImpl context, final Instant startTime,
+      final Instant endTime, final long duration, final Throwable exception,
       final String errorMessage) {
 
     requireNonNull(context, "context argument cannot be null");
 
     this.context = context;
-    this.startTime = startTime == null ? null : new Date(startTime.getTime());
-    this.endTime = endTime == null ? null : new Date(endTime.getTime());
+    this.startTime = startTime == null ? null : Instant.ofEpochSecond(startTime.getEpochSecond());
+    this.endTime = endTime == null ? null : Instant.ofEpochSecond(endTime.getEpochSecond());;
     this.duration = duration;
     this.success = false;
     this.taskMessage = null;

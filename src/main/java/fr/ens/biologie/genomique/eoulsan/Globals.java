@@ -24,6 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan;
 
+import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.datetoString;
+
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -31,7 +33,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -133,7 +134,7 @@ public final class Globals {
     @Override
     public String format(final LogRecord record) {
       return record.getLevel()
-          + "\t" + this.df.format(new Date(record.getMillis())) + "\t"
+          + "\t" + this.df.format(datetoString(record.getMillis())) + "\t"
           + record.getMessage() + "\n";
     }
   };

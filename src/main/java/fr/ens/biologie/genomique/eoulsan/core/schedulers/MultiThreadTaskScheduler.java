@@ -27,8 +27,8 @@ package fr.ens.biologie.genomique.eoulsan.core.schedulers;
 import static com.google.common.base.Preconditions.checkArgument;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -112,8 +112,9 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
               + cancel);
 
       final TaskResultImpl result = new TaskResultImpl(this.context,
-          new Date(this.submissionTime), new Date(endTime),
-          endTime - this.submissionTime, exception, exception.getMessage());
+          Instant.ofEpochMilli(this.submissionTime),
+          Instant.ofEpochMilli(endTime), endTime - this.submissionTime,
+          exception, exception.getMessage());
 
       afterExecuteTask(this.context, result);
 

@@ -31,6 +31,7 @@ import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.PARTIALLY_DO
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.READY;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WAITING;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
+import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.datetoString;
 import static fr.ens.biologie.genomique.kenetre.util.StringUtils.stackTraceToString;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -42,7 +43,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -962,7 +962,7 @@ public abstract class AbstractWorkflow implements Workflow {
     final String mailMessage = "THIS IS AN AUTOMATED MESSAGE.\n\n"
         + successString + " end of your job " + this.workflowContext.getJobId()
         + " on " + this.workflowContext.getJobHost() + ".\nJob finished at "
-        + new Date(System.currentTimeMillis()) + " in "
+        + datetoString(System.currentTimeMillis()) + " in "
         + StringUtils.toTimeHumanReadable(this.stopwatch.elapsed(MILLISECONDS))
         + " s.\n\nOutput files and logs can be found in the following location:\n"
         + this.workflowContext.getOutputDirectory() + "\n\nThe "

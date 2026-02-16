@@ -26,12 +26,12 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.Globals.APP_VERSION;
+import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.datetoString;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,8 +47,8 @@ import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.io.DefaultDesignReader;
 import fr.ens.biologie.genomique.eoulsan.ui.UI;
 import fr.ens.biologie.genomique.eoulsan.ui.UIService;
-import fr.ens.biologie.genomique.kenetre.util.SystemUtils;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopInfo;
+import fr.ens.biologie.genomique.kenetre.util.SystemUtils;
 
 /**
  * This class is the executor for running all the steps of an analysis.
@@ -148,7 +148,7 @@ public class Executor {
     StepObserverRegistry.getInstance().addObserver(ui);
 
     getLogger()
-        .info("Start analysis at " + new Date(System.currentTimeMillis()));
+        .info("Start analysis at " + datetoString(System.currentTimeMillis()));
 
     // Execute Workflow
     workflow.execute();

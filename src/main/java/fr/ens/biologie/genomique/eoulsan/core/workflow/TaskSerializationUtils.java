@@ -31,7 +31,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Date;
+import java.time.Duration;
+import java.time.Instant;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -109,20 +110,20 @@ public class TaskSerializationUtils {
     final Module module =
         StepInstances.getInstance().getModule(context.getCurrentStep());
 
-    final long startTime = System.currentTimeMillis();
+    final Instant startTime = Instant.now();
 
     // Configure step
     try {
       module.configure(context, context.getCurrentStep().getParameters());
     } catch (Throwable t) {
 
-      final long endTime = System.currentTimeMillis();
+      final Instant endTime = Instant.now();
 
       // An exception has occured while configuring the step
       getLogger().severe("Exception while configuring task: " + t.getMessage());
 
-      return new TaskResultImpl(context, new Date(startTime), new Date(endTime),
-          endTime - startTime, t, t.getMessage());
+      return new TaskResultImpl(context, startTime, endTime,
+         Duration.between(startTime, endTime).toMillis(), t, t.getMessage());
     }
 
     // Create the context runner
