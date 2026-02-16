@@ -39,6 +39,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Splitter;
+
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.checkers.DESeq2DesignChecker;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -390,17 +392,17 @@ public abstract class AbstractEasyContrasts {
 
     final StringBuilder sb = new StringBuilder();
 
-    for (String c : experiment.getMetadata().getComparisons().split(";")) {
+    for (String c : Splitter.on(';').split(experiment.getMetadata().getComparisons())) {
 
-      final String[] splitC = c.split(":");
+      final List<String> splitC = Splitter.on(':').splitToList(c);
 
-      if (splitC.length != 2) {
+      if (splitC.size() != 2) {
         throw new EoulsanException("Invalid comparison entry format: " + c);
       }
 
-      sb.append(splitC[0].trim());
+      sb.append(splitC.get(0).trim());
       sb.append(TAB_SEPARATOR);
-      sb.append(splitC[1].trim());
+      sb.append(splitC.get(1).trim());
       sb.append(NEWLINE);
     }
 

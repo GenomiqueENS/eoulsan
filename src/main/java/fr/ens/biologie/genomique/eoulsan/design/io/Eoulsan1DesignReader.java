@@ -43,6 +43,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Splitter;
+
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Naming;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -128,13 +130,13 @@ public class Eoulsan1DesignReader implements DesignReader {
           continue;
         }
 
-        final String[] fields = line.split(TAB_SEPARATOR);
+        final List<String> fields = Splitter.on(TAB_SEPARATOR).splitToList(line);
 
         if (firstLine) {
 
-          for (int i = 0; i < fields.length; i++) {
+          for (int i = 0; i < fields.size(); i++) {
 
-            String field = fields[i].trim();
+            String field = fields.get(i).trim();
 
             if ("".equals(field)) {
               throw new IOException(
@@ -144,7 +146,7 @@ public class Eoulsan1DesignReader implements DesignReader {
             // Compatibility with old design files
             if (field.equals(FILENAME_FIELD)) {
               field = SampleMetadata.READS_KEY;
-              fields[i] = field;
+              fields.set(i, field);
             }
 
             if (fieldnames.contains(field)) {
@@ -189,17 +191,17 @@ public class Eoulsan1DesignReader implements DesignReader {
           firstLine = false;
         } else {
 
-          if (fields.length != fieldnames.size()) {
+          if (fields.size() != fieldnames.size()) {
             throw new IOException("Invalid file format: "
-                + "Found " + fields.length + " fields whereas "
+                + "Found " + fields.size() + " fields whereas "
                 + fieldnames.size() + " are required in line: " + line);
           }
 
           Sample sample = null;
 
-          for (int i = 0; i < fields.length; i++) {
+          for (int i = 0; i < fields.size(); i++) {
 
-            final String value = fields[i].trim();
+            final String value = fields.get(i).trim();
 
             final String fieldName = fieldnames.get(i);
 

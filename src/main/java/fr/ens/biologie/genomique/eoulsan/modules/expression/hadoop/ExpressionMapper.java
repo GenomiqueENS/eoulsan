@@ -35,13 +35,14 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+
+import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
@@ -69,8 +70,8 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, LongWritable> {
   private String counterGroup;
 
   private final SAMLineParser parser = new SAMLineParser(new SAMFileHeader());
-  private final Pattern recordSplitterPattern =
-      Pattern.compile("" + SAM_RECORD_PAIRED_END_SERPARATOR);
+  private final Splitter recordSplitterPattern =
+      Splitter.on(SAM_RECORD_PAIRED_END_SERPARATOR);
 
   private final List<SAMRecord> samRecords = new ArrayList<>();
   private ReporterIncrementer reporter;

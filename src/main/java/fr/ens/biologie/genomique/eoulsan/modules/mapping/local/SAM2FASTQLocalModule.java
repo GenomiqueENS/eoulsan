@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import com.google.common.base.Splitter;
+
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
@@ -168,7 +170,7 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
           && samRecord.getReadPairedFlag() && samRecord.getSecondOfPairFlag()) {
         secondPair = true;
       }
-      samRecord.setReadName(samRecord.getReadName().split(" ")[0]);
+      samRecord.setReadName(Splitter.on(' ').splitToList(samRecord.getReadName()).get(0));
       samWriter.addAlignment(samRecord);
       reporter.incrCounter(COUNTER_GROUP, "converted records", 1);
     }

@@ -49,6 +49,8 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+import com.google.common.base.Splitter;
+
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -544,7 +546,8 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
     if (connectString == null) {
 
-      connectString = conf.get("yarn.resourcemanager.hostname").split(":")[0]
+      connectString = Splitter.on(':')
+          .splitToList(conf.get("yarn.resourcemanager.hostname")).get(0)
           + ":" + settings.getZooKeeperDefaultPort();
 
     }

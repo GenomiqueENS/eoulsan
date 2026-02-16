@@ -132,14 +132,16 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     // Illumina technology and Casava 1.8 format for the '@' line
     if (!this.fields.get(0).contains("/")) {
-      outKey = new Text(this.read.getName().split(" ")[0]);
-      outValue = new Text(this.read.getName().split(" ")[1]
+      List<String> fields = Splitter.on(' ').splitToList(this.read.getName());
+      outKey = new Text(fields.get(0));
+      outValue = new Text(fields.get(1)
           + "\t" + this.read.getSequence() + "\t" + this.read.getQuality());
     }
     // Before Casava 1.8 or technology other than Illumina
     else {
-      outKey = new Text(this.read.getName().split("/")[0] + "/");
-      outValue = new Text(this.read.getName().split("/")[1]
+      List<String> fields = Splitter.on('/').splitToList(this.read.getName());
+      outKey = new Text(fields.get(0) + "/");
+      outValue = new Text(fields.get(1)
           + "\t" + this.read.getSequence() + "\t" + this.read.getQuality());
     }
 

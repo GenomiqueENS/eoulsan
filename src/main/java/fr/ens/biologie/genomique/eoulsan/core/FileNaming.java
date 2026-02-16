@@ -30,7 +30,10 @@ import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toLetter;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
+import java.util.List;
 import java.util.Objects;
+
+import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -554,43 +557,43 @@ public class FileNaming {
 
     final FileNaming result = new FileNaming();
 
-    final String[] extensions = filename.split("\\.");
+    final List<String> extensions = Splitter.on('.').splitToList(filename);
 
-    if (extensions.length < 2 || extensions.length > 3) {
+    if (extensions.size() < 2 || extensions.size() > 3) {
       throw new FileNamingParsingRuntimeException(
           "Invalid filename: " + filename);
     }
 
     // Get format extension
-    final String formatExtension = '.' + extensions[1];
+    final String formatExtension = '.' + extensions.get(1);
 
     // Get compression
-    if (extensions.length == 3) {
+    if (extensions.size() == 3) {
       result.setCompression(
-          CompressionType.getCompressionTypeByExtension('.' + extensions[2]));
+          CompressionType.getCompressionTypeByExtension('.' + extensions.get(2)));
     }
 
-    final String[] fields = extensions[0].split("_");
+    final List<String> fields = Splitter.on('_').splitToList(extensions.get(0));
 
-    if (fields.length < 4) {
+    if (fields.size() < 4) {
       throw new FileNamingParsingRuntimeException(
           "Invalid filename: " + filename);
     }
 
-    if (fields[0].isEmpty() || !isStepIdValid(fields[0])) {
+    if (fields.get(0).isEmpty() || !isStepIdValid(fields.get(0))) {
       throw new FileNamingParsingRuntimeException(
           "Invalid filename: " + filename);
     }
-    result.setStepId(fields[0]);
+    result.setStepId(fields.get(0));
 
-    if (fields[1].isEmpty() || !isPortNameValid(fields[1])) {
+    if (fields.get(1).isEmpty() || !isPortNameValid(fields.get(1))) {
       throw new FileNamingParsingRuntimeException(
           "Invalid filename: " + filename);
     }
-    result.setPortName(fields[1]);
+    result.setPortName(fields.get(1));
 
     final DataFormat format = DataFormatRegistry.getInstance()
-        .getDataFormatFromFilename(fields[2], formatExtension);
+        .getDataFormatFromFilename(fields.get(2), formatExtension);
 
     if (format == null) {
       throw new FileNamingParsingRuntimeException(
@@ -598,15 +601,15 @@ public class FileNaming {
     }
     result.setFormat(format);
 
-    if (fields[3].isEmpty() || !isDataNameValid(fields[3])) {
+    if (fields.get(3).isEmpty() || !isDataNameValid(fields.get(3))) {
       throw new FileNamingParsingRuntimeException(
           "Invalid filename: " + filename);
     }
-    result.setDataName(fields[3]);
+    result.setDataName(fields.get(3));
 
-    for (int i = 4; i < fields.length; i++) {
+    for (int i = 4; i < fields.size(); i++) {
 
-      if (fields[i].startsWith(FILE_INDEX_PREFIX)) {
+      if (fields.get(i).startsWith(FILE_INDEX_PREFIX)) {
 
         if (result.getFileIndex() != -1) {
           throw new FileNamingParsingRuntimeException(
@@ -614,12 +617,12 @@ public class FileNaming {
         }
         try {
           result.setFileIndex(Integer
-              .parseInt(fields[i].substring(FILE_INDEX_PREFIX.length())));
+              .parseInt(fields.get(i).substring(FILE_INDEX_PREFIX.length())));
         } catch (NumberFormatException e) {
           throw new FileNamingParsingRuntimeException(
               "Invalid filename: " + filename);
         }
-      } else if (fields[i].startsWith(PART_INDEX_PREFIX)) {
+      } else if (fields.get(i).startsWith(PART_INDEX_PREFIX)) {
 
         if (result.getPart() != -1) {
           throw new FileNamingParsingRuntimeException(
@@ -627,7 +630,7 @@ public class FileNaming {
         }
         try {
           result.setPart(Integer
-              .parseInt(fields[i].substring(PART_INDEX_PREFIX.length())));
+              .parseInt(fields.get(i).substring(PART_INDEX_PREFIX.length())));
         } catch (NumberFormatException e) {
           throw new FileNamingParsingRuntimeException(
               "Invalid filename: " + filename);

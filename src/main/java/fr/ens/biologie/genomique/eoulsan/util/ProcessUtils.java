@@ -41,6 +41,7 @@ import java.util.Random;
 import java.util.Set;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.eoulsan.io.FileCharsets;
 import fr.ens.biologie.genomique.kenetre.io.FileUtils;
@@ -406,8 +407,7 @@ public final class ProcessUtils {
       final String s =
           ProcessUtils.execToString("pgrep -x " + executableName.trim());
 
-      final String[] lines = s.split("\n");
-      for (String line : lines) {
+      for (String line : Splitter.on('\n').split(s)) {
         try {
           result.add(Integer.parseInt(line));
         } catch (NumberFormatException e) {

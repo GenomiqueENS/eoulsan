@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.base.Splitter;
+
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.util.JarRepack;
 
@@ -137,7 +139,7 @@ public final class HadoopJarRepackager {
           "The name of the jar to repack is null.");
     }
 
-    for (String filename : libPaths.split(":")) {
+    for (String filename : Splitter.on(':').split(libPaths)) {
 
       final File file = new File(filename.trim());
       if (file.exists() && file.isFile()) {

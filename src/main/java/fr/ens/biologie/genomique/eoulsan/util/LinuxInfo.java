@@ -30,7 +30,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 
@@ -59,10 +62,10 @@ public abstract class LinuxInfo {
 
       while ((line = br.readLine()) != null) {
 
-        String[] fields = line.split(":");
+        List<String> fields = Splitter.on(':').splitToList(line);
 
-        if (fields.length > 1) {
-          this.map.put(fields[0].trim(), fields[1].trim());
+        if (fields.size() > 1) {
+          this.map.put(fields.get(0).trim(), fields.get(1).trim());
         }
 
       }

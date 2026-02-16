@@ -139,7 +139,7 @@ public class DESeq2DesignChecker implements Checker, Serializable {
       Set<String> comparisionNames = new HashSet<>();
 
       // Check if the comparison structure is correct
-      for (String c : emd.getComparisons().split(";")) {
+      for (String c :  Splitter.on(';').splitToList(emd.getComparisons())) {
         List<String> splitC =
             Splitter.on(':').omitEmptyStrings().trimResults().splitToList(c);
 

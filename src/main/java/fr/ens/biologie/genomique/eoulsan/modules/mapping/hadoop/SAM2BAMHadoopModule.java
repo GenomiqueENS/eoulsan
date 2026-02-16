@@ -41,6 +41,8 @@ import org.seqdoop.hadoop_bam.SAMFormat;
 import org.seqdoop.hadoop_bam.SAMRecordWritable;
 import org.seqdoop.hadoop_bam.util.SAMHeaderReader;
 
+import com.google.common.base.Splitter;
+
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
@@ -486,14 +488,14 @@ final class SortRecordReader
     protected void map(final LongWritable key, final Text value,
         final Context context) throws IOException, InterruptedException {
 
-      final String[] files = value.toString().split("\t");
+      final List<String> files = Splitter.on('\t').splitToList(value.toString());
 
-      if (files.length != 2) {
+      if (files.size() != 2) {
         throw new IOException("Invalid arguments: " + value);
       }
 
-      final Path bamFile = new Path(files[0]);
-      final Path indexFile = new Path(files[1]);
+      final Path bamFile = new Path(files.get(0));
+      final Path indexFile = new Path(files.get(1));
 
       // Create index
       SAM2BAMHadoopModule.createIndex(context.getConfiguration(), bamFile,

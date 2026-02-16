@@ -8,19 +8,20 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
+import com.google.common.base.Splitter;
+
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
+import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopReporterIncrementer;
 import fr.ens.biologie.genomique.kenetre.KenetreException;
 import fr.ens.biologie.genomique.kenetre.bio.expressioncounter.ExpressionCounter;
 import fr.ens.biologie.genomique.kenetre.util.ReporterIncrementer;
-import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopReporterIncrementer;
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFormatException;
 import htsjdk.samtools.SAMLineParser;
@@ -37,8 +38,8 @@ public class ExpressionSAMOutputMapper extends Mapper<Text, Text, Text, Text> {
   private String counterGroup;
 
   private final SAMLineParser parser = new SAMLineParser(new SAMFileHeader());
-  private final Pattern recordSplitterPattern =
-      Pattern.compile("" + SAM_RECORD_PAIRED_END_SERPARATOR);
+  private final Splitter recordSplitterPattern =
+      Splitter.on(SAM_RECORD_PAIRED_END_SERPARATOR);
 
   private final List<SAMRecord> samRecords = new ArrayList<>();
   private ReporterIncrementer reporter;

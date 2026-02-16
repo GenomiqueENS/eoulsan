@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Splitter;
+
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
@@ -198,16 +200,16 @@ public class DataMetadataStorage {
 
       while ((line = reader.readLine()) != null) {
 
-        final String[] fields = line.split(FIELD_SEPARATOR);
+        final List<String> fields = Splitter.on(FIELD_SEPARATOR).splitToList(line);
 
-        if (fields.length % 2 != 0) {
+        if (fields.size() % 2 != 0) {
 
-          final String filename = fields[0];
+          final String filename = fields.get(0);
           final Map<String, String> entries = new HashMap<>();
           this.metadata.put(filename, entries);
 
-          for (int i = 1; i < fields.length; i += 2) {
-            entries.put(fields[i], fields[i + 1]);
+          for (int i = 1; i < fields.size(); i += 2) {
+            entries.put(fields.get(i), fields.get(i + 1));
           }
         }
       }

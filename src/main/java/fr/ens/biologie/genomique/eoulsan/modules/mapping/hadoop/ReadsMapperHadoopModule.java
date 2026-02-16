@@ -51,6 +51,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
+import com.google.common.base.Splitter;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
@@ -326,7 +327,8 @@ public class ReadsMapperHadoopModule extends AbstractReadsMapperModule {
 
     if (connectString == null) {
 
-      connectString = jobConf.get("yarn.resourcemanager.hostname").split(":")[0]
+      connectString = Splitter.on(':')
+          .splitToList(jobConf.get("yarn.resourcemanager.hostname")).get(0)
           + ":" + settings.getZooKeeperDefaultPort();
 
     }

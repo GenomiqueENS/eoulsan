@@ -30,6 +30,8 @@ import static fr.ens.biologie.genomique.eoulsan.modules.mgmt.upload.HDFSDataDown
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.common.base.Splitter;
+
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Settings;
@@ -39,10 +41,10 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 
 /**
  * This Step allow to define the list of the formats of the files to download at
@@ -96,11 +98,10 @@ public class DefineDataFormatToDownload extends AbstractModule {
       throw new EoulsanException("No format to download set.");
     }
 
-    final String[] fields = formatNames.split(",");
     final Set<DataFormat> formats = new HashSet<>();
     final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
-    for (String format : fields) {
+    for (String format : Splitter.on(',').split(formatNames)) {
 
       if ("".equals(format.trim())) {
         continue;
