@@ -74,7 +74,7 @@
 		<tr><td>main.rserve.enable</td><td>boolean</td><td>false</td><td>Enable Rserve server for R computation</td></tr>
 		<tr><td>main.rserve.servername</td><td>string</td><td>Not set</td><td>Name of the Rserve server</td></tr>
 		<tr><td>main.rserve.keep.files</td><td>boolean</td><td>false</td><td>Keep files on Rserve server</td></tr>
-		<tr><td>main.save.r.scripts</td><td>boolean</td><td>false</td><td>Save or not r scripts</td></tr>
+		<tr><td>main.save.r.scripts</td><td>boolean</td><td>false</td><td>Save or not R scripts</td></tr>
 
 		<tr><td>main.genome.storage.path</td><td>string</td><td>Not set</td><td>Path to the genomes repository</td></tr>
 		<tr><td>main.gff.storage.path</td><td>string</td><td>Not set</td><td>Path to the GFF annotations repository</td></tr>

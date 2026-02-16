@@ -90,7 +90,7 @@ public class DESeq2Module extends AbstractModule {
   private static final String LOGO_URL = "logo.url";
   private static final String AUTHOR_NAME = "author.name";
   private static final String AUTHOR_MAIL = "author.email";
-
+  private static final String SAVE_R_SCRIPTS = "save.r.scripts";
   private static final String VERSION = "easy.contrasts.version";
 
   // Default value for DEseq options
@@ -98,6 +98,7 @@ public class DESeq2Module extends AbstractModule {
 
   private final Set<Requirement> requirements = new HashSet<>();
   private RExecutor executor;
+  private boolean saveRScripts;
 
   //
   // Module methods
@@ -233,6 +234,10 @@ public class DESeq2Module extends AbstractModule {
         this.deseq2Parameters.setAuthorEmail(p.getStringValue());
         break;
 
+      case SAVE_R_SCRIPTS:
+        this.saveRScripts = p.getBooleanValue();
+        break;
+
       default:
         throw new EoulsanException(
             "Unkown parameter for step " + getName() + " : " + p.getName());
@@ -288,6 +293,8 @@ public class DESeq2Module extends AbstractModule {
     }
 
     String stepId = context.getCurrentStep().getId();
+    boolean saveScripts =
+        this.saveRScripts || context.getSettings().isSaveRscripts();
 
     try {
 
@@ -307,12 +314,12 @@ public class DESeq2Module extends AbstractModule {
 
         case 1:
           ec = new EasyContrasts1(this.executor, stepId, design, e, sampleFiles,
-              this.deseq2Parameters, context.getSettings().isSaveRscripts());
+              this.deseq2Parameters, saveScripts);
           break;
 
         case 2:
           ec = new EasyContrasts2(this.executor, stepId, design, e, sampleFiles,
-              this.deseq2Parameters, context.getSettings().isSaveRscripts());
+              this.deseq2Parameters, saveScripts);
           break;
 
         default:
