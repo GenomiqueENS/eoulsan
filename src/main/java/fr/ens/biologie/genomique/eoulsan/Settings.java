@@ -77,6 +77,9 @@ public final class Settings implements Serializable {
   private static final String EXECUTABLES_TMP_DIR_KEY =
       MAIN_PREFIX_KEY + "executables.tmp.dir";
 
+  private static final String WORKING_DIR_KEY =
+      MAIN_PREFIX_KEY + "working.dir";
+
   private static final String LOCAL_THREADS_NUMBER =
       MAIN_PREFIX_KEY + "local.threads";
 
@@ -362,6 +365,15 @@ public final class Settings implements Serializable {
 
     return this.properties.getProperty(EXECUTABLES_TMP_DIR_KEY,
         getTempDirectory());
+  }
+
+  /**
+   * Get the working directory for executables.
+   * @return The working directory for executables
+   */
+  public String getWorkingDirectory() {
+
+    return this.properties.getProperty(WORKING_DIR_KEY);
   }
 
   /**
@@ -974,6 +986,17 @@ public final class Settings implements Serializable {
     if (executablesTempDirectory != null) {
       this.properties.setProperty(EXECUTABLES_TMP_DIR_KEY,
           executablesTempDirectory);
+    }
+  }
+
+  /**
+   * Set the working directory.
+   * @param tempDirectory The path to the working directory
+   */
+  public void setWorkingDirectory(final String workingDirectory) {
+
+    if (workingDirectory != null) {
+      this.properties.setProperty(WORKING_DIR_KEY, workingDirectory);
     }
   }
 
