@@ -4,6 +4,7 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanRuntime.getSettings;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -82,7 +83,7 @@ public class GenericExecutorInterpreter extends AbstractExecutorInterpreter {
     final String value = getSettings()
         .getSetting(GALAXY_TOOL_INTERPRETER_SETTING_PREFIX + interpreterName);
 
-    return value != null ? new File(value) : null;
+    return value != null ? Path.of(value).toFile() : null;
   }
 
   //
@@ -106,7 +107,7 @@ public class GenericExecutorInterpreter extends AbstractExecutorInterpreter {
     }
 
     if (path == null) {
-      path = new File("/usr/bin/" + interpreterName);
+      path =  Path.of("/usr/bin/" + interpreterName).toFile();
     }
 
     this.path = path;

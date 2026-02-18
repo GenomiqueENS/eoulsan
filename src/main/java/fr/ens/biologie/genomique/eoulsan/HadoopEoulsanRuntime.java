@@ -74,8 +74,9 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
 
       // Use Hadoop temporary directory if defined or the default JVM
       // temporary directory
-      return new File(
-          this.conf.get(HADOOP_TEMP_DIR, System.getProperty("java.io.tmpdir")));
+      return java.nio.file.Path.of(
+          this.conf.get(HADOOP_TEMP_DIR, System.getProperty("java.io.tmpdir")))
+          .toFile();
     }
 
     return getSettings().getTempDirectoryFile();

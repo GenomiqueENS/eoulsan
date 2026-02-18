@@ -28,6 +28,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.kenetre.bio.ReadSequence;
@@ -49,7 +50,7 @@ public class FastqSequenceFile implements CounterSequenceFile {
   @Override
   public File getFile() {
 
-    return new File(this.file.getName());
+    return Path.of(this.file.getName()).toFile();
   }
 
   @Override

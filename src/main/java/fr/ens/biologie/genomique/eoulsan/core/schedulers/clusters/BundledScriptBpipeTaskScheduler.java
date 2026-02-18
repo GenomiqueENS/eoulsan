@@ -1,6 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import fr.ens.biologie.genomique.eoulsan.Main;
 
@@ -14,7 +15,7 @@ public abstract class BundledScriptBpipeTaskScheduler
     extends BpipeTaskScheduler {
 
   private final String schedulerName;
-  private final File commandWrapperFile;
+  private final Path commandWrapperFile;
 
   @Override
   public String getSchedulerName() {
@@ -25,7 +26,7 @@ public abstract class BundledScriptBpipeTaskScheduler
   @Override
   protected File getBpipeCommandWrapper() {
 
-    return this.commandWrapperFile;
+    return this.commandWrapperFile.toFile();
   }
 
   //
@@ -51,9 +52,9 @@ public abstract class BundledScriptBpipeTaskScheduler
 
     this.schedulerName = schedulerName;
 
-    final File binDir =
-        new File(Main.getInstance().getEoulsanDirectory(), "bin");
+    final Path binDir =
+        Main.getInstance().getEoulsanDirectory().toPath().resolve("bin");
 
-    this.commandWrapperFile = new File(binDir, commandWrapperScript);
+    this.commandWrapperFile = binDir.resolve(commandWrapperScript);
   }
 }

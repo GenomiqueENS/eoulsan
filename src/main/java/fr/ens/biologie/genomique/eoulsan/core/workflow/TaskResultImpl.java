@@ -27,8 +27,6 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -36,6 +34,8 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.time.Instant;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -129,11 +129,23 @@ public class TaskResultImpl implements TaskResult, Serializable {
    * @param file output DataFile
    * @throws IOException if an error occurs while creating the file
    */
+  public void serialize(final Path file) throws IOException {
+
+    requireNonNull(file, "file argument cannot be null");
+
+    serialize(Files.newOutputStream(file));
+  }
+
+  /**
+   * Serialize the TaskResult object.
+   * @param file output DataFile
+   * @throws IOException if an error occurs while creating the file
+   */
   public void serialize(final File file) throws IOException {
 
     requireNonNull(file, "file argument cannot be null");
 
-    serialize(new FileOutputStream(file));
+    serialize(file.toPath());
   }
 
   /**
@@ -168,11 +180,24 @@ public class TaskResultImpl implements TaskResult, Serializable {
    * @return a deserialized TaskResultImpl object
    * @throws IOException if an error occurs while reading the file
    */
+  public static TaskResultImpl deserialize(final Path file) throws IOException {
+
+    requireNonNull(file, "file argument cannot be null");
+
+    return deserialize(Files.newInputStream(file));
+  }
+
+  /**
+   * Deserialize the TaskResult object.
+   * @param file input DataFile
+   * @return a deserialized TaskResultImpl object
+   * @throws IOException if an error occurs while reading the file
+   */
   public static TaskResultImpl deserialize(final File file) throws IOException {
 
     requireNonNull(file, "file argument cannot be null");
 
-    return deserialize(new FileInputStream(file));
+    return deserialize(file.toPath());
   }
 
   /**

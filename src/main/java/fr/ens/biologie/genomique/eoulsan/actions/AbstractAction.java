@@ -24,8 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.actions;
 
-import java.util.Locale;
-
 import fr.ens.biologie.genomique.eoulsan.Globals;
 
 /**

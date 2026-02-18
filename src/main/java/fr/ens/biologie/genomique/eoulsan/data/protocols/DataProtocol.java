@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -205,5 +206,12 @@ public interface DataProtocol {
    * @return a File object or null if the protocol does not allow it
    */
   File getSourceAsFile(DataFile src);
+
+  /**
+   * Get the underlying File object for the DataFile if the protocol allow it.
+   * @param src source DataFile
+   * @return a File object or null if the protocol does not allow it
+   */
+  Path getSourceAsPath(DataFile src);
 
 }

@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.util;
 
-import java.io.File;
+import java.nio.file.Path;
 
 /**
  * Get information about processor on Linux systems.
@@ -36,9 +36,9 @@ public class LinuxCpuInfo extends LinuxInfo {
   private static final String CPUINFO_FILE = "/proc/cpuinfo";
 
   @Override
-  public File getInfoFile() {
+  public Path getInfoFile() {
 
-    return new File(CPUINFO_FILE);
+    return Path.of(CPUINFO_FILE);
   }
 
   /**

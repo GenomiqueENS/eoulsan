@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters;
 
 import java.io.File;
+import java.nio.file.Path;
 
 /**
  * This class define a TGCC cluster scheduler. This scheduler is based on the
@@ -47,7 +48,7 @@ public class TGCCTaskScheduler extends BpipeTaskScheduler {
   @Override
   protected File getBpipeCommandWrapper() {
 
-    return new File(BPIPE_SCRIPT_PATH);
+    return Path.of(BPIPE_SCRIPT_PATH).toFile();
   }
 
 }

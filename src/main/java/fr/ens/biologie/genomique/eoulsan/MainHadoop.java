@@ -27,9 +27,9 @@ package fr.ens.biologie.genomique.eoulsan;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Collections.singletonList;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.StreamHandler;
@@ -102,16 +102,16 @@ public final class MainHadoop extends Main {
       Infos.log(Level.INFO, Infos.partitionInfo(EoulsanRuntime.getSettings()));
 
       // Log the usage of the hadoop temporary directory partition
-      final String hadoopTmp = this.conf.get("hadoop.tmp.dir");
+      java.nio.file.Path hadoopTmp = java.nio.file.Path.of(this.conf.get("hadoop.tmp.dir"));
       if (hadoopTmp != null) {
         Infos.log(Level.INFO,
-            singletonList(Infos.diskFreeInfo(new File(hadoopTmp))));
+            singletonList(Infos.diskFreeInfo(hadoopTmp.toFile())));
       }
 
       // Log the usage of the Java temporary directory partition
-      final File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-      if (tmpDir != null && tmpDir.exists() && tmpDir.isDirectory()) {
-        Infos.log(Level.INFO, Infos.diskFreeInfo(new File(hadoopTmp)));
+      final java.nio.file.Path tmpDir = java.nio.file.Path.of(System.getProperty("java.io.tmpdir"));
+      if (tmpDir != null && Files.exists(tmpDir) && Files.isDirectory(tmpDir)) {
+        Infos.log(Level.INFO, Infos.diskFreeInfo(hadoopTmp.toFile()));
       }
 
     } catch (IOException e) {

@@ -28,6 +28,7 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -92,7 +93,7 @@ public abstract class UploadModule extends AbstractModule {
         ((AbstractWorkflow) context.getWorkflow()).getWorkflowContext();
 
     final Map<DataFile, DataFile> filesToCopy = new HashMap<>();
-    File repackagedJarFile = null;
+    Path repackagedJarFile = null;
 
     try {
       final Design design = context.getWorkflow().getDesign();
@@ -112,7 +113,7 @@ public abstract class UploadModule extends AbstractModule {
       if (!context.getRuntime().getMode().isHadoopMode()) {
         repackagedJarFile = HadoopJarRepackager.repack();
         final DataFile jarDataFile =
-            new DataFile(repackagedJarFile.getAbsolutePath());
+            new DataFile(repackagedJarFile.toAbsolutePath());
         filesToCopy.put(jarDataFile, getUploadedDataFile(jarDataFile));
       }
 
@@ -177,7 +178,7 @@ public abstract class UploadModule extends AbstractModule {
     // The path to the jar file
     if (!context.getRuntime().getMode().isHadoopMode()) {
       fullContext.setJarFile(new DataFile(
-          getDest().toString() + "/" + repackagedJarFile.getName()));
+          getDest(), repackagedJarFile.getFileName().toString()));
     }
 
     status.setProgressMessage(log.toString());

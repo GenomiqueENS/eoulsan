@@ -27,6 +27,7 @@
 package fr.ens.biologie.genomique.eoulsan;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +36,8 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -47,7 +50,6 @@ import java.util.Set;
 import com.google.common.base.Splitter;
 
 import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import fr.ens.biologie.genomique.kenetre.util.Utils;
 
 /**
@@ -342,7 +344,7 @@ public final class Settings implements Serializable {
    */
   public File getTempDirectoryFile() {
 
-    return new File(getTempDirectory());
+    return Path.of(getTempDirectory()).toFile();
   }
 
   /**
@@ -370,7 +372,7 @@ public final class Settings implements Serializable {
    */
   public File getExecutablesTempDirectoryFile() {
 
-    return new File(getExecutablesTempDirectory());
+    return Path.of(getExecutablesTempDirectory()).toFile();
   }
 
   /**
@@ -1408,7 +1410,7 @@ public final class Settings implements Serializable {
    */
   public void saveSettings() throws IOException {
 
-    saveSettings(new File(getConfigurationFilePath()));
+    saveSettings(Path.of(getConfigurationFilePath()));
   }
 
   /**
@@ -1418,13 +1420,24 @@ public final class Settings implements Serializable {
    */
   public void saveSettings(final File file) throws IOException {
 
-    final OutputStream os = FileUtils.createOutputStream(file);
+    requireNonNull(file);
+    saveSettings(file.toPath());
+  }
 
-    this.properties.store(os,
-        " "
-            + Globals.APP_NAME + " version " + Globals.APP_VERSION_STRING
-            + " configuration file");
-    os.close();
+  /**
+   * Save application options.
+   * @param file File to save
+   * @throws IOException if an error occurs while writing settings
+   */
+  public void saveSettings(final Path file) throws IOException {
+
+    try (OutputStream os = Files.newOutputStream(file)) {
+
+      this.properties.store(os,
+          " "
+              + Globals.APP_NAME + " version " + Globals.APP_VERSION_STRING
+              + " configuration file");
+    }
   }
 
   /**
@@ -1434,8 +1447,8 @@ public final class Settings implements Serializable {
    */
   public void loadSettings() throws IOException, EoulsanException {
 
-    final File confFile = new File(getConfigurationFilePath());
-    if (confFile.exists()) {
+    final Path confFile = Path.of(getConfigurationFilePath());
+    if (Files.exists(confFile)) {
       loadSettings(confFile);
     } else {
       getLogger().config("No configuration file found.");
@@ -1451,13 +1464,26 @@ public final class Settings implements Serializable {
   public void loadSettings(final File file)
       throws IOException, EoulsanException {
 
-    getLogger().info("Load configuration file: " + file.getAbsolutePath());
-    final InputStream is = FileUtils.createInputStream(file);
+    requireNonNull(file);
+    loadSettings(file.toPath());
+  }
+
+  /**
+   * Load application options.
+   * @param file file to save
+   * @throws IOException if an error occurs while reading the file
+   * @throws EoulsanException if an invalid key is found in configuration file
+   */
+  public void loadSettings(final Path file)
+      throws IOException, EoulsanException {
+
+    getLogger().info("Load configuration file: " + file.toAbsolutePath());
 
     // Load properties in a temporary object
     final Properties tmpProperties = new Properties();
-    tmpProperties.load(FileUtils.createInputStream(file));
-    is.close();
+    try (InputStream in = Files.newInputStream(file)) {
+      tmpProperties.load(in);
+    }
 
     for (String key : tmpProperties.stringPropertyNames()) {
 
@@ -1613,6 +1639,18 @@ public final class Settings implements Serializable {
    * @throws EoulsanException if an invalid key is found in configuration file
    */
   Settings(final File file) throws IOException, EoulsanException {
+
+    init();
+    loadSettings(file);
+  }
+
+  /**
+   * Public constructor. Load application options.
+   * @param file file to save
+   * @throws IOException if an error occurs while reading the file
+   * @throws EoulsanException if an invalid key is found in configuration file
+   */
+  Settings(final Path file) throws IOException, EoulsanException {
 
     init();
     loadSettings(file);

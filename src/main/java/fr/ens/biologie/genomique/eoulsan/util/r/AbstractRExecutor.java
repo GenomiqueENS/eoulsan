@@ -1,10 +1,9 @@
 package fr.ens.biologie.genomique.eoulsan.util.r;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
-import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +21,8 @@ public abstract class AbstractRExecutor implements RExecutor {
   private static final String SWEAVE_FILE_EXTENSION = ".Rnw";
 
   private final List<String> inputFilenames = new ArrayList<>();
-  private final File outputDirectory;
-  private final File temporaryDirectory;
+  private final Path outputDirectory;
+  private final Path temporaryDirectory;
 
   //
   // Protected methods
@@ -53,8 +52,8 @@ public abstract class AbstractRExecutor implements RExecutor {
    * @param scriptArguments script arguments
    * @throws IOException if an error occurs while executing the script
    */
-  protected abstract void executeRScript(File rScriptFile, boolean sweave,
-      String sweaveOuput, File workflowOutputDir, String... scriptArguments)
+  protected abstract void executeRScript(Path rScriptFile, boolean sweave,
+      String sweaveOuput, Path workflowOutputDir, String... scriptArguments)
       throws IOException;
 
   /**
@@ -69,7 +68,7 @@ public abstract class AbstractRExecutor implements RExecutor {
    * Get the output directory of the analysis.
    * @return the output directory of the analysis
    */
-  protected File getOutputDirectory() {
+  protected Path getOutputDirectory() {
 
     return this.outputDirectory;
   }
@@ -78,7 +77,7 @@ public abstract class AbstractRExecutor implements RExecutor {
    * Get the temporary directory.
    * @return the temporary directory
    */
-  protected File getTemporaryDirectory() {
+  protected Path getTemporaryDirectory() {
 
     return this.temporaryDirectory;
   }
@@ -90,13 +89,13 @@ public abstract class AbstractRExecutor implements RExecutor {
   @Override
   public void openConnection() throws IOException {
 
-    if (!outputDirectory.isDirectory()) {
+    if (!Files.isDirectory(this.outputDirectory)) {
       throw new IOException(
           "The output directory does not exist or is not a directory: "
               + outputDirectory);
     }
 
-    if (!temporaryDirectory.isDirectory()) {
+    if (!Files.isDirectory(this.temporaryDirectory)) {
       throw new IOException(
           "The output directory does not exist or is not a directory: "
               + outputDirectory);
@@ -172,22 +171,22 @@ public abstract class AbstractRExecutor implements RExecutor {
       throw new NullPointerException("description argument cannot be null");
     }
 
-    final File rScriptFile = new File(this.outputDirectory,
+    final Path rScriptFile = this.outputDirectory.resolve(
         description + (sweave ? SWEAVE_FILE_EXTENSION : R_FILE_EXTENSION));
 
     // Write R script in a File
-    Writer writer = new FileWriter(rScriptFile, Charset.defaultCharset());
-    writer.write(rScript);
-    writer.close();
+    Files.writeString(rScriptFile, rScript);
 
     // Execute R script
     executeRScript(rScriptFile, sweave, sweaveOutput,
-        workflowOutputDir.toFile(), scriptArguments);
+        workflowOutputDir.toPath(), scriptArguments);
 
     // Remove temporary R script
     if (!saveRscript) {
 
-      if (!rScriptFile.delete()) {
+      try {
+        Files.delete(rScriptFile);
+      } catch (IOException e) {
         EoulsanLogger
             .logWarning("Cannot removing temporary R script: " + rScriptFile);
       }
@@ -231,8 +230,8 @@ public abstract class AbstractRExecutor implements RExecutor {
       throw new NullPointerException("outputDirectory argument cannot be null");
     }
 
-    this.outputDirectory = outputDirectory;
-    this.temporaryDirectory = temporaryDirectory;
+    this.outputDirectory = outputDirectory.toPath();
+    this.temporaryDirectory = temporaryDirectory.toPath();
   }
 
 }

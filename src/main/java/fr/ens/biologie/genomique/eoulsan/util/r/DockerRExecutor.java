@@ -3,6 +3,7 @@ package fr.ens.biologie.genomique.eoulsan.util.r;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Path;
 
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
@@ -52,7 +53,7 @@ public class DockerRExecutor extends ProcessRExecutor {
       return;
     }
 
-    final File inFile = inputFile.toFile();
+    final Path inFile = inputFile.toPath();
 
     // Check if the file is in the output directory (or a subdir) or in the
     // temporary directory (or a subdir)
@@ -78,10 +79,10 @@ public class DockerRExecutor extends ProcessRExecutor {
    * @param b second file
    * @return true if a file is in a sub directory of another file
    */
-  private static boolean isInSubDir(File a, File b) {
+  private static boolean isInSubDir(Path a, Path b) {
 
-    final File aAbs = getCanonicalOrAbsoluteFile(a);
-    final File bAbs = getCanonicalOrAbsoluteFile(b);
+    final File aAbs = getCanonicalOrAbsoluteFile(a.toFile());
+    final File bAbs = getCanonicalOrAbsoluteFile(b.toFile());
 
     final URI aURI = aAbs.toURI();
     final URI bURI = bAbs.toURI();

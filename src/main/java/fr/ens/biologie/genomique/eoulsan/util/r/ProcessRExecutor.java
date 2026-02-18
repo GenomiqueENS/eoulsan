@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,7 +50,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
   protected void putFile(final DataFile inputFile, final String outputFilename)
       throws IOException {
 
-    final File outputDir = getOutputDirectory().getAbsoluteFile();
+    final Path outputDir = getOutputDirectory().toAbsolutePath();
     final DataFile outputFile = new DataFile(outputDir, outputFilename);
 
     // Check if the input and output file are the same
@@ -117,9 +119,10 @@ public class ProcessRExecutor extends AbstractRExecutor {
       return;
     }
 
-    final File file = new File(getOutputDirectory(), filename);
-
-    if (!file.delete()) {
+    Path file = getOutputDirectory().resolve(filename);
+    try {
+      Files.delete(file);
+    } catch (IOException e) {
       EoulsanLogger.logWarning("Cannot remove file used by R: " + file);
     }
   }
@@ -131,7 +134,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
    * @param scriptArguments script arguments
    * @return the R command as a list
    */
-  protected List<String> createCommand(final File rScriptFile,
+  protected List<String> createCommand(final Path rScriptFile,
       final boolean sweave, final String sweaveOuput,
       final String... scriptArguments) {
 
@@ -144,7 +147,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
 
       final StringBuilder sb = new StringBuilder();
       sb.append("Sweave(\"");
-      sb.append(rScriptFile.getAbsolutePath());
+      sb.append(rScriptFile.toAbsolutePath());
       sb.append('\"');
 
       if (sweaveOuput != null) {
@@ -156,7 +159,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
 
       result.add(sb.toString());
     } else {
-      result.add(rScriptFile.getAbsolutePath());
+      result.add(rScriptFile.toAbsolutePath().toString());
     }
 
     if (scriptArguments != null) {
@@ -177,8 +180,8 @@ public class ProcessRExecutor extends AbstractRExecutor {
   }
 
   @Override
-  protected void executeRScript(final File rScriptFile, final boolean sweave,
-      final String sweaveOuput, final File workflowOutputDir,
+  protected void executeRScript(final Path rScriptFile, final boolean sweave,
+      final String sweaveOuput, final Path workflowOutputDir,
       final String... scriptArguments) throws IOException {
 
     final SimpleProcess process = createSimpleProcess();
@@ -186,12 +189,12 @@ public class ProcessRExecutor extends AbstractRExecutor {
     final List<String> commandLine =
         createCommand(rScriptFile, sweave, sweaveOuput, scriptArguments);
 
-    final File stdoutFile = changeFileExtension(rScriptFile, ".out");
+    final Path stdoutFile = changeFileExtension(rScriptFile, ".out");
 
-    final int exitValue = process.execute(commandLine, getOutputDirectory(),
+    final int exitValue = process.execute(commandLine, getOutputDirectory().toFile(),
         Collections.singletonMap(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG),
-        getTemporaryDirectory(), stdoutFile, stdoutFile, true,
-        workflowOutputDir);
+        getTemporaryDirectory().toFile(), stdoutFile.toFile(), stdoutFile.toFile(), true,
+        workflowOutputDir.toFile());
 
     ProcessUtils.throwExitCodeException(exitValue,
         Joiner.on(' ').join(commandLine));
@@ -206,13 +209,14 @@ public class ProcessRExecutor extends AbstractRExecutor {
     final List<String> commandLine =
         Arrays.asList(RSCRIPT_EXECUTABLE, "-e", code);
 
-    final File stdoutFile = getOutputDirectory().toPath()
+    final File stdoutFile = getOutputDirectory()
         .resolve("R-" + System.currentTimeMillis() + ".out").toFile();
 
-    final int exitValue = process.execute(commandLine, getOutputDirectory(),
-        Collections.singletonMap(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG),
-        getTemporaryDirectory(), stdoutFile, stdoutFile, true,
-        workflowOutputDir);
+    final int exitValue =
+        process.execute(commandLine, getOutputDirectory().toFile(),
+            Collections.singletonMap(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG),
+            getTemporaryDirectory().toFile(), stdoutFile, stdoutFile, true,
+            workflowOutputDir);
 
     ProcessUtils.throwExitCodeException(exitValue,
         Joiner.on(' ').join(commandLine));
@@ -225,7 +229,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
    * @param newExtension the new extension of the file
    * @return a file object
    */
-  protected static File changeFileExtension(final File file,
+  protected static Path changeFileExtension(final Path file,
       final String newExtension) {
 
     if (file == null) {
@@ -237,9 +241,10 @@ public class ProcessRExecutor extends AbstractRExecutor {
     }
 
     final String newFilename =
-        StringUtils.filenameWithoutExtension(file.getName()) + newExtension;
+        StringUtils.filenameWithoutExtension(file.getFileName().toString())
+            + newExtension;
 
-    return new File(file.getParent(), newFilename);
+    return file.getParent().resolve(newFilename);
   }
 
   @Override

@@ -9,6 +9,7 @@ import static fr.ens.biologie.genomique.eoulsan.modules.chipseq.ChIPSeqDataForma
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -310,10 +311,10 @@ public class MACS2Module extends AbstractModule {
 
         String commandLine2 = Joiner.on(" ").join(commandLine);
 
-        final File stdoutFile =
-            new File(context.getStepOutputDirectory().toFile(), "macs2.out");
-        final File stderrFile =
-            new File(context.getStepOutputDirectory().toFile(), "macs2.err");
+        final Path stdoutFile =
+            context.getStepOutputDirectory().toPath().resolve("macs2.out");
+        final Path stderrFile =
+            context.getStepOutputDirectory().toPath().resolve("macs2.err");
 
         getLogger().info("Run command line : " + commandLine2);
         try {
@@ -321,7 +322,7 @@ public class MACS2Module extends AbstractModule {
               EoulsanDockerManager.getInstance().createImageInstance(dockerImage);
           final int exitValue = process.execute(commandLine,
               context.getStepOutputDirectory().toFile(),
-              context.getLocalTempDirectory(), stdoutFile, stderrFile,
+              context.getLocalTempDirectory(), stdoutFile.toFile(), stderrFile.toFile(),
               sampleFile, refFile);
 
           ProcessUtils.throwExitCodeException(exitValue,

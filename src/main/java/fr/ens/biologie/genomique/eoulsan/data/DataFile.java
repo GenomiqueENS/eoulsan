@@ -36,7 +36,6 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.data.protocols.DataProtocol;
@@ -250,7 +249,21 @@ public class DataFile implements Comparable<DataFile>, Serializable {
       return null;
     }
 
-    return Paths.get(uri);
+    if (!this.src.contains("://") && !this.src.startsWith("//")) {
+      // Case #1: Local path (no scheme)
+      return Path.of(this.src);
+    } else if (this.src.startsWith("//")) {
+      // Case #2: URI without scheme (e.g //host/path)
+      try {
+        return Path.of(new URI("file:" + this.src));
+      } catch (URISyntaxException e) {
+        return null;
+      }
+    }
+    else {
+      // Case #3: Well formed URI (e.g. file:///path)
+      return Path.of(uri);
+    }
   }
 
   /**

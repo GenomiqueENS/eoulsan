@@ -26,8 +26,9 @@ package fr.ens.biologie.genomique.eoulsan.util.hadoop;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,15 +46,15 @@ public final class HadoopJarRepackager {
 
   private static final String DIR_IN_JAR = "lib/";
 
-  private final List<File> jarFiles = new ArrayList<>();
-  private File srcJar;
+  private final List<Path> jarFiles = new ArrayList<>();
+  private Path srcJar;
 
   /**
    * Proceed to the repackaging
    * @param destJarFile path to the repackaged jar file
    * @throws IOException if an error occurs while repackage the application
    */
-  private void doIt(final File destJarFile) throws IOException {
+  private void doIt(final Path destJarFile) throws IOException {
 
     if (this.srcJar == null) {
       throw new IOException(
@@ -63,9 +64,9 @@ public final class HadoopJarRepackager {
     getLogger().info("Repackage " + this.srcJar + " in " + destJarFile);
 
     final JarRepack jarRepack = new JarRepack(this.srcJar, destJarFile);
-    for (File file : this.jarFiles) {
+    for (Path file : this.jarFiles) {
       jarRepack.addFile(file, DIR_IN_JAR);
-      getLogger().fine("Add in repackaged jar file: " + file.getName());
+      getLogger().fine("Add in repackaged jar file: " + file.getFileName());
     }
 
     jarRepack.close();
@@ -80,7 +81,7 @@ public final class HadoopJarRepackager {
    * @param destJarFile path to the repackaged jar file
    * @throws IOException if an error occurs while repackage the application
    */
-  public static void repack(final File destJarFile) throws IOException {
+  public static void repack(final Path destJarFile) throws IOException {
 
     final HadoopJarRepackager hjr = new HadoopJarRepackager(
         System.getProperty(Globals.LIBS_TO_HADOOP_REPACK_PROPERTY),
@@ -95,11 +96,11 @@ public final class HadoopJarRepackager {
    * @return the File repackaged jar file
    * @throws IOException if an error occurs while repackage the application
    */
-  public static File repack() throws IOException {
+  public static Path repack() throws IOException {
 
-    File result = new File(createRepackagedJarName());
+    Path result = Path.of(createRepackagedJarName());
 
-    if (!result.exists()) {
+    if (!Files.exists(result)) {
       repack(result);
     }
 
@@ -141,10 +142,10 @@ public final class HadoopJarRepackager {
 
     for (String filename : Splitter.on(':').split(libPaths)) {
 
-      final File file = new File(filename.trim());
-      if (file.exists() && file.isFile()) {
+      final Path file = Path.of(filename.trim());
+      if (Files.exists(file) && Files.isRegularFile(file)) {
 
-        if (jarName.equals(file.getName())) {
+        if (jarName.equals(file.getFileName().toString())) {
           this.srcJar = file;
         } else {
           this.jarFiles.add(file);

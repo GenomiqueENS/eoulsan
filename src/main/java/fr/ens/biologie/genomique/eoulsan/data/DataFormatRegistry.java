@@ -28,7 +28,6 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanRuntime.getSettings;
 import static java.util.Objects.requireNonNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -37,7 +36,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -119,7 +117,7 @@ public class DataFormatRegistry {
         return new DataFile(FORMAT_SUBDIR);
       }
 
-      return new DataFile(new File(main.getEoulsanDirectory(), FORMAT_SUBDIR));
+      return new DataFile(main.getEoulsanDirectory().toPath().resolve(FORMAT_SUBDIR));
     }
 
     //

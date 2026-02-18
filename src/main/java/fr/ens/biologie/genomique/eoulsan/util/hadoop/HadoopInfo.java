@@ -26,8 +26,9 @@ package fr.ens.biologie.genomique.eoulsan.util.hadoop;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.DF;
@@ -79,19 +80,19 @@ public class HadoopInfo {
       parseCpuinfo();
       parseMeminfo();
 
-      df(new File(ROOT_PATH), conf);
-      df(new File(TMP_PATH), conf);
-      df(new File(VAR_PATH), conf);
+      df(Path.of(ROOT_PATH), conf);
+      df(Path.of(TMP_PATH), conf);
+      df(Path.of(VAR_PATH), conf);
 
       // Log the usage of the hadoop temporary directory partition
       final String hadoopTmp = conf.get("hadoop.tmp.dir");
       if (hadoopTmp != null) {
-        df(new File(hadoopTmp), conf);
+        df(Path.of(hadoopTmp), conf);
       }
 
       // Log the usage of the Java temporary directory partition
-      final File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-      if (tmpDir != null && tmpDir.exists() && tmpDir.isDirectory()) {
+      final Path tmpDir = Path.of(System.getProperty("java.io.tmpdir"));
+      if (tmpDir != null && Files.exists(tmpDir) && Files.isDirectory(tmpDir)) {
         df(tmpDir, conf);
       }
     } catch (IOException e) {
@@ -132,10 +133,10 @@ public class HadoopInfo {
         .info("SYSINFO Mem Total: " + (memTotal == null ? "NA" : memTotal));
   }
 
-  private static void df(final File f, final Configuration conf)
+  private static void df(final Path f, final Configuration conf)
       throws IOException {
 
-    DF df = new DF(f, conf);
+    DF df = new DF(f.toFile(), conf);
 
     getLogger().info("SYSINFO "
         + f + " " + StringUtils.sizeToHumanReadable(df.getCapacity())

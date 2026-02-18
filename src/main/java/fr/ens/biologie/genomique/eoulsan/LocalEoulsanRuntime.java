@@ -28,10 +28,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 
 /**
  * This class define the Runtime to execute low level IO operation for Eoulsan
@@ -63,10 +63,8 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
       throw new IllegalArgumentException("The datasource is null.");
     }
 
-    final File file = new File(dataSource);
-
-    return decompressInputStreamIsNeeded(FileUtils.createInputStream(file),
-        dataSource);
+    return decompressInputStreamIsNeeded(
+        Files.newInputStream(Path.of(dataSource)), dataSource);
   }
 
   @Override
@@ -77,9 +75,7 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
       throw new IllegalArgumentException("The datasource is null.");
     }
 
-    final File file = new File(dataSource);
-
-    return FileUtils.createInputStream(file);
+    return Files.newInputStream(Path.of(dataSource));
   }
 
   @Override
@@ -90,9 +86,7 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
       throw new IllegalArgumentException("The datasource is null.");
     }
 
-    final File file = new File(dataSource);
-
-    return FileUtils.createOutputStream(file);
+    return Files.newOutputStream(Path.of(dataSource));
   }
 
   /**

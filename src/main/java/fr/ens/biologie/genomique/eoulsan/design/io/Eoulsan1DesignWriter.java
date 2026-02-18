@@ -33,11 +33,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -253,11 +253,24 @@ public class Eoulsan1DesignWriter implements DesignWriter {
    * @throws IOException if an error occurs while reading the file or if the
    *           file is null.
    */
+  public Eoulsan1DesignWriter(final Path file) throws IOException {
+
+    requireNonNull(file, "file argument cannot be null");
+
+    this.out = Files.newOutputStream(file);
+  }
+
+  /**
+   * Public constructor.
+   * @param file file to read
+   * @throws IOException if an error occurs while reading the file or if the
+   *           file is null.
+   */
   public Eoulsan1DesignWriter(final File file) throws IOException {
 
     requireNonNull(file, "file argument cannot be null");
 
-    this.out = new FileOutputStream(file);
+    this.out = Files.newOutputStream(file.toPath());
   }
 
   /**
@@ -288,14 +301,14 @@ public class Eoulsan1DesignWriter implements DesignWriter {
   /**
    * Public constructor.
    * @param filename File to write
-   * @throws FileNotFoundException if the file doesn't exist
+   * @throws IOException if the file doesn't exist
    */
   public Eoulsan1DesignWriter(final String filename)
-      throws FileNotFoundException {
+      throws IOException {
 
     requireNonNull(filename, "filename argument cannot be null");
 
-    this.out = new FileOutputStream(filename);
+    this.out = Files.newOutputStream(Path.of(filename));
   }
 
 }

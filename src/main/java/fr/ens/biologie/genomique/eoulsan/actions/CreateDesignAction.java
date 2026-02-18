@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.actions;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -169,7 +169,7 @@ public class CreateDesignAction extends AbstractAction {
 
       // Add all the files of a Casava design if Casava design path is defined
       for (String sampleSheetPath : sampleSheetPaths) {
-        db.addBcl2FastqSamplesheetProject(new File(sampleSheetPath),
+        db.addBcl2FastqSamplesheetProject(Path.of(sampleSheetPath),
             samplesProjectName);
       }
 

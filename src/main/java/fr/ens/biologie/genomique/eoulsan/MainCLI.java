@@ -24,9 +24,10 @@
 
 package fr.ens.biologie.genomique.eoulsan;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 
@@ -91,18 +92,21 @@ public final class MainCLI extends Main {
       throw new NullPointerException("The log file is null");
     }
 
-    final File file = new File(logFile);
-    final File parentFile = file.getParentFile();
+    final Path file = Path.of(logFile);
+    final Path parentFile = file.getParent();
 
     // Create parent directory if necessary
-    if (parentFile != null && !parentFile.exists()) {
-      if (!parentFile.mkdirs()) {
+    if (parentFile != null && !Files.exists(parentFile)) {
+
+      try {
+        Files.createDirectories(parentFile);
+      } catch (IOException e) {
         throw new IOException("Unable to create directory "
             + parentFile + " for log file:" + logFile);
       }
     }
 
-    return new FileHandler(file.getAbsolutePath());
+    return new FileHandler(file.toAbsolutePath().toString());
   }
 
   //

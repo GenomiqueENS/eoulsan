@@ -5,8 +5,8 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_INDEX_BAI;
 import static fr.ens.biologie.genomique.eoulsan.modules.chipseq.ChIPSeqDataFormats.PEAK;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -279,16 +279,16 @@ public class DeepToolsModule extends AbstractModule {
       cmd1multibamSummary
           .add("multiBamSummary_readCounts_" + e.getName() + "%s.tab");
 
-      final File stderrFile1 =
-          new File("dockerMultiBAMSummary_global_" + e.getName() + ".err");
-      final File stdoutFile1 =
-          new File("dockerMultiBAMSummary_global_" + e.getName() + ".out");
+      final Path stderrFile1 =
+          Path.of("dockerMultiBAMSummary_global_" + e.getName() + ".err");
+      final Path stdoutFile1 =
+          Path.of("dockerMultiBAMSummary_global_" + e.getName() + ".out");
 
       // Execute process
       try {
         final int exitValue1 = process.execute(cmd1multibamSummary,
             context.getStepOutputDirectory().toFile(),
-            context.getLocalTempDirectory(), stdoutFile1, stderrFile1);
+            context.getLocalTempDirectory(), stdoutFile1.toFile(), stderrFile1.toFile());
 
         ProcessUtils.throwExitCodeException(exitValue1,
             Joiner.on(' ').join(cmd1multibamSummary));
@@ -324,16 +324,16 @@ public class DeepToolsModule extends AbstractModule {
       cmd2bamCorrelate
           .add("bamcorrelatebins_output_report_" + e.getName() + ".pdf");
 
-      final File stderrFile2 =
-          new File("dockerPlotCorrelation_global_" + e.getName() + ".err");
-      final File stdoutFile2 =
-          new File("dockerPlotCorrelation_global_" + e.getName() + ".out");
+      final Path stderrFile2 =
+          Path.of("dockerPlotCorrelation_global_" + e.getName() + ".err");
+      final Path stdoutFile2 =
+          Path.of("dockerPlotCorrelation_global_" + e.getName() + ".out");
 
       // Execute process
       try {
         final int exitValue2 = process.execute(cmd2bamCorrelate,
             context.getStepOutputDirectory().toFile(),
-            context.getLocalTempDirectory(), stdoutFile2, stderrFile2);
+            context.getLocalTempDirectory(), stdoutFile2.toFile(), stderrFile2.toFile());
 
         ProcessUtils.throwExitCodeException(exitValue2,
             Joiner.on(' ').join(cmd2bamCorrelate));
@@ -370,16 +370,16 @@ public class DeepToolsModule extends AbstractModule {
         cmd3multibamSummary
             .add("multiBamSummary_peaks_readCounts_" + e.getName() + ".tab");
 
-        final File stderrFile3 =
-            new File("dockerMultiBAMSummary_peak_" + e.getName() + ".err");
-        final File stdoutFile3 =
-            new File("dockerMultiBAMSummary_peak_" + e.getName() + ".out");
+        final Path stderrFile3 =
+            Path.of("dockerMultiBAMSummary_peak_" + e.getName() + ".err");
+        final Path stdoutFile3 =
+            Path.of("dockerMultiBAMSummary_peak_" + e.getName() + ".out");
 
         // Execute process
         try {
           final int exitValue3 = process.execute(cmd3multibamSummary,
               context.getStepOutputDirectory().toFile(),
-              context.getLocalTempDirectory(), stdoutFile3, stderrFile3);
+              context.getLocalTempDirectory(), stdoutFile3.toFile(), stderrFile3.toFile());
 
           ProcessUtils.throwExitCodeException(exitValue3,
               Joiner.on(' ').join(cmd3multibamSummary));
@@ -415,17 +415,17 @@ public class DeepToolsModule extends AbstractModule {
         cmd4bamCorrelate
             .add("bamcorrelatepeaks_output_report_" + e.getName() + ".pdf");
 
-        final File stderrFile4 =
-            new File("dockerPlotCorrelation_peak_" + e.getName() + ".err");
-        final File stdoutFile4 =
-            new File("dockerPlotCorrelation_peak_" + e.getName() + ".out");
+        final Path stderrFile4 =
+            Path.of("dockerPlotCorrelation_peak_" + e.getName() + ".err");
+        final Path stdoutFile4 =
+            Path.of("dockerPlotCorrelation_peak_" + e.getName() + ".out");
 
         // Execute process
 
         try {
           final int exitValue4 = process.execute(cmd4bamCorrelate,
               context.getStepOutputDirectory().toFile(),
-              context.getLocalTempDirectory(), stdoutFile4, stderrFile4);
+              context.getLocalTempDirectory(), stdoutFile4.toFile(), stderrFile4.toFile());
 
           ProcessUtils.throwExitCodeException(exitValue4,
               Joiner.on(' ').join(cmd4bamCorrelate));
@@ -454,16 +454,16 @@ public class DeepToolsModule extends AbstractModule {
       cmd5bamFingerprint.add("--plotFileFormat");
       cmd5bamFingerprint.add("pdf");
 
-      final File stderrFile5 =
-          new File("dockerFingerPrint_" + e.getName() + ".err");
-      final File stdoutFile5 =
-          new File("dockerFingerPrint_" + e.getName() + ".out");
+      final Path stderrFile5 =
+          Path.of("dockerFingerPrint_" + e.getName() + ".err");
+      final Path stdoutFile5 =
+          Path.of("dockerFingerPrint_" + e.getName() + ".out");
 
       // Execute process
       try {
         final int exitValue5 = process.execute(cmd5bamFingerprint,
             context.getStepOutputDirectory().toFile(),
-            context.getLocalTempDirectory(), stdoutFile5, stderrFile5);
+            context.getLocalTempDirectory(), stdoutFile5.toFile(), stderrFile5.toFile());
 
         ProcessUtils.throwExitCodeException(exitValue5,
             Joiner.on(' ').join(cmd5bamFingerprint));

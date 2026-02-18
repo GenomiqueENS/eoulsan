@@ -67,7 +67,7 @@ public class FileDataProtocol extends AbstractDataProtocol {
   }
 
   @Override
-  public File getSourceAsFile(final DataFile dataFile) {
+  public Path getSourceAsPath(final DataFile dataFile) {
 
     if (dataFile == null || dataFile.getSource() == null) {
       throw new NullPointerException("The source is null.");
@@ -76,10 +76,18 @@ public class FileDataProtocol extends AbstractDataProtocol {
     final String protocolName = dataFile.getProtocolPrefixInSource();
 
     if (protocolName == null) {
-      return new File(dataFile.getSource());
+      return Path.of(dataFile.getSource());
     }
 
-    return new File(dataFile.getSource().substring(protocolName.length() + 1));
+    return Path.of(dataFile.getSource().substring(protocolName.length() + 1));
+  }
+
+  @Override
+  public File getSourceAsFile(final DataFile dataFile) {
+
+    Path result = getSourceAsPath(dataFile);
+
+    return result == null ? null : result.toFile();
   }
 
   @Override
@@ -250,7 +258,7 @@ public class FileDataProtocol extends AbstractDataProtocol {
     final Path path = getSourceAsFile(file).toPath();
 
     // Check if use wants to remove /
-    if (new File("/").toPath().equals(path.normalize().toAbsolutePath())) {
+    if (Path.of("/").equals(path.normalize().toAbsolutePath())) {
       throw new IOException("Cannot remove /: " + file);
     }
 

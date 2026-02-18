@@ -27,8 +27,8 @@ package fr.ens.biologie.genomique.eoulsan.actions;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,8 +105,8 @@ public class HadoopExecAction extends AbstractAction {
       help(options);
     }
 
-    final File paramFile = new File(arguments.get(argsOptions));
-    final File designFile = new File(arguments.get(argsOptions + 1));
+    final Path paramFile = Path.of(arguments.get(argsOptions));
+    final Path designFile = Path.of(arguments.get(argsOptions + 1));
     final String hdfsPath = arguments.get(argsOptions + 2);
 
     // Execute program in hadoop mode
@@ -201,7 +201,7 @@ public class HadoopExecAction extends AbstractAction {
    * @param hdfsPath path of data on hadoop file system
    * @param jobDescription job description
    */
-  private static void run(final File workflowFile, final File designFile,
+  private static void run(final Path workflowFile, final Path designFile,
       final String hdfsPath, final String jobDescription) {
 
     requireNonNull(workflowFile, "paramFile is null");
@@ -213,7 +213,7 @@ public class HadoopExecAction extends AbstractAction {
 
     // Repackage application for Hadoop
     System.out.println("Package " + Globals.APP_NAME + " for hadoop mode...");
-    final File repackagedJarFile;
+    final Path repackagedJarFile;
     try {
       repackagedJarFile = HadoopJarRepackager.repack();
 
@@ -232,7 +232,7 @@ public class HadoopExecAction extends AbstractAction {
 
     argsList.add("hadoop");
     argsList.add("jar");
-    argsList.add(repackagedJarFile.getAbsolutePath());
+    argsList.add(repackagedJarFile.toAbsolutePath().toString());
 
     final Main main = Main.getInstance();
 

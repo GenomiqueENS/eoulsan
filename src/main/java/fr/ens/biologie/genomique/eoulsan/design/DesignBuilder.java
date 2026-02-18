@@ -36,6 +36,9 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -435,19 +438,34 @@ public class DesignBuilder {
       final String projectName, final File bcl2fastqOutputDir)
       throws EoulsanException {
 
+    addBcl2FastqSamplesheetProject(samplesheet, projectName,
+        bcl2fastqOutputDir.toPath());
+  }
+
+  /**
+   * Add all the sample from a Bclfastq samplesheet.
+   * @param samplesheet The Bcl2fastq samplesheet object
+   * @param projectName name of the project
+   * @param bcl2fastqOutputDir the output directory of Bcl2fastq demultiplexing
+   * @throws EoulsanException if an error occurs while adding the Bcl2fastq
+   *           samplesheet
+   */
+  public void addBcl2FastqSamplesheetProject(final SampleSheet samplesheet,
+      final String projectName, final Path bcl2fastqOutputDir)
+      throws EoulsanException {
+
     if (samplesheet == null || bcl2fastqOutputDir == null) {
       return;
     }
 
-    if (!bcl2fastqOutputDir.exists() || !bcl2fastqOutputDir.isDirectory()) {
+    if (!Files.exists(bcl2fastqOutputDir) || !Files.isDirectory(bcl2fastqOutputDir)) {
       throw new EoulsanException(
           "The Bcl2fastq output directory does not exists: "
               + bcl2fastqOutputDir);
     }
 
-    final boolean Bcl2Fastq1 =
-        new File(bcl2fastqOutputDir.getPath() + "/Project_" + projectName)
-            .isDirectory();
+    final boolean Bcl2Fastq1 = Files.isDirectory(
+        Path.of(bcl2fastqOutputDir.toString() + "/Project_" + projectName));
 
     for (fr.ens.biologie.genomique.kenetre.illumina.samplesheet.Sample sample : samplesheet) {
 
@@ -470,23 +488,23 @@ public class DesignBuilder {
       if (projectName != null && !projectName.equals(sampleProject)) {
         continue;
       }
-      File dataDir;
+      Path dataDir;
       if (Bcl2Fastq1) {
-        dataDir = new File(bcl2fastqOutputDir.getPath()
+        dataDir = Path.of(bcl2fastqOutputDir.toString()
             + "/Project_" + sampleProject + "/Sample_" + sampleId);
       } else {
 
-        dataDir = new File(bcl2fastqOutputDir.getPath() + "/" + sampleProject);
+        dataDir = bcl2fastqOutputDir.resolve(sampleProject);
 
         // Check if a sample sub directory may exist
         String subdir = defineSampleSubDirName(sampleId, sampleName);
 
         if (!"".equals(subdir)) {
-          dataDir = new File(dataDir, subdir);
+          dataDir = dataDir.resolve(subdir);
         }
       }
       // Test if the directory with fastq files exists
-      if (!dataDir.exists() || !dataDir.isDirectory()) {
+      if (!Files.exists(dataDir) || !Files.isDirectory(dataDir)) {
         continue;
       }
 
@@ -494,7 +512,7 @@ public class DesignBuilder {
           sampleLane == -1 ? "_L" : String.format("_L%03d_", sampleLane);
 
       // List the input FASTQ files
-      final File[] files = dataDir.listFiles(f -> {
+      final File[] files = dataDir.toFile().listFiles(f -> {
 
         final String filename =
             StringUtils.filenameWithoutCompressionExtension(f.getName());
@@ -543,6 +561,18 @@ public class DesignBuilder {
   public void addBcl2FastqSamplesheetProject(final File samplesheetFile,
       final String projectName) throws EoulsanException {
 
+    addBcl2FastqSamplesheetProject(samplesheetFile.toPath(), projectName);
+  }
+
+  /**
+   * Add all the samples from a Bcl2Fastq samplesheet.
+   * @param samplesheetFile the path to the Casava design
+   * @param projectName the name of the project
+   * @throws EoulsanException if an error occurs while reading the Casava design
+   */
+  public void addBcl2FastqSamplesheetProject(final Path samplesheetFile,
+      final String projectName) throws EoulsanException {
+
     if (samplesheetFile == null) {
       return;
     }
@@ -551,18 +581,18 @@ public class DesignBuilder {
         + samplesheetFile + " to design with " + (projectName == null
             ? "no project filter." : projectName + " project filter."));
 
-    final File baseDir;
-    final File file;
+    final Path baseDir;
+    final Path file;
 
-    if (!samplesheetFile.exists()) {
+    if (!Files.exists(samplesheetFile)) {
       throw new EoulsanException(
           "The Bcl2fastq samplesheet file does not exists: " + samplesheetFile);
     }
 
-    if (samplesheetFile.isDirectory()) {
+    if (Files.isDirectory(samplesheetFile)) {
       baseDir = samplesheetFile;
 
-      final File[] files = baseDir.listFiles((dir, filename) -> {
+      final File[] files = baseDir.toFile().listFiles((dir, filename) -> {
         if (filename.endsWith(".csv")) {
           return true;
         }
@@ -580,9 +610,9 @@ public class DesignBuilder {
                 + baseDir);
       }
 
-      file = files[0];
+      file = files[0].toPath();
     } else {
-      baseDir = samplesheetFile.getParentFile();
+      baseDir = samplesheetFile.getParent();
       file = samplesheetFile;
     }
 

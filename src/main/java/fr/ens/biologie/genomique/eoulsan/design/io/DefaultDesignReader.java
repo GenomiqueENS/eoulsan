@@ -3,10 +3,11 @@ package fr.ens.biologie.genomique.eoulsan.design.io;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
@@ -34,16 +35,29 @@ public class DefaultDesignReader implements DesignReader {
   // Constructor
   //
 
+
   /**
    * Public constructor.
    * @param file file to read
    * @throws FileNotFoundException if the file cannot be found
    */
-  public DefaultDesignReader(final File file) throws FileNotFoundException {
+  public DefaultDesignReader(final Path file) throws IOException {
 
     requireNonNull(file, "file argument cannot be null");
 
-    this.is = new FileInputStream(file);
+    this.is = Files.newInputStream(file);
+  }
+
+  /**
+   * Public constructor.
+   * @param file file to read
+   * @throws IOException if the file cannot be found
+   */
+  public DefaultDesignReader(final File file) throws IOException {
+
+    requireNonNull(file, "file argument cannot be null");
+
+    this.is = Files.newInputStream(file.toPath());
   }
 
   /**
@@ -73,14 +87,14 @@ public class DefaultDesignReader implements DesignReader {
   /**
    * Public constructor
    * @param filename File to read
-   * @throws FileNotFoundException if the file doesn't exist
+   * @throws IOException if the file doesn't exist
    */
   public DefaultDesignReader(final String filename)
-      throws FileNotFoundException {
+      throws IOException {
 
     requireNonNull(filename, "filename argument cannot be null");
 
-    this.is = new FileInputStream(filename);
+    this.is = Files.newInputStream(Path.of(filename));
   }
 
 }

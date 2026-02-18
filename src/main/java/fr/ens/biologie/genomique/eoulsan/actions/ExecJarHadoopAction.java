@@ -26,7 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.actions;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
@@ -37,9 +36,9 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -306,7 +305,7 @@ public class ExecJarHadoopAction extends AbstractAction {
       if (workflowPathname.contains("://")) {
         workflowURI = new URI(workflowPathname);
       } else {
-        workflowURI = new File(workflowPathname).getAbsoluteFile().toURI();
+        workflowURI = java.nio.file.Path.of(workflowPathname).toAbsolutePath().toUri();
       }
 
       // Define design URI
@@ -314,7 +313,7 @@ public class ExecJarHadoopAction extends AbstractAction {
       if (designPathname.contains("://")) {
         designURI = new URI(designPathname);
       } else {
-        designURI = new File(designPathname).getAbsoluteFile().toURI();
+        designURI = java.nio.file.Path.of(designPathname).toAbsolutePath().toUri();
       }
 
       // Define destination URI

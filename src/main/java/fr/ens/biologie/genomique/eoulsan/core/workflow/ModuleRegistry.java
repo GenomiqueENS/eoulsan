@@ -31,7 +31,6 @@ import static fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode.HADOOP
 import static fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode.LOCAL_ONLY;
 import static java.util.Objects.requireNonNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -48,11 +47,11 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Main;
 import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.modules.GalaxyToolModule;
 import fr.ens.biologie.genomique.eoulsan.util.ClassPathResourceLoader;
 import fr.ens.biologie.genomique.eoulsan.util.FileResourceLoader;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 
 /**
  * This class define a registry for modules.
@@ -114,8 +113,7 @@ public class ModuleRegistry {
         return new DataFile(GALAXY_TOOL_SUBDIR);
       }
 
-      return new DataFile(
-          new File(main.getEoulsanDirectory(), GALAXY_TOOL_SUBDIR));
+      return new DataFile(main.getEoulsanDirectory(), GALAXY_TOOL_SUBDIR);
     }
 
     @Override

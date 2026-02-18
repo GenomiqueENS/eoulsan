@@ -123,7 +123,7 @@ public class SAM2BAMLocalModule extends AbstractSAM2BAMModule {
         bamDataFile.getName().substring(0, bamDataFile.getName().length() - 1)
             + "i";
     final File createdBamIndexFile =
-        new File(bamDataFile.toFile().getParentFile(), createdBamIndexFilename);
+        bamDataFile.toPath().getParent().resolve(createdBamIndexFilename).toFile();
 
     if (!createdBamIndexFile.renameTo(bamIndexDataFile.toFile())) {
       EoulsanLogger.getLogger().warning("Unable to rename the BAI file "

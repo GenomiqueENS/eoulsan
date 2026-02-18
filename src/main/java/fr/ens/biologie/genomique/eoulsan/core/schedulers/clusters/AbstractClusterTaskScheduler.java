@@ -37,7 +37,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -132,7 +133,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
   private final class TaskThread extends Thread {
 
     private final TaskContextImpl context;
-    private final File taskDir;
+    private final Path taskDir;
     private final String taskPrefix;
     private String jobId;
 
@@ -144,17 +145,17 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
     private List<String> createJobCommand() throws IOException {
 
       // Define the file for the task context
-      final File taskContextFile =
-          new File(this.taskDir, this.taskPrefix + TASK_CONTEXT_EXTENSION);
+      final Path taskContextFile =
+          this.taskDir.resolve(this.taskPrefix + TASK_CONTEXT_EXTENSION);
 
       // Serialize the context object
       this.context.serialize(taskContextFile);
 
       final List<String> command = new ArrayList<>();
 
-      final File eoulsanScriptFile =
-          new File(Main.getInstance().getEoulsanScriptPath());
-      command.add(eoulsanScriptFile.getAbsolutePath());
+      final Path eoulsanScriptFile =
+          Path.of(Main.getInstance().getEoulsanScriptPath());
+      command.add(eoulsanScriptFile.toAbsolutePath().toString());
 
       // Force the usage of the current JRE by the submitted task
       command.add("-j");
@@ -172,7 +173,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
       }
 
       command.add(ClusterTaskAction.ACTION_NAME);
-      command.add(taskContextFile.getAbsolutePath());
+      command.add(taskContextFile.toAbsolutePath().toString());
 
       return Collections.unmodifiableList(command);
     }
@@ -195,21 +196,21 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
     private TaskResultImpl loadResult() throws EoulsanException, IOException {
 
       // Define the file for the task done
-      final File taskDoneFile =
-          new File(this.taskDir, this.taskPrefix + TASK_DONE_EXTENSION);
+      final Path taskDoneFile =
+          this.taskDir.resolve(this.taskPrefix + TASK_DONE_EXTENSION);
 
-      if (!taskDoneFile.exists()) {
+      if (!Files.exists(taskDoneFile)) {
         throw new EoulsanException("No done file found for task #"
             + this.context.getId() + " in step "
             + getStep(this.context).getId());
       }
 
       // Define the file for the task result
-      final File taskResultFile =
-          new File(this.taskDir, this.taskPrefix + TASK_RESULT_EXTENSION);
+      final Path taskResultFile =
+          this.taskDir.resolve(this.taskPrefix + TASK_RESULT_EXTENSION);
       // Load output data objects
       this.context.deserializeOutputData(
-          new File(this.taskDir, this.taskPrefix + TASK_DATA_EXTENSION));
+          this.taskDir.resolve(this.taskPrefix + TASK_DATA_EXTENSION));
 
       return TaskResultImpl.deserialize(taskResultFile);
     }
@@ -221,10 +222,11 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
     private void createJobIdFile() throws IOException {
 
       // Define the file for the job id
-      final File taskResultFile =
-          new File(this.taskDir, this.taskPrefix + TASK_JOB_ID);
+      final Path taskResultFile =
+          this.taskDir.resolve(this.taskPrefix + TASK_JOB_ID);
 
-      try (PrintWriter out = new PrintWriter(taskResultFile, Charset.defaultCharset())) {
+      try (PrintWriter out =
+          new PrintWriter(Files.newOutputStream(taskResultFile))) {
         out.println(this.jobId);
       }
     }
@@ -359,7 +361,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
       requireNonNull(context, "context argument cannot be null");
 
       this.context = context;
-      this.taskDir = context.getTaskOutputDirectory().toFile();
+      this.taskDir = context.getTaskOutputDirectory().toPath();
       this.taskPrefix = context.getTaskFilePrefix();
 
       // Set Thread name

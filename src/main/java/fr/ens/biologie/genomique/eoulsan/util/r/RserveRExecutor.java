@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,7 +48,7 @@ public class RserveRExecutor extends AbstractRExecutor {
 
         // Retrieve the file
         this.rConnection.getFile(filename,
-            new File(getOutputDirectory(), filename));
+            getOutputDirectory().resolve(filename));
 
         // Delete the file
         removeFile(filename);
@@ -135,13 +136,13 @@ public class RserveRExecutor extends AbstractRExecutor {
   }
 
   @Override
-  protected void executeRScript(final File rScriptFile, final boolean sweave,
-      final String sweaveOuput, final File workflowOutputDir,
+  protected void executeRScript(final Path rScriptFile, final boolean sweave,
+      final String sweaveOuput, final Path workflowOutputDir,
       final String... scriptArguments) throws IOException {
 
     checkConnection();
 
-    final String rScriptOnRservePath = rScriptFile.getName();
+    final String rScriptOnRservePath = rScriptFile.getFileName().toString();
 
     // Put the R script on the Rserve server
     putFile(new DataFile(rScriptFile), rScriptOnRservePath);

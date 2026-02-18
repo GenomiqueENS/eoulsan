@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.util;
 
-import java.io.File;
+import java.nio.file.Path;
 
 /**
  * Get information about memory on Linux systems
@@ -36,9 +36,9 @@ public class LinuxMemInfo extends LinuxInfo {
   private static final String MEMINFO_FILE = "/proc/meminfo";
 
   @Override
-  public File getInfoFile() {
+  public Path getInfoFile() {
 
-    return new File(MEMINFO_FILE);
+    return Path.of(MEMINFO_FILE);
   }
 
   /**

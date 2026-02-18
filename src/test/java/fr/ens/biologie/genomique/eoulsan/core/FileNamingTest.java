@@ -32,6 +32,7 @@ import static org.junit.Assert.fail;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.nio.file.Path;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -435,7 +436,10 @@ public class FileNamingTest {
   public void testParseFile() {
 
     assertEquals("filterreads_output_reads_s1_file0.fq", FileNaming
-        .parse(new File("filterreads_output_reads_s1_file0.fq")).filename());
+        .parse(Path.of("filterreads_output_reads_s1_file0.fq")).filename());
+
+    assertEquals("filterreads_output_reads_s1_file0.fq", FileNaming
+        .parse(Path.of("filterreads_output_reads_s1_file0.fq").toFile()).filename());
   }
 
   @Test
@@ -488,30 +492,29 @@ public class FileNamingTest {
 
     assertTrue(FileSystems.getDefault()
         .getPathMatcher("glob:filterreads_output_reads_*.fq")
-        .matches(new File("filterreads_output_reads_s1_file0.fq").toPath()));
+        .matches(Path.of("filterreads_output_reads_s1_file0.fq")));
 
     assertEquals("filterreads_output_reads_*.fq.bz2",
         FileNaming.parse("filterreads_output_reads_s1_file0.fq.bz2").glob());
 
     assertTrue(FileSystems.getDefault()
         .getPathMatcher("glob:filterreads_output_reads_*.fq.bz2").matches(
-            new File("filterreads_output_reads_s1_file0.fq.bz2").toPath()));
+            Path.of("filterreads_output_reads_s1_file0.fq.bz2")));
 
     assertEquals("filterreads_output_reads_*.fq.bz2", FileNaming
         .parse("filterreads_output_reads_s1_file0_part1.fq.bz2").glob());
 
     assertTrue(FileSystems.getDefault()
         .getPathMatcher("glob:filterreads_output_reads_*.fq.bz2")
-        .matches(new File("filterreads_output_reads_s1_file0_part1.fq.bz2")
-            .toPath()));
+        .matches(Path.of("filterreads_output_reads_s1_file0_part1.fq.bz2")
+            ));
 
     assertEquals("genericindexgenerator_output_bowtieindex_*.zip", FileNaming
         .parse("genericindexgenerator_output_bowtieindex_genome.zip").glob());
 
     assertTrue(FileSystems.getDefault()
         .getPathMatcher("glob:genericindexgenerator_output_bowtieindex_*.zip")
-        .matches(new File("genericindexgenerator_output_bowtieindex_genome.zip")
-            .toPath()));
+        .matches(Path.of("genericindexgenerator_output_bowtieindex_genome.zip")));
 
     assertEquals("genericindexgenerator_output_bowtieindex_*.zip",
         FileNaming
@@ -520,9 +523,8 @@ public class FileNamingTest {
 
     assertTrue(FileSystems.getDefault()
         .getPathMatcher("glob:genericindexgenerator_output_bowtieindex_*.zip")
-        .matches(new File(
-            "genericindexgenerator_output_bowtieindex_genome_part5.zip")
-                .toPath()));
+        .matches(Path.of(
+            "genericindexgenerator_output_bowtieindex_genome_part5.zip")));
 
     assertEquals("genericindexgenerator_output_bowtieindex_*.zip.gz",
         FileNaming
@@ -533,8 +535,7 @@ public class FileNamingTest {
         .getPathMatcher(
             "glob:genericindexgenerator_output_bowtieindex_*.zip.gz")
         .matches(
-            new File("genericindexgenerator_output_bowtieindex_genome.zip.gz")
-                .toPath()));
+            Path.of("genericindexgenerator_output_bowtieindex_genome.zip.gz")));
 
     assertEquals("genericindexgenerator_output_bowtieindex_*.zip.gz",
         FileNaming
@@ -545,9 +546,8 @@ public class FileNamingTest {
     assertTrue(FileSystems.getDefault()
         .getPathMatcher(
             "glob:genericindexgenerator_output_bowtieindex_*.zip.gz")
-        .matches(new File(
-            "genericindexgenerator_output_bowtieindex_genome_part5.zip.gz")
-                .toPath()));
+        .matches(Path.of(
+            "genericindexgenerator_output_bowtieindex_genome_part5.zip.gz")));
 
   }
 
@@ -643,8 +643,11 @@ public class FileNamingTest {
   public void testIsFilenameValidFile() {
 
     assertTrue(FileNaming
-        .isFilenameValid(new File("filterreads_output_reads_s1_file0.fq")));
-    assertFalse(FileNaming.isFilenameValid(new File("toto.txt")));
+        .isFilenameValid(Path.of("filterreads_output_reads_s1_file0.fq").toFile()));
+    assertFalse(FileNaming.isFilenameValid(Path.of("toto.txt").toFile()));
+    assertTrue(FileNaming
+        .isFilenameValid(Path.of("filterreads_output_reads_s1_file0.fq")));
+    assertFalse(FileNaming.isFilenameValid(Path.of("toto.txt")));
   }
 
   @Test

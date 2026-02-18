@@ -4,11 +4,10 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.FEATURECOUNTS_S
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
@@ -52,7 +51,7 @@ public class FeatureCountsInputPreprocessor implements InputPreprocessor {
 
     // Create a summary file for MultiQC with a more explicit sample name
     if (summaryFile.exists()) {
-      rewriteSummaryFile(summaryFile.toFile(), finalSummaryFile.toFile(), name);
+      rewriteSummaryFile(summaryFile.toPath(), finalSummaryFile.toPath(), name);
     }
 
   }
@@ -64,13 +63,11 @@ public class FeatureCountsInputPreprocessor implements InputPreprocessor {
    * @param dataName name of the sample
    * @throws IOException if an error occurs while rewriting the summary file
    */
-  private void rewriteSummaryFile(final File inputFile, final File outputFile,
+  private void rewriteSummaryFile(final Path inputFile, final Path outputFile,
       final String dataName) throws IOException {
 
-    try (
-        BufferedReader reader = new BufferedReader(
-            new FileReader(inputFile, Charset.defaultCharset()));
-        Writer writer = new FileWriter(outputFile, Charset.defaultCharset())) {
+    try (BufferedReader reader = Files.newBufferedReader(inputFile);
+        Writer writer = Files.newBufferedWriter(outputFile)) {
 
       String line = null;
 
