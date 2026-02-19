@@ -43,7 +43,6 @@ import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.AbstractWorkflow;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepOutputDataFile;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowContext;
@@ -56,8 +55,9 @@ import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.design.io.DesignWriter;
 import fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan1DesignWriter;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopJarRepackager;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 
 /**
  * This class define a abstract module class for files uploading.
@@ -97,9 +97,7 @@ public abstract class UploadModule extends AbstractModule {
 
     try {
       final Design design = context.getWorkflow().getDesign();
-      for (Sample sample : design.getSamples()) {
-        filesToCopy.putAll(findDataFilesInWorkflow(sample, context));
-      }
+      filesToCopy.putAll(findDataFilesInWorkflow());
 
       removeNotExistingDataFile(filesToCopy);
 
@@ -255,13 +253,11 @@ public abstract class UploadModule extends AbstractModule {
 
   /**
    * Find DataFiles used by the steps of a Workflow for a sample
-   * @param sample sample
-   * @param context Execution context
    * @return a set of DataFile used by the workflow for the sample
    * @throws IOException if an error occurs while finding files
    */
-  private Map<DataFile, DataFile> findDataFilesInWorkflow(final Sample sample,
-      final TaskContext context) throws IOException {
+  private Map<DataFile, DataFile> findDataFilesInWorkflow()
+      throws IOException {
 
     final Map<DataFile, DataFile> result = new HashMap<>();
 

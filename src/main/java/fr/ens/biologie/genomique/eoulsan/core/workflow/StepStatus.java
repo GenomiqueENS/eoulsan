@@ -211,7 +211,7 @@ public class StepStatus {
   public void setTaskProgress(final int contextId, final String contextName,
       final double progress) {
 
-    checkContext(contextId, contextName);
+    checkContext(contextName);
     checkProgress(progress);
 
     // Inform observers that status has changed
@@ -301,8 +301,7 @@ public class StepStatus {
   // Check progress
   //
 
-  private static void checkContext(final int contextId,
-      final String contextName) {
+  private static void checkContext(final String contextName) {
 
     requireNonNull(contextName, "contextName cannot be null");
   }

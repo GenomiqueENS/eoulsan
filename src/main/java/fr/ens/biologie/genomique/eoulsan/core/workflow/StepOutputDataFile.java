@@ -124,15 +124,13 @@ public final class StepOutputDataFile
   /**
    * Create a new DataFile object from the step, format, sample and file index.
    * @param step step of the file
-   * @param portName the port name
    * @param format format of the file
    * @param sample sample of the file
    * @param fileIndex file index of the file for multi-file data
    * @return a new DataFile object
    */
   private static DataFile newDataFile(final AbstractStep step,
-      final String portName, final DataFormat format, final Sample sample,
-      final int fileIndex) {
+      final DataFormat format, final Sample sample, final int fileIndex) {
 
     requireNonNull(format, "Format argument cannot be null");
     requireNonNull(sample, "Sample argument cannot be null");
@@ -492,7 +490,7 @@ public final class StepOutputDataFile
     this.format = format;
     this.sample = format.isOneFilePerAnalysis() ? null : sample;
     this.file =
-        newDataFile(this.step, this.portName, format, sample, fileIndex);
+        newDataFile(this.step, format, sample, fileIndex);
     this.fileIndex = fileIndex;
     this.mayNotExist = fileIndex > 0;
   }

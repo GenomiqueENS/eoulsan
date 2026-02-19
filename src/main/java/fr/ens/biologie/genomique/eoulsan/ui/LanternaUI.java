@@ -225,7 +225,7 @@ public class LanternaUI extends AbstractUI implements TerminalResizeListener {
         return;
       }
 
-      notifyTask(step, contextId, this.submittedTasks, 1);
+      notifyTask(step, this.submittedTasks, 1);
       print(step, false, false, null);
     }
   }
@@ -239,7 +239,7 @@ public class LanternaUI extends AbstractUI implements TerminalResizeListener {
         return;
       }
 
-      notifyTask(step, contextId, this.runningTasks, 1);
+      notifyTask(step, this.runningTasks, 1);
       print(step, false, false, null);
     }
   }
@@ -253,14 +253,14 @@ public class LanternaUI extends AbstractUI implements TerminalResizeListener {
         return;
       }
 
-      notifyTask(step, contextId, this.runningTasks, -1);
-      notifyTask(step, contextId, this.doneTasks, 1);
+      notifyTask(step, this.runningTasks, -1);
+      notifyTask(step, this.doneTasks, 1);
       print(step, false, false, null);
     }
   }
 
-  private void notifyTask(final Step step, final int contextId,
-      final Map<Step, Integer> map, final int diff) {
+  private void notifyTask(final Step step, final Map<Step, Integer> map,
+      final int diff) {
 
     if (map.containsKey(step)) {
 

@@ -197,7 +197,6 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
       Path rdsFile = rdsData.getDataFile().toPath();
 
       // Define R script input files
-      Path temporaryDirectory = context.getLocalTempDirectory().toPath();
       Path outputDir = context.getStepOutputDirectory().toPath();
       Path matrixFile =
           outputDir.resolve("matrix-" + rdsData.getName() + ".tsv");
@@ -215,8 +214,8 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
           cellsFile);
 
       // Launch R and create RDS file
-      createRDS(matrixFile, cellsFile, featuresFile, rdsFile,
-          temporaryDirectory, saveRScript, context.getStepOutputDirectory(),
+      createRDS(matrixFile, cellsFile, featuresFile, rdsFile, saveRScript,
+          context.getStepOutputDirectory(),
           R_SCRIPT_NAME + "-" + rdsData.getName());
 
     } catch (IOException e) {
@@ -500,15 +499,13 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
    * @param cellsFile cell annotations file
    * @param featuresFile feature annotations file
    * @param rdsFile RDS output file
-   * @param temporaryDirectory temporary directory
    * @param saveRScript if R script must be saved
    * @param RExecutionDirectory R execution directory
    * @param scriptName script name
    * @throws IOException if an error occurs while executing the command
    */
   private void createRDS(final Path matrixFile, final Path cellsFile,
-      final Path featuresFile, final Path rdsFile,
-      final Path temporaryDirectory, final boolean saveRScript,
+      final Path featuresFile, final Path rdsFile, final boolean saveRScript,
       final DataFile RExecutionDirectory, final String scriptName)
       throws IOException {
 

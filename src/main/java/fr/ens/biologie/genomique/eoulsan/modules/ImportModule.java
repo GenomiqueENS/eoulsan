@@ -281,7 +281,7 @@ public class ImportModule extends AbstractModule {
       Collections.sort(sortedFiles);
 
       // Group files related to the same data
-      final Set<List<DataFile>> groupedFiles = groupFiles(registry, files);
+      final Set<List<DataFile>> groupedFiles = groupFiles(files);
 
       // For each data
       for (List<DataFile> inputFiles : groupedFiles) {
@@ -514,11 +514,9 @@ public class ImportModule extends AbstractModule {
 
   /**
    * Group file by data.
-   * @param registry format registry
    * @param files files to process
    */
-  private static Set<List<DataFile>> groupFiles(
-      final DataFormatRegistry registry, final Set<DataFile> files) {
+  private static Set<List<DataFile>> groupFiles(final Set<DataFile> files) {
 
     final Set<List<DataFile>> result = new HashSet<>();
 

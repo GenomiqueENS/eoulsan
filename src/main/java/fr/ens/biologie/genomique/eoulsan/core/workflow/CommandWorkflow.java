@@ -358,8 +358,8 @@ public class CommandWorkflow extends AbstractWorkflow {
           || step.getType() == StepType.GENERATOR_STEP)
           && !step.isSkip() && stepProtocol != depProtocol
           && inputPort.isRequiredInWorkingDirectory()) {
-        newStep = newInputFormatCopyStep(this, inputPort, dependencyOutputPort,
-            depOutputCompression, stepCompressionsAllowed);
+        newStep = newInputFormatCopyStep(this, inputPort, depOutputCompression,
+            stepCompressionsAllowed);
       }
 
       // Check if (un)compression is needed
@@ -368,8 +368,8 @@ public class CommandWorkflow extends AbstractWorkflow {
               || step.getType() == StepType.GENERATOR_STEP)
           && !step.isSkip() && !inputPort.getCompressionsAccepted()
               .contains(depOutputCompression)) {
-        newStep = newInputFormatCopyStep(this, inputPort, dependencyOutputPort,
-            depOutputCompression, stepCompressionsAllowed);
+        newStep = newInputFormatCopyStep(this, inputPort, depOutputCompression,
+            stepCompressionsAllowed);
       }
 
       // If the dependency if design step and step does not allow all the
@@ -380,8 +380,8 @@ public class CommandWorkflow extends AbstractWorkflow {
           && !step.isSkip() && dependencyStep == this.getDesignStep()
           && !EnumSet.allOf(CompressionType.class)
               .containsAll(stepCompressionsAllowed)) {
-        newStep = newInputFormatCopyStep(this, inputPort, dependencyOutputPort,
-            depOutputCompression, stepCompressionsAllowed);
+        newStep = newInputFormatCopyStep(this, inputPort, depOutputCompression,
+            stepCompressionsAllowed);
       }
 
       // Set the dependencies
@@ -414,7 +414,6 @@ public class CommandWorkflow extends AbstractWorkflow {
    * Create a new step that copy/(un)compress input data of a step.
    * @param workflow workflow where adding the step
    * @param inputPort input port
-   * @param outputPort output port
    * @param inputCompression compression format of the data to read
    * @param outputCompressionsAllowed compression formats allowed by the step
    * @return a new step
@@ -422,7 +421,7 @@ public class CommandWorkflow extends AbstractWorkflow {
    */
   private static CommandStep newInputFormatCopyStep(
       final CommandWorkflow workflow, final StepInputPort inputPort,
-      final StepOutputPort outputPort, final CompressionType inputCompression,
+      final CompressionType inputCompression,
       final EnumSet<CompressionType> outputCompressionsAllowed)
       throws EoulsanException {
 

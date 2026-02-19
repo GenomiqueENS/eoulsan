@@ -124,7 +124,7 @@ public class TaskRunner {
 
     // Create Log handler and register it
     final Logger logger = isNoLog(this.module)
-        ? null : createStepLogger(this.context.getStep(), threadGroupName);
+        ? null : createStepLogger(threadGroupName);
 
     // Register the logger
     if (logger != null) {
@@ -401,12 +401,10 @@ public class TaskRunner {
 
   /**
    * Create the logger for a step.
-   * @param step the step
    * @param threadGroupName the name of the thread group
    * @return a Logger instance
    */
-  private Logger createStepLogger(final AbstractStep step,
-      final String threadGroupName) {
+  private Logger createStepLogger(final String threadGroupName) {
 
     // Define the log file for the step
     final DataFile logDir =

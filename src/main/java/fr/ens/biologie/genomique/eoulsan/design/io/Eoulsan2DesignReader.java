@@ -288,7 +288,7 @@ public class Eoulsan2DesignReader implements DesignReader {
         } else {
 
           // Or a SampleMetadata
-          readSampleMetadata(columnName, columnValue, design, sample);
+          readSampleMetadata(columnName, columnValue, sample);
         }
       }
     }
@@ -298,12 +298,11 @@ public class Eoulsan2DesignReader implements DesignReader {
    * Read sample metadata.
    * @param columnName the column name
    * @param columnValue the value
-   * @param design the design object
    * @param sample the sample
    * @throws IOException if the metadata read is incorrect
    */
   private void readSampleMetadata(String columnName, String columnValue,
-      Design design, Sample sample) throws IOException {
+      Sample sample) throws IOException {
 
     if (sample.getMetadata().contains(columnName)) {
 

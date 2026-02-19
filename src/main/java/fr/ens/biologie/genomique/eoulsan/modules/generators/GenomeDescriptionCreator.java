@@ -60,7 +60,7 @@ public class GenomeDescriptionCreator {
       final DataFile annotationDataFile)
       throws BadBioEntryException, IOException {
 
-    return createGenomeDescription(annotationDataFile, true);
+    return createGenomeDescription(annotationDataFile);
   }
 
   /**
@@ -74,24 +74,7 @@ public class GenomeDescriptionCreator {
    *           description
    */
   public GenomeDescription createGenomeDescription(
-      final DataFile genomeDataFile) throws BadBioEntryException, IOException {
-
-    return createGenomeDescription(genomeDataFile, false);
-  }
-
-  /**
-   * Create genome description object from the storage if already exists or
-   * compute it from the genome.
-   * @param genomeDataFile genome file
-   * @param gffFormat the input file is in GFF format
-   * @return the genome description object
-   * @throws BadBioEntryException if an error occurs while computing the genome
-   *           description
-   * @throws IOException if an error occurs while computing the genome
-   *           description
-   */
-  private GenomeDescription createGenomeDescription(
-      final DataFile genomeDataFile, final boolean gffFormat)
+      final DataFile genomeDataFile)
       throws BadBioEntryException, IOException {
 
     // Check if the genome description has been already put in the CheckStore

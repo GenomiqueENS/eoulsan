@@ -150,7 +150,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       // Paired-end pre-processing
       if (pairedEnd) {
         MapReduceUtils.submitAndWaitForJob(
-            createPairedEndJob(conf, context, alignmentsData,
+            createPairedEndJob(conf, alignmentsData,
                 genomeDescriptionData),
             alignmentsData.getName(), CommonHadoop.CHECK_COMPLETION_TIME,
             status, COUNTER_GROUP);
@@ -173,8 +173,8 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       if (!isSAMOutputFormat()) {
 
         // Create the final expression files
-        createFinalExpressionFeaturesFile(context, getExpressionCounter(),
-            outData, job, this.conf);
+        createFinalExpressionFeaturesFile(getExpressionCounter(), outData, job,
+            this.conf);
 
         getLogger().info("Finish the create of the final expression files in "
             + ((System.currentTimeMillis() - mapReduceEndTime) / 1000)
@@ -352,14 +352,13 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
   /**
    * Create JobConf object for a paired-end job.
    * @param parentConf parent configuration
-   * @param context the Eoulsan task context
    * @param alignmentsData alignment data
    * @param genomeDescriptionData genome description data
    * @throws IOException if an error occurs while creating job
    */
   private static Job createPairedEndJob(final Configuration parentConf,
-      final TaskContext context, final Data alignmentsData,
-      final Data genomeDescriptionData) throws IOException {
+      final Data alignmentsData, final Data genomeDescriptionData)
+      throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -501,7 +500,6 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
   /**
    * Create the final expression file.
-   * @param context the Eoulsan context
    * @param counter the counter to use
    * @param outData output data
    * @param job Hadoop expression job
@@ -510,13 +508,12 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
    *           file
    */
   private static void createFinalExpressionFeaturesFile(
-      final TaskContext context, final ExpressionCounter counter,
+      final ExpressionCounter counter,
       final Data outData, final Job job, final Configuration conf)
       throws IOException {
 
-    FinalExpressionFeaturesCreator fefc = null;
-
-    fefc = new FinalExpressionFeaturesCreator(counter);
+    FinalExpressionFeaturesCreator fefc =
+        new FinalExpressionFeaturesCreator(counter);
 
     // Set the result path
     final Path resultPath = new Path(outData.getDataFile().getSource());
