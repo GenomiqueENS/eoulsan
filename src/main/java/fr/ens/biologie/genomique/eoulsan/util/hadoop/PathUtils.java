@@ -909,7 +909,8 @@ public final class PathUtils {
 
   /**
    * Check if a directory exists
-   * @param directory directory to test * @param conf Configuration
+   * @param directory directory to test
+   * @param conf Configuration
    * @param conf the configuration object
    * @param msgFileType message for the description of the file
    * @throws IOException if the file doesn't exists
@@ -929,7 +930,8 @@ public final class PathUtils {
 
   /**
    * Check if a directory exists
-   * @param directory directory to test * @param conf Configuration
+   * @param directory directory to test
+   * @param conf Configuration
    * @param conf the configuration object
    * @return true is the directory exists
    * @throws IOException if an error occurs
@@ -979,7 +981,8 @@ public final class PathUtils {
 
   /**
    * Check if a file exists
-   * @param file File to test * @param conf Configuration
+   * @param file File to test
+   * @param conf Configuration
    * @param conf Configuration
    * @param msgFileType message for the description of the file
    * @throws IOException if the file doesn't exists
@@ -999,7 +1002,8 @@ public final class PathUtils {
 
   /**
    * Check if a file exists
-   * @param file File to test * @param conf Configuration
+   * @param file File to test
+   * @param conf Configuration
    * @param conf Configuration
    * @param msgFileType message for the description of the file
    * @throws IOException if the file doesn't exists

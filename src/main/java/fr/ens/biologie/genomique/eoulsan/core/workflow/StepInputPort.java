@@ -151,7 +151,8 @@ class StepInputPort extends SimpleInputPort implements Serializable {
 
   /**
    * Constructor.
-   * @param step the step related to the port * @param name name of the port
+   * @param step the step related to the port
+   * @param name name of the port
    * @param format format of the port
    * @param compressionsAccepted compression accepted
    * @param requiredInWorkingDirectory if data is required in working directory
