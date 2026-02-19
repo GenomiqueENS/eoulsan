@@ -6,8 +6,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -128,11 +126,8 @@ public class FastQCInputPreprocessor implements InputPreprocessor {
    */
   private static void updateReport(Path src, Path dst, String name)
       throws IOException {
-    try (
-        BufferedReader br = new BufferedReader(
-            new InputStreamReader(Files.newInputStream(src)));
-        BufferedWriter bw = new BufferedWriter(
-            new OutputStreamWriter(Files.newOutputStream(dst)))) {
+    try (BufferedReader br = Files.newBufferedReader(src);
+        BufferedWriter bw = Files.newBufferedWriter(dst)) {
 
       String line;
       while ((line = br.readLine()) != null) {

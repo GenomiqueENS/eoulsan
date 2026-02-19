@@ -1,6 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.util.r;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.File;
 import java.io.IOException;
@@ -127,7 +128,7 @@ public class RserveRExecutor extends AbstractRExecutor {
     }
 
     try (Writer writer = new OutputStreamWriter(
-        this.rConnection.getFileOutputStream(outputFilename))) {
+        this.rConnection.getFileOutputStream(outputFilename), UTF_8)) {
       writer.write(content);
     } catch (REngineException e) {
       throw new IOException(e);

@@ -1,5 +1,7 @@
 package fr.ens.biologie.genomique.eoulsan.splitermergers;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -60,7 +62,7 @@ public class ExpressionMerger implements Merger {
       boolean first = true;
 
       try (BufferedReader reader =
-          new BufferedReader(new InputStreamReader(inFile.open()))) {
+          new BufferedReader(new InputStreamReader(inFile.open(), UTF_8))) {
 
         String line = null;
 
@@ -98,7 +100,7 @@ public class ExpressionMerger implements Merger {
     }
 
     // Write the result file
-    try (Writer writer = new OutputStreamWriter(outFile.create())) {
+    try (Writer writer = new OutputStreamWriter(outFile.create(), UTF_8)) {
 
       writer.write(ExpressionSplitter.EXPRESSION_FILE_HEADER);
 

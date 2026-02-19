@@ -36,7 +36,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -225,10 +224,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
       final Path taskResultFile =
           this.taskDir.resolve(this.taskPrefix + TASK_JOB_ID);
 
-      try (PrintWriter out =
-          new PrintWriter(Files.newOutputStream(taskResultFile))) {
-        out.println(this.jobId);
-      }
+      Files.writeString(taskResultFile, this.jobId);
     }
 
     @Override

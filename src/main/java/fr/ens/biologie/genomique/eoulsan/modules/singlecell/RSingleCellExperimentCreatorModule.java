@@ -5,6 +5,7 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ADDITIONAL_ANNO
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_MATRIX_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.SINGLE_CELL_EXPERMIMENT_RDS;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 
@@ -559,8 +560,8 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
     final StringBuilder sb = new StringBuilder();
     String line = null;
 
-    try (
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+    try (BufferedReader reader =
+        new BufferedReader(new InputStreamReader(is, UTF_8))) {
 
       while ((line = reader.readLine()) != null) {
 
