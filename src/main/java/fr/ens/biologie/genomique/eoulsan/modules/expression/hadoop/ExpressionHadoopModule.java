@@ -28,6 +28,7 @@ import static fr.ens.biologie.genomique.eoulsan.CommonHadoop.createConfiguration
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
+import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GTF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
@@ -125,7 +126,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
     final Data alignmentsData = context.getInputData(MAPPER_RESULTS_SAM);
     final Data featureAnnotationData = context
-        .getInputData(isGTFInputFormat() ? ANNOTATION_GFF : ANNOTATION_GFF);
+        .getInputData(isGTFInputFormat() ? ANNOTATION_GTF : ANNOTATION_GFF);
     final Data genomeDescriptionData = context.getInputData(GENOME_DESC_TXT);
     final Data outData = context.getOutputData(
         isSAMOutputFormat() ? MAPPER_RESULTS_SAM : EXPRESSION_RESULTS_TSV,
