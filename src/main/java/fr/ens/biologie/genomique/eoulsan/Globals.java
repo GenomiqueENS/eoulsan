@@ -24,13 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan;
 
-import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.datetoString;
-
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -128,13 +127,14 @@ public final class Globals {
   /** Format of the log. */
   public static final Formatter LOG_FORMATTER = new Formatter() {
 
-    private final DateFormat df =
-        new SimpleDateFormat("yyyy.MM.dd kk:mm:ss", DEFAULT_LOCALE);
+    private final DateTimeFormatter dtf =
+        DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss")
+                         .withZone(ZoneId.systemDefault());
 
     @Override
     public String format(final LogRecord record) {
       return record.getLevel()
-          + "\t" + this.df.format(datetoString(record.getMillis())) + "\t"
+          + "\t" + dtf.format(Instant.ofEpochMilli(record.getMillis())) + "\t"
           + record.getMessage() + "\n";
     }
   };
