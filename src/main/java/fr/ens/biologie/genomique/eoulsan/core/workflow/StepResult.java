@@ -39,6 +39,7 @@ import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -377,8 +378,8 @@ public class StepResult {
     jg.write(STEP_CLASS_TAG, this.stepClass);
     jg.write(STEP_VERSION_TAG,
         this.stepVersion == null ? null : this.stepVersion.toString());
-    jg.write(START_TIME_TAG, this.dateFormat.format(this.startTime));
-    jg.write(END_TIME_TAG, this.dateFormat.format(this.endTime));
+    jg.write(START_TIME_TAG, this.dateFormat.format(this.startTime.atZone(ZoneId.systemDefault())));
+    jg.write(END_TIME_TAG, this.dateFormat.format(this.endTime.atZone(ZoneId.systemDefault())));
     jg.write(DURATION_TAG, toTimeHumanReadable(this.duration));
     jg.write(DURATION_IN_MILLISECONDS_TAG, this.duration);
     jg.write(SUCCESS_TAG, this.success);
