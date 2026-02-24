@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.util;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.silentSleep;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -440,10 +441,7 @@ public final class ProcessUtils {
         return;
       }
 
-      try {
-        Thread.sleep(5000);
-      } catch (InterruptedException e) {
-      }
+      silentSleep(5000);
     }
 
   }
@@ -462,11 +460,7 @@ public final class ProcessUtils {
       random = new Random(System.currentTimeMillis());
     }
 
-    try {
-      Thread.sleep(random.nextInt(maxMilliseconds));
-    } catch (InterruptedException e) {
-    }
-
+    silentSleep(random.nextInt(maxMilliseconds));
   }
 
   /**
@@ -515,7 +509,7 @@ public final class ProcessUtils {
           this.pw.println(l);
         }
       } catch (IOException e) {
-
+        // Do not handled interruption exception
         e.printStackTrace();
       }
     }

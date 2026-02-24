@@ -328,6 +328,7 @@ public class DesignBuilder {
     try {
       md = file.getMetaData();
     } catch (IOException e) {
+      // Do nothing if metadata cannot be retrieved
     }
 
     if (isDataFormatExtension(DataFormats.READS_FASTQ, extension, md)) {

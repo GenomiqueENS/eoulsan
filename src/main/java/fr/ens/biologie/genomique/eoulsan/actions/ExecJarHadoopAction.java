@@ -165,6 +165,7 @@ public class ExecJarHadoopAction extends AbstractAction {
         try {
           millisSinceEpoch = Long.parseLong(line.getOptionValue("p").trim());
         } catch (NumberFormatException e) {
+          // Ignore the parameter if the value is invalid
         }
         argsOptions += 2;
       }

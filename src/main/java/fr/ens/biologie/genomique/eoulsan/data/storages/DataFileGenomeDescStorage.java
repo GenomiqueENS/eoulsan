@@ -64,6 +64,7 @@ public class DataFileGenomeDescStorage extends AbstractFileGenomeDescStorage {
     try {
       md = df.getMetaData();
     } catch (IOException e) {
+      // Do nothing if metadata cannot be retrieved
     }
 
     if (md != null

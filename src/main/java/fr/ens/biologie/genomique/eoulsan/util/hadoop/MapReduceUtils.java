@@ -24,6 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.util.hadoop;
 
+import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.silentSleep;
+
 import java.io.IOException;
 
 import org.apache.hadoop.mapreduce.Job;
@@ -131,10 +133,7 @@ public final class MapReduceUtils {
     try {
       while (!job.isComplete()) {
         failedTry = 0;
-        try {
-          Thread.sleep(COMPLETION_POLL_INTERVAL);
-        } catch (InterruptedException ie) {
-        }
+        silentSleep(COMPLETION_POLL_INTERVAL);
       }
     } catch (IOException e) {
 

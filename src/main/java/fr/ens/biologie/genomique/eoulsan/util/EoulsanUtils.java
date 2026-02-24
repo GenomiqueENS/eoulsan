@@ -19,4 +19,13 @@ public class EoulsanUtils {
     return datetoString(System.currentTimeMillis());
   }
 
+  public static final void silentSleep(int millis) {
+
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException e) {
+      // Do not handle interruption exception
+    }
+  }
+
 }

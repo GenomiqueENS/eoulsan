@@ -24,6 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.util.locker;
 
+import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.silentSleep;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
@@ -99,11 +101,7 @@ public class TicketLocker implements Locker {
           // e.printStackTrace();
         }
 
-        try {
-          Thread.sleep(5000);
-        } catch (InterruptedException e) {
-        }
-
+        silentSleep(5000);
       }
     }
 
@@ -170,10 +168,7 @@ public class TicketLocker implements Locker {
     t.start();
 
     while (t.isAlive()) {
-      try {
-        Thread.sleep(1000);
-      } catch (InterruptedException e) {
-      }
+      silentSleep(1000);
     }
 
   }
@@ -208,6 +203,7 @@ public class TicketLocker implements Locker {
         }
 
       } catch (InterruptedException | RemoteException e) {
+        // Do nothing if there is an exception
       }
 
     }).start();

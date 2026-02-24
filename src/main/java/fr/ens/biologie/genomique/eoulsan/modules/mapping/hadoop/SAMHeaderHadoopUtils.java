@@ -204,6 +204,7 @@ public class SAMHeaderHadoopUtils {
             try {
               sequenceLength = Integer.parseInt(f.substring(3));
             } catch (NumberFormatException e) {
+              // Do not handle the case where the value is not an integer
             }
           }
         }

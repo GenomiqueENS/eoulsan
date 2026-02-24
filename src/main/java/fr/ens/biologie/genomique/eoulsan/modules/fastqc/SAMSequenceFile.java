@@ -72,6 +72,7 @@ public class SAMSequenceFile implements CounterSequenceFile {
       try {
         reader.close();
       } catch (IOException e) {
+        // Do not handle exception
       }
     }
 

@@ -24,6 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.schedulers;
 
+import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.silentSleep;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -78,7 +80,7 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 
     // Wait if requirements has not been yet updated
     while (!this.requirements.containsKey(r)) {
-      sleep();
+      silentSleep(1000);
     }
 
     int requiredThreads = this.requirements.get(r);
@@ -97,7 +99,7 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 
     // Sleep until threads are available
     while (this.threadsAvailable - requiredThreads < 0) {
-      sleep();
+      silentSleep(1000);
     }
 
     synchronized (this) {
@@ -146,18 +148,6 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
       this.unPaused.signalAll();
     } finally {
       this.pauseLock.unlock();
-    }
-  }
-
-  /**
-   * Sleep 1 second.
-   */
-  private static void sleep() {
-
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      // Do nothing
     }
   }
 

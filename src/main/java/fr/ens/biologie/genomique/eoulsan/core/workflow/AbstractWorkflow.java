@@ -32,6 +32,7 @@ import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.READY;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WAITING;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
 import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.datetoString;
+import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.silentSleep;
 import static fr.ens.biologie.genomique.kenetre.util.StringUtils.stackTraceToString;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -481,12 +482,8 @@ public abstract class AbstractWorkflow implements Workflow {
     while (!getSortedStepsByState(READY, WAITING, PARTIALLY_DONE, WORKING)
         .isEmpty()) {
 
-      try {
-        // TODO 2000 must be a constant
-        Thread.sleep(2000);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+      // TODO 2000 must be a constant
+      silentSleep(2000);
 
       if (this.shutdownNow) {
 
@@ -654,6 +651,7 @@ public abstract class AbstractWorkflow implements Workflow {
    * Create a shutdown hook thread.
    * @return a new thread
    */
+  @SuppressWarnings("CatchAndPrintStackTrace")
   public Thread createShutdownHookThread() {
 
     final AbstractWorkflow workflow = this;

@@ -25,6 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.util.locker;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
+import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.silentSleep;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,7 +71,7 @@ public class ExecLock implements Locker {
   public void lock() {
 
     while (this.lock) {
-      sleep(5000);
+      silentSleep(5000);
     }
 
     try {
@@ -108,7 +109,7 @@ public class ExecLock implements Locker {
         }
 
         count++;
-        sleep(5000);
+        silentSleep(5000);
 
       } while (true);
 
@@ -134,7 +135,7 @@ public class ExecLock implements Locker {
           "Can not delete pid file: " + this.pidFile.toAbsolutePath());
     }
     this.lock = false;
-    sleep(10000);
+    silentSleep(10000);
   }
 
   /**
@@ -193,19 +194,6 @@ public class ExecLock implements Locker {
   private Set<Integer> getJVMsPIDs() {
 
     return ProcessUtils.getExecutablePids("java");
-  }
-
-  /**
-   * Sleep for n milliseconds
-   * @param duration milliseconds to wait
-   */
-  private void sleep(final int duration) {
-
-    try {
-      Thread.sleep(duration);
-    } catch (InterruptedException e) {
-    }
-
   }
 
   /**
