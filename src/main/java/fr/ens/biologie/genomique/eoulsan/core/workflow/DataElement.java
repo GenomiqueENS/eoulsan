@@ -27,7 +27,6 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,7 +46,7 @@ import fr.ens.biologie.genomique.eoulsan.design.Design;
  * @since 2.0
  * @author Laurent Jourdren
  */
-class DataElement extends AbstractData implements Serializable {
+class DataElement extends AbstractData {
 
   private static final long serialVersionUID = -8982205120365590676L;
 

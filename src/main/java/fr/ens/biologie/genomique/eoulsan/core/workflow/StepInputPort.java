@@ -29,7 +29,6 @@ import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
 import static java.util.Objects.requireNonNull;
 
-import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -48,7 +47,7 @@ import fr.ens.biologie.genomique.kenetre.io.CompressionType;
  * @since 2.0
  * @author Laurent Jourdren
  */
-class StepInputPort extends SimpleInputPort implements Serializable {
+class StepInputPort extends SimpleInputPort {
 
   private static final long serialVersionUID = -3858660424325558424L;
 

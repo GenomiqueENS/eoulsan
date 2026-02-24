@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.core;
 
-import java.io.Serializable;
 import java.util.Set;
 
 /**
@@ -33,7 +32,7 @@ import java.util.Set;
  * @since 2.0
  */
 public class SimpleInputPorts extends AbstractPorts<InputPort>
-    implements InputPorts, Serializable {
+    implements InputPorts {
 
   private static final long serialVersionUID = -6661589274392547355L;
 

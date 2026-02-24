@@ -26,7 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +42,7 @@ import fr.ens.biologie.genomique.eoulsan.design.Design;
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class DataList extends AbstractData implements Serializable {
+public class DataList extends AbstractData {
 
   private static final long serialVersionUID = -2933515018143805029L;
 

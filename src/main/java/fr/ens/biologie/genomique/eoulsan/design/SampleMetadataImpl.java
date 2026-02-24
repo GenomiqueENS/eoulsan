@@ -26,7 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.design;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.Serializable;
 import java.util.List;
 
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -38,7 +37,7 @@ import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
  * @since 2.0
  */
 class SampleMetadataImpl extends AbstractMetadata
-    implements Serializable, SampleMetadata {
+    implements SampleMetadata {
 
   /** Serialization version UID. */
   private static final long serialVersionUID = -6298102513903455973L;

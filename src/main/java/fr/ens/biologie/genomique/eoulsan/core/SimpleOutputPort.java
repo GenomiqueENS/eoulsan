@@ -24,8 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.core;
 
-import java.io.Serializable;
-
 import com.google.common.base.MoreObjects;
 
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
@@ -37,7 +35,7 @@ import fr.ens.biologie.genomique.kenetre.io.CompressionType;
  * @author Laurent Jourdren
  */
 public class SimpleOutputPort extends AbstractPort
-    implements OutputPort, Serializable {
+    implements OutputPort {
 
   private static final long serialVersionUID = 3565485272173523695L;
 

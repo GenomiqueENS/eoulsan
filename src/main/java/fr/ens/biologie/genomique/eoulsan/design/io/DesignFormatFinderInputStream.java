@@ -17,8 +17,7 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class DesignFormatFinderInputStream extends InputStream
-    implements AutoCloseable {
+public class DesignFormatFinderInputStream extends InputStream {
 
   private InputStream is;
 

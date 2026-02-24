@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,8 +37,7 @@ import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
  * @since 2.0
  * @author Laurent Jourdren
  */
-class StepOutputPorts extends AbstractPorts<StepOutputPort>
-    implements Serializable {
+class StepOutputPorts extends AbstractPorts<StepOutputPort> {
 
   private static final long serialVersionUID = 183816706502235237L;
 

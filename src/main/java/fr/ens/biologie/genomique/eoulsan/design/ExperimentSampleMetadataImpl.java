@@ -24,8 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-import java.io.Serializable;
-
 import fr.ens.biologie.genomique.eoulsan.Globals;
 
 /**
@@ -35,7 +33,7 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
  * @since 2.0
  */
 public class ExperimentSampleMetadataImpl extends AbstractMetadata
-    implements Serializable, ExperimentSampleMetadata {
+    implements ExperimentSampleMetadata {
 
   /** Serialization version UID. */
   private static final long serialVersionUID = 4079804296437126108L;

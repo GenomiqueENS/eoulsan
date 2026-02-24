@@ -27,7 +27,6 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -42,7 +41,7 @@ import fr.ens.biologie.genomique.eoulsan.design.Sample;
  * @since 2.0
  * @author Laurent Jourdren
  */
-class SimpleDataMetadata extends AbstractDataMetadata implements Serializable {
+class SimpleDataMetadata extends AbstractDataMetadata {
 
   private static final long serialVersionUID = -2905676240064559127L;
 

@@ -24,15 +24,13 @@
 
 package fr.ens.biologie.genomique.eoulsan.design;
 
-import java.io.Serializable;
-
 /**
  * This class defines the default implementation of the design metadata.
  * @author Xavier Bauquet
  * @since 2.0
  */
 public class DesignMetadataImpl extends AbstractMetadata
-    implements Serializable, DesignMetadata {
+    implements DesignMetadata {
 
   /** Serialization version UID. */
   private static final long serialVersionUID = -2481571646937449716L;

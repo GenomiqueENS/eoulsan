@@ -30,7 +30,6 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_FASTQ;
 import static java.util.Collections.singletonList;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

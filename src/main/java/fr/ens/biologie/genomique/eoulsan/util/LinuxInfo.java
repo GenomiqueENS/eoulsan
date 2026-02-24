@@ -36,8 +36,6 @@ import java.util.Map;
 
 import com.google.common.base.Splitter;
 
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
-
 /**
  * This class define a linux info file parser.
  * @since 1.0
