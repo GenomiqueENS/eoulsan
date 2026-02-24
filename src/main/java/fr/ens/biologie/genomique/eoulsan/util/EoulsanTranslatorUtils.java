@@ -60,8 +60,11 @@ public class EoulsanTranslatorUtils {
 
     final Translator did = createDuplicatedEnsemblIdTranslator();
 
-    AnnotationMatrix matrix =
-        new TSVAnnotationMatrixReader(annotationFile.open()).read();
+    AnnotationMatrix matrix;
+    try (TSVAnnotationMatrixReader reader =
+        new TSVAnnotationMatrixReader(annotationFile.open())) {
+      matrix = reader.read();
+    }
 
     final CommonLinksInfoTranslator translator = new CommonLinksInfoTranslator(
         new ConcatTranslator(did, new AnnotationMatrixTranslator(matrix)));
