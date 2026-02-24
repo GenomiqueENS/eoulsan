@@ -156,6 +156,7 @@ public class ClusterTaskAction extends AbstractAction {
    * Execute the task.
    * @param taskContextFile context file
    */
+  @SuppressWarnings("CatchAndPrintStackTrace")
   private static void run(final DataFile taskContextFile) {
 
     requireNonNull(taskContextFile, "contextFile is null");

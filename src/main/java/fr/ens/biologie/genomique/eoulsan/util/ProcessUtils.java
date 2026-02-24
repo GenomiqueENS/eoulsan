@@ -494,6 +494,7 @@ public final class ProcessUtils {
    * This class allow to write on a PrintStream the content of a BufferedReader
    * @author Laurent Jourdren
    */
+  @SuppressWarnings("CatchAndPrintStackTrace")
   private static final class ProcessThreadOutput implements Runnable {
 
     final BufferedReader reader;
@@ -509,7 +510,7 @@ public final class ProcessUtils {
           this.pw.println(l);
         }
       } catch (IOException e) {
-        // Do not handled interruption exception
+        // Do not handle interruption exception
         e.printStackTrace();
       }
     }

@@ -411,7 +411,7 @@ public class Normalization {
     try {
       sb.append(readStaticScript(NORMALIZATION_FUNCTIONS));
     } catch (EoulsanException e) {
-      e.printStackTrace();
+      getLogger().severe(e.getMessage());
     }
 
     // Add a end R code chunck mark

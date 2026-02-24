@@ -68,6 +68,7 @@ public class ExecLock implements Locker {
   }
 
   @Override
+  @SuppressWarnings("CatchAndPrintStackTrace")
   public void lock() {
 
     while (this.lock) {
