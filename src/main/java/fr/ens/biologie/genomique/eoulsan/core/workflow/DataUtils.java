@@ -11,8 +11,8 @@ class DataUtils {
 
   /**
    * Copy a Data object
-   * @param data
-   * @return
+   * @param data data to copy
+   * @return the copied data
    */
   static AbstractData copy(final AbstractData data) {
 

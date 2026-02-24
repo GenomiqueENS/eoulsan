@@ -143,7 +143,7 @@ public abstract class AbstractEasyContrasts {
 
   /**
    * Define design filename.
-   * @param prefix
+   * @param prefix the prefix of the differential analysis
    * @return the design filename
    */
   protected static String deseq2DesignFileName(String prefix) {
@@ -153,7 +153,7 @@ public abstract class AbstractEasyContrasts {
 
   /**
    * Define comparison filename.
-   * @param prefix
+   * @param prefix the prefix of the differential analysis
    * @return comparison filename
    */
   protected static String comparisonFileName(String prefix) {
@@ -162,7 +162,7 @@ public abstract class AbstractEasyContrasts {
 
   /**
    * Define contrast filename.
-   * @param prefix
+   * @param prefix the prefix of the differential analysis
    * @return the contrast filename
    */
   protected static String contrastFilename(String prefix) {
