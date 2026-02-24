@@ -378,7 +378,7 @@ public class RSConnection {
 
   /**
    * Execute a R code.
-   * @param source code to execute
+   * @param code code to execute
    * @throws REngineException if an error while executing the code
    */
   public void executeR(final String code) throws REngineException {
