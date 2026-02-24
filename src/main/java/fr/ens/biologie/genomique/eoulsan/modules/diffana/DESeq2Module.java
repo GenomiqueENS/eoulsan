@@ -201,15 +201,15 @@ public class DESeq2Module extends AbstractModule {
         break;
 
       case SIZE_FACTORS_TYPE:
-        this.deseq2Parameters.setSizeFactorsType(p);
+        this.deseq2Parameters.setSizeFactorsType(p.getName(), p.getStringValue());
         break;
 
       case FIT_TYPE:
-        this.deseq2Parameters.setFitType(p);
+        this.deseq2Parameters.setFitType(p.getName(), p.getStringValue());
         break;
 
       case STATISTIC_TEST:
-        this.deseq2Parameters.setStatisticTest(p);
+        this.deseq2Parameters.setStatisticTest(p.getName(), p.getStringValue());
         break;
 
       // Modules

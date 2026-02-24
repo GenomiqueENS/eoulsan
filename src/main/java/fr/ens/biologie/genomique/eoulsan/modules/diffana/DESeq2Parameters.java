@@ -4,7 +4,6 @@ import static java.util.Objects.requireNonNull;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 
 /**
  * This class contains DESeq2 module parameters.
@@ -41,17 +40,17 @@ public class DESeq2Parameters {
 
     /**
      * Get the size factors type to be used in DESeq2.
-     * @param parameter Eoulsan parameter
+     * @param value value to set
      * @return the size factors type value
      * @throws EoulsanException if the size factors type value is different from
      *           ratio or iterate
      */
-    public static SizeFactorsType get(final Parameter parameter)
+    public static SizeFactorsType get(final String value)
         throws EoulsanException {
 
-      requireNonNull(parameter, "parameter argument cannot be null");
+      requireNonNull(value, "parameter argument cannot be null");
 
-      final String lowerName = parameter.getLowerStringValue().trim();
+      final String lowerName = value.toLowerCase(Globals.DEFAULT_LOCALE).trim();
 
       for (SizeFactorsType dem : SizeFactorsType.values()) {
 
@@ -60,9 +59,7 @@ public class DESeq2Parameters {
         }
       }
 
-      throw new EoulsanException("The value: "
-          + parameter.getValue() + " is not an acceptable value for the "
-          + parameter.getName() + " parameter.");
+      return null;
     }
 
     /**
@@ -84,17 +81,16 @@ public class DESeq2Parameters {
 
     /**
      * Get the fit type to be used in DESeq2.
-     * @param name name of the enum
+     * @param value value to set
      * @return the fit type value
      * @throws EoulsanException if the fit type value is different from
      *           parametric, local or mean
      */
-    public static FitType get(final Parameter parameter)
-        throws EoulsanException {
+    public static FitType get(final String value) throws EoulsanException {
 
-      requireNonNull(parameter, "parameter argument cannot be null");
+      requireNonNull(value, "parameter argument cannot be null");
 
-      final String lowerName = parameter.getLowerStringValue().trim();
+      final String lowerName = value.toLowerCase(Globals.DEFAULT_LOCALE).trim();
 
       for (FitType dem : FitType.values()) {
 
@@ -103,9 +99,7 @@ public class DESeq2Parameters {
         }
       }
 
-      throw new EoulsanException("The value: "
-          + parameter.getValue() + " is not an acceptable value for the "
-          + parameter.getName() + " parameter.");
+      return null;
     }
 
     /**
@@ -135,17 +129,17 @@ public class DESeq2Parameters {
 
     /**
      * Get the statistic test to be used in DESeq2.
-     * @param name name of the enum
+     * @param value value to set
      * @return the statistic test value
      * @throws EoulsanException if the statistic test value is different from
      *           Wald or LRT
      */
-    public static StatisticTest get(final Parameter parameter)
+    public static StatisticTest get(final String value)
         throws EoulsanException {
 
-      requireNonNull(parameter, "parameter argument annot be null");
+      requireNonNull(value, "parameter argument annot be null");
 
-      final String lowerName = parameter.getLowerStringValue().trim();
+      final String lowerName = value.toLowerCase(Globals.DEFAULT_LOCALE).trim();
 
       for (StatisticTest dem : StatisticTest.values()) {
 
@@ -155,9 +149,7 @@ public class DESeq2Parameters {
         }
       }
 
-      throw new EoulsanException("The value: "
-          + parameter.getValue() + " is not an acceptable value for the "
-          + parameter.getName() + " parameter.");
+      return null;
     }
 
     /**
@@ -337,44 +329,71 @@ public class DESeq2Parameters {
 
   /**
    * Set the size factors type parameter value.
-   * @param sizeFactorsType the sizeFactorsType to set
+   * @param parameterName parameter name
+   * @param value value to set
    * @throws EoulsanException if the parameter value is not valid
    */
-  public void setSizeFactorsType(Parameter p) throws EoulsanException {
+  public void setSizeFactorsType(String parameterName, String value)
+      throws EoulsanException {
 
     if (this.frozen) {
       throw new IllegalStateException();
     }
 
-    this.sizeFactorsType = SizeFactorsType.get(p);
+    var result = SizeFactorsType.get(value);
+    if (result == null) {
+      throw new EoulsanException("The value: "
+          + value + " is not an acceptable value for the " + parameterName
+          + " parameter.");
+    }
+
+    this.sizeFactorsType = result;
   }
 
   /**
    * Set the fit type parameter value.
-   * @param fitType the fitType to set
+   * @param parameterName parameter name
+   * @param value value to set
    * @throws EoulsanException if the parameter value is not valid
    */
-  public void setFitType(Parameter p) throws EoulsanException {
+  public void setFitType(String parameterName, String value)
+      throws EoulsanException {
 
     if (this.frozen) {
       throw new IllegalStateException();
     }
 
-    this.fitType = FitType.get(p);
+    var result = FitType.get(value);
+    if (result == null) {
+      throw new EoulsanException("The value: "
+          + value + " is not an acceptable value for the " + parameterName
+          + " parameter.");
+    }
+
+    this.fitType = result;
   }
 
   /**
    * Set the statistic test parameter value.
-   * @param statisticTest the statisticTest to set
+   * @param parameterName parameter name
+   * @param value value to set
    * @throws EoulsanException if the parameter value is not valid
    */
-  public void setStatisticTest(Parameter p) throws EoulsanException {
+  public void setStatisticTest(String parameterName, String value)
+      throws EoulsanException {
 
     if (this.frozen) {
       throw new IllegalStateException();
     }
 
-    this.statisticTest = StatisticTest.get(p);
+    var result = StatisticTest.get(value);
+    if (result == null) {
+      throw new EoulsanException("The value: "
+          + value + " is not an acceptable value for the " + parameterName
+          + " parameter.");
+    }
+
+    this.statisticTest = result;
   }
 
   /**
