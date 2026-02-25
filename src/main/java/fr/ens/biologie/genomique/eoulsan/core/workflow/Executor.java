@@ -26,7 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.Globals.APP_VERSION;
-import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.datetoString;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.datetoString;
 import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;

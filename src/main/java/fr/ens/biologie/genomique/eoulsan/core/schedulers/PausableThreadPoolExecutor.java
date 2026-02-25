@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.schedulers;
 
-import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.silentSleep;
+import static fr.ens.biologie.genomique.kenetre.util.Utils.silentSleep;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

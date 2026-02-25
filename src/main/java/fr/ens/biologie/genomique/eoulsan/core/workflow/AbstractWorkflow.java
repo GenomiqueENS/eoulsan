@@ -31,8 +31,8 @@ import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.PARTIALLY_DO
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.READY;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WAITING;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
-import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.datetoString;
-import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.silentSleep;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.datetoString;
+import static fr.ens.biologie.genomique.kenetre.util.Utils.silentSleep;
 import static fr.ens.biologie.genomique.kenetre.util.StringUtils.stackTraceToString;
 import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;

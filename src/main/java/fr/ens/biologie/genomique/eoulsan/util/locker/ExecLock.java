@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.util.locker;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.silentSleep;
+import static fr.ens.biologie.genomique.kenetre.util.Utils.silentSleep;
 
 import java.io.File;
 import java.io.IOException;

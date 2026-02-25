@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static fr.ens.biologie.genomique.eoulsan.util.EoulsanUtils.datetoString;
+import static fr.ens.biologie.genomique.kenetre.util.StringUtils.datetoString;
 import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toCompactTime;
 import static java.util.Objects.requireNonNull;
 
