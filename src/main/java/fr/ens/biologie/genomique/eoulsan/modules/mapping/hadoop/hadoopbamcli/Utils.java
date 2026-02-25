@@ -330,11 +330,16 @@ public final class Utils {
 		}
 
 		final String orderStr = conf.get(HEADERMERGER_SORTORDER_PROP);
-		final SAMFileHeader.SortOrder order =
-			orderStr == null ? SAMFileHeader.SortOrder.unsorted
-			                 : SAMFileHeader.SortOrder.valueOf(orderStr);
+		final SAMFileHeader.SortOrder order;
+        if (orderStr == null) {
+			order = SAMFileHeader.SortOrder.unsorted;
+		} else {
+			order = SAMFileHeader.SortOrder.valueOf(orderStr);
+		}
 
-		return headerMerger = new SamFileHeaderMerger(order, headers, true);
+		headerMerger = new SamFileHeaderMerger(order, headers, true);
+
+		return headerMerger;
 	}
 
 	/** Changes the given SAMRecord as appropriate for being placed in a file
@@ -455,22 +460,9 @@ public final class Utils {
 		sb.append("or ");
 		sb.append(last);
 		sb.append(')');
-		return stringencyOptHelp = sb.toString();
+
+		stringencyOptHelp = sb.toString();
+		return stringencyOptHelp;
 	}
 
-	/** Sets the default validation stringency in addition to returning it. */
-//	public static ValidationStringency toStringency(
-//		Object o, String cmdName)
-//	{
-//		final String s = (String)o;
-//		try {
-//			final ValidationStringency stringency =
-//				ValidationStringency.valueOf(s);
-//			SAMFileReader.setDefaultValidationStringency(stringency);
-//			return stringency;
-//		} catch (IllegalArgumentException e) {
-//			System.err.printf("%s :: invalid stringency '%s'\n", cmdName, s);
-//			return null;
-//		}
-//	}
 }

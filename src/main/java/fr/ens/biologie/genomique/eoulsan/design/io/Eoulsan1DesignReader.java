@@ -206,9 +206,7 @@ public class Eoulsan1DesignReader implements DesignReader {
             final String fieldName = fieldnames.get(i);
 
             if (i == idFieldIndex) {
-
               // Do nothing for the SampleNumber field
-              continue;
             } else if (i == nameFieldIndex) {
 
               // The Name filed

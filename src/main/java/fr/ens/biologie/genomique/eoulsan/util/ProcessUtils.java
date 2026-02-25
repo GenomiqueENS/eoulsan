@@ -60,56 +60,6 @@ public final class ProcessUtils {
 
   private static Random random;
 
-  public static class ProcessResult {
-
-    private final int exitValue;
-    private final String stdout;
-    private final String stderr;
-
-    /**
-     * Get the exit value of the process.
-     * @return Returns the errorResult
-     */
-    public int getExitValue() {
-      return this.exitValue;
-    }
-
-    /**
-     * Get the standard output of the process
-     * @return Returns the stdout
-     */
-    public String getStdout() {
-      return this.stdout;
-    }
-
-    /**
-     * Get the standard error of the process
-     * @return Returns the stderr
-     */
-    public String getStderr() {
-      return this.stderr;
-    }
-
-    //
-    // Constructor
-    //
-
-    /**
-     * Constructor.
-     * @param exitValue the exit value of the process
-     * @param stdout the standard output of the process
-     * @param stderr the standard error of the process
-     */
-    private ProcessResult(final int exitValue, final String stdout,
-        final String stderr) {
-
-      this.exitValue = exitValue;
-      this.stdout = stdout;
-      this.stderr = stderr;
-    }
-
-  }
-
   /**
    * Execute a command.
    * @param cmd command to execute
@@ -412,7 +362,7 @@ public final class ProcessUtils {
         try {
           result.add(Integer.parseInt(line));
         } catch (NumberFormatException e) {
-          continue;
+          // Do nothing
         }
       }
 
