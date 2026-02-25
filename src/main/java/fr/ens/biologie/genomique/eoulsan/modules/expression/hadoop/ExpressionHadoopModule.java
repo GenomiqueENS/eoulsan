@@ -419,7 +419,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
    * @param counter the counter to initialize
    * @param genomeDescData the genome description data
    * @param annotationData the annotation data
-   * @throws EoulsanException if an error occurs while initialize the counter
+   * @throws KenetreException if an error occurs while initialize the counter
    * @throws IOException if an error occurs while reading the input data
    */
   private static void initializeCounter(final ExpressionCounter counter,

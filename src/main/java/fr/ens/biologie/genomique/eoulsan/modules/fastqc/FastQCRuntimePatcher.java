@@ -122,7 +122,7 @@ public class FastQCRuntimePatcher {
     try {
       BufferedImage b =
           ImageIO.read(clazz.getResourceAsStream("/Templates/" + path));
-      return (ImageToBase64.imageToBase64(b));
+      return ImageToBase64.imageToBase64(b);
     } catch (IOException ioe) {
       ioe.printStackTrace();
       return "Failed";

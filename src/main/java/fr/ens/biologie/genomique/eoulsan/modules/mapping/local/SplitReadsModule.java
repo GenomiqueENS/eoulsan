@@ -217,7 +217,7 @@ public class SplitReadsModule extends AbstractModule {
    * @param inFile input file
    * @param outFile output file
    * @param reporter reporter to use
-   * @param filter reads filter to use
+   * @param splitLength split length
    * @throws IOException if an error occurs while filtering data
    */
   private static void splitFile(final DataFile inFile, final DataFile outFile,

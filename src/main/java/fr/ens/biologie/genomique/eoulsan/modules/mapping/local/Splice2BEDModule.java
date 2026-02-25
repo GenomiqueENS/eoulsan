@@ -34,6 +34,7 @@ public class Splice2BEDModule extends AbstractSplice2BEDModule {
   private static final String PLUS_COLOR = "255,0,0";
   private static final String MINUS_COLOR = "0,0,255";
 
+  @Override
   public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 

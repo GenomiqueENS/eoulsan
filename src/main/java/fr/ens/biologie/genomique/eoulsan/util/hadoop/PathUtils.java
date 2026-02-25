@@ -659,7 +659,7 @@ public final class PathUtils {
       result.add(fst.getPath());
     }
 
-    return result;
+    return Collections.unmodifiableList(result);
   }
 
   /**
@@ -719,7 +719,7 @@ public final class PathUtils {
       result.add(fst.getPath());
     }
 
-    return result;
+    return Collections.unmodifiableList(result);
   }
 
   /**

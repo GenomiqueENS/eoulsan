@@ -165,6 +165,7 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
 
       case "use.gene.annotation":
         Modules.renamedParameter(context, p, "use.additional.annotation");
+        // fall through
       case "use.additional.annotation":
         this.useAdditionalAnnotation = p.getBooleanValue();
         break;

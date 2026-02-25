@@ -109,7 +109,6 @@ public class EasyContrasts1 extends AbstractEasyContrasts {
    * @param workflowOutputDir output directory
    * @throws IOException if an error occurs while reading or writing input files
    *           for the script
-   * @throws EoulsanException if an error occurs while executing the script
    */
   private void executeNormDiffana(String prefix,
       final DataFile workflowOutputDir) throws IOException {

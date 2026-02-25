@@ -56,6 +56,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -261,11 +262,11 @@ public class CommandWorkflowParser {
 
                 final String stepId =
                     getAttribute(eStepElement, ID_ATTR_NAME_STEP_TAG).trim()
-                        .toLowerCase();
+                        .toLowerCase(Globals.DEFAULT_LOCALE);
 
                 final boolean skip = Boolean.parseBoolean(
                     getAttribute(eStepElement, SKIP_ATTR_NAME_STEP_TAG).trim()
-                        .toLowerCase());
+                        .toLowerCase(Globals.DEFAULT_LOCALE));
 
                 final int requiredMemory =
                     parseMemory(getAttribute(eStepElement,
@@ -811,7 +812,7 @@ public class CommandWorkflowParser {
       return -1;
     }
 
-    final String value = s.replace(" ", "").trim().toLowerCase();
+    final String value = s.replace(" ", "").trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
     if (s.isEmpty()) {
       return -1;

@@ -204,7 +204,6 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
    * @param context Eoulsan context
    * @param additionalArguments additional indexer arguments
    * @param additionalDescription additional indexer arguments description
-   * @param threadCount the number of thread to use
    */
   static void execute(final Mapper mapper, final TaskContext context,
       final String additionalArguments,

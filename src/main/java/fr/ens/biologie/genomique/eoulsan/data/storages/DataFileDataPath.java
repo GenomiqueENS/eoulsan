@@ -123,7 +123,7 @@ public class DataFileDataPath
       result.add(new DataFileDataPath(f));
     }
 
-    return result;
+    return Collections.unmodifiableList(result);
   }
 
   @Override

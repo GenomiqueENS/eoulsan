@@ -26,10 +26,10 @@ package fr.ens.biologie.genomique.eoulsan.util.locker;
 
 import java.io.Serializable;
 import java.lang.management.ManagementFactory;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Date;
 
 /**
  * This class define a ticket for the TicketLocker.
@@ -150,14 +150,19 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
   @Override
   public String toString() {
 
-    final DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+    final DateTimeFormatter timeFormatter = DateTimeFormatter
+        .ofPattern("HH:mm:ss.SSS").withZone(ZoneId.systemDefault());
 
-    return dateFormat.format(new Date(this.creationTime))
-        + " " + dateFormat.format(new Date(this.lastActiveTime)) + " "
-        + dateFormat
-            .format(new Date(System.currentTimeMillis() - this.creationTime))
-        + " " + (this.working ? "WORKING" : "NOT WORKING") + " [" + this.pid
-        + '.' + this.threadId + " "
+    Instant creationInstant = Instant.ofEpochMilli(this.creationTime);
+    Instant lastActiveInstant = Instant.ofEpochMilli(this.lastActiveTime);
+    Instant uptimeInstant =
+        Instant.ofEpochMilli(System.currentTimeMillis() - this.creationTime);
+
+    return timeFormatter.format(creationInstant)
+        + " " + timeFormatter.format(lastActiveInstant) + " "
+        + timeFormatter.format(uptimeInstant) + " " + " "
+        + (this.working ? "WORKING" : "NOT WORKING") + " [" + this.pid + '.'
+        + this.threadId + " "
         + (this.description != null ? this.description : "") + "]";
   }
 

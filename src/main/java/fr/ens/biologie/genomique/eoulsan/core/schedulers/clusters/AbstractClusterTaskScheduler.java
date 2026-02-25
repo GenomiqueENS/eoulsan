@@ -98,7 +98,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
   /**
    * This class allow to fetch standard output or standard error.
    */
-  public final class ProcessThreadOutput extends Thread {
+  public static final class ProcessThreadOutput extends Thread {
 
     final InputStream in;
     final OutputStream out;

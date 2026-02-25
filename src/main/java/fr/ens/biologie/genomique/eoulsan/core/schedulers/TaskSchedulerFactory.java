@@ -49,6 +49,7 @@ public class TaskSchedulerFactory {
   //
 
   /**
+   * Initialize the scheduler.
    * @throws EoulsanException if an error occurs while configuring the scheduler
    */
   public static void initialize() throws EoulsanException {

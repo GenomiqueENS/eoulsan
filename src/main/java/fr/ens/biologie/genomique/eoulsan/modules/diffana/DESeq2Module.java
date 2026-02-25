@@ -441,7 +441,7 @@ public class DESeq2Module extends AbstractModule {
 
   /**
    * Show a message for not relevant parameters.
-   * @param stepId the step identifier
+   * @param context the Eoulsan context
    * @param parameter the deprecated parameter
    * @throws EoulsanException throw an exception if required
    */
