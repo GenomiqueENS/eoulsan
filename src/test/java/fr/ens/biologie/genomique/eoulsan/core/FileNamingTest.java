@@ -45,12 +45,12 @@ import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 public class FileNamingTest {
 
   @Before
-  public void setUp() {
+  public void setUp() throws Exception {
 
     try {
       EoulsanRuntimeDebug.initDebugEoulsanRuntime();
     } catch (IOException | EoulsanException e) {
-      e.printStackTrace();
+      throw e;
     }
   }
 

@@ -24,6 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.data.protocols;
 
+import static java.nio.charset.Charset.defaultCharset;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -89,7 +90,7 @@ public class FileDataProtocolTest {
     is.close();
     f.delete();
 
-    assertEquals(fileContent, new String(bb.array(), 0, bb.position()));
+    assertEquals(fileContent, new String(bb.array(), 0, bb.position(), defaultCharset()));
   }
 
   @Test
@@ -99,7 +100,7 @@ public class FileDataProtocolTest {
     DataFile df = new DataFile(f1.getAbsolutePath());
 
     OutputStream os = df.create();
-    Writer writer = new OutputStreamWriter(os);
+    Writer writer = new OutputStreamWriter(os, defaultCharset());
     writer.write(fileContent);
     writer.close();
 

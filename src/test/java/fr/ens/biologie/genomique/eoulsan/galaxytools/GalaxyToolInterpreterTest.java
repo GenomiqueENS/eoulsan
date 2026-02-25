@@ -23,10 +23,12 @@
  */
 package fr.ens.biologie.genomique.eoulsan.galaxytools;
 
+import static java.nio.charset.Charset.defaultCharset;
 import static java.util.Objects.requireNonNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -109,7 +111,7 @@ public class GalaxyToolInterpreterTest {
 
     // Read file
     try (final BufferedReader br =
-        new BufferedReader(new InputStreamReader(srcTestsSetting))) {
+        new BufferedReader(new InputStreamReader(srcTestsSetting, defaultCharset()))) {
 
       while ((line = br.readLine()) != null) {
 
@@ -156,7 +158,7 @@ public class GalaxyToolInterpreterTest {
       }
 
     } catch (IOException e) {
-      e.printStackTrace();
+      throw e;
     }
 
   }
@@ -170,7 +172,7 @@ public class GalaxyToolInterpreterTest {
    * @author Sandrine Perrin
    * @since 2.0
    */
-  final class ToolTest {
+  final static class ToolTest {
 
     /** Keys expected from description file */
     private static final String TOOLSHEDXML_PATH_KEY = "toolshedxml";

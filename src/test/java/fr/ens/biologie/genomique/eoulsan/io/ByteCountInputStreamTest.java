@@ -24,8 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.io;
 
+import static java.nio.charset.Charset.defaultCharset;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -36,39 +36,33 @@ import org.junit.Test;
 public class ByteCountInputStreamTest {
 
   @Test
-  public void test() {
+  public void test() throws IOException {
 
-    try {
+    testString1("Il est beau le soleil.");
+    testString2("Il est beau le soleil.");
 
-      testString1("Il est beau le soleil.");
-      testString2("Il est beau le soleil.");
+    final Random rand = new Random(System.currentTimeMillis());
+    final StringBuilder sb = new StringBuilder();
 
-      final Random rand = new Random(System.currentTimeMillis());
-      final StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < 100; i++) {
 
-      for (int i = 0; i < 100; i++) {
-
-        sb.setLength(0);
-        final int count = rand.nextInt(100000);
-        for (int y = 0; y < count; y++) {
-          sb.append('1');
-        }
-
-        final String s = sb.toString();
-        testString1(s);
-        testString2(s);
-
+      sb.setLength(0);
+      final int count = rand.nextInt(100000);
+      for (int y = 0; y < count; y++) {
+        sb.append('1');
       }
 
-    } catch (IOException e) {
-      fail();
+      final String s = sb.toString();
+      testString1(s);
+      testString2(s);
+
     }
 
   }
 
   private void testString1(final String s) throws IOException {
 
-    final byte[] bytes = s.getBytes();
+    final byte[] bytes = s.getBytes(defaultCharset());
 
     final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 
@@ -84,7 +78,7 @@ public class ByteCountInputStreamTest {
 
   private void testString2(final String s) throws IOException {
 
-    final byte[] bytes = s.getBytes();
+    final byte[] bytes = s.getBytes(defaultCharset());
 
     final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 

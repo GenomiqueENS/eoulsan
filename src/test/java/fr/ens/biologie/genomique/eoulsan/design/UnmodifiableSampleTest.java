@@ -86,7 +86,7 @@ public class UnmodifiableSampleTest {
       d.getSample("2").setName("titi");
       assertTrue(true);
     } catch (IllegalArgumentException e) {
-      fail();
+      assertTrue(false);
     }
 
   }

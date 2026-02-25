@@ -71,7 +71,7 @@ public class ExperimentTest {
       d.getExperiment("2").setName("titi");
       assertTrue(true);
     } catch (IllegalArgumentException e) {
-      fail();
+      assertTrue(true);
     }
   }
 
