@@ -30,13 +30,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 /**
  * This class define an InputStream that concatenate path in an InputStream.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -71,11 +71,11 @@ public class PathConcatInputStream extends AbstractConcatInputStream {
 
   /**
    * Constructor.
+   *
    * @param paths paths to concatenate in the InputStream.
    * @param conf Hadoop configuration
    */
-  public PathConcatInputStream(final List<Path> paths,
-      final Configuration conf) {
+  public PathConcatInputStream(final List<Path> paths, final Configuration conf) {
 
     requireNonNull(paths, "paths is null");
     requireNonNull(conf, "conf is null");
@@ -83,5 +83,4 @@ public class PathConcatInputStream extends AbstractConcatInputStream {
     this.it = paths.iterator();
     this.conf = conf;
   }
-
 }

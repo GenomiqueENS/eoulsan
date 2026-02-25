@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.design;
 
 /**
  * This interface defines the experiment sample.
+ *
  * @author Xavier Bauquet
  * @since 2.0
  */
@@ -33,14 +34,15 @@ public interface ExperimentSample {
 
   /**
    * Get the experiment sample name.
+   *
    * @return the experiment sample name
    */
   Sample getSample();
 
   /**
    * Get the experiment sample metadata.
+   *
    * @return an ExperimentSampleMetadata object
    */
   ExperimentSampleMetadata getMetadata();
-
 }

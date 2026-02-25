@@ -24,6 +24,7 @@
 
 /**
  * This package contains Eoulsan user interface classes.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */

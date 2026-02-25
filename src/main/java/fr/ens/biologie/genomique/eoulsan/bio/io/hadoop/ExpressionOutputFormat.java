@@ -26,7 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.bio.io.hadoop;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -42,15 +41,15 @@ import org.apache.hadoop.util.ReflectionUtils;
 
 /**
  * This class define a expression output format.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class ExpressionOutputFormat
-    extends FileOutputFormat<Text, LongWritable> {
+public class ExpressionOutputFormat extends FileOutputFormat<Text, LongWritable> {
 
   @Override
-  public RecordWriter<Text, LongWritable> getRecordWriter(
-      TaskAttemptContext context) throws IOException, InterruptedException {
+  public RecordWriter<Text, LongWritable> getRecordWriter(TaskAttemptContext context)
+      throws IOException, InterruptedException {
 
     Configuration conf = context.getConfiguration();
     boolean isCompressed = getCompressOutput(context);
@@ -76,9 +75,8 @@ public class ExpressionOutputFormat
     } else {
 
       FSDataOutputStream fileOut = fs.create(file, false);
-      return new ExpressionRecordWriter(context,
-          new DataOutputStream(codec.createOutputStream(fileOut)));
+      return new ExpressionRecordWriter(
+          context, new DataOutputStream(codec.createOutputStream(fileOut)));
     }
   }
-
 }

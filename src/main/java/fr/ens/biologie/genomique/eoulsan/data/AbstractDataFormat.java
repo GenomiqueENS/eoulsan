@@ -24,17 +24,16 @@
 
 package fr.ens.biologie.genomique.eoulsan.data;
 
+import com.google.common.base.MoreObjects;
+import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import com.google.common.base.MoreObjects;
-
-import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
-import fr.ens.biologie.genomique.eoulsan.core.Module;
-
 /**
  * This class define an abstract data format.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -103,20 +102,21 @@ abstract class AbstractDataFormat implements DataFormat {
     return Objects.equals(this.getName(), that.getName())
         && Objects.equals(this.getDescription(), that.getDescription())
         && Objects.equals(this.getContentType(), that.getContentType())
-        && Objects.equals(this.getDefaultExtension(),
-            that.getDefaultExtension())
+        && Objects.equals(this.getDefaultExtension(), that.getDefaultExtension())
         && Objects.equals(this.getExtensions(), that.getExtensions())
         && this.isGenerator() == that.isGenerator()
         && this.isChecker() == that.isChecker()
         && ((this.getGenerator() == null && that.getGenerator() == null)
             || (this.getGenerator() != null
                 && that.getGenerator() != null
-                && Objects.equals(this.getGenerator().getClass().getName(),
+                && Objects.equals(
+                    this.getGenerator().getClass().getName(),
                     that.getGenerator().getClass().getName())))
         && ((this.getChecker() == null && that.getChecker() == null)
             || (this.getChecker() != null
                 && that.getChecker() != null
-                && Objects.equals(this.getChecker().getClass().getName(),
+                && Objects.equals(
+                    this.getChecker().getClass().getName(),
                     that.getChecker().getClass().getName())))
         && this.getMaxFilesCount() == that.getMaxFilesCount();
   }
@@ -124,16 +124,21 @@ abstract class AbstractDataFormat implements DataFormat {
   @Override
   public int hashCode() {
 
-    final Integer extensionsHashCode =
-        getExtensions() == null ? null : getExtensions().hashCode();
-    final Integer generatorHashCode =
-        isGenerator() ? getGenerator().getClass().hashCode() : null;
-    final Integer checkerHashCode =
-        isChecker() ? getChecker().getClass().hashCode() : null;
+    final Integer extensionsHashCode = getExtensions() == null ? null : getExtensions().hashCode();
+    final Integer generatorHashCode = isGenerator() ? getGenerator().getClass().hashCode() : null;
+    final Integer checkerHashCode = isChecker() ? getChecker().getClass().hashCode() : null;
 
-    return Objects.hash(getName(), getDescription(), getContentType(),
-        getDefaultExtension(), extensionsHashCode, isGenerator(), isChecker(),
-        generatorHashCode, checkerHashCode, getMaxFilesCount());
+    return Objects.hash(
+        getName(),
+        getDescription(),
+        getContentType(),
+        getDefaultExtension(),
+        extensionsHashCode,
+        isGenerator(),
+        isChecker(),
+        generatorHashCode,
+        checkerHashCode,
+        getMaxFilesCount());
   }
 
   @Override
@@ -143,15 +148,16 @@ abstract class AbstractDataFormat implements DataFormat {
     final Checker checker = getChecker();
 
     return MoreObjects.toStringHelper(this)
-        .add("name", getName()).add("description", getDescription())
+        .add("name", getName())
+        .add("description", getDescription())
         .add("contentType", getContentType())
         .add("defaultExtension", getDefaultExtension())
         .add("extensions", getExtensions())
-        .add("generatorClassName",
+        .add(
+            "generatorClassName",
             generator != null ? generator.getClass().getCanonicalName() : null)
-        .add("checkerClassName",
-            checker != null ? checker.getClass().getCanonicalName() : null)
-        .add("maxFilesCount", getMaxFilesCount()).toString();
+        .add("checkerClassName", checker != null ? checker.getClass().getCanonicalName() : null)
+        .add("maxFilesCount", getMaxFilesCount())
+        .toString();
   }
-
 }

@@ -29,6 +29,7 @@ import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
 
 /**
  * This interface define workflow step events
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -36,6 +37,7 @@ public interface StepObserver {
 
   /**
    * The status of the step has been changed.
+   *
    * @param step step that the status has been changed
    * @param stepState state the step state
    */
@@ -43,26 +45,27 @@ public interface StepObserver {
 
   /**
    * The progress of the step for a sample has been changed.
+   *
    * @param step step that the progress has been changed
    * @param contextId id of the context
    * @param contextName name of the context that has been changed
    * @param progress progress value
    */
-  void notifyStepState(Step step, int contextId, String contextName,
-      double progress);
+  void notifyStepState(Step step, int contextId, String contextName, double progress);
 
   /**
    * The progress of the step has been changed.
+   *
    * @param step step that the progress has been changed
    * @param terminatedTasks the terminated tasks count
    * @param submittedTasks the submitted tasks count
    * @param progress the progress of the step
    */
-  void notifyStepState(Step step, int terminatedTasks, int submittedTasks,
-      double progress);
+  void notifyStepState(Step step, int terminatedTasks, int submittedTasks, double progress);
 
   /**
    * The note of the step has been changed.
+   *
    * @param step step that the note has been changed
    * @param note the note content
    */
@@ -70,6 +73,7 @@ public interface StepObserver {
 
   /**
    * Notify that a task has been submitted.
+   *
    * @param step the step of the submitted task
    * @param contextId id of the context
    */
@@ -77,6 +81,7 @@ public interface StepObserver {
 
   /**
    * Notify that a task is running.
+   *
    * @param step the step of the submitted task
    * @param contextId id of the context
    */
@@ -84,6 +89,7 @@ public interface StepObserver {
 
   /**
    * Notify that a task has been done.
+   *
    * @param step the step of the submitted task
    * @param contextId id of the context
    */
@@ -91,9 +97,9 @@ public interface StepObserver {
 
   /**
    * Notify the success of the workflow.
+   *
    * @param success the success of the workflow
    * @param message success message
    */
   void notifyWorkflowSuccess(boolean success, String message);
-
 }

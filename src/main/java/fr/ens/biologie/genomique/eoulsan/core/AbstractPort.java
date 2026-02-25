@@ -27,15 +27,15 @@ package fr.ens.biologie.genomique.eoulsan.core;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-
 /**
  * Abstract class that define a port.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -76,6 +76,7 @@ public abstract class AbstractPort implements Port, Serializable {
 
   /**
    * Constructor.
+   *
    * @param name name of the port
    * @param list true if the port requires a list as value
    * @param format format of the port
@@ -84,13 +85,12 @@ public abstract class AbstractPort implements Port, Serializable {
 
     requireNonNull(name, "The name of the port is null");
     requireNonNull(format, "The format of the port " + name + " is null");
-    checkArgument(FileNaming.isPortNameValid(name),
-        "Invalid port name (only ascii letters and digits are allowed): "
-            + name.trim());
+    checkArgument(
+        FileNaming.isPortNameValid(name),
+        "Invalid port name (only ascii letters and digits are allowed): " + name.trim());
 
     this.name = name.trim().toLowerCase(Globals.DEFAULT_LOCALE);
     this.list = list;
     this.format = format;
   }
-
 }

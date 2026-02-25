@@ -24,13 +24,13 @@
 
 package fr.ens.biologie.genomique.eoulsan.core;
 
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import java.util.List;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-
 /**
  * This interface define a group of ports.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -38,6 +38,7 @@ public interface Ports<E extends Port> extends Iterable<E> {
 
   /**
    * Get a port.
+   *
    * @param name name of the port to get
    * @return the port if exists or null
    */
@@ -45,6 +46,7 @@ public interface Ports<E extends Port> extends Iterable<E> {
 
   /**
    * Test if a port exists.
+   *
    * @param name name of the port to test
    * @return true if the port exists
    */
@@ -52,6 +54,7 @@ public interface Ports<E extends Port> extends Iterable<E> {
 
   /**
    * Test if a port exists by testing if port name exists.
+   *
    * @param port port to test
    * @return true if the port exists
    */
@@ -59,24 +62,28 @@ public interface Ports<E extends Port> extends Iterable<E> {
 
   /**
    * Get the names of the ports
+   *
    * @return a set with the names of the ports
    */
   Set<String> getPortNames();
 
   /**
    * Get the number of ports in the object.
+   *
    * @return the number of ports
    */
   int size();
 
   /**
    * Test if the object is empty
+   *
    * @return true if the object is null
    */
   boolean isEmpty();
 
   /**
    * Count the number of occurrences of a format in the port.
+   *
    * @param format the format to test
    * @return the number of occurrences of the format
    */
@@ -84,6 +91,7 @@ public interface Ports<E extends Port> extends Iterable<E> {
 
   /**
    * Get a list with all the ports that format is the specified format.
+   *
    * @param format the format to get
    * @return always a list (even empty) of Ports
    */
@@ -91,8 +99,8 @@ public interface Ports<E extends Port> extends Iterable<E> {
 
   /**
    * Get the first port.
+   *
    * @return a port or null if the object does not contains ports.
    */
   E getFirstPort();
-
 }

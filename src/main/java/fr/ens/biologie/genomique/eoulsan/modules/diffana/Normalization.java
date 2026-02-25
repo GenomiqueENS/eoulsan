@@ -29,14 +29,6 @@ import static fr.ens.biologie.genomique.kenetre.util.StringUtils.datetoString;
 import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toCompactTime;
 import static java.util.Objects.requireNonNull;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
@@ -51,14 +43,20 @@ import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 import fr.ens.biologie.genomique.eoulsan.util.r.RSConnection;
 import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * This class create and launch an R script to compute normalisation of
- * expression data
+ * This class create and launch an R script to compute normalisation of expression data
+ *
  * @since 1.2
  * @author Vivien Deshaies
  */
-
 public class Normalization {
 
   protected static final String TARGET_CREATION = "/DESeq1/targetCreation.Rnw";
@@ -69,12 +67,9 @@ public class Normalization {
       "/DESeq1/normalisationPart1WithTechRep.Rnw";
   private static final String NORMALIZATION_PART1_WHITHOUT_TECHREP =
       "/DESeq1/normalisationPart1WithoutTechRep.Rnw";
-  private static final String CLUSTERING_PCA_RAW =
-      "/DESeq1/clusteringAndPCARaw.Rnw";
-  private static final String CLUSTERING_PCA_NORM =
-      "/DESeq1/clusteringAndPCANorm.Rnw";
-  private static final String NORMALIZATION_PART2 =
-      "/DESeq1/normalizationPart2.Rnw";
+  private static final String CLUSTERING_PCA_RAW = "/DESeq1/clusteringAndPCARaw.Rnw";
+  private static final String CLUSTERING_PCA_NORM = "/DESeq1/clusteringAndPCANorm.Rnw";
+  private static final String NORMALIZATION_PART2 = "/DESeq1/normalizationPart2.Rnw";
 
   protected final Design design;
   protected final String expressionFilesPrefix;
@@ -88,18 +83,16 @@ public class Normalization {
 
   /**
    * Run normalisation step.
+   *
    * @param context task context
    * @param data data to process
-   * @throws EoulsanException if the number of sample to analyze if lower than
-   *           one
+   * @throws EoulsanException if the number of sample to analyze if lower than one
    */
-  public void run(final TaskContext context, final Data data)
-      throws EoulsanException {
+  public void run(final TaskContext context, final Data data) throws EoulsanException {
 
     // Check if there more than one file to launch the analysis
     if (data.size() < 2) {
-      throw new EoulsanException(
-          "Cannot run the analysis with less than 2 input files");
+      throw new EoulsanException("Cannot run the analysis with less than 2 input files");
     }
 
     runRExecutor(context, data);
@@ -107,12 +100,12 @@ public class Normalization {
 
   /**
    * Execute Rnw script.
+   *
    * @param context Step context
    * @param data data to process
    * @throws EoulsanException if an error occurs while executing the script
    */
-  protected void runRExecutor(final TaskContext context, final Data data)
-      throws EoulsanException {
+  protected void runRExecutor(final TaskContext context, final Data data) throws EoulsanException {
 
     final boolean saveRScript = context.getSettings().isSaveRscripts();
     final DataFile workflowOutputDir = context.getOutputDirectory();
@@ -139,12 +132,11 @@ public class Normalization {
 
           // Check if the sample ID exists
           if (sampleId == -1) {
-            throw new EoulsanException(
-                "No sample Id found for input file: " + d.getDataFile());
+            throw new EoulsanException("No sample Id found for input file: " + d.getDataFile());
           }
 
-          final String linkFilename = this.expressionFilesPrefix
-              + sampleId + this.expressionFilesSuffix;
+          final String linkFilename =
+              this.expressionFilesPrefix + sampleId + this.expressionFilesSuffix;
 
           executor.putInputFile(d.getDataFile(), linkFilename);
         }
@@ -153,17 +145,20 @@ public class Normalization {
         final String rScript = generateScript(experiment, context);
 
         // Set the description of the analysis
-        final String description = context.getCurrentStep().getId()
-            + '_' + experiment.getId() + '-'
-            + toCompactTime(System.currentTimeMillis());
+        final String description =
+            context.getCurrentStep().getId()
+                + '_'
+                + experiment.getId()
+                + '-'
+                + toCompactTime(System.currentTimeMillis());
 
         // Set the Sweave output
-        final String sweaveOutput = context.getCurrentStep().getId()
-            + '_' + experiment.getId() + ".tex";
+        final String sweaveOutput =
+            context.getCurrentStep().getId() + '_' + experiment.getId() + ".tex";
 
         // Execute the R script
-        executor.executeRScript(rScript, true, sweaveOutput, saveRScript,
-            description, workflowOutputDir);
+        executor.executeRScript(
+            rScript, true, sweaveOutput, saveRScript, description, workflowOutputDir);
 
         // Remove input files
         executor.removeInputFiles();
@@ -176,8 +171,7 @@ public class Normalization {
       }
 
     } catch (IOException e) {
-      throw new EoulsanException(
-          "Error while running differential analysis: " + e.getMessage(), e);
+      throw new EoulsanException("Error while running differential analysis: " + e.getMessage(), e);
     }
   }
 
@@ -187,6 +181,7 @@ public class Normalization {
 
   /**
    * Test if there is Technical replicates into rRepTechGroup field.
+   *
    * @param rRepTechGroup list of the technical replicate group
    */
   protected boolean isTechnicalReplicates(final List<String> rRepTechGroup) {
@@ -210,12 +205,12 @@ public class Normalization {
 
   /**
    * Read a static part of the generated script.
+   *
    * @param staticFile the name of a file containing a part of the script
    * @return A String with the static part of the script
    * @throws EoulsanException if an error occurs while reading the script
    */
-  protected String readStaticScript(final String staticFile)
-      throws EoulsanException {
+  protected String readStaticScript(final String staticFile) throws EoulsanException {
 
     final StringBuilder sb = new StringBuilder();
 
@@ -240,13 +235,14 @@ public class Normalization {
 
   /**
    * Generate the R script.
+   *
    * @param experiment the experiment
    * @param context step context
    * @return String rScript R script to execute
    * @throws EoulsanException if an error occurs while generate the R script
    */
-  protected String generateScript(final Experiment experiment,
-      final TaskContext context) throws EoulsanException {
+  protected String generateScript(final Experiment experiment, final TaskContext context)
+      throws EoulsanException {
 
     final Map<String, List<Integer>> conditionsMap = new HashMap<>();
 
@@ -266,8 +262,8 @@ public class Normalization {
       }
 
       if ("".equals(condition)) {
-        throw new EoulsanException("No value for condition in sample: "
-            + s.getName() + " (" + s.getId() + ")");
+        throw new EoulsanException(
+            "No value for condition in sample: " + s.getName() + " (" + s.getId() + ")");
       }
 
       final String repTechGroup = DesignUtils.getRepTechGroup(experiment, s);
@@ -296,11 +292,9 @@ public class Normalization {
 
     // Create Rnw script stringbuilder with preamble
     String pdfTitle = escapeUnderScore(experiment.getName()) + " normalisation";
-    String filePrefix =
-        "normalization_" + escapeUnderScore(experiment.getName());
+    String filePrefix = "normalization_" + escapeUnderScore(experiment.getName());
 
-    final StringBuilder sb =
-        generateRnwpreamble(experiment.getSamples(), pdfTitle, filePrefix);
+    final StringBuilder sb = generateRnwpreamble(experiment.getSamples(), pdfTitle, filePrefix);
 
     /*
      * Replace "na" values of repTechGroup by unique sample ids to avoid pooling
@@ -365,14 +359,14 @@ public class Normalization {
 
   /**
    * Write Rnw preamble.
+   *
    * @param experimentSamplesList sample experiment list
    * @param title title of the document
    * @param filePrefix Sweave file prefix
    * @return a StringBuilder with Rnw preamble
    */
   protected StringBuilder generateRnwpreamble(
-      final List<Sample> experimentSamplesList, final String title,
-      final String filePrefix) {
+      final List<Sample> experimentSamplesList, final String title, final String filePrefix) {
 
     StringBuilder sb = new StringBuilder();
     // Add packages to the LaTeX StringBuilder
@@ -426,11 +420,11 @@ public class Normalization {
 
   /**
    * Add sampleNames vector to R script.
+   *
    * @param rSampleNames sample names
    * @param sb StringBuilder where write the part of the script
    */
-  protected void generateSampleNamePart(final List<String> rSampleNames,
-      final StringBuilder sb) {
+  protected void generateSampleNamePart(final List<String> rSampleNames, final StringBuilder sb) {
 
     // Add samples names to R script
     sb.append("# create sample names vector\n");
@@ -448,16 +442,15 @@ public class Normalization {
       sb.append('\"');
     }
     sb.append(")\n\n");
-
   }
 
   /**
    * Add SampleIds vector to R script.
+   *
    * @param rSampleIds samples identifiers
    * @param sb StringBuilder where write the part of the script
    */
-  protected void generateSampleIdsPart(final List<Integer> rSampleIds,
-      final StringBuilder sb) {
+  protected void generateSampleIdsPart(final List<Integer> rSampleIds, final StringBuilder sb) {
 
     // Put sample ids into R vector
     sb.append("sampleIds <- c(");
@@ -474,6 +467,7 @@ public class Normalization {
 
   /**
    * Add expression file name vector to R script.
+   *
    * @param sb StringBuilder where write the part of the script
    */
   protected void generateExpressionFileNamesPart(final StringBuilder sb) {
@@ -489,11 +483,12 @@ public class Normalization {
 
   /**
    * Write the section of the script that handle technical replicate groups.
+   *
    * @param rRepTechGroup list of technical replicate groups
    * @param sb StringBuilder where write the part of the script
    */
-  protected void generateRepTechGroupPart(final List<String> rRepTechGroup,
-      final StringBuilder sb) {
+  protected void generateRepTechGroupPart(
+      final List<String> rRepTechGroup, final StringBuilder sb) {
 
     if (isTechnicalReplicates(rRepTechGroup)) {
 
@@ -526,11 +521,11 @@ public class Normalization {
 
   /**
    * Add condition vector to R script.
+   *
    * @param rCondNames condition names
    * @param sb StringBuilder where write the part of the script
    */
-  protected void generateConditionPart(final List<String> rCondNames,
-      final StringBuilder sb) {
+  protected void generateConditionPart(final List<String> rCondNames, final StringBuilder sb) {
 
     sb.append("# create condition vector\n");
     sb.append("condition <- c(");
@@ -546,7 +541,6 @@ public class Normalization {
       sb.append('\"');
       sb.append(r);
       sb.append('\"');
-
     }
     sb.append(")\n\n");
   }
@@ -557,12 +551,13 @@ public class Normalization {
 
   /**
    * Check if there is a problem in the repTechGroup coherence.
+   *
    * @param rRepTechGroup technical replicate group
    * @param rCondNames condition names
    * @throws EoulsanException if an error if found in the design file
    */
-  protected void checkRepTechGroupCoherence(final List<String> rRepTechGroup,
-      final List<String> rCondNames) throws EoulsanException {
+  protected void checkRepTechGroupCoherence(
+      final List<String> rRepTechGroup, final List<String> rCondNames) throws EoulsanException {
 
     // Check repTechGroup field coherence
     Map<String, String> condRepTGMap = new HashMap<>();
@@ -586,6 +581,7 @@ public class Normalization {
 
   /**
    * Escape underscore for LaTeX title.
+   *
    * @param s string to escape
    * @return s with escaped underscore
    */
@@ -596,11 +592,11 @@ public class Normalization {
 
   /**
    * Replace na values in RepTechGroup list to avoid pooling error.
+   *
    * @param rRepTechGroup list of technical replicate groups
    * @param rSampleNames sample names
    */
-  protected void replaceRtgNA(final List<String> rRepTechGroup,
-      final List<String> rSampleNames) {
+  protected void replaceRtgNA(final List<String> rRepTechGroup, final List<String> rSampleNames) {
 
     for (int j = 0; j < rRepTechGroup.size(); j++) {
 
@@ -616,9 +612,9 @@ public class Normalization {
 
   /**
    * Test if there is enough distinct repTechGroup (>2) to perform clustering.
+   *
    * @param rRepTechGroup list of technical replicate groups
-   * @return true if there is enough distinct repTechGroup (>2) to perform
-   *         clustering
+   * @return true if there is enough distinct repTechGroup (>2) to perform clustering
    */
   private boolean isEnoughRepTechGroup(final List<String> rRepTechGroup) {
 
@@ -642,13 +638,13 @@ public class Normalization {
 
   /**
    * Public constructor.
+   *
    * @param executor executor to use to execute the normalization
    * @param design The design object
-   * @throws EoulsanException if an error occurs if connection to RServe server
-   *           cannot be established
+   * @throws EoulsanException if an error occurs if connection to RServe server cannot be
+   *     established
    */
-  public Normalization(final RExecutor executor, final Design design)
-      throws EoulsanException {
+  public Normalization(final RExecutor executor, final Design design) throws EoulsanException {
 
     requireNonNull(design, "design is null.");
 
@@ -660,5 +656,4 @@ public class Normalization {
 
     this.executor = executor;
   }
-
 }

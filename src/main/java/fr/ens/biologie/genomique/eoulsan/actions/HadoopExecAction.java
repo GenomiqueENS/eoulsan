@@ -27,11 +27,15 @@ package fr.ens.biologie.genomique.eoulsan.actions;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.Joiner;
+import fr.ens.biologie.genomique.eoulsan.Common;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.Main;
+import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopJarRepackager;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -40,15 +44,9 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 
-import com.google.common.base.Joiner;
-
-import fr.ens.biologie.genomique.eoulsan.Common;
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.Main;
-import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopJarRepackager;
-
 /**
  * This class launch Eoulsan in hadoop mode.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -82,8 +80,7 @@ public class HadoopExecAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[0]), true);
+      final CommandLine line = parser.parse(options, arguments.toArray(new String[0]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -97,8 +94,7 @@ public class HadoopExecAction extends AbstractAction {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e,
-          "Error while parsing command line arguments: " + e.getMessage());
+      Common.errorExit(e, "Error while parsing command line arguments: " + e.getMessage());
     }
 
     if (arguments.size() != argsOptions + 3) {
@@ -119,6 +115,7 @@ public class HadoopExecAction extends AbstractAction {
 
   /**
    * Create options for command line
+   *
    * @return an Options object
    */
   @SuppressWarnings("static-access")
@@ -131,27 +128,36 @@ public class HadoopExecAction extends AbstractAction {
     options.addOption("h", "help", false, "display this help");
 
     // Description option
-    options.addOption(Option.builder("d").argName("description").hasArg()
-        .desc("job description").longOpt("desc").get());
+    options.addOption(
+        Option.builder("d")
+            .argName("description")
+            .hasArg()
+            .desc("job description")
+            .longOpt("desc")
+            .get());
 
     return options;
   }
 
   /**
    * Show command line help.
+   *
    * @param options Options of the software
    */
   private static void help(final Options options) {
 
     // Show help message
-    final HelpFormatter formatter =
-        HelpFormatter.builder().setShowSince(false).get();
+    final HelpFormatter formatter = HelpFormatter.builder().setShowSince(false).get();
     try {
       formatter.printHelp(
           Globals.APP_NAME_LOWER_CASE
-              + ".sh " + ACTION_NAME
+              + ".sh "
+              + ACTION_NAME
               + " [options] workflow.xml design.txt hdfs://server/path",
-          "", options, "", false);
+          "",
+          options,
+          "",
+          false);
     } catch (IOException e) {
       Common.errorExit(e, "Error while creating help message.");
     }
@@ -165,6 +171,7 @@ public class HadoopExecAction extends AbstractAction {
 
   /**
    * Get the JVM arguments as a string.
+   *
    * @return a String with the JVM arguments
    */
   private static String getJVMArgs() {
@@ -181,14 +188,12 @@ public class HadoopExecAction extends AbstractAction {
     final Main main = Main.getInstance();
 
     if (main.getEoulsanScriptPath() != null) {
-      result
-          .add("-D" + Main.EOULSAN_SCRIPT + "=" + main.getEoulsanScriptPath());
+      result.add("-D" + Main.EOULSAN_SCRIPT + "=" + main.getEoulsanScriptPath());
       result.add("-D" + Main.EOULSAN_PATH + "=" + main.getEoulsanDirectory());
     }
 
     if (main.getClassPath() != null) {
-      result.add(
-          "-D" + Main.EOULSAN_CLASSPATH_JVM_ARG + "=" + main.getClassPath());
+      result.add("-D" + Main.EOULSAN_CLASSPATH_JVM_ARG + "=" + main.getClassPath());
     }
 
     return Joiner.on(' ').join(result);
@@ -196,13 +201,17 @@ public class HadoopExecAction extends AbstractAction {
 
   /**
    * Run Eoulsan in hadoop mode.
+   *
    * @param workflowFile workflow file
    * @param designFile design file
    * @param hdfsPath path of data on hadoop file system
    * @param jobDescription job description
    */
-  private static void run(final Path workflowFile, final Path designFile,
-      final String hdfsPath, final String jobDescription) {
+  private static void run(
+      final Path workflowFile,
+      final Path designFile,
+      final String hdfsPath,
+      final String jobDescription) {
 
     requireNonNull(workflowFile, "paramFile is null");
     requireNonNull(designFile, "designFile is null");
@@ -218,8 +227,8 @@ public class HadoopExecAction extends AbstractAction {
       repackagedJarFile = HadoopJarRepackager.repack();
 
     } catch (IOException e) {
-      Common.errorExit(e, "Error while repackaging "
-          + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
+      Common.errorExit(
+          e, "Error while repackaging " + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
 
       // Never called
       return;
@@ -282,9 +291,8 @@ public class HadoopExecAction extends AbstractAction {
       System.exit(exitCode);
 
     } catch (IOException | InterruptedException e) {
-      Common.errorExit(e, "Error while executing "
-          + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
+      Common.errorExit(
+          e, "Error while executing " + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
     }
-
   }
 }

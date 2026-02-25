@@ -29,9 +29,9 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * This annotation is used to mark a step class that is a terminal step.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Terminal {
-}
+public @interface Terminal {}

@@ -32,25 +32,7 @@ import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_RESULT_EXTENSION;
 import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toTimeHumanReadable;
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.Charset;
-import java.util.Queue;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
-
 import com.google.common.collect.Queues;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -63,10 +45,26 @@ import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskRunner;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskSerializationUtils;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopJobEmergencyStopTask;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.util.Queue;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 
 /**
- * This class is a scheduler for tasks from step with the @HadoopComptible
- * annotation in Hadoop mode.
+ * This class is a scheduler for tasks from step with the @HadoopComptible annotation in Hadoop
+ * mode.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -77,6 +75,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
 
   /**
    * Wrapper class around a call to executeTask methods.
+   *
    * @author Laurent Jourdren
    */
   private final class TaskThread extends Thread {
@@ -89,9 +88,12 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
     private String jobId;
     private Job hadoopJob;
 
-    private Job createHadoopJob(final Configuration conf,
-        final DataFile submitFile, final int requiredMemory,
-        final String jobDescription) throws IOException {
+    private Job createHadoopJob(
+        final Configuration conf,
+        final DataFile submitFile,
+        final int requiredMemory,
+        final String jobDescription)
+        throws IOException {
 
       final Configuration jobConf = new Configuration(conf);
 
@@ -144,15 +146,14 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
 
     /**
      * Create the submit file for the Hadoop job.
+     *
      * @param taskContextFile the task context file
      * @return the path to the submit file
      * @throws IOException if an error occurs while creating the submit file
      */
-    private DataFile createSubmitFile(final DataFile taskContextFile)
-        throws IOException {
+    private DataFile createSubmitFile(final DataFile taskContextFile) throws IOException {
 
-      final DataFile submitFile =
-          new DataFile(taskContextFile.getParent(), SUBMIT_FILE_NAME);
+      final DataFile submitFile = new DataFile(taskContextFile.getParent(), SUBMIT_FILE_NAME);
 
       final Writer writer = new OutputStreamWriter(submitFile.create(), Charset.defaultCharset());
       writer.write(taskContextFile.getSource());
@@ -163,6 +164,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
 
     /**
      * Load the result of the step
+     *
      * @return a TaskResult object
      * @throws EoulsanException if the done task is not found
      * @throws IOException if an error occurs while reading the result file
@@ -174,9 +176,11 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
           new DataFile(this.taskDir, this.taskPrefix + TASK_DONE_EXTENSION);
 
       if (!taskDoneFile.exists()) {
-        throw new EoulsanException("No done file found for task #"
-            + this.context.getId() + " in step "
-            + getStep(this.context).getId());
+        throw new EoulsanException(
+            "No done file found for task #"
+                + this.context.getId()
+                + " in step "
+                + getStep(this.context).getId());
       }
 
       // Define the file for the task result
@@ -199,8 +203,8 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
         // Create job directory
         this.taskDir.mkdir();
 
-        final DataFile taskContextFile = new DataFile(this.taskDir,
-            this.taskPrefix + Globals.TASK_CONTEXT_EXTENSION);
+        final DataFile taskContextFile =
+            new DataFile(this.taskDir, this.taskPrefix + Globals.TASK_CONTEXT_EXTENSION);
 
         // Serialize the context object
         this.context.serialize(taskContextFile);
@@ -217,28 +221,33 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
         final DataFile sumbitFile = createSubmitFile(taskContextFile);
 
         // Submit Job
-        this.hadoopJob = createHadoopJob(this.conf, sumbitFile,
-            this.context.getCurrentStep().getRequiredMemory(),
-            "Eoulsan Step "
-                + this.context.getCurrentStep().getId() + " ("
-                + this.context.getCurrentStep().getModuleName() + ") Task #"
-                + this.context.getId() + " (" + this.context.getContextName()
-                + ")");
+        this.hadoopJob =
+            createHadoopJob(
+                this.conf,
+                sumbitFile,
+                this.context.getCurrentStep().getRequiredMemory(),
+                "Eoulsan Step "
+                    + this.context.getCurrentStep().getId()
+                    + " ("
+                    + this.context.getCurrentStep().getModuleName()
+                    + ") Task #"
+                    + this.context.getId()
+                    + " ("
+                    + this.context.getContextName()
+                    + ")");
 
         // Submit the Hadoop job
         this.hadoopJob.submit();
 
         // Add the Hadoop job to the list of job to kill if workflow fails
-        HadoopJobEmergencyStopTask
-            .addHadoopJobEmergencyStopTask(this.hadoopJob);
+        HadoopJobEmergencyStopTask.addHadoopJobEmergencyStopTask(this.hadoopJob);
 
         // Submit the job to the Hadoop scheduler, and wait the end of the job
         // in non verbose mode
         this.hadoopJob.waitForCompletion(false);
 
         // Remove the Hadoop job to the list of job to kill if workflow fails
-        HadoopJobEmergencyStopTask
-            .removeHadoopJobEmergencyStopTask(this.hadoopJob);
+        HadoopJobEmergencyStopTask.removeHadoopJobEmergencyStopTask(this.hadoopJob);
 
         if (!this.hadoopJob.isSuccessful()) {
 
@@ -250,7 +259,9 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
 
             throw new EoulsanException(
                 "Error while running Hadoop job for Eoulsan task #"
-                    + this.context.getId() + "(" + this.context.getContextName()
+                    + this.context.getId()
+                    + "("
+                    + this.context.getContextName()
                     + ")");
           }
         }
@@ -269,8 +280,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
         // Send tokens
         TaskRunner.sendTokens(this.context, result);
 
-      } catch (IOException | EoulsanException | InterruptedException
-          | ClassNotFoundException e) {
+      } catch (IOException | EoulsanException | InterruptedException | ClassNotFoundException e) {
 
         result = TaskRunner.createStepResult(this.context, e);
       }
@@ -287,9 +297,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
       queue.remove(this);
     }
 
-    /**
-     * Stop the thread.
-     */
+    /** Stop the thread. */
     public void stopThread() {
 
       if (this.jobId != null) {
@@ -299,8 +307,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
             this.hadoopJob.killJob();
           }
         } catch (IOException e) {
-          getLogger().severe(
-              "Error while stopping job " + this.jobId + ": " + e.getMessage());
+          getLogger().severe("Error while stopping job " + this.jobId + ": " + e.getMessage());
         }
       }
     }
@@ -311,6 +318,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
 
     /**
      * Constructor.
+     *
      * @param context context to execute
      */
     TaskThread(final Configuration conf, final TaskContextImpl context) {
@@ -322,8 +330,8 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
 
       this.conf = conf;
       this.context = context;
-      this.taskDir = new DataFile(hadoopWorkDir,
-          "eoulsan-hadoop-compatible-task-" + this.context.getId());
+      this.taskDir =
+          new DataFile(hadoopWorkDir, "eoulsan-hadoop-compatible-task-" + this.context.getId());
       this.taskPrefix = context.getTaskFilePrefix();
     }
   }
@@ -336,8 +344,7 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
       extends Mapper<LongWritable, Text, NullWritable, NullWritable> {
 
     @Override
-    protected void setup(
-        Mapper<LongWritable, Text, NullWritable, NullWritable>.Context context)
+    protected void setup(Mapper<LongWritable, Text, NullWritable, NullWritable>.Context context)
         throws IOException, InterruptedException {
 
       EoulsanLogger.initConsoleHandler();
@@ -355,8 +362,8 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
     }
 
     @Override
-    protected void map(final LongWritable key, final Text value,
-        final Context context) throws IOException, InterruptedException {
+    protected void map(final LongWritable key, final Text value, final Context context)
+        throws IOException, InterruptedException {
 
       getLogger().info("Start of map()");
       getLogger().info("Task context file: " + value);
@@ -370,15 +377,12 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
         // Log task result informations
         if (result != null) {
 
-          getLogger().info(
-              "Task result: " + (result.isSuccess() ? "SUCCESS" : "FAIL"));
-          getLogger().info(
-              "Task Duration: " + toTimeHumanReadable(result.getDuration()));
+          getLogger().info("Task result: " + (result.isSuccess() ? "SUCCESS" : "FAIL"));
+          getLogger().info("Task Duration: " + toTimeHumanReadable(result.getDuration()));
 
           if (!result.isSuccess()) {
 
-            getLogger()
-                .severe("Task error message: " + result.getErrorMessage());
+            getLogger().severe("Task error message: " + result.getErrorMessage());
 
             if (result.getException() != null) {
               result.getException().printStackTrace();
@@ -392,7 +396,6 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
 
       getLogger().info("End of map()");
     }
-
   }
 
   //
@@ -434,13 +437,10 @@ public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
   // Constructor
   //
 
-  /**
-   * Constructor.
-   */
+  /** Constructor. */
   HadoopCompatibleTaskScheduler() {
 
     // Create configuration object
     this.conf = createConfiguration();
   }
-
 }

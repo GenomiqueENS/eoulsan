@@ -26,18 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.modules.mgmt.upload;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -49,34 +37,38 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepOutputDataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatConverter;
-import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.modules.mgmt.hadoop.DistCp;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.PathUtils;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 
 /**
- * This class define a download module that retrieve data from HDFS at the end
- * of an analysis.
+ * This class define a download module that retrieve data from HDFS at the end of an analysis.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
 @HadoopOnly
 public class HDFSDataDownloadModule extends AbstractModule {
 
-  /**
-   * Key in the settings to use to save the list of DataFormat of the files to
-   * download.
-   */
-  public static final String DATAFORMATS_TO_DOWNLOAD_SETTING =
-      "dataformat.to.download";
+  /** Key in the settings to use to save the list of DataFormat of the files to download. */
+  public static final String DATAFORMATS_TO_DOWNLOAD_SETTING = "dataformat.to.download";
 
-  /**
-   * Key in the settings to use to disable the downloads.
-   */
+  /** Key in the settings to use to disable the downloads. */
   public static final String NO_HDFS_DOWNLOAD = "no.hdfs.download";
 
   /** Module name. */
@@ -103,19 +95,17 @@ public class HDFSDataDownloadModule extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     this.conf = CommonHadoop.createConfiguration(EoulsanRuntime.getSettings());
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     // Skip the step if the global parameter NO_HDFS_DOWNLOAD is set
-    final String noDownloadValue =
-        context.getSettings().getSetting(NO_HDFS_DOWNLOAD);
+    final String noDownloadValue = context.getSettings().getSetting(NO_HDFS_DOWNLOAD);
     if (noDownloadValue != null
         && "true".equals(noDownloadValue.trim().toLowerCase(Globals.DEFAULT_LOCALE))) {
 
@@ -127,8 +117,8 @@ public class HDFSDataDownloadModule extends AbstractModule {
         ContextUtils.getHadoopWorkingDirectory(context).getSource();
 
     getLogger().info("Start copying results.");
-    getLogger().info("inpath="
-        + hadoopWorkingPathname + "\toutpath=" + context.getOutputDirectory());
+    getLogger()
+        .info("inpath=" + hadoopWorkingPathname + "\toutpath=" + context.getOutputDirectory());
 
     final Configuration conf = this.conf;
 
@@ -148,8 +138,7 @@ public class HDFSDataDownloadModule extends AbstractModule {
       final Path inPath = new Path(hadoopWorkingPathname);
 
       if (!PathUtils.isExistingDirectoryFile(inPath, conf)) {
-        throw new EoulsanException(
-            "The base directory is not a directory: " + inPath);
+        throw new EoulsanException("The base directory is not a directory: " + inPath);
       }
 
       // Map with files to download
@@ -165,9 +154,7 @@ public class HDFSDataDownloadModule extends AbstractModule {
         final DataFile in = file.getDataFile();
 
         final DataFile out =
-
-            new DataFile(outputDir,
-                in.getName() + CompressionType.BZIP2.getExtension());
+            new DataFile(outputDir, in.getName() + CompressionType.BZIP2.getExtension());
 
         files.put(in, out);
       }
@@ -200,16 +187,15 @@ public class HDFSDataDownloadModule extends AbstractModule {
             if (src.getName().equals(dest.getName())) {
               filesToDistCp.put(src, dest);
             } else {
-              final DataFile tmp =
-                  new DataFile(src.getParent(), dest.getName());
+              final DataFile tmp = new DataFile(src.getParent(), dest.getName());
               filesToTranscode.put(src, tmp);
               filesToDistCp.put(tmp, dest);
             }
           }
 
           // Create temporary files
-          final Path jobPath = PathUtils.createTempPath(
-              new Path(hadoopWorkingPathname), "distcp-", "", this.conf);
+          final Path jobPath =
+              PathUtils.createTempPath(new Path(hadoopWorkingPathname), "distcp-", "", this.conf);
 
           final DataFileDistCp dsdcp = new DataFileDistCp(this.conf, jobPath);
           dsdcp.copy(filesToTranscode);
@@ -217,8 +203,7 @@ public class HDFSDataDownloadModule extends AbstractModule {
           // Remove job path directory
           final FileSystem fs = jobPath.getFileSystem(conf);
           if (!fs.delete(jobPath, true)) {
-            getLogger()
-                .warning("Cannot remove DataFileDistCp job path: " + jobPath);
+            getLogger().warning("Cannot remove DataFileDistCp job path: " + jobPath);
           }
 
           // Copy files to destination
@@ -240,19 +225,19 @@ public class HDFSDataDownloadModule extends AbstractModule {
 
     } catch (EoulsanException | IOException e) {
 
-      return status.createTaskResult(e,
-          "Error while download results: " + e.getMessage());
+      return status.createTaskResult(e, "Error while download results: " + e.getMessage());
     }
   }
 
   /**
    * Copy files using hadoop DistCp.
+   *
    * @param conf Hadoop configuration
    * @param files files to copy
    * @throws EoulsanException if an error occurs while copying
    */
-  private void hadoopDistCp(final Configuration conf,
-      final Map<DataFile, DataFile> files) throws EoulsanException {
+  private void hadoopDistCp(final Configuration conf, final Map<DataFile, DataFile> files)
+      throws EoulsanException {
 
     final DistCp distcp = new DistCp(conf);
     final Map<DataFile, Set<DataFile>> toCopy = new HashMap<>();
@@ -302,7 +287,5 @@ public class HDFSDataDownloadModule extends AbstractModule {
       // Run distcp
       distcp.runWithException(args);
     }
-
   }
-
 }

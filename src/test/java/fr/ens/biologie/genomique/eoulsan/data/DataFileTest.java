@@ -30,16 +30,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeDebug;
+import fr.ens.biologie.genomique.eoulsan.data.protocols.DataProtocolService;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-
 import org.junit.Before;
 import org.junit.Test;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeDebug;
-import fr.ens.biologie.genomique.eoulsan.data.protocols.DataProtocolService;
 
 public class DataFileTest {
 
@@ -87,7 +85,6 @@ public class DataFileTest {
     filename = "ftp://login:passwd@ftp.toto.com/home/toto/toto.txt";
     df = new DataFile(filename);
     assertEquals(filename.hashCode(), df.hashCode());
-
   }
 
   @Test
@@ -140,7 +137,6 @@ public class DataFileTest {
     filename = "ftp://login:passwd@ftp.toto.com/home/toto/toto.txt";
     df = new DataFile(filename);
     assertEquals(filename, df.getSource());
-
   }
 
   @Test
@@ -220,8 +216,7 @@ public class DataFileTest {
 
     filename = "ftp://login:passwd@ftp.toto.com/home/toto/toto.txt";
     df = new DataFile(filename);
-    assertEquals("ftp://login:passwd@ftp.toto.com/home/toto",
-        df.getParent().getSource());
+    assertEquals("ftp://login:passwd@ftp.toto.com/home/toto", df.getParent().getSource());
   }
 
   @Test
@@ -263,7 +258,6 @@ public class DataFileTest {
     } catch (IOException e) {
       assertTrue(true);
     }
-
   }
 
   @Test
@@ -386,7 +380,6 @@ public class DataFileTest {
     df2 = new DataFile("file:///home/toto/toto.txt");
     assertNotSame(df1, df2);
     assertNotSame(df1, "file:/home/toto/toto.txt");
-
   }
 
   @Test
@@ -401,7 +394,5 @@ public class DataFileTest {
 
     new DataFile("toto:/www.toto.com/home/toto/toto.txt");
     assertTrue(true);
-
   }
-
 }

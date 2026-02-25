@@ -24,11 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.splitermergers;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -42,9 +37,14 @@ import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SamInputResource;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * This class define a merger class for SAM files.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -61,14 +61,14 @@ public class BAMMerger implements Merger {
 
     // The merge does not need any parameter
     for (Parameter p : conf) {
-      throw new EoulsanException("Unknown parameter for "
-          + getFormat().getName() + " merger: " + p.getName());
+      throw new EoulsanException(
+          "Unknown parameter for " + getFormat().getName() + " merger: " + p.getName());
     }
   }
 
   @Override
-  public void merge(final Iterator<DataFile> inFileIterator,
-      final DataFile outFile) throws IOException {
+  public void merge(final Iterator<DataFile> inFileIterator, final DataFile outFile)
+      throws IOException {
 
     // Get temporary directory
     final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
@@ -80,18 +80,19 @@ public class BAMMerger implements Merger {
       // Get input file
       final DataFile inFile = inFileIterator.next();
 
-      EoulsanLogger.getLogger()
-          .info("Merge " + inFile.getName() + " to " + outFile.getName());
+      EoulsanLogger.getLogger().info("Merge " + inFile.getName() + " to " + outFile.getName());
 
       // Get reader
-      final SamReader inputSam = SamReaderFactory.makeDefault()
-          .open(SamInputResource.of(inFile.open()));
+      final SamReader inputSam =
+          SamReaderFactory.makeDefault().open(SamInputResource.of(inFile.open()));
 
       // Get Writer
       if (outputSam == null) {
 
-        outputSam = new SAMFileWriterFactory().setTempDirectory(tmpDir)
-            .makeBAMWriter(inputSam.getFileHeader(), false, outFile.create());
+        outputSam =
+            new SAMFileWriterFactory()
+                .setTempDirectory(tmpDir)
+                .makeBAMWriter(inputSam.getFileHeader(), false, outFile.create());
       }
 
       // Write all the entries of the input file to the output file
@@ -104,5 +105,4 @@ public class BAMMerger implements Merger {
 
     outputSam.close();
   }
-
 }

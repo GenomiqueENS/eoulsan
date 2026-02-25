@@ -24,14 +24,14 @@
 
 package fr.ens.biologie.genomique.eoulsan.data.protocols;
 
-import java.util.List;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
+import java.util.List;
 
 /**
  * This class define a genome protocol.
+ *
  * @since 1.1
  * @author Laurent Jourdren
  */
@@ -58,5 +58,4 @@ public class GenomeDataProtocol extends StorageDataProtocol {
 
     return EoulsanRuntime.getSettings().getGenomeStoragePath();
   }
-
 }

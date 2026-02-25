@@ -27,6 +27,17 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 import static fr.ens.biologie.genomique.kenetre.util.StringUtils.xmlEscape;
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.SystemUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -38,21 +49,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.core.Step;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.kenetre.util.StringUtils;
-import fr.ens.biologie.genomique.kenetre.util.SystemUtils;
-
 /**
  * Convert a Workflow to Graphviz
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -66,14 +65,14 @@ public class Workflow2Graphviz {
 
   private void addRow(final StringBuilder sb, final String s) {
 
-    sb.append(
-        "<tr><td bgcolor=\"white\" align=\"center\" colspan=\"2\"><font color=\"black\">");
+    sb.append("<tr><td bgcolor=\"white\" align=\"center\" colspan=\"2\"><font color=\"black\">");
     sb.append(s);
     sb.append("</font></td></tr>");
   }
 
   /**
    * Convert the workflow to Graphviz format
+   *
    * @return a string with the workflow converted to Graphviz format
    */
   private String convert() {
@@ -87,15 +86,15 @@ public class Workflow2Graphviz {
     sb.append(StringUtils.join(createCommandLine(true), " "));
     sb.append("\"\n");
 
-    sb.append("digraph g {\n  graph [fontsize=30 labelloc=\"t\" label=\"\" "
-        + "splines=true overlap=false rankdir = \"LR\"]\n"
-        + "  ratio = auto;\n");
+    sb.append(
+        "digraph g {\n  graph [fontsize=30 labelloc=\"t\" label=\"\" "
+            + "splines=true overlap=false rankdir = \"LR\"]\n"
+            + "  ratio = auto;\n");
 
     // Create nodes
     for (Step step : this.workflow.getSteps()) {
 
-      if (step == this.workflow.getFirstStep()
-          || step == this.workflow.getCheckerStep()) {
+      if (step == this.workflow.getFirstStep() || step == this.workflow.getCheckerStep()) {
         continue;
       }
 
@@ -104,11 +103,9 @@ public class Workflow2Graphviz {
       sb.append(
           "\" [ style = \"filled\" penwidth = 1 fillcolor = \"white\" fontname = \"Courier New\" shape = \"Mrecord\" label =");
 
-      sb.append(
-          "<<table border=\"0\" cellborder=\"0\" cellpadding=\"3\" bgcolor=\"white\">");
+      sb.append("<<table border=\"0\" cellborder=\"0\" cellpadding=\"3\" bgcolor=\"white\">");
 
-      sb.append(
-          "<tr><td bgcolor=\"black\" align=\"center\" colspan=\"2\"><font color=\"white\">");
+      sb.append("<tr><td bgcolor=\"black\" align=\"center\" colspan=\"2\"><font color=\"white\">");
       sb.append(step.getId());
       sb.append("</font></td></tr>");
 
@@ -122,15 +119,13 @@ public class Workflow2Graphviz {
 
     sb.append('\n');
 
-    final Multimap<AbstractStep, AbstractStep> linkedSteps =
-        HashMultimap.create();
+    final Multimap<AbstractStep, AbstractStep> linkedSteps = HashMultimap.create();
 
     // Create links from output ports
     for (Step step : this.workflow.getSteps()) {
 
       // Do not handle first and check step
-      if (step == this.workflow.getFirstStep()
-          || step == this.workflow.getCheckerStep()) {
+      if (step == this.workflow.getFirstStep() || step == this.workflow.getCheckerStep()) {
         continue;
       }
 
@@ -157,14 +152,14 @@ public class Workflow2Graphviz {
           sb.append(stepNumber);
           sb.append(" -> step");
           sb.append(linkedStep.getNumber());
-          sb.append(
-              " [ penwidth = 5 fontsize = 28 fontcolor = \"black\" label = \"");
+          sb.append(" [ penwidth = 5 fontsize = 28 fontcolor = \"black\" label = \"");
 
           final DataFormat format = outputPort.getFormat();
 
           String formatName =
               format.getAlias() == null || "".equals(format.getAlias())
-                  ? format.getName() : format.getAlias();
+                  ? format.getName()
+                  : format.getAlias();
 
           sb.append(formatName);
           sb.append("\" ];\n");
@@ -176,17 +171,14 @@ public class Workflow2Graphviz {
     for (Step step : this.workflow.getSteps()) {
 
       // Do not handle first and check step
-      if (step == this.workflow.getFirstStep()
-          || step == this.workflow.getCheckerStep()) {
+      if (step == this.workflow.getFirstStep() || step == this.workflow.getCheckerStep()) {
         continue;
       }
 
       AbstractStep abstractStep = (AbstractStep) step;
 
-      StepStateDependencies observer =
-          ((AbstractStep) step).getStepStateDependencies();
-      Set<AbstractStep> requiredSteps =
-          new HashSet<>(observer.getRequiredSteps());
+      StepStateDependencies observer = ((AbstractStep) step).getStepStateDependencies();
+      Set<AbstractStep> requiredSteps = new HashSet<>(observer.getRequiredSteps());
 
       requiredSteps.removeAll(linkedSteps.get(abstractStep));
 
@@ -202,7 +194,6 @@ public class Workflow2Graphviz {
         sb.append(step.getNumber());
         sb.append(" [ penwidth = 5 fontsize = 28 fontcolor = \"green\"");
         sb.append(" ];\n");
-
       }
     }
 
@@ -213,6 +204,7 @@ public class Workflow2Graphviz {
 
   /**
    * Convert and save the workflow as a Graphviz file.
+   *
    * @throws IOException if an error occurs while creating the output file
    */
   public void saveDotFile() throws IOException {
@@ -221,6 +213,7 @@ public class Workflow2Graphviz {
 
   /**
    * Convert and save the workflow as a Graphviz file.
+   *
    * @throws IOException if an error occurs while creating the output file
    */
   private void saveDotFile(final DataFile outputFile) throws IOException {
@@ -232,6 +225,7 @@ public class Workflow2Graphviz {
 
   /**
    * Convert and save the workflow as an image file.
+   *
    * @return true if image successfully saved
    */
   public boolean saveImageFile() {
@@ -258,8 +252,8 @@ public class Workflow2Graphviz {
       dotExecutableFile = SystemUtils.searchExecutableInPATH("dot");
       if (dotExecutableFile == null) {
 
-        EoulsanLogger
-            .logWarning("Unable to find the \"dot\" command in the PATH"
+        EoulsanLogger.logWarning(
+            "Unable to find the \"dot\" command in the PATH"
                 + " to create the workflow image file");
 
         // Delete temporary files
@@ -269,8 +263,7 @@ public class Workflow2Graphviz {
         return false;
       }
     } catch (IOException e) {
-      EoulsanLogger
-          .logWarning("Unable to create workflow image: " + e.getMessage());
+      EoulsanLogger.logWarning("Unable to create workflow image: " + e.getMessage());
       return false;
     }
 
@@ -285,8 +278,7 @@ public class Workflow2Graphviz {
       int exitcode = p.waitFor();
 
       if (exitcode != 0) {
-        EoulsanLogger.logWarning(
-            "Unable to create workflow image: dot exit error: " + exitcode);
+        EoulsanLogger.logWarning("Unable to create workflow image: dot exit error: " + exitcode);
         return false;
       }
 
@@ -295,8 +287,7 @@ public class Workflow2Graphviz {
 
       return true;
     } catch (IOException | InterruptedException e) {
-      EoulsanLogger
-          .logWarning("Unable to create workflow image: " + e.getMessage());
+      EoulsanLogger.logWarning("Unable to create workflow image: " + e.getMessage());
       return false;
     } finally {
 
@@ -308,8 +299,8 @@ public class Workflow2Graphviz {
 
   /**
    * Create GraphViz command line.
-   * @param absolustePath true if the absolute path must be used in the command
-   *          line
+   *
+   * @param absolustePath true if the absolute path must be used in the command line
    * @return a list with the command line
    */
   private List<String> createCommandLine(final boolean absolustePath) {
@@ -319,21 +310,24 @@ public class Workflow2Graphviz {
 
   /**
    * Create GraphViz command line.
-   * @param absolustePath true if the absolute path must be used in the command
-   *          line
+   *
+   * @param absolustePath true if the absolute path must be used in the command line
    * @param dotFile output dot file
    * @param imageFile output image file
    * @return a list with the command line
    */
-  private static List<String> createCommandLine(final DataFile dotFile,
-      final DataFile imageFile, final boolean absolustePath) {
+  private static List<String> createCommandLine(
+      final DataFile dotFile, final DataFile imageFile, final boolean absolustePath) {
 
-    return Arrays.asList("-Gsize=40", "-Tpng", filePath(dotFile, absolustePath),
-        "-o", filePath(imageFile, absolustePath));
+    return Arrays.asList(
+        "-Gsize=40",
+        "-Tpng",
+        filePath(dotFile, absolustePath),
+        "-o",
+        filePath(imageFile, absolustePath));
   }
 
-  private static String filePath(final DataFile file,
-      final boolean absolustePath) {
+  private static String filePath(final DataFile file, final boolean absolustePath) {
 
     return absolustePath ? file.getSource() : file.getName();
   }
@@ -344,12 +338,13 @@ public class Workflow2Graphviz {
 
   /**
    * Public constructor.
+   *
    * @param workflow the workflow
    * @param dotFile output dot file
    * @param imageFile output image file
    */
-  public Workflow2Graphviz(final AbstractWorkflow workflow,
-      final DataFile dotFile, final DataFile imageFile) {
+  public Workflow2Graphviz(
+      final AbstractWorkflow workflow, final DataFile dotFile, final DataFile imageFile) {
 
     requireNonNull(workflow, "workflow parameter cannot be null");
     requireNonNull(dotFile, "dotFile parameter cannot be null");
@@ -359,5 +354,4 @@ public class Workflow2Graphviz {
     this.dotFile = dotFile;
     this.imageFile = imageFile;
   }
-
 }

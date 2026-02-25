@@ -1,11 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.local;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-
 import com.google.common.base.Splitter;
-
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
@@ -25,9 +20,13 @@ import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SamInputResource;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 /**
  * This class define a module for converting SAM files into FASTQ.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -35,8 +34,7 @@ import htsjdk.samtools.SamReaderFactory;
 public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     try {
 
@@ -47,17 +45,15 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
       final Data inData = context.getInputData(DataFormats.MAPPER_RESULTS_SAM);
 
       // Get input SAM TMP data
-      File samTmpFile = File.createTempFile("samTmp", ".sam",
-          context.getLocalTempDirectory());
+      File samTmpFile = File.createTempFile("samTmp", ".sam", context.getLocalTempDirectory());
 
       // Get output FASTQ data
-      final Data outData =
-          context.getOutputData(DataFormats.READS_FASTQ, inData);
+      final Data outData = context.getOutputData(DataFormats.READS_FASTQ, inData);
 
       final DataFile samFile = inData.getDataFile();
 
-      final int paired = sortConvert(samFile, samTmpFile, reporter,
-          context.getLocalTempDirectory());
+      final int paired =
+          sortConvert(samFile, samTmpFile, reporter, context.getLocalTempDirectory());
 
       final DataFile fastqFile1 = outData.getDataFile(0);
       final DataFile fastqFile2 = paired == 3 ? outData.getDataFile(1) : null;
@@ -65,8 +61,8 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
       writeConvert(samTmpFile, fastqFile1, fastqFile2, reporter);
 
       // Set the description of the context
-      status.setDescription("Convert alignments ("
-          + inData.getName() + "," + outData.getName() + ")");
+      status.setDescription(
+          "Convert alignments (" + inData.getName() + "," + outData.getName() + ")");
 
       // Add counters for this sample to log file
       status.setCounters(reporter, COUNTER_GROUP);
@@ -81,25 +77,29 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
 
   /**
    * Convert SAM file to FASTQ
+   *
    * @param samDataFile input SAM file
    * @param fastqDataFile1 output FASTQ file 1
    * @param fastqDataFile2 output FASTQ file 2
    * @param reporter reporter
    * @throws IOException if an error occurs
    */
-
-  private static void writeConvert(final File samDataFile,
-      final DataFile fastqDataFile1, final DataFile fastqDataFile2,
-      final Reporter reporter) throws IOException {
+  private static void writeConvert(
+      final File samDataFile,
+      final DataFile fastqDataFile1,
+      final DataFile fastqDataFile2,
+      final Reporter reporter)
+      throws IOException {
 
     // Open sam file
-    final SamReader samReader = SamReaderFactory.makeDefault()
-        .open(SamInputResource.of(Files.newInputStream(samDataFile.toPath())));
+    final SamReader samReader =
+        SamReaderFactory.makeDefault()
+            .open(SamInputResource.of(Files.newInputStream(samDataFile.toPath())));
 
     // Open fastq file
     final FastqWriter fastqWriter1 = new FastqWriter(fastqDataFile1.create());
-    final FastqWriter fastqWriter2 = fastqDataFile2 == null
-        ? null : new FastqWriter(fastqDataFile2.create());
+    final FastqWriter fastqWriter2 =
+        fastqDataFile2 == null ? null : new FastqWriter(fastqDataFile2.create());
     String seq1 = null;
     String seq2 = null;
     String qual1 = null;
@@ -107,15 +107,12 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
     String currentRecordId = null;
 
     for (final SAMRecord samRecord : samReader) {
-      if (currentRecordId != null
-          && !currentRecordId.equals(samRecord.getReadName())) {
+      if (currentRecordId != null && !currentRecordId.equals(samRecord.getReadName())) {
 
         reporter.incrCounter(COUNTER_GROUP, "sorted records", 1);
 
-        writeFastq(fastqWriter1, fastqWriter2, currentRecordId, seq1, qual1,
-            seq2, qual2);
+        writeFastq(fastqWriter1, fastqWriter2, currentRecordId, seq1, qual1, seq2, qual2);
         seq1 = seq2 = qual1 = qual2 = null;
-
       }
       if (samRecord.getReadPairedFlag() && !samRecord.getFirstOfPairFlag()) {
         seq2 = samRecord.getReadString();
@@ -130,9 +127,7 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
 
     if (seq1 != null && seq2 != null) {
       reporter.incrCounter(COUNTER_GROUP, "sorted records", 1);
-      writeFastq(fastqWriter1, fastqWriter2, currentRecordId, seq1, qual1, seq2,
-          qual2);
-
+      writeFastq(fastqWriter1, fastqWriter2, currentRecordId, seq1, qual1, seq2, qual2);
     }
     samReader.close();
     fastqWriter1.close();
@@ -140,34 +135,33 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
     if (fastqWriter2 != null) {
       fastqWriter2.close();
     }
-
   }
 
-  private static int sortConvert(final DataFile samDataFile,
-      final File samFileTmp, final Reporter reporter, final File tmpDir)
+  private static int sortConvert(
+      final DataFile samDataFile, final File samFileTmp, final Reporter reporter, final File tmpDir)
       throws IOException {
 
     // Open sam file
-    final SamReader samReader = SamReaderFactory.makeDefault()
-        .open(SamInputResource.of(samDataFile.open()));
+    final SamReader samReader =
+        SamReaderFactory.makeDefault().open(SamInputResource.of(samDataFile.open()));
 
     // Force sort
     samReader.getFileHeader().setSortOrder(SortOrder.queryname);
 
     // Open sam file
-    final SAMFileWriter samWriter = new SAMFileWriterFactory()
-        .setCreateIndex(false).setTempDirectory(tmpDir)
-        .makeSAMWriter(samReader.getFileHeader(), false, samFileTmp);
+    final SAMFileWriter samWriter =
+        new SAMFileWriterFactory()
+            .setCreateIndex(false)
+            .setTempDirectory(tmpDir)
+            .makeSAMWriter(samReader.getFileHeader(), false, samFileTmp);
 
     boolean firstPair = false;
     boolean secondPair = false;
     for (final SAMRecord samRecord : samReader) {
-      if (!firstPair
-          && samRecord.getReadPairedFlag() && samRecord.getFirstOfPairFlag()) {
+      if (!firstPair && samRecord.getReadPairedFlag() && samRecord.getFirstOfPairFlag()) {
         firstPair = true;
       }
-      if (!secondPair
-          && samRecord.getReadPairedFlag() && samRecord.getSecondOfPairFlag()) {
+      if (!secondPair && samRecord.getReadPairedFlag() && samRecord.getSecondOfPairFlag()) {
         secondPair = true;
       }
       samRecord.setReadName(Splitter.on(' ').splitToList(samRecord.getReadName()).get(0));
@@ -194,14 +188,18 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
     return result;
   }
 
-  private static void writeFastq(FastqWriter fastqWriter1,
-      FastqWriter fastqWriter2, String currentRecordId, String seq1,
-      String qual1, String seq2, String qual2) throws IOException {
+  private static void writeFastq(
+      FastqWriter fastqWriter1,
+      FastqWriter fastqWriter2,
+      String currentRecordId,
+      String seq1,
+      String qual1,
+      String seq2,
+      String qual2)
+      throws IOException {
 
-    ReadSequence read1 =
-        seq1 == null ? null : new ReadSequence(currentRecordId, seq1, qual1);
-    ReadSequence read2 =
-        seq2 == null ? null : new ReadSequence(currentRecordId, seq2, qual2);
+    ReadSequence read1 = seq1 == null ? null : new ReadSequence(currentRecordId, seq1, qual1);
+    ReadSequence read2 = seq2 == null ? null : new ReadSequence(currentRecordId, seq2, qual2);
 
     if (fastqWriter2 != null) {
       if (seq1 != null && seq2 != null) {
@@ -214,9 +212,6 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
       } else {
         fastqWriter1.write(read2);
       }
-
     }
-
   }
-
 }

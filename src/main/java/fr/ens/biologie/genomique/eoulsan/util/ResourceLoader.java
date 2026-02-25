@@ -28,6 +28,7 @@ import java.util.List;
 
 /**
  * This interface define a resource loader.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -35,20 +36,19 @@ public interface ResourceLoader<S> {
 
   /**
    * Load all available resources.
+   *
    * @return a list with all the loaded resources
    */
   List<S> loadAllResources();
 
   /**
    * Load a resource.
+   *
    * @param name name of the resource to load
    * @return a list the loaded resources that had the requested name
    */
   List<S> loadResources(String name);
 
-  /**
-   * Reload the list of available resources.
-   */
+  /** Reload the list of available resources. */
   void reload();
-
 }

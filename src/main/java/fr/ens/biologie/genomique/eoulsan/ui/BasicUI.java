@@ -27,18 +27,17 @@ package fr.ens.biologie.genomique.eoulsan.ui;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.common.base.Strings;
-
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
 import fr.ens.biologie.genomique.eoulsan.core.Workflow;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class define a basic UI for Eoulsan.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -75,8 +74,7 @@ public class BasicUI extends AbstractUI {
     // Check if the UI has been initialized
     checkState(this.workflow != null, "The UI has not been initialized");
 
-    if (step == null
-        || stepState == null || step.getWorkflow() != this.workflow) {
+    if (step == null || stepState == null || step.getWorkflow() != this.workflow) {
       return;
     }
 
@@ -88,8 +86,8 @@ public class BasicUI extends AbstractUI {
   }
 
   @Override
-  public void notifyStepState(final Step step, final int contextId,
-      final String contextName, final double progress) {
+  public void notifyStepState(
+      final Step step, final int contextId, final String contextName, final double progress) {
 
     // Check if the UI has been initialized
     checkState(this.workflow != null, "The UI has not been initialized");
@@ -98,14 +96,15 @@ public class BasicUI extends AbstractUI {
   }
 
   @Override
-  public void notifyStepState(final Step step, final int terminatedTasks,
-      final int submittedTasks, final double progress) {
+  public void notifyStepState(
+      final Step step, final int terminatedTasks, final int submittedTasks, final double progress) {
 
     // Check if the UI has been initialized
     checkState(this.workflow != null, "The UI has not been initialized");
 
     if (!isInteractiveMode()
-        || step == null || step.getWorkflow() != this.workflow
+        || step == null
+        || step.getWorkflow() != this.workflow
         || this.stepState.get(step) != StepState.WORKING
         || !this.steps.containsKey(step)) {
       return;
@@ -117,10 +116,10 @@ public class BasicUI extends AbstractUI {
       System.out.println(Globals.WELCOME_MSG);
     }
 
-    final String msg = String.format(
-        "%.0f%% workflow done (currently process step %s #%d, %.0f%% done)",
-        globalProgress * 100.0, step.getId(), step.getNumber(),
-        progress * 100.0);
+    final String msg =
+        String.format(
+            "%.0f%% workflow done (currently process step %s #%d, %.0f%% done)",
+            globalProgress * 100.0, step.getId(), step.getNumber(), progress * 100.0);
 
     // Clear previous message
     System.out.print(Strings.repeat("\r", this.lastMessageLength));
@@ -136,7 +135,6 @@ public class BasicUI extends AbstractUI {
     }
 
     System.out.flush();
-
   }
 
   @Override
@@ -149,14 +147,12 @@ public class BasicUI extends AbstractUI {
       return;
     }
 
-    System.out.print("Step "
-        + step.getId() + " " + this.stepState.get(step).toString() + " note: "
-        + note);
+    System.out.print(
+        "Step " + step.getId() + " " + this.stepState.get(step).toString() + " note: " + note);
   }
 
   @Override
-  public void notifyWorkflowSuccess(final boolean success,
-      final String message) {
+  public void notifyWorkflowSuccess(final boolean success, final String message) {
     // Do nothing
   }
 
@@ -179,9 +175,7 @@ public class BasicUI extends AbstractUI {
   // Other methods
   //
 
-  /**
-   * Search steps to follow.
-   */
+  /** Search steps to follow. */
   private void searchSteps() {
 
     for (Step step : this.workflow.getSteps()) {
@@ -191,24 +185,24 @@ public class BasicUI extends AbstractUI {
       }
 
       switch (step.getType()) {
-      case CHECKER_STEP:
-      case GENERATOR_STEP:
-      case STANDARD_STEP:
+        case CHECKER_STEP:
+        case GENERATOR_STEP:
+        case STANDARD_STEP:
+          if (!step.isSkip()) {
+            this.steps.put(step, 0.0);
+          }
 
-        if (!step.isSkip()) {
-          this.steps.put(step, 0.0);
-        }
+          break;
 
-        break;
-
-      default:
-        break;
+        default:
+          break;
       }
     }
   }
 
   /**
    * Compute global progress.
+   *
    * @param step step to update progress
    * @param progress progress value of the step
    * @return global progress as percent
@@ -229,5 +223,4 @@ public class BasicUI extends AbstractUI {
 
     return sum / this.steps.size();
   }
-
 }

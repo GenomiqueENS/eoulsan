@@ -27,15 +27,14 @@ package fr.ens.biologie.genomique.eoulsan.bio.io.hadoop;
 import static fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.Counters.ENTRIES_WRITTEN;
 
 import java.io.IOException;
-
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
 /**
- * This class define a RecordReader for FASTQ files for the Hadoop MapReduce
- * framework.
+ * This class define a RecordReader for FASTQ files for the Hadoop MapReduce framework.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -76,8 +75,7 @@ public class FastqRecordReader extends RecordReader<Text, Text> {
   }
 
   @Override
-  public void initialize(final InputSplit inputSplit,
-      final TaskAttemptContext taskAttemptContext)
+  public void initialize(final InputSplit inputSplit, final TaskAttemptContext taskAttemptContext)
       throws IOException, InterruptedException {
 
     this.lrr = new FastqLineRecordReader();
@@ -85,8 +83,7 @@ public class FastqRecordReader extends RecordReader<Text, Text> {
   }
 
   @Override
-  public synchronized boolean nextKeyValue()
-      throws IOException, InterruptedException {
+  public synchronized boolean nextKeyValue() throws IOException, InterruptedException {
 
     int count = 0;
     boolean found = false;
@@ -126,8 +123,7 @@ public class FastqRecordReader extends RecordReader<Text, Text> {
     this.key = new Text(memberId(this.lines[0].substring(1)));
 
     // Set value
-    this.value = new Text(this.lines[0].substring(1)
-        + '\t' + this.lines[1] + '\t' + this.lines[3]);
+    this.value = new Text(this.lines[0].substring(1) + '\t' + this.lines[1] + '\t' + this.lines[3]);
 
     // Clean array
     this.lines[0] = this.lines[1] = this.lines[2] = this.lines[3] = null;
@@ -139,6 +135,7 @@ public class FastqRecordReader extends RecordReader<Text, Text> {
 
   /**
    * Get the member id of a sequence Id
+   *
    * @param s sequence id
    * @return the member of the sequence id
    */
@@ -170,11 +167,11 @@ public class FastqRecordReader extends RecordReader<Text, Text> {
 
   /**
    * Public constructor.
+   *
    * @param context the context
    */
   public FastqRecordReader(final TaskAttemptContext context) {
 
     this.context = context;
   }
-
 }

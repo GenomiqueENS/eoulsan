@@ -28,12 +28,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import org.apache.hadoop.mapreduce.Counter;
 
 /**
- * This class implements an OutputStream that inform Hadoop of the progress of
- * task using counters.
+ * This class implements an OutputStream that inform Hadoop of the progress of task using counters.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -50,8 +49,7 @@ public final class ProgressCounterOutputStream extends OutputStream {
   //
 
   @Override
-  public final void write(final byte[] b, final int off, final int len)
-      throws IOException {
+  public final void write(final byte[] b, final int off, final int len) throws IOException {
 
     this.out.write(b, off, len);
     incrementCounter(len);
@@ -96,15 +94,13 @@ public final class ProgressCounterOutputStream extends OutputStream {
       this.counter.increment(this.sum);
       this.sum = 0;
     }
-
   }
 
   //
   // Constructor
   //
 
-  public ProgressCounterOutputStream(final OutputStream os,
-      final Counter counter) {
+  public ProgressCounterOutputStream(final OutputStream os, final Counter counter) {
 
     requireNonNull(os, "OutputStream is null");
     requireNonNull(counter, "The counter to use is null.");
@@ -112,5 +108,4 @@ public final class ProgressCounterOutputStream extends OutputStream {
     this.out = os;
     this.counter = counter;
   }
-
 }

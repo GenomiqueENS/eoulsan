@@ -26,21 +26,19 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Multimap;
+import fr.ens.biologie.genomique.eoulsan.core.InputPort;
+import fr.ens.biologie.genomique.eoulsan.data.Data;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Multimap;
-
-import fr.ens.biologie.genomique.eoulsan.core.InputPort;
-import fr.ens.biologie.genomique.eoulsan.data.Data;
-
 /**
- * This class define a data product that return data/port couples with only data
- * with the same name.
+ * This class define a data product that return data/port couples with only data with the same name.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -62,8 +60,7 @@ class MatchDataProduct implements DataProduct, Serializable {
 
   @Override
   public Set<ImmutableMap<InputPort, Data>> makeProduct(
-      final StepInputPorts inputPorts,
-      final Multimap<InputPort, Data> inputTokens) {
+      final StepInputPorts inputPorts, final Multimap<InputPort, Data> inputTokens) {
 
     requireNonNull(inputPorts, "inputPorts argument cannot be null");
     requireNonNull(inputTokens, "inputTokens argument cannot be null");
@@ -110,5 +107,4 @@ class MatchDataProduct implements DataProduct, Serializable {
 
     return result;
   }
-
 }

@@ -24,6 +24,7 @@
 
 /**
  * This package contains I/O classes to read and write design files.
+ *
  * @since 1.0
  */
 package fr.ens.biologie.genomique.eoulsan.design.io;

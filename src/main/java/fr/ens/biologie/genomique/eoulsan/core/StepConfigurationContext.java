@@ -24,128 +24,145 @@
 
 package fr.ens.biologie.genomique.eoulsan.core;
 
-import java.io.File;
-import java.util.logging.Logger;
-
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.kenetre.log.GenericLogger;
+import java.io.File;
+import java.util.logging.Logger;
 
 public interface StepConfigurationContext {
 
   /**
    * Get the command name.
+   *
    * @return the command name
    */
   String getCommandName();
 
   /**
    * Get the UUID of the job.
+   *
    * @return the job UUID
    */
   String getJobUUID();
 
   /**
    * Get the job description.
+   *
    * @return the job description
    */
   String getJobDescription();
 
   /**
    * Get the job environment.
+   *
    * @return the job environment
    */
   String getJobEnvironment();
 
   /**
    * Get command description.
+   *
    * @return the command description
    */
   String getCommandDescription();
 
   /**
    * Get the command author.
+   *
    * @return the command author
    */
   String getCommandAuthor();
 
   /**
    * Get the output path.
+   *
    * @return Returns the output Path
    */
   DataFile getOutputDirectory();
 
   /**
    * Get the job path.
+   *
    * @return Returns the log Path
    */
   DataFile getJobDirectory();
 
   /**
    * Get the step working directory.
+   *
    * @return Returns the step working directory
    */
   DataFile getStepOutputDirectory();
 
   /**
    * Get the job id.
+   *
    * @return the job id
    */
   String getJobId();
 
   /**
    * Get the host of the job.
+   *
    * @return a string with the host of the job
    */
   String getJobHost();
 
   /**
    * Get the design file path.
+   *
    * @return the design file path
    */
   DataFile getDesignFile();
 
   /**
    * Get the workflow file path.
+   *
    * @return the workflow file path
    */
   DataFile getWorkflowFile();
 
   /**
    * Get EoulsanRuntime.
+   *
    * @return the EoulsanRuntime
    */
   AbstractEoulsanRuntime getRuntime();
 
   /**
    * Get Eoulsan settings.
+   *
    * @return the Settings
    */
   Settings getSettings();
 
   /**
    * Get the logger.
+   *
    * @return the logger
    */
   Logger getLogger();
 
   /**
    * Get the generic logger.
+   *
    * @return the generic logger
    */
   GenericLogger getGenericLogger();
 
   /**
    * Get the current step.
+   *
    * @return the current Step or null if no Step is currently running.
    */
   Step getCurrentStep();
 
   /**
    * Get local temporary directory.
+   *
    * @return the local temporary directory
    */
   File getLocalTempDirectory();
-
 }

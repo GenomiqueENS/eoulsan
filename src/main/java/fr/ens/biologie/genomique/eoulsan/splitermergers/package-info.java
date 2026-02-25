@@ -23,8 +23,9 @@
  */
 
 /**
- * This package contains splitter and merger used when running Eoulsan on a
- * standard cluster to get more parallelization efficiency.
+ * This package contains splitter and merger used when running Eoulsan on a standard cluster to get
+ * more parallelization efficiency.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */

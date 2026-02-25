@@ -29,20 +29,20 @@ import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_DATA_EXTENSION;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_RESULT_EXTENSION;
 import static java.util.Objects.requireNonNull;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.time.Duration;
-import java.time.Instant;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.schedulers.TaskSchedulerFactory;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 
 /**
- * This class contains utility methods for serialization, deserialization and
- * execution of Task objects.
+ * This class contains utility methods for serialization, deserialization and execution of Task
+ * objects.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -50,10 +50,10 @@ public class TaskSerializationUtils {
 
   /**
    * Execute a task context serialization file.
+   *
    * @param taskContextFile input task context file
    * @return the task result
-   * @throws IOException if an error occurs while reading or writing serialized
-   *           files
+   * @throws IOException if an error occurs while reading or writing serialized files
    * @throws EoulsanException if an error occurs while executing the task
    */
   public static TaskResultImpl execute(final DataFile taskContextFile)
@@ -66,27 +66,25 @@ public class TaskSerializationUtils {
 
   /**
    * Execute a task context serialization file.
+   *
    * @param taskContextFile input task context file
    * @param outputDir output directory for results file
    * @return the task result
-   * @throws IOException if an error occurs while reading or writing serialized
-   *           files
+   * @throws IOException if an error occurs while reading or writing serialized files
    * @throws EoulsanException if an error occurs while executing the task
    */
-  public static TaskResultImpl execute(final DataFile taskContextFile,
-      final DataFile outputDir) throws IOException, EoulsanException {
+  public static TaskResultImpl execute(final DataFile taskContextFile, final DataFile outputDir)
+      throws IOException, EoulsanException {
 
     requireNonNull(taskContextFile, "contextFile argument cannot be null");
     requireNonNull(outputDir, "taskResultFile argument cannot be null");
 
     if (!taskContextFile.exists()) {
-      throw new FileNotFoundException(
-          "The context file does not exists: " + taskContextFile);
+      throw new FileNotFoundException("The context file does not exists: " + taskContextFile);
     }
 
     // Load context file
-    final TaskContextImpl context =
-        TaskContextImpl.deserialize(taskContextFile);
+    final TaskContextImpl context = TaskContextImpl.deserialize(taskContextFile);
 
     // Get TaskResult
     final TaskResultImpl result = executeContext(context);
@@ -99,6 +97,7 @@ public class TaskSerializationUtils {
 
   /**
    * Execute a context.
+   *
    * @param context context to execute
    * @return a TaskResult object
    * @throws EoulsanException if an error occurs while executing the task
@@ -107,8 +106,7 @@ public class TaskSerializationUtils {
       throws EoulsanException {
 
     // Load module instance
-    final Module module =
-        StepInstances.getInstance().getModule(context.getCurrentStep());
+    final Module module = StepInstances.getInstance().getModule(context.getCurrentStep());
 
     final Instant startTime = Instant.now();
 
@@ -122,8 +120,13 @@ public class TaskSerializationUtils {
       // An exception has occured while configuring the step
       getLogger().severe("Exception while configuring task: " + t.getMessage());
 
-      return new TaskResultImpl(context, startTime, endTime,
-         Duration.between(startTime, endTime).toMillis(), t, t.getMessage());
+      return new TaskResultImpl(
+          context,
+          startTime,
+          endTime,
+          Duration.between(startTime, endTime).toMillis(),
+          t,
+          t.getMessage());
     }
 
     // Create the context runner
@@ -142,14 +145,14 @@ public class TaskSerializationUtils {
 
   /**
    * Save a TaskResult object.
+   *
    * @param taskContextFile the task context file
    * @param context the Eoulsan context
    * @param result the TaskResult to save
-   * @throws IOException if an error occurs while reading or writing serialized
-   *           files
+   * @throws IOException if an error occurs while reading or writing serialized files
    */
-  private static void saveTaskResult(final DataFile taskContextFile,
-      final TaskContextImpl context, final TaskResultImpl result)
+  private static void saveTaskResult(
+      final DataFile taskContextFile, final TaskContextImpl context, final TaskResultImpl result)
       throws IOException {
 
     // Get the prefix for the task files and the base dir
@@ -160,12 +163,9 @@ public class TaskSerializationUtils {
     result.serialize(new DataFile(baseDir, taskPrefix + TASK_RESULT_EXTENSION));
 
     // Save task output data
-    context.serializeOutputData(
-        new DataFile(baseDir, taskPrefix + TASK_DATA_EXTENSION));
+    context.serializeOutputData(new DataFile(baseDir, taskPrefix + TASK_DATA_EXTENSION));
 
     // Create done file
-    new DataFile(baseDir, taskPrefix + Globals.TASK_DONE_EXTENSION).create()
-        .close();
+    new DataFile(baseDir, taskPrefix + Globals.TASK_DONE_EXTENSION).create().close();
   }
-
 }

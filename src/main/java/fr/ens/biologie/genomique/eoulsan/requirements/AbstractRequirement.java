@@ -26,14 +26,14 @@ package fr.ens.biologie.genomique.eoulsan.requirements;
 
 import static java.util.Objects.requireNonNull;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-
 /**
  * This class define an abstract requirement.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -93,33 +93,28 @@ public abstract class AbstractRequirement implements Requirement {
   }
 
   @Override
-  public void configure(final Set<Parameter> parameters)
-      throws EoulsanException {
+  public void configure(final Set<Parameter> parameters) throws EoulsanException {
 
     requireNonNull(parameters, "parameter argument cannot be null");
 
     for (Parameter p : parameters) {
 
       switch (p.getName()) {
+        case NAME_PARAMETER:
+          // Nothing to do
+          break;
 
-      case NAME_PARAMETER:
-        // Nothing to do
-        break;
+        case OPTIONAL_PARAMETER:
+          setOptionnal(p.getBooleanValue());
+          break;
 
-      case OPTIONAL_PARAMETER:
-        setOptionnal(p.getBooleanValue());
-        break;
+        case INSTALLABLE_PARAMETER:
+          setInstallable(p.getBooleanValue());
+          break;
 
-      case INSTALLABLE_PARAMETER:
-        setInstallable(p.getBooleanValue());
-        break;
-
-      default:
-        throw new EoulsanException(
-            "Unknown requirement parameter: " + p.getName());
+        default:
+          throw new EoulsanException("Unknown requirement parameter: " + p.getName());
       }
-
     }
   }
-
 }

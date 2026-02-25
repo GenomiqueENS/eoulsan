@@ -26,18 +26,17 @@ package fr.ens.biologie.genomique.eoulsan.design;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.List;
-
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
+import java.util.List;
 
 /**
  * This class defines the default implementation of the sample metadata.
+ *
  * @author Xavier Bauquet
  * @since 2.0
  */
-class SampleMetadataImpl extends AbstractMetadata
-    implements SampleMetadata {
+class SampleMetadataImpl extends AbstractMetadata implements SampleMetadata {
 
   /** Serialization version UID. */
   private static final long serialVersionUID = -6298102513903455973L;
@@ -102,8 +101,7 @@ class SampleMetadataImpl extends AbstractMetadata
 
     value = value.trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
-    return "t".equals(value)
-        || "true".equals(value) || "y".equals(value) || "yes".equals(value);
+    return "t".equals(value) || "true".equals(value) || "y".equals(value) || "yes".equals(value);
   }
 
   @Override
@@ -242,10 +240,6 @@ class SampleMetadataImpl extends AbstractMetadata
   // Constructor
   //
 
-  /**
-   * Constructor.
-   */
-  SampleMetadataImpl() {
-  }
-
+  /** Constructor. */
+  SampleMetadataImpl() {}
 }

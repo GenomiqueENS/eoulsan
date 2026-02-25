@@ -27,19 +27,17 @@ package fr.ens.biologie.genomique.eoulsan.bio.io.hadoop;
 import static fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.Counters.ENTRIES_WRITTEN;
 import static fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.Counters.INPUT_ENTRIES;
 
+import fr.ens.biologie.genomique.kenetre.bio.ReadSequence;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.RecordWriter;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
-import fr.ens.biologie.genomique.kenetre.bio.ReadSequence;
-
-
 /**
  * This class define a RecordWriter for FASTQ files.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -58,8 +56,7 @@ public class FastqRecordWriter extends RecordWriter<Text, Text> {
   private final ReadSequence read = new ReadSequence();
 
   @Override
-  public synchronized void write(final Text key, final Text value)
-      throws IOException {
+  public synchronized void write(final Text key, final Text value) throws IOException {
 
     this.context.getCounter(COUNTERS_GROUP, INPUT_ENTRIES).increment(1);
 
@@ -76,8 +73,7 @@ public class FastqRecordWriter extends RecordWriter<Text, Text> {
   }
 
   @Override
-  public synchronized void close(final TaskAttemptContext context)
-      throws IOException {
+  public synchronized void close(final TaskAttemptContext context) throws IOException {
 
     this.out.close();
   }
@@ -88,14 +84,13 @@ public class FastqRecordWriter extends RecordWriter<Text, Text> {
 
   /**
    * Public constructor.
+   *
    * @param context the context
    * @param out data output stream
    */
-  public FastqRecordWriter(final TaskAttemptContext context,
-      final DataOutputStream out) {
+  public FastqRecordWriter(final TaskAttemptContext context, final DataOutputStream out) {
 
     this.context = context;
     this.out = out;
   }
-
 }

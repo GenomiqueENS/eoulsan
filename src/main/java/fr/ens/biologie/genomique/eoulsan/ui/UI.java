@@ -29,6 +29,7 @@ import fr.ens.biologie.genomique.eoulsan.core.workflow.StepObserver;
 
 /**
  * This interface define how UI is informed of The workflow changes.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -36,14 +37,15 @@ public interface UI extends StepObserver {
 
   /**
    * Get the name of the UI.
+   *
    * @return the name of the UI
    */
   String getName();
 
   /**
    * Initialize the UI.
+   *
    * @param workflow the worflow
    */
   void init(Workflow workflow);
-
 }

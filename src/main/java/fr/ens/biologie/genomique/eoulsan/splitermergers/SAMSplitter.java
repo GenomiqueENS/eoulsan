@@ -24,13 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.splitermergers;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
@@ -44,9 +37,16 @@ import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SamInputResource;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class define a splitter class for SAM files.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -69,25 +69,24 @@ public class SAMSplitter implements Splitter {
     for (Parameter p : conf) {
 
       switch (p.getName()) {
+        case "max.entries":
+          this.splitMaxEntries = p.getIntValueGreaterOrEqualsTo(1);
+          break;
 
-      case "max.entries":
-        this.splitMaxEntries = p.getIntValueGreaterOrEqualsTo(1);
-        break;
+        case "chromosomes":
+          this.splitByChromosomes = p.getBooleanValue();
+          break;
 
-      case "chromosomes":
-        this.splitByChromosomes = p.getBooleanValue();
-        break;
-
-      default:
-        throw new EoulsanException("Unknown parameter for "
-            + getFormat().getName() + " splitter: " + p.getName());
+        default:
+          throw new EoulsanException(
+              "Unknown parameter for " + getFormat().getName() + " splitter: " + p.getName());
       }
     }
   }
 
   @Override
-  public void split(final DataFile inFile,
-      final Iterator<DataFile> outFileIterator) throws IOException {
+  public void split(final DataFile inFile, final Iterator<DataFile> outFileIterator)
+      throws IOException {
 
     if (this.splitByChromosomes) {
       splitByChromosomes(inFile, outFileIterator);
@@ -98,13 +97,13 @@ public class SAMSplitter implements Splitter {
 
   /**
    * Split SAM file by line count.
+   *
    * @param inFile input file
    * @param outFileIterator output files iterator
-   * @throws IOException if an error occurs while reading or creating output
-   *           files
+   * @throws IOException if an error occurs while reading or creating output files
    */
-  private void splitByLineCount(final DataFile inFile,
-      final Iterator<DataFile> outFileIterator) throws IOException {
+  private void splitByLineCount(final DataFile inFile, final Iterator<DataFile> outFileIterator)
+      throws IOException {
 
     // Get temporary directory
     final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
@@ -130,8 +129,10 @@ public class SAMSplitter implements Splitter {
         }
 
         // Create new writer
-        writer = new SAMFileWriterFactory().setTempDirectory(tmpDir)
-            .makeSAMWriter(header, false, outFileIterator.next().create());
+        writer =
+            new SAMFileWriterFactory()
+                .setTempDirectory(tmpDir)
+                .makeSAMWriter(header, false, outFileIterator.next().create());
       }
 
       writer.addAlignment(record);
@@ -147,13 +148,13 @@ public class SAMSplitter implements Splitter {
 
   /**
    * Split SAM file by chromosomes.
+   *
    * @param inFile input file
    * @param outFileIterator output files iterator
-   * @throws IOException if an error occurs while reading or creating output
-   *           files
+   * @throws IOException if an error occurs while reading or creating output files
    */
-  public void splitByChromosomes(final DataFile inFile,
-      final Iterator<DataFile> outFileIterator) throws IOException {
+  public void splitByChromosomes(final DataFile inFile, final Iterator<DataFile> outFileIterator)
+      throws IOException {
 
     // Get temporary directory
     final File tmpDir = EoulsanRuntime.getRuntime().getTempDirectory();
@@ -177,8 +178,10 @@ public class SAMSplitter implements Splitter {
       if (!writers.containsKey(chromosome)) {
 
         // Create the writer for the chromosome
-        writer = new SAMFileWriterFactory().setTempDirectory(tmpDir)
-            .makeSAMWriter(header, false, outFileIterator.next().create());
+        writer =
+            new SAMFileWriterFactory()
+                .setTempDirectory(tmpDir)
+                .makeSAMWriter(header, false, outFileIterator.next().create());
         writers.put(chromosome, writer);
       } else {
         writer = writers.get(chromosome);
@@ -195,7 +198,5 @@ public class SAMSplitter implements Splitter {
     for (SAMFileWriter writer : writers.values()) {
       writer.close();
     }
-
   }
-
 }

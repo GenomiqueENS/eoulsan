@@ -32,6 +32,10 @@ import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.READY;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WAITING;
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.Joiner;
+import com.google.common.eventbus.Subscribe;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,14 +45,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Joiner;
-import com.google.common.eventbus.Subscribe;
-
-import fr.ens.biologie.genomique.eoulsan.core.Step;
-import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
-
 /**
  * This class allow to store the step state and its dependencies.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -65,6 +64,7 @@ public class StepStateDependencies implements Serializable {
 
   /**
    * Add a dependency.
+   *
    * @param step the dependency
    */
   public void addDependency(final AbstractStep step) {
@@ -80,6 +80,7 @@ public class StepStateDependencies implements Serializable {
 
   /**
    * Get the required steps.
+   *
    * @return a set with the required steps
    */
   public Set<AbstractStep> getRequiredSteps() {
@@ -89,6 +90,7 @@ public class StepStateDependencies implements Serializable {
 
   /**
    * Get the state of the step.
+   *
    * @return the state of the step
    */
   public StepState getState() {
@@ -98,6 +100,7 @@ public class StepStateDependencies implements Serializable {
 
   /**
    * Listen StepState events.
+   *
    * @param event the event to handle
    */
   @Subscribe
@@ -141,12 +144,12 @@ public class StepStateDependencies implements Serializable {
         // Set the step to the READY state
         setState(READY);
       }
-
     }
   }
 
   /**
    * Test if a dependency step is done.
+   *
    * @param state the state of the dependency step
    * @return true if the dependency step is done
    */
@@ -157,6 +160,7 @@ public class StepStateDependencies implements Serializable {
 
   /**
    * Set the state of the step.
+   *
    * @param state the new state of the step
    */
   private synchronized void setState(final StepState state) {
@@ -164,7 +168,8 @@ public class StepStateDependencies implements Serializable {
     // Do nothing if the state has not changed or if the current state is a
     // final state
     if (state == null
-        || state == CREATED || this.stepState == state
+        || state == CREATED
+        || this.stepState == state
         || this.stepState.isFinalState()) {
       return;
     }
@@ -192,9 +197,17 @@ public class StepStateDependencies implements Serializable {
     }
 
     // Log the new state of the step
-    getLogger().fine("Step #"
-        + this.step.getNumber() + " " + this.step.getId() + " is now in state "
-        + this.stepState + " (previous state was " + previousState + ")");
+    getLogger()
+        .fine(
+            "Step #"
+                + this.step.getNumber()
+                + " "
+                + this.step.getId()
+                + " is now in state "
+                + this.stepState
+                + " (previous state was "
+                + previousState
+                + ")");
 
     // Log dependencies when step is in WAITING state
     if (this.stepState == WAITING) {
@@ -207,14 +220,15 @@ public class StepStateDependencies implements Serializable {
     }
   }
 
-  /**
-   * Log dependencies of step.
-   */
+  /** Log dependencies of step. */
   void logDependencies() {
 
-    String msg = "Step #"
-        + this.step.getNumber() + " " + this.step.getId()
-        + " has the following dependencies: ";
+    String msg =
+        "Step #"
+            + this.step.getNumber()
+            + " "
+            + this.step.getId()
+            + " has the following dependencies: ";
 
     List<String> list = new ArrayList<>();
 
@@ -236,6 +250,7 @@ public class StepStateDependencies implements Serializable {
 
   /**
    * Constructor.
+   *
    * @param step the step related to the instance
    */
   public StepStateDependencies(final AbstractStep step) {
@@ -247,8 +262,13 @@ public class StepStateDependencies implements Serializable {
     // Register the observer
     WorkflowEventBus.getInstance().register(this);
 
-    getLogger().fine("Step #"
-        + this.step.getNumber() + " " + this.step.getId() + " is now in state "
-        + this.stepState);
+    getLogger()
+        .fine(
+            "Step #"
+                + this.step.getNumber()
+                + " "
+                + this.step.getId()
+                + " is now in state "
+                + this.stepState);
   }
 }

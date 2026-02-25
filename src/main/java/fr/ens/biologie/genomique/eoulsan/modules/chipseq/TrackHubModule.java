@@ -3,17 +3,6 @@ package fr.ens.biologie.genomique.eoulsan.modules.chipseq;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.BIGBED;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.BIGWIG;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -32,9 +21,20 @@ import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class construct TrackHub for genome browser visualization.
+ *
  * @author Cédric Michaud
  */
 @LocalOnly
@@ -76,62 +76,60 @@ public class TrackHubModule extends AbstractModule {
 
   /**
    * Set the parameters of the step to configure the step.
+   *
    * @param stepParameters parameters of the step
    * @throws EoulsanException if a parameter is invalid
    */
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     for (Parameter p : stepParameters) {
 
       switch (p.getLowerStringValue()) {
+        case "shortlabel.name":
+          this.shortLabel = p.getStringValue();
+          break;
 
-      case "shortlabel.name":
-        this.shortLabel = p.getStringValue();
-        break;
+        case "longlabel.name":
+          this.longLabel = p.getStringValue();
+          break;
 
-      case "longlabel.name":
-        this.longLabel = p.getStringValue();
-        break;
+        case "e.mail":
+        case "email":
+          this.email = p.getStringValue();
+          break;
 
-      case "e.mail":
-      case "email":
-        this.email = p.getStringValue();
-        break;
+        case "data.path":
+          this.bigDataUrl = p.getStringValue();
+          break;
 
-      case "data.path":
-        this.bigDataUrl = p.getStringValue();
-        break;
+        case "multi.wig":
+          this.multiWIG = p.getBooleanValue();
+          break;
 
-      case "multi.wig":
-        this.multiWIG = p.getBooleanValue();
-        break;
+        case "server.name":
+          this.server = p.getStringValue();
+          break;
 
-      case "server.name":
-        this.server = p.getStringValue();
-        break;
-
-      default:
-        Modules.unknownParameter(context, p);
-        break;
+        default:
+          Modules.unknownParameter(context, p);
+          break;
       }
     }
-
   }
 
-  /**
-   * Run trackhub generator.
-   */
+  /** Run trackhub generator. */
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     final Design design = context.getWorkflow().getDesign();
 
     // Define the current date as a string
-    final String date = Instant.now().atZone(ZoneId.systemDefault())
-        .format(DateTimeFormatter.ofPattern("yyyy_MM_dd"));
+    final String date =
+        Instant.now()
+            .atZone(ZoneId.systemDefault())
+            .format(DateTimeFormatter.ofPattern("yyyy_MM_dd"));
 
     // Get input data (BIGWIG format)
     final Data BigWigData = context.getInputData(BIGWIG);
@@ -175,6 +173,7 @@ public class TrackHubModule extends AbstractModule {
 
   /**
    * Create track files.
+   *
    * @param dir output directory
    * @param design the design
    * @param date the current date as a string
@@ -182,28 +181,29 @@ public class TrackHubModule extends AbstractModule {
    * @param nameMapBigBed map of BigBed data
    * @throws IOException if an error occurs while creating the output files
    */
-  private void createTrack(final Path dir, final Design design,
-      final String date, Map<String, Data> nameMapBigWig,
-      Map<String, Data> nameMapBigBed) throws IOException {
+  private void createTrack(
+      final Path dir,
+      final Design design,
+      final String date,
+      Map<String, Data> nameMapBigWig,
+      Map<String, Data> nameMapBigBed)
+      throws IOException {
 
     // If the folder already exist the step is stopped.
     if (Files.exists(dir)) {
-      throw new IOException(
-          "The output folder " + dir.toAbsolutePath() + " already exists");
+      throw new IOException("The output folder " + dir.toAbsolutePath() + " already exists");
     }
 
     // Create the directory
     if (!dir.toFile().mkdir()) {
-      throw new IOException(
-          "Fail to create the folder : " + dir.toAbsolutePath());
+      throw new IOException("Fail to create the folder : " + dir.toAbsolutePath());
     }
 
     // Create a folder with the name of the genome.
     Path genomeDirectory = dir.resolve(this.genome);
 
     if (!genomeDirectory.toFile().mkdir()) {
-      throw new IOException(
-          "Fail to create the folder : " + dir.toAbsolutePath());
+      throw new IOException("Fail to create the folder : " + dir.toAbsolutePath());
     }
 
     // In this folder, create a hub.txt file where we write all the necessary
@@ -220,12 +220,12 @@ public class TrackHubModule extends AbstractModule {
 
   /**
    * Write Hub file.
+   *
    * @param dir output directory
    * @param date the current date as a string
    * @throws IOException if an error occurs while creating the file
    */
-  private void writeHubFile(final Path dir, final String date)
-      throws IOException {
+  private void writeHubFile(final Path dir, final String date) throws IOException {
 
     try (Writer w = Files.newBufferedWriter(dir.resolve("hub.txt"))) {
 
@@ -239,6 +239,7 @@ public class TrackHubModule extends AbstractModule {
 
   /**
    * Write genome file.
+   *
    * @param dir output directory
    * @throws IOException if an error occurs while creating the file
    */
@@ -252,14 +253,18 @@ public class TrackHubModule extends AbstractModule {
 
   /**
    * Create TrackDb file.
+   *
    * @param genomeDirectory output directory.
    * @param design design object
    * @param nameMapBigWig map of BigWig data
    * @param nameMapBigBed map of BigBed data
    * @throws IOException if an error occurs while creating the output file
    */
-  private void writeTrackDb(Path genomeDirectory, Design design,
-      Map<String, Data> nameMapBigWig, Map<String, Data> nameMapBigBed)
+  private void writeTrackDb(
+      Path genomeDirectory,
+      Design design,
+      Map<String, Data> nameMapBigWig,
+      Map<String, Data> nameMapBigBed)
       throws IOException {
 
     // variable for the priority of tacks.
@@ -296,8 +301,7 @@ public class TrackHubModule extends AbstractModule {
             // Write informations in the trackDb file. (The track, shortLabel,
             // and longLabel lignes use the condition, reptechgroup
             // and experiment name of the samples)
-            priorityTrack = addTrackDbStandardSample(sb, e, expSam,
-                nameMapBigWig, priorityTrack);
+            priorityTrack = addTrackDbStandardSample(sb, e, expSam, nameMapBigWig, priorityTrack);
           }
         }
       }
@@ -310,21 +314,18 @@ public class TrackHubModule extends AbstractModule {
         if (nameMapBigBed.get(expSam.getSample().getName()) != null) {
 
           // Write informations in the trackDb file.
-          priorityTrack =
-              addTrackDbSample(sb, e, expSam, nameMapBigBed, priorityTrack);
+          priorityTrack = addTrackDbSample(sb, e, expSam, nameMapBigBed, priorityTrack);
         }
       }
     }
 
     // Write trackDb file
-    try (
-        Writer writer = Files.newBufferedWriter(genomeDirectory.resolve("trackDb.txt"))) {
+    try (Writer writer = Files.newBufferedWriter(genomeDirectory.resolve("trackDb.txt"))) {
       writer.write(sb.toString());
     }
   }
 
-  private int addMultiWigTrackDbHeader(StringBuilder sb, Experiment e,
-      int priorityTrack) {
+  private int addMultiWigTrackDbHeader(StringBuilder sb, Experiment e, int priorityTrack) {
 
     sb.append("track ");
     sb.append(e.getName());
@@ -348,8 +349,11 @@ public class TrackHubModule extends AbstractModule {
     return priorityTrack + 1;
   }
 
-  private void addMultiWigTrackDbSample(StringBuilder sb, Experiment experiment,
-      ExperimentSample sample, Map<String, Data> nameMapBigWig) {
+  private void addMultiWigTrackDbSample(
+      StringBuilder sb,
+      Experiment experiment,
+      ExperimentSample sample,
+      Map<String, Data> nameMapBigWig) {
 
     sb.append("\ttrack ");
     sb.append(DesignUtils.getCondition(sample));
@@ -366,8 +370,7 @@ public class TrackHubModule extends AbstractModule {
     sb.append("\tbigDataUrl ");
     sb.append(server);
     sb.append(bigDataUrl);
-    sb.append(
-        nameMapBigWig.get(sample.getSample().getName()).getDataFilename());
+    sb.append(nameMapBigWig.get(sample.getSample().getName()).getDataFilename());
     sb.append('\n');
 
     sb.append("\tshortLabel ");
@@ -392,11 +395,13 @@ public class TrackHubModule extends AbstractModule {
       sb.append("\tcolor 244,195,165\n");
     }
     sb.append('\n');
-
   }
 
-  private int addTrackDbSample(StringBuilder sb, Experiment experiment,
-      ExperimentSample sample, Map<String, Data> nameMapBigBed,
+  private int addTrackDbSample(
+      StringBuilder sb,
+      Experiment experiment,
+      ExperimentSample sample,
+      Map<String, Data> nameMapBigBed,
       int priorityTrack) {
 
     sb.append("track ");
@@ -411,8 +416,7 @@ public class TrackHubModule extends AbstractModule {
     sb.append("bigDataUrl ");
     sb.append(server);
     sb.append(this.bigDataUrl);
-    sb.append(
-        nameMapBigBed.get(sample.getSample().getName()).getDataFilename());
+    sb.append(nameMapBigBed.get(sample.getSample().getName()).getDataFilename());
     sb.append('\n');
 
     sb.append("shortLabel ");
@@ -445,8 +449,11 @@ public class TrackHubModule extends AbstractModule {
     return priorityTrack + 1;
   }
 
-  private int addTrackDbStandardSample(StringBuilder sb, Experiment experiment,
-      ExperimentSample sample, Map<String, Data> nameMapBigWig,
+  private int addTrackDbStandardSample(
+      StringBuilder sb,
+      Experiment experiment,
+      ExperimentSample sample,
+      Map<String, Data> nameMapBigWig,
       int priorityTrack) {
 
     sb.append("track ");
@@ -460,8 +467,7 @@ public class TrackHubModule extends AbstractModule {
     sb.append("bigDataUrl ");
     sb.append(server);
     sb.append(bigDataUrl);
-    sb.append(
-        nameMapBigWig.get(sample.getSample().getName()).getDataFilename());
+    sb.append(nameMapBigWig.get(sample.getSample().getName()).getDataFilename());
     sb.append('\n');
 
     sb.append("shortLabel ");
@@ -497,5 +503,4 @@ public class TrackHubModule extends AbstractModule {
 
     return priorityTrack + 1;
   }
-
 }

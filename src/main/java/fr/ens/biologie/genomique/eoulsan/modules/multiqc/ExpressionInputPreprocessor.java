@@ -1,19 +1,5 @@
 package fr.ens.biologie.genomique.eoulsan.modules.multiqc;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.json.JsonValue;
-
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
@@ -23,9 +9,22 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounterCounter;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonValue;
 
 /**
  * This class define a preprocessor for expression reports.
+ *
  * @since 2.2
  * @author Laurent Jourdren
  */
@@ -45,8 +44,9 @@ public class ExpressionInputPreprocessor implements InputPreprocessor {
   }
 
   @Override
-  public void preprocess(final TaskContext context, final Data data,
-      final File multiQCInputDirectory) throws IOException {
+  public void preprocess(
+      final TaskContext context, final Data data, final File multiQCInputDirectory)
+      throws IOException {
 
     if (this.sampleStats == null) {
       loadExpressionResultStats(context);
@@ -64,19 +64,17 @@ public class ExpressionInputPreprocessor implements InputPreprocessor {
     // If expression file exists, create a copy of the expression file enhanced
     // with HTSeq-count statistics entries
     if (expressionFile.exists()) {
-      enhanceExpressionFile(expressionFile.toPath(), newFile.toPath(),
-          this.sampleStats.get(name));
+      enhanceExpressionFile(expressionFile.toPath(), newFile.toPath(), this.sampleStats.get(name));
     }
   }
 
   /**
    * Load expression step result counters.
+   *
    * @param context the step counters
-   * @throws IOException if an error occurs while reading the expression step
-   *           result file
+   * @throws IOException if an error occurs while reading the expression step result file
    */
-  private void loadExpressionResultStats(final TaskContext context)
-      throws IOException {
+  private void loadExpressionResultStats(final TaskContext context) throws IOException {
 
     for (Step step : context.getWorkflow().getSteps()) {
 
@@ -84,8 +82,8 @@ public class ExpressionInputPreprocessor implements InputPreprocessor {
 
         final String stepId = step.getId();
 
-        final DataFile expressionStepResultFile = new DataFile(
-            context.getJobDirectory(), stepId + Globals.STEP_RESULT_EXTENSION);
+        final DataFile expressionStepResultFile =
+            new DataFile(context.getJobDirectory(), stepId + Globals.STEP_RESULT_EXTENSION);
 
         // Parse result file if exists
         if (expressionStepResultFile.exists()) {
@@ -95,8 +93,8 @@ public class ExpressionInputPreprocessor implements InputPreprocessor {
     }
   }
 
-  private static Map<String, Map<String, Integer>> parseStepResultFile(
-      DataFile file) throws IOException {
+  private static Map<String, Map<String, Integer>> parseStepResultFile(DataFile file)
+      throws IOException {
 
     // Define result
     final Map<String, Map<String, Integer>> result = new HashMap<>();
@@ -128,8 +126,7 @@ public class ExpressionInputPreprocessor implements InputPreprocessor {
           if (!dict.containsKey(ec.counterName())) {
             stats.put(ec.htSeqCountCounterName(), 0);
           } else {
-            stats.put(ec.htSeqCountCounterName(),
-                dict.getInt(ec.counterName()));
+            stats.put(ec.htSeqCountCounterName(), dict.getInt(ec.counterName()));
           }
         }
       }
@@ -139,15 +136,16 @@ public class ExpressionInputPreprocessor implements InputPreprocessor {
   }
 
   /**
-   * Create a copy of the expression result files and add at the end of the
-   * files the HTSeq-count statistics entries
+   * Create a copy of the expression result files and add at the end of the files the HTSeq-count
+   * statistics entries
+   *
    * @param inFile input file
    * @param outFile output file
    * @param stats sample expression statistics
    * @throws IOException if an error occurs while reading or writing the files
    */
-  private void enhanceExpressionFile(final Path inFile, final Path outFile,
-      final Map<String, Integer> stats) throws IOException {
+  private void enhanceExpressionFile(
+      final Path inFile, final Path outFile, final Map<String, Integer> stats) throws IOException {
 
     try (BufferedReader reader = Files.newBufferedReader(inFile);
         Writer writer = Files.newBufferedWriter(outFile)) {
@@ -164,7 +162,5 @@ public class ExpressionInputPreprocessor implements InputPreprocessor {
         }
       }
     }
-
   }
-
 }

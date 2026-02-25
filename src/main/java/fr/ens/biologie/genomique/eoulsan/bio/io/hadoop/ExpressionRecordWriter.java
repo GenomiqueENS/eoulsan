@@ -30,7 +30,6 @@ import static fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.Counters.INPUT_ENT
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.RecordWriter;
@@ -38,13 +37,13 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
 /**
  * This class define a RecordWriter for expression files.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
 public class ExpressionRecordWriter extends RecordWriter<Text, LongWritable> {
 
-  private static final String COUNTERS_GROUP =
-      "Expression Output Format Counters";
+  private static final String COUNTERS_GROUP = "Expression Output Format Counters";
 
   private static final byte[] newline;
   private static final byte[] separator;
@@ -76,8 +75,7 @@ public class ExpressionRecordWriter extends RecordWriter<Text, LongWritable> {
   }
 
   @Override
-  public synchronized void close(final TaskAttemptContext context)
-      throws IOException {
+  public synchronized void close(final TaskAttemptContext context) throws IOException {
 
     this.out.close();
   }
@@ -88,14 +86,13 @@ public class ExpressionRecordWriter extends RecordWriter<Text, LongWritable> {
 
   /**
    * Public constructor.
+   *
    * @param context the context
    * @param out data output stream
    */
-  public ExpressionRecordWriter(final TaskAttemptContext context,
-      final DataOutputStream out) {
+  public ExpressionRecordWriter(final TaskAttemptContext context, final DataOutputStream out) {
 
     this.context = context;
     this.out = out;
   }
-
 }

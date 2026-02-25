@@ -30,6 +30,7 @@ import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 
 /**
  * This class define an UI that do nothing.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -52,14 +53,14 @@ public class NoUI extends AbstractUI {
   }
 
   @Override
-  public void notifyStepState(final Step step, final int contextId,
-      final String contextName, final double progress) {
+  public void notifyStepState(
+      final Step step, final int contextId, final String contextName, final double progress) {
     // Do nothing
   }
 
   @Override
-  public void notifyStepState(final Step step, final int terminatedTasks,
-      final int submittedTasks, final double progress) {
+  public void notifyStepState(
+      final Step step, final int terminatedTasks, final int submittedTasks, final double progress) {
     // Do nothing
   }
 
@@ -69,8 +70,7 @@ public class NoUI extends AbstractUI {
   }
 
   @Override
-  public void notifyWorkflowSuccess(final boolean success,
-      final String message) {
+  public void notifyWorkflowSuccess(final boolean success, final String message) {
     // Do nothing
   }
 
@@ -88,5 +88,4 @@ public class NoUI extends AbstractUI {
   public void notifyTaskDone(Step step, int contextId) {
     // Do nothing
   }
-
 }

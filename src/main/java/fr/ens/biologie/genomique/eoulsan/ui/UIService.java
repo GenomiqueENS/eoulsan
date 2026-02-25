@@ -28,6 +28,7 @@ import fr.ens.biologie.genomique.kenetre.util.ServiceNameLoader;
 
 /**
  * This class define a service to retrieve a UI.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -41,6 +42,7 @@ public class UIService extends ServiceNameLoader<UI> {
 
   /**
    * Retrieve the singleton static instance of UIService.
+   *
    * @return A UIService instance
    */
   public static synchronized UIService getInstance() {
@@ -72,9 +74,7 @@ public class UIService extends ServiceNameLoader<UI> {
   // Constructor
   //
 
-  /**
-   * Private protocol.
-   */
+  /** Private protocol. */
   private UIService() {
 
     super(UI.class);

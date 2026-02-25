@@ -26,11 +26,13 @@ package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop;
 
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.Joiner;
+import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.FastqInputFormat;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
@@ -39,32 +41,27 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-import com.google.common.base.Joiner;
-
-import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.FastqInputFormat;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-
 /**
  * This class allow to convert two FASTQ file in one TFQ file.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
 public class PairedEndFastqToTfq {
 
   /**
-   * This class define the reducer required to convert FASTQ files into TFQ
-   * file.
+   * This class define the reducer required to convert FASTQ files into TFQ file.
+   *
    * @author Laurent Jourdren
    * @since 2.0
    */
-  public static final class FastqPairedEndReducer
-      extends Reducer<Text, Text, Text, Text> {
+  public static final class FastqPairedEndReducer extends Reducer<Text, Text, Text, Text> {
 
     private static final Joiner JOINER = Joiner.on('\t');
 
     @Override
-    protected void reduce(final Text key, final Iterable<Text> values,
-        final Context context) throws IOException, InterruptedException {
+    protected void reduce(final Text key, final Iterable<Text> values, final Context context)
+        throws IOException, InterruptedException {
 
       final List<String> list = new ArrayList<>();
       for (Text t : values) {
@@ -75,11 +72,11 @@ public class PairedEndFastqToTfq {
 
       context.write(key, new Text(JOINER.join(list)));
     }
-
   }
 
   /**
    * Create the job to convert FASTQ files in a TFQ file.
+   *
    * @param parentConf Hadoop configuration
    * @param fastqFile1 Path of the first FASTQ file
    * @param fastqFile2 Path of the second FASTQ file
@@ -88,9 +85,12 @@ public class PairedEndFastqToTfq {
    * @return an Hadoop Job
    * @throws IOException if an error occurs while creating the Job
    */
-  public static Job convert(final Configuration parentConf,
-      final DataFile fastqFile1, final DataFile fastqFile2,
-      final DataFile outputFile, final int reducerTaskCount)
+  public static Job convert(
+      final Configuration parentConf,
+      final DataFile fastqFile1,
+      final DataFile fastqFile2,
+      final DataFile outputFile,
+      final int reducerTaskCount)
       throws IOException {
 
     requireNonNull(parentConf, "parentConf argument cannot be null");
@@ -98,13 +98,17 @@ public class PairedEndFastqToTfq {
     requireNonNull(fastqFile2, "fastqFile2 argument cannot be null");
     requireNonNull(outputFile, "outputFile argument cannot be null");
 
-    return convert(parentConf, new Path(fastqFile1.getSource()),
-        new Path(fastqFile2.getSource()), new Path(outputFile.getSource()),
+    return convert(
+        parentConf,
+        new Path(fastqFile1.getSource()),
+        new Path(fastqFile2.getSource()),
+        new Path(outputFile.getSource()),
         reducerTaskCount);
   }
 
   /**
    * Create the job to convert FASTQ files in a TFQ file.
+   *
    * @param parentConf Hadoop configuration
    * @param fastqFile1 Path of the first FASTQ file
    * @param fastqFile2 Path of the second FASTQ file
@@ -113,9 +117,13 @@ public class PairedEndFastqToTfq {
    * @return an Hadoop Job
    * @throws IOException if an error occurs while creating the Job
    */
-  public static Job convert(final Configuration parentConf,
-      final Path fastqFile1, final Path fastqFile2, final Path outputFile,
-      final int reducerTaskCount) throws IOException {
+  public static Job convert(
+      final Configuration parentConf,
+      final Path fastqFile1,
+      final Path fastqFile2,
+      final Path outputFile,
+      final int reducerTaskCount)
+      throws IOException {
 
     requireNonNull(parentConf, "parentConf argument cannot be null");
     requireNonNull(fastqFile1, "fastqFile1 argument cannot be null");
@@ -126,10 +134,16 @@ public class PairedEndFastqToTfq {
 
     // Set Job name
     // Create the job and its name
-    final Job job = Job.getInstance(jobConf,
-        "Convert FASTQ paired files in TFQ ("
-            + fastqFile1.getName() + ", " + fastqFile2.getName() + ", "
-            + outputFile.getName() + ")");
+    final Job job =
+        Job.getInstance(
+            jobConf,
+            "Convert FASTQ paired files in TFQ ("
+                + fastqFile1.getName()
+                + ", "
+                + fastqFile2.getName()
+                + ", "
+                + outputFile.getName()
+                + ")");
 
     // Set the jar
     job.setJarByClass(PairedEndFastqToTfq.class);
@@ -163,5 +177,4 @@ public class PairedEndFastqToTfq {
 
     return job;
   }
-
 }

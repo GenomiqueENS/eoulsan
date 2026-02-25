@@ -26,28 +26,26 @@ package fr.ens.biologie.genomique.eoulsan.modules.expression.hadoop;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
-import java.io.IOException;
-import java.util.regex.Pattern;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Mapper;
-
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAMHeaderHadoopUtils;
+import java.io.IOException;
+import java.util.regex.Pattern;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
 
 /**
- * This class define a mapper for the pretreatment of paired-end data before the
- * expression estimation step.
+ * This class define a mapper for the pretreatment of paired-end data before the expression
+ * estimation step.
+ *
  * @since 1.2
  * @author Claire Wallon
  */
-public class PreTreatmentExpressionMapper
-    extends Mapper<LongWritable, Text, Text, Text> {
+public class PreTreatmentExpressionMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   private String counterGroup;
 
@@ -63,8 +61,7 @@ public class PreTreatmentExpressionMapper
   //
 
   @Override
-  protected void setup(final Context context)
-      throws IOException, InterruptedException {
+  protected void setup(final Context context) throws IOException, InterruptedException {
 
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
@@ -84,8 +81,8 @@ public class PreTreatmentExpressionMapper
     }
 
     // SAM header writer
-    this.samHeaderWriter = new SAMHeaderHadoopUtils.SAMHeaderWriter(
-        context.getTaskAttemptID().toString());
+    this.samHeaderWriter =
+        new SAMHeaderHadoopUtils.SAMHeaderWriter(context.getTaskAttemptID().toString());
 
     getLogger().info("End of setup()");
   }
@@ -99,8 +96,8 @@ public class PreTreatmentExpressionMapper
    * file. 'value': the SAM record.
    */
   @Override
-  protected void map(final LongWritable key, final Text value,
-      final Context context) throws IOException, InterruptedException {
+  protected void map(final LongWritable key, final Text value, final Context context)
+      throws IOException, InterruptedException {
 
     final String line = value.toString();
 
@@ -148,11 +145,8 @@ public class PreTreatmentExpressionMapper
   }
 
   @Override
-
-  protected void cleanup(final Context context)
-      throws IOException, InterruptedException {
+  protected void cleanup(final Context context) throws IOException, InterruptedException {
 
     this.samHeaderWriter.close(context);
   }
-
 }

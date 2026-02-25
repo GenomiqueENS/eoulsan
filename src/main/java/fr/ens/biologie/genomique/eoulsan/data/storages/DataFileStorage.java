@@ -24,16 +24,16 @@
 
 package fr.ens.biologie.genomique.eoulsan.data.storages;
 
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.kenetre.storage.AbstractFileStorage;
+import fr.ens.biologie.genomique.kenetre.storage.DataPath;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.kenetre.storage.AbstractFileStorage;
-import fr.ens.biologie.genomique.kenetre.storage.DataPath;
-
 /**
  * This class define a storage using DataFile API.
+ *
  * @since 2.6
  * @author Laurent Jourdren
  */
@@ -53,6 +53,7 @@ public class DataFileStorage extends AbstractFileStorage {
 
   /**
    * Get a Datafile related to a short name
+   *
    * @param shortName the short name of a file
    * @return a DataFile
    * @throws IOException if the file cannot be found
@@ -66,6 +67,7 @@ public class DataFileStorage extends AbstractFileStorage {
 
   /**
    * Get a file related to a short name
+   *
    * @param shortName the short name of a file
    * @return a DataFile
    * @throws IOException if the file cannot be found
@@ -88,11 +90,11 @@ public class DataFileStorage extends AbstractFileStorage {
 
   /**
    * Constructor.
+   *
    * @param rootPath root of the storage
    * @param extensions extension of the files
    */
   public DataFileStorage(String rootPath, List<String> extensions) {
     super(rootPath, extensions);
   }
-
 }

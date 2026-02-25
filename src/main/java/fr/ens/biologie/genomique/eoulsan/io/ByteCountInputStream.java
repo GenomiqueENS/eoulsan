@@ -30,6 +30,7 @@ import java.io.InputStream;
 
 /**
  * This filter class allow to count the number of bytes read by an inputStream.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -53,8 +54,8 @@ public class ByteCountInputStream extends FilterInputStream {
     }
 
     if (this.nRead != this.attemptNRead) {
-      throw new IOException("Error read "
-          + this.nRead + " bytes, attempted: " + this.attemptNRead + " bytes");
+      throw new IOException(
+          "Error read " + this.nRead + " bytes, attempted: " + this.attemptNRead + " bytes");
     }
   }
 
@@ -70,8 +71,7 @@ public class ByteCountInputStream extends FilterInputStream {
   }
 
   @Override
-  public int read(final byte[] b, final int off, final int len)
-      throws IOException {
+  public int read(final byte[] b, final int off, final int len) throws IOException {
 
     final int nr = this.in.read(b, off, len);
 
@@ -119,6 +119,7 @@ public class ByteCountInputStream extends FilterInputStream {
 
   /**
    * Get the number of bytes read.
+   *
    * @return the number of bytes read
    */
   public long getBytesRead() {
@@ -132,6 +133,7 @@ public class ByteCountInputStream extends FilterInputStream {
 
   /**
    * Public constructor
+   *
    * @param is inputStream
    */
   public ByteCountInputStream(final InputStream is) {
@@ -143,11 +145,11 @@ public class ByteCountInputStream extends FilterInputStream {
     } catch (IOException ioe) {
       this.size = 0;
     }
-
   }
 
   /**
    * Public constructor
+   *
    * @param is inputStream
    * @param attemptNRead attempt read count
    */
@@ -156,5 +158,4 @@ public class ByteCountInputStream extends FilterInputStream {
     this(is);
     this.attemptNRead = attemptNRead;
   }
-
 }

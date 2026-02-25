@@ -23,9 +23,8 @@
  */
 
 /**
- * This package contain classes related to the Galaxy tool executor
- * interpreters.
+ * This package contain classes related to the Galaxy tool executor interpreters.
+ *
  * @since 2.0
  */
-
 package fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters;

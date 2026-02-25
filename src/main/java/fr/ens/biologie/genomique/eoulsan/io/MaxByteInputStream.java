@@ -28,9 +28,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * This class allow to create an InputStream that can read a maximum of byte
- * from another InputStream. Warning: this class never close the original
- * stream.
+ * This class allow to create an InputStream that can read a maximum of byte from another
+ * InputStream. Warning: this class never close the original stream.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -45,8 +45,7 @@ public class MaxByteInputStream extends InputStream {
   //
 
   @Override
-  public void close() throws IOException {
-  }
+  public void close() throws IOException {}
 
   @Override
   public int read() throws IOException {
@@ -65,15 +64,13 @@ public class MaxByteInputStream extends InputStream {
   }
 
   @Override
-  public int read(final byte[] b, final int off, final int len)
-      throws IOException {
+  public int read(final byte[] b, final int off, final int len) throws IOException {
 
     if (this.nRead == this.max) {
       return -1;
     }
 
-    final int l =
-        (this.nRead + len) > this.max ? (int) (this.max - this.nRead) : len;
+    final int l = (this.nRead + len) > this.max ? (int) (this.max - this.nRead) : len;
 
     final int nr = this.in.read(b, off, l);
 
@@ -90,6 +87,7 @@ public class MaxByteInputStream extends InputStream {
 
   /**
    * Public constructor
+   *
    * @param in inputStream
    * @param max stream size
    */
@@ -100,12 +98,10 @@ public class MaxByteInputStream extends InputStream {
     }
 
     if (max < 1) {
-      throw new IllegalArgumentException(
-          "Max length cannot be lower than 1: " + max);
+      throw new IllegalArgumentException("Max length cannot be lower than 1: " + max);
     }
 
     this.in = in;
     this.max = max;
   }
-
 }

@@ -29,6 +29,7 @@ import java.io.InputStream;
 
 /**
  * This class define an InputStream that concatenate InputStream.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -38,12 +39,14 @@ public abstract class AbstractConcatInputStream extends InputStream {
 
   /**
    * Test if there is an other InputStream to concatenate
+   *
    * @return true if an other InputStream is available
    */
   protected abstract boolean hasNextInputStream();
 
   /**
    * Get the next InputStream to concatenate
+   *
    * @return the next InputStream to concatenate
    * @throws IOException if an error occurs while creating InputStream
    */
@@ -84,8 +87,7 @@ public abstract class AbstractConcatInputStream extends InputStream {
   }
 
   @Override
-  public int read(final byte[] b, final int off, final int len)
-      throws IOException {
+  public int read(final byte[] b, final int off, final int len) throws IOException {
 
     // No input stream
     if (this.is == null) {
@@ -144,7 +146,5 @@ public abstract class AbstractConcatInputStream extends InputStream {
     if (this.is != null) {
       this.is.close();
     }
-
   }
-
 }

@@ -26,19 +26,18 @@ package fr.ens.biologie.genomique.eoulsan.util.hadoop;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
+import com.google.common.base.Splitter;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.util.JarRepack;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.base.Splitter;
-
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.util.JarRepack;
-
 /**
  * This class allow to repackage the application.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -51,14 +50,14 @@ public final class HadoopJarRepackager {
 
   /**
    * Proceed to the repackaging
+   *
    * @param destJarFile path to the repackaged jar file
    * @throws IOException if an error occurs while repackage the application
    */
   private void doIt(final Path destJarFile) throws IOException {
 
     if (this.srcJar == null) {
-      throw new IOException(
-          "No source jar found in the paths of libraries to repack.");
+      throw new IOException("No source jar found in the paths of libraries to repack.");
     }
 
     getLogger().info("Repackage " + this.srcJar + " in " + destJarFile);
@@ -78,21 +77,23 @@ public final class HadoopJarRepackager {
 
   /**
    * Repackage the jar application.
+   *
    * @param destJarFile path to the repackaged jar file
    * @throws IOException if an error occurs while repackage the application
    */
   public static void repack(final Path destJarFile) throws IOException {
 
-    final HadoopJarRepackager hjr = new HadoopJarRepackager(
-        System.getProperty(Globals.LIBS_TO_HADOOP_REPACK_PROPERTY),
-        Globals.APP_NAME_LOWER_CASE
-            + '-' + Globals.APP_VERSION_STRING + ".jar");
+    final HadoopJarRepackager hjr =
+        new HadoopJarRepackager(
+            System.getProperty(Globals.LIBS_TO_HADOOP_REPACK_PROPERTY),
+            Globals.APP_NAME_LOWER_CASE + '-' + Globals.APP_VERSION_STRING + ".jar");
 
     hjr.doIt(destJarFile);
   }
 
   /**
    * Repackage the jar application only if the repackaged file does not exist.
+   *
    * @return the File repackaged jar file
    * @throws IOException if an error occurs while repackage the application
    */
@@ -110,11 +111,12 @@ public final class HadoopJarRepackager {
   private static String createRepackagedJarName() {
 
     return Globals.APP_NAME_LOWER_CASE
-        + "-" + Globals.APP_VERSION_STRING
-        + (Globals.DEBUG ? "-" + Globals.APP_BUILD_NUMBER : "") + "-"
+        + "-"
+        + Globals.APP_VERSION_STRING
+        + (Globals.DEBUG ? "-" + Globals.APP_BUILD_NUMBER : "")
+        + "-"
         + Integer.toHexString(
-            System.getProperty(Globals.LIBS_TO_HADOOP_REPACK_PROPERTY).trim()
-                .hashCode())
+            System.getProperty(Globals.LIBS_TO_HADOOP_REPACK_PROPERTY).trim().hashCode())
         + ".jar";
   }
 
@@ -124,20 +126,18 @@ public final class HadoopJarRepackager {
 
   /**
    * Private constructor.
+   *
    * @param libPaths a String with all the paths of the file to repackage
-   * @param jarName the name of the jar file to repackage. This jar file must be
-   *          in the libPaths
+   * @param jarName the name of the jar file to repackage. This jar file must be in the libPaths
    */
   private HadoopJarRepackager(final String libPaths, final String jarName) {
 
     if (libPaths == null) {
-      throw new IllegalArgumentException(
-          "The paths of libraries to repack is null.");
+      throw new IllegalArgumentException("The paths of libraries to repack is null.");
     }
 
     if (jarName == null) {
-      throw new IllegalArgumentException(
-          "The name of the jar to repack is null.");
+      throw new IllegalArgumentException("The name of the jar to repack is null.");
     }
 
     for (String filename : Splitter.on(':').split(libPaths)) {
@@ -153,5 +153,4 @@ public final class HadoopJarRepackager {
       }
     }
   }
-
 }

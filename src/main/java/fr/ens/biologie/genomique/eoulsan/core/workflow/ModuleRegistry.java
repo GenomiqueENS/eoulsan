@@ -31,6 +31,16 @@ import static fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode.HADOOP
 import static fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode.LOCAL_ONLY;
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.Strings;
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Main;
+import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.modules.GalaxyToolModule;
+import fr.ens.biologie.genomique.eoulsan.util.ClassPathResourceLoader;
+import fr.ens.biologie.genomique.eoulsan.util.FileResourceLoader;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -41,27 +51,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Strings;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.Main;
-import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
-import fr.ens.biologie.genomique.eoulsan.core.Module;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.modules.GalaxyToolModule;
-import fr.ens.biologie.genomique.eoulsan.util.ClassPathResourceLoader;
-import fr.ens.biologie.genomique.eoulsan.util.FileResourceLoader;
-import fr.ens.biologie.genomique.kenetre.util.Version;
-
 /**
  * This class define a registry for modules.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
 public class ModuleRegistry {
 
-  private static final String RESOURCE_PREFIX =
-      "META-INF/services/registrytoolshed/";
+  private static final String RESOURCE_PREFIX = "META-INF/services/registrytoolshed/";
   private static final String GALAXY_TOOL_SUBDIR = "galaxytools";
 
   private static ModuleRegistry instance;
@@ -74,10 +72,7 @@ public class ModuleRegistry {
   // Inner classes
   //
 
-  /**
-   * This class define a resource loader for resource defined in the file
-   * system.
-   */
+  /** This class define a resource loader for resource defined in the file system. */
   private static final class GalaxyToolModuleFileResourceLoader
       extends FileResourceLoader<GalaxyToolModule> {
 
@@ -96,13 +91,13 @@ public class ModuleRegistry {
       try {
         return new GalaxyToolModule(in, source);
       } catch (EoulsanException e) {
-        throw new EoulsanException(
-            "Unable to load Galaxy tool module: " + source, e);
+        throw new EoulsanException("Unable to load Galaxy tool module: " + source, e);
       }
     }
 
     /**
      * Get the default format directory.
+     *
      * @return the default format directory
      */
     private static DataFile getDefaultFormatDirectory() {
@@ -130,10 +125,10 @@ public class ModuleRegistry {
 
     /**
      * Constructor.
+     *
      * @param resourcePaths paths where searching for the resources.
      */
-    public GalaxyToolModuleFileResourceLoader(
-        final List<String> resourcePaths) {
+    public GalaxyToolModuleFileResourceLoader(final List<String> resourcePaths) {
 
       super(GalaxyToolModule.class, getDefaultFormatDirectory());
 
@@ -143,9 +138,7 @@ public class ModuleRegistry {
     }
   }
 
-  /**
-   * This class define a resource loader for resource defined in the class path.
-   */
+  /** This class define a resource loader for resource defined in the class path. */
   private static final class GalaxyToolModuleClassPathLoader
       extends ClassPathResourceLoader<GalaxyToolModule> {
 
@@ -180,6 +173,7 @@ public class ModuleRegistry {
 
   /**
    * Retrieve the singleton static instance of ModuleRegistry.
+   *
    * @return A ModuleRegistry instance
    */
   public static synchronized ModuleRegistry getInstance() {
@@ -200,6 +194,7 @@ public class ModuleRegistry {
 
   /**
    * Load a module.
+   *
    * @param moduleName name of the required module
    * @param version version of the required module
    * @return a Module object or null if the requested module has been not found
@@ -225,9 +220,7 @@ public class ModuleRegistry {
     return modulesFound.get(modulesFound.size() - 1);
   }
 
-  /**
-   * Reload the list of available modules.
-   */
+  /** Reload the list of available modules. */
   public void reload() {
 
     this.service.reload();
@@ -237,13 +230,11 @@ public class ModuleRegistry {
     this.javaModuleFound.clear();
 
     // Log modules defined in jars
-    for (Map.Entry<String, String> e : this.service.getServiceClasses()
-        .entries()) {
+    for (Map.Entry<String, String> e : this.service.getServiceClasses().entries()) {
 
       this.javaModuleFound.add(e.getKey());
 
-      getLogger()
-          .config("Found module: " + e.getKey() + " (" + e.getValue() + ")");
+      getLogger().config("Found module: " + e.getKey() + " (" + e.getValue() + ")");
     }
 
     // Log Galaxy tool modules
@@ -253,13 +244,14 @@ public class ModuleRegistry {
 
     for (GalaxyToolModule s : modulesFound) {
 
-      getLogger().config("Found module: "
-          + s.getName() + " (Galaxy tool, source: " + s.getSource() + ")");
+      getLogger()
+          .config("Found module: " + s.getName() + " (Galaxy tool, source: " + s.getSource() + ")");
     }
   }
 
   /**
    * Get all the modules.
+   *
    * @return a list of all the modules
    */
   public List<Module> getAllModules() {
@@ -281,6 +273,7 @@ public class ModuleRegistry {
 
   /**
    * Filter the modules on their version.
+   *
    * @param modules modules to filter
    * @param version required version
    */
@@ -316,6 +309,7 @@ public class ModuleRegistry {
 
   /**
    * Sort the modules.
+   *
    * @param modules list of module to sort
    */
   private void sortModules(final List<Module> modules) {
@@ -330,97 +324,91 @@ public class ModuleRegistry {
     Collections.reverse(modules);
 
     // Sort the modules
-    modules.sort(new Comparator<Module>() {
+    modules.sort(
+        new Comparator<Module>() {
 
-      @Override
-      public int compare(final Module m1, final Module m2) {
+          @Override
+          public int compare(final Module m1, final Module m2) {
 
-        if (m1 == null) {
-          return 1;
-        }
+            if (m1 == null) {
+              return 1;
+            }
 
-        if (m2 == null) {
-          return -1;
-        }
+            if (m2 == null) {
+              return -1;
+            }
 
-        int result = compareModuleModes(m1, m2);
+            int result = compareModuleModes(m1, m2);
 
-        if (result != 0) {
-          return result;
-        }
+            if (result != 0) {
+              return result;
+            }
 
-        return compareModuleVersions(m1, m2);
-      }
+            return compareModuleVersions(m1, m2);
+          }
 
-      private int compareModuleModes(final Module m1, final Module m2) {
+          private int compareModuleModes(final Module m1, final Module m2) {
 
-        final ExecutionMode mode1 =
-            ExecutionMode.getExecutionMode(m1.getClass());
-        final ExecutionMode mode2 =
-            ExecutionMode.getExecutionMode(m2.getClass());
+            final ExecutionMode mode1 = ExecutionMode.getExecutionMode(m1.getClass());
+            final ExecutionMode mode2 = ExecutionMode.getExecutionMode(m2.getClass());
 
-        int result = compareModes(mode1, mode2, HADOOP_ONLY);
+            int result = compareModes(mode1, mode2, HADOOP_ONLY);
 
-        if (result != 0) {
-          return result;
-        }
+            if (result != 0) {
+              return result;
+            }
 
-        result = compareModes(mode1, mode2, HADOOP_COMPATIBLE);
+            result = compareModes(mode1, mode2, HADOOP_COMPATIBLE);
 
-        if (result != 0) {
-          return result;
-        }
+            if (result != 0) {
+              return result;
+            }
 
-        return compareModes(mode1, mode2, LOCAL_ONLY);
-      }
+            return compareModes(mode1, mode2, LOCAL_ONLY);
+          }
 
-      private int compareModes(ExecutionMode mode1, ExecutionMode mode2,
-          ExecutionMode modeToCompare) {
+          private int compareModes(
+              ExecutionMode mode1, ExecutionMode mode2, ExecutionMode modeToCompare) {
 
-        if (mode1 == modeToCompare && mode2 != modeToCompare) {
-          return 1;
-        }
+            if (mode1 == modeToCompare && mode2 != modeToCompare) {
+              return 1;
+            }
 
-        if (mode2 == modeToCompare && mode1 != modeToCompare) {
-          return -1;
-        }
+            if (mode2 == modeToCompare && mode1 != modeToCompare) {
+              return -1;
+            }
 
-        return 0;
-      }
+            return 0;
+          }
 
-      private int compareModuleVersions(final Module s1, final Module s2) {
+          private int compareModuleVersions(final Module s1, final Module s2) {
 
-        final Version v1 = s1.getVersion();
-        final Version v2 = s2.getVersion();
+            final Version v1 = s1.getVersion();
+            final Version v2 = s2.getVersion();
 
-        if (v1 == null) {
-          return 1;
-        }
+            if (v1 == null) {
+              return 1;
+            }
 
-        if (v2 == null) {
-          return -1;
-        }
+            if (v2 == null) {
+              return -1;
+            }
 
-        return v1.compareTo(v2);
-      }
-
-    });
-
+            return v1.compareTo(v2);
+          }
+        });
   }
 
   //
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
+  /** Private constructor. */
   private ModuleRegistry() {
 
     this.service = new ModuleService();
     this.galaxyClassPathLoader = new GalaxyToolModuleClassPathLoader();
-    this.galaxyFileLoader = new GalaxyToolModuleFileResourceLoader(
-        getSettings().getGalaxyToolPaths());
+    this.galaxyFileLoader =
+        new GalaxyToolModuleFileResourceLoader(getSettings().getGalaxyToolPaths());
   }
-
 }

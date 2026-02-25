@@ -26,17 +26,15 @@ package fr.ens.biologie.genomique.eoulsan.util.hadoop;
 
 import static fr.ens.biologie.genomique.kenetre.util.Utils.silentSleep;
 
-import java.io.IOException;
-
-import org.apache.hadoop.mapreduce.Job;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
+import java.io.IOException;
+import org.apache.hadoop.mapreduce.Job;
 
 /**
- * This class contains utility method to easily manipulate the new Hadoop
- * MapReduce API.
+ * This class contains utility method to easily manipulate the new Hadoop MapReduce API.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -47,18 +45,21 @@ public final class MapReduceUtils {
 
   /**
    * Wait the completion of a job.
+   *
    * @param job the job to submit
    * @param jobDescription the description of the job
-   * @param waitTimeInMillis waiting time between 2 checks of the completion of
-   *          jobs
+   * @param waitTimeInMillis waiting time between 2 checks of the completion of jobs
    * @param status step status
    * @param counterGroup group of the counter to log
-   * @throws EoulsanException if the job fail or if an exception occurs while
-   *           submitting or waiting the end of the job
+   * @throws EoulsanException if the job fail or if an exception occurs while submitting or waiting
+   *     the end of the job
    */
-  public static void submitAndWaitForJob(final Job job,
-      final String jobDescription, final int waitTimeInMillis,
-      final TaskStatus status, final String counterGroup)
+  public static void submitAndWaitForJob(
+      final Job job,
+      final String jobDescription,
+      final int waitTimeInMillis,
+      final TaskStatus status,
+      final String counterGroup)
       throws EoulsanException {
 
     if (job == null) {
@@ -91,8 +92,7 @@ public final class MapReduceUtils {
 
         status.setProgressMessage("FAILED");
 
-        throw new EoulsanException(
-            "Fail of the Hadoop job: " + job.getJobFile());
+        throw new EoulsanException("Fail of the Hadoop job: " + job.getJobFile());
       }
 
       // Set the counters
@@ -105,13 +105,12 @@ public final class MapReduceUtils {
 
   /**
    * Wait for job completion.
+   *
    * @param job job to submit
-   * @param maxTry number of try to connect to JobTracker before throwing an
-   *          exception
+   * @param maxTry number of try to connect to JobTracker before throwing an exception
    * @throws IOException thrown if the communication with the JobTracker is lost
    */
-  public static void waitForCompletion(final Job job, final int maxTry)
-      throws IOException {
+  public static void waitForCompletion(final Job job, final int maxTry) throws IOException {
 
     if (job == null) {
       throw new NullPointerException("The job is null");
@@ -122,13 +121,13 @@ public final class MapReduceUtils {
 
   /**
    * Wait for job completion.
+   *
    * @param job job to submit
-   * @param maxTry number of try to connect to JobTracker before throwing an
-   *          exception
+   * @param maxTry number of try to connect to JobTracker before throwing an exception
    * @throws IOException thrown if the communication with the JobTracker is lost
    */
-  private static void waitForCompletion(final Job job, final int maxTry,
-      int failedTry) throws IOException {
+  private static void waitForCompletion(final Job job, final int maxTry, int failedTry)
+      throws IOException {
 
     try {
       while (!job.isComplete()) {
@@ -140,9 +139,15 @@ public final class MapReduceUtils {
       failedTry += 1;
 
       EoulsanLogger.getLogger()
-          .severe("Fail to check if Hadoop Job ("
-              + job.getJobName() + ") is completed, " + failedTry + "/" + maxTry
-              + " trys: " + e.getMessage());
+          .severe(
+              "Fail to check if Hadoop Job ("
+                  + job.getJobName()
+                  + ") is completed, "
+                  + failedTry
+                  + "/"
+                  + maxTry
+                  + " trys: "
+                  + e.getMessage());
 
       if (failedTry >= maxTry) {
         throw new IOException(e);
@@ -156,7 +161,5 @@ public final class MapReduceUtils {
   // Constructor
   //
 
-  private MapReduceUtils() {
-  }
-
+  private MapReduceUtils() {}
 }

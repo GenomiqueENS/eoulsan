@@ -26,22 +26,21 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+import fr.ens.biologie.genomique.eoulsan.core.InputPort;
+import fr.ens.biologie.genomique.eoulsan.data.Data;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-
-import fr.ens.biologie.genomique.eoulsan.core.InputPort;
-import fr.ens.biologie.genomique.eoulsan.data.Data;
-
 /**
  * This class define a cross data product.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -56,9 +55,7 @@ class CrossDataProduct implements DataProduct, Serializable {
     return DATAPRODUCT_NAME;
   }
 
-  /**
-   * Class needed for cartesian product computation.
-   */
+  /** Class needed for cartesian product computation. */
   private static class CartesianProductEntry {
     final StepInputPort port;
     final Data data;
@@ -76,15 +73,13 @@ class CrossDataProduct implements DataProduct, Serializable {
 
   @Override
   public Set<ImmutableMap<InputPort, Data>> makeProduct(
-      final StepInputPorts inputPorts,
-      final Multimap<InputPort, Data> inputTokens) {
+      final StepInputPorts inputPorts, final Multimap<InputPort, Data> inputTokens) {
 
     requireNonNull(inputPorts, "inputPorts argument cannot be null");
     requireNonNull(inputTokens, "inputTokens argument cannot be null");
 
     final Set<ImmutableMap<InputPort, Data>> result = new HashSet<>();
-    final List<StepInputPort> portsList =
-        Lists.newArrayList(inputPorts.iterator());
+    final List<StepInputPort> portsList = Lists.newArrayList(inputPorts.iterator());
 
     // First create the lists for Sets.cartesianProduct()
     final List<Set<CartesianProductEntry>> sets = new ArrayList<>();
@@ -97,8 +92,7 @@ class CrossDataProduct implements DataProduct, Serializable {
     }
 
     // Compute cartesian product
-    final Set<List<CartesianProductEntry>> cartesianProduct =
-        Sets.cartesianProduct(sets);
+    final Set<List<CartesianProductEntry>> cartesianProduct = Sets.cartesianProduct(sets);
 
     // Now convert result of cartesianProduct() to final result
     for (List<CartesianProductEntry> l : cartesianProduct) {
@@ -114,5 +108,4 @@ class CrossDataProduct implements DataProduct, Serializable {
 
     return result;
   }
-
 }

@@ -27,6 +27,9 @@ package fr.ens.biologie.genomique.eoulsan;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.kenetre.util.StringUtils.datetoString;
 
+import fr.ens.biologie.genomique.eoulsan.core.workflow.StepObserverRegistry;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -35,7 +38,6 @@ import java.io.Writer;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Properties;
-
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -43,12 +45,9 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import fr.ens.biologie.genomique.eoulsan.core.workflow.StepObserverRegistry;
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
-import fr.ens.biologie.genomique.kenetre.util.StringUtils;
-
 /**
  * This class define common constants.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -56,34 +55,41 @@ public final class Common {
 
   /**
    * Write log data.
+   *
    * @param os OutputStream of the log file
    * @param startTime startTime of Eoulsan
    * @param data data to write
    * @throws IOException if an error occurs while writing log file
    */
-  public static void writeLog(final OutputStream os, final long startTime,
-      final String data) throws IOException {
+  public static void writeLog(final OutputStream os, final long startTime, final String data)
+      throws IOException {
 
     final long endTime = System.currentTimeMillis();
     final long duration = endTime - startTime;
 
     final Writer writer = new OutputStreamWriter(os, Globals.DEFAULT_CHARSET);
-    writer.write("Start time: "
-        + datetoString(startTime) + "\nEnd time: " + datetoString(endTime)
-        + "\nDuration: " + StringUtils.toTimeHumanReadable(duration) + "\n");
+    writer.write(
+        "Start time: "
+            + datetoString(startTime)
+            + "\nEnd time: "
+            + datetoString(endTime)
+            + "\nDuration: "
+            + StringUtils.toTimeHumanReadable(duration)
+            + "\n");
     writer.write(data);
     writer.close();
   }
 
   /**
    * Write log data.
+   *
    * @param file the log file
    * @param startTime startTime of Eoulsan
    * @param data data to write
    * @throws IOException if an error occurs while writing log file
    */
-  public static void writeLog(final File file, final long startTime,
-      final String data) throws IOException {
+  public static void writeLog(final File file, final long startTime, final String data)
+      throws IOException {
 
     if (file == null) {
       throw new NullPointerException("File for log file is null.");
@@ -94,6 +100,7 @@ public final class Common {
 
   /**
    * Show a message and then exit.
+   *
    * @param message the message to show
    */
   public static void showMessageAndExit(final String message) {
@@ -104,6 +111,7 @@ public final class Common {
 
   /**
    * Show and log an error message.
+   *
    * @param message message to show and log
    */
   public static void showAndLogErrorMessage(final String message) {
@@ -114,6 +122,7 @@ public final class Common {
 
   /**
    * Show a message and then exit.
+   *
    * @param message the message to show
    */
   public static void showErrorMessageAndExit(final String message) {
@@ -124,6 +133,7 @@ public final class Common {
 
   /**
    * Print error message to the user and exits the application.
+   *
    * @param e Exception
    * @param message message to show to the use
    */
@@ -134,12 +144,12 @@ public final class Common {
 
   /**
    * Print error message to the user and exits the application.
+   *
    * @param e Exception
    * @param message message to show to the use
    * @param logMessage true if message must be logged
    */
-  public static void errorExit(final Throwable e, final String message,
-      final boolean logMessage) {
+  public static void errorExit(final Throwable e, final String message, final boolean logMessage) {
 
     if (logMessage) {
       getLogger().severe(message);
@@ -148,8 +158,7 @@ public final class Common {
     System.err.println("\n=== " + Globals.APP_NAME + " Error ===");
     System.err.println(message);
 
-    if (!EoulsanRuntime.isRuntime()
-        || EoulsanRuntime.getSettings().isPrintStackTrace()) {
+    if (!EoulsanRuntime.isRuntime() || EoulsanRuntime.getSettings().isPrintStackTrace()) {
       printStackTrace(e);
     }
 
@@ -158,6 +167,7 @@ public final class Common {
 
   /**
    * Print error message to the user and halts the application.
+   *
    * @param e Exception
    * @param message message to show to the use
    */
@@ -168,12 +178,12 @@ public final class Common {
 
   /**
    * Print error message to the user and halts the application.
+   *
    * @param e Exception
    * @param message message to show to the use
    * @param logMessage true if message must be logged
    */
-  public static void errorHalt(final Throwable e, final String message,
-      final boolean logMessage) {
+  public static void errorHalt(final Throwable e, final String message, final boolean logMessage) {
 
     if (logMessage) {
       getLogger().severe(message);
@@ -182,8 +192,7 @@ public final class Common {
     System.err.println("\n=== " + Globals.APP_NAME + " Error ===");
     System.err.println(message);
 
-    if (!EoulsanRuntime.isRuntime()
-        || EoulsanRuntime.getSettings().isPrintStackTrace()) {
+    if (!EoulsanRuntime.isRuntime() || EoulsanRuntime.getSettings().isPrintStackTrace()) {
       printStackTrace(e);
     }
 
@@ -192,6 +201,7 @@ public final class Common {
 
   /**
    * Print the stack trace for an exception.
+   *
    * @param e Exception
    */
   private static void printStackTrace(final Throwable e) {
@@ -203,6 +213,7 @@ public final class Common {
 
   /**
    * Exit the application.
+   *
    * @param exitCode exit code
    */
   public static void exit(final int exitCode) {
@@ -212,6 +223,7 @@ public final class Common {
 
   /**
    * Exit the application.
+   *
    * @param exitCode exit code
    */
   public static void halt(final int exitCode) {
@@ -221,6 +233,7 @@ public final class Common {
 
   /**
    * Send email.
+   *
    * @param subject email subject
    * @param message message of the email
    */
@@ -274,23 +287,20 @@ public final class Common {
       getLogger().warning("Error while sending mail: " + mex.getMessage());
 
       // Prints all nested (chained) exceptions as well
-      if (!EoulsanRuntime.isRuntime()
-          || EoulsanRuntime.getSettings().isPrintStackTrace()) {
+      if (!EoulsanRuntime.isRuntime() || EoulsanRuntime.getSettings().isPrintStackTrace()) {
         mex.printStackTrace();
       }
     }
-
   }
 
   /**
-   * Get the number of threads to use from localThreads, maxLocalThreads and
-   * global threads number.
+   * Get the number of threads to use from localThreads, maxLocalThreads and global threads number.
+   *
    * @param localThreads number of threads
    * @param maxLocalThreads maximum number of threads
    * @return the number of threads to use
    */
-  public static int getThreadsNumber(final int localThreads,
-      final int maxLocalThreads) {
+  public static int getThreadsNumber(final int localThreads, final int maxLocalThreads) {
 
     int threads = EoulsanRuntime.getSettings().getLocalThreadsNumber();
 
@@ -307,6 +317,7 @@ public final class Common {
 
   /**
    * Print warning.
+   *
    * @param message message to print
    */
   public static void printWarning(final String message) {
@@ -329,5 +340,4 @@ public final class Common {
 
     throw new IllegalStateException();
   }
-
 }

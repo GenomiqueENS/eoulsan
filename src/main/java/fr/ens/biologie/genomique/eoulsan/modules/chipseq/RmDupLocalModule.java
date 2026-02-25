@@ -4,10 +4,6 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.singleInputPort;
 import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.singleOutputPort;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -19,86 +15,72 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.File;
+import java.io.IOException;
+import java.util.Set;
 import picard.sam.markduplicates.MarkDuplicates;
 
 /**
- * This class removes PCR duplicates from a SAM file. It uses Picard's
- * MarkDuplicates to either mark or remove PCR duplicates.
+ * This class removes PCR duplicates from a SAM file. It uses Picard's MarkDuplicates to either mark
+ * or remove PCR duplicates.
+ *
  * @author Celine Hernandez - CSB lab - ENS - Paris
  */
 @LocalOnly
 public class RmDupLocalModule extends AbstractModule {
 
-  /**
-   *
-   */
+  /** */
   private static final String STEP_NAME = "rmdup";
 
-  /**
-   * Group for hadoop counters.
-   */
+  /** Group for hadoop counters. */
   protected static final String COUNTER_GROUP = "rmdup";
 
   //
   // Settings for rmdup
   //
 
-  /**
-   * Should duplicates be removed or only annotated?
-   */
+  /** Should duplicates be removed or only annotated? */
   private boolean delete = true;
 
-  /**
-   * Should input file be sorted before?
-   */
+  /** Should input file be sorted before? */
   private boolean sort = true;
 
   //
   // Overridden methods
   //
 
-  /**
-   * Name of the Step.
-   */
+  /** Name of the Step. */
   @Override
   public String getName() {
     return STEP_NAME;
   }
 
-  /**
-   * A short description of the tool and what is done in the step.
-   */
+  /** A short description of the tool and what is done in the step. */
   @Override
   public String getDescription() {
     return "This step removes PCR duplicates from a SAM file. "
         + "It uses Picard's MarkDuplicates to either mark or remove them.";
   }
 
-  /**
-   * Version.
-   */
+  /** Version. */
   @Override
   public Version getVersion() {
     return Globals.APP_VERSION;
   }
 
-  /**
-   * Define input port.
-   */
+  /** Define input port. */
   @Override
   public InputPorts getInputPorts() {
     return singleInputPort(DataFormats.MAPPER_RESULTS_SAM);
   }
 
-  /**
-   * Define output port.
-   */
+  /** Define output port. */
   @Override
   public OutputPorts getOutputPorts() {
     return singleOutputPort(DataFormats.MAPPER_RESULTS_SAM);
@@ -106,41 +88,39 @@ public class RmDupLocalModule extends AbstractModule {
 
   /**
    * Set the parameters of the step to configure the step.
+   *
    * @param stepParameters parameters of the step
    * @throws EoulsanException if a parameter is invalid
    */
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     for (Parameter p : stepParameters) {
 
       switch (p.getName().toLowerCase(Globals.DEFAULT_LOCALE)) {
+        case "remove.marked":
+          this.delete = p.getBooleanValue();
+          break;
 
-      case "remove.marked":
-        this.delete = p.getBooleanValue();
-        break;
+        case "sort":
+          this.sort = p.getBooleanValue();
+          break;
 
-      case "sort":
-        this.sort = p.getBooleanValue();
-        break;
-
-      default:
-        Modules.unknownParameter(context, p);
-        break;
+        default:
+          Modules.unknownParameter(context, p);
+          break;
       }
     }
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     // Get input data (SAM format)
     final Data inData = context.getInputData(DataFormats.MAPPER_RESULTS_SAM);
     // Get output data (SAM format)
-    final Data outData =
-        context.getOutputData(DataFormats.MAPPER_RESULTS_SAM, inData);
+    final Data outData = context.getOutputData(DataFormats.MAPPER_RESULTS_SAM, inData);
 
     // Get the input sam file
     final DataFile samFile = inData.getDataFile();
@@ -155,12 +135,12 @@ public class RmDupLocalModule extends AbstractModule {
       try {
 
         // Create a temp file
-        final File tmpSortFile = FileUtils.createTempFile(
-            context.getRuntime().getSettings().getTempDirectoryFile(),
-            "rmdupsort", ".sam");
+        final File tmpSortFile =
+            FileUtils.createTempFile(
+                context.getRuntime().getSettings().getTempDirectoryFile(), "rmdupsort", ".sam");
 
-        getLogger().info("Running Picard's SortSam on "
-            + inputFile + " with output " + tmpSortFile);
+        getLogger()
+            .info("Running Picard's SortSam on " + inputFile + " with output " + tmpSortFile);
 
         // Set up arguments
         String[] sortArguments = new String[4];
@@ -180,8 +160,8 @@ public class RmDupLocalModule extends AbstractModule {
       }
     }
 
-    getLogger().info("Running Picard's MarkDuplicates on "
-        + inputFile + " with output " + outputFile);
+    getLogger()
+        .info("Running Picard's MarkDuplicates on " + inputFile + " with output " + outputFile);
 
     String[] arguments = new String[6];
     arguments[0] = "INPUT=" + inputFile;
@@ -201,5 +181,4 @@ public class RmDupLocalModule extends AbstractModule {
 
     return status.createTaskResult();
   }
-
 }

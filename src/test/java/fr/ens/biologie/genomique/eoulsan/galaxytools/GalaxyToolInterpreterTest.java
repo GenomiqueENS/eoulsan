@@ -28,8 +28,14 @@ import static java.util.Objects.requireNonNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
+import com.google.common.base.Splitter;
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeDebug;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.DataToolElement;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElement;
+import fr.ens.biologie.genomique.kenetre.util.GuavaCompatibility;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,43 +47,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.base.Splitter;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeDebug;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.DataToolElement;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElement;
-import fr.ens.biologie.genomique.kenetre.util.GuavaCompatibility;
-
 /**
- * The class define unit tests on GalaxyToolStep, it check if the command line
- * build from tool shed XML and parameters correspond to the expected syntax. It
- * use an extra file which set data useful to create command line and expected
- * value of this. Syntax example: _____________________________________________
- * test_description=grep python script_________________________________________
+ * The class define unit tests on GalaxyToolStep, it check if the command line build from tool shed
+ * XML and parameters correspond to the expected syntax. It use an extra file which set data useful
+ * to create command line and expected value of this. Syntax example:
+ * _____________________________________________ test_description=grep python
+ * script_________________________________________
  * toolshedxml.path=grep.xml___________________________________________________
  * param.key1=value1___________________________________________________________
  * param.key3=value2___________________________________________________________
  * output.key3=value3__________________________________________________________
  * command.expected=python grep.py_____________________________________________
+ *
  * @author Sandrine Perrin
  * @since 2.0
  */
 public class GalaxyToolInterpreterTest {
 
-  public final static Splitter SPLITTER =
-      Splitter.on("=").trimResults().omitEmptyStrings();
+  public static final Splitter SPLITTER = Splitter.on("=").trimResults().omitEmptyStrings();
 
-  public final static Splitter SPLITTER_KEY =
-      Splitter.on(".").trimResults().omitEmptyStrings();
+  public static final Splitter SPLITTER_KEY = Splitter.on(".").trimResults().omitEmptyStrings();
 
-  public final static Splitter SPLITTER_SPACE =
-      Splitter.on(" ").trimResults().omitEmptyStrings();
+  public static final Splitter SPLITTER_SPACE = Splitter.on(" ").trimResults().omitEmptyStrings();
 
   /** Key for value test description, it marks too the start on a new test. */
   private static final String NEW_TEST_KEY = "test_description";
@@ -85,8 +79,7 @@ public class GalaxyToolInterpreterTest {
   /** Directory path which contains all tool shed XML file. */
   private static final String SRC_DIR = "/galaxytools";
 
-  private static final String SRC_TESTS_SETTING =
-      SRC_DIR + "/testdatatoolshedgalaxy.txt";
+  private static final String SRC_TESTS_SETTING = SRC_DIR + "/testdatatoolshedgalaxy.txt";
 
   @Before
   public void setUp() throws Exception {
@@ -95,16 +88,16 @@ public class GalaxyToolInterpreterTest {
   }
 
   /**
-   * Test tool interpreter, it read the extra file. To set a test, it give XML
-   * name file, parameter value, command line expected.
+   * Test tool interpreter, it read the extra file. To set a test, it give XML name file, parameter
+   * value, command line expected.
+   *
    * @throws Exception if an error occurs during setting or execution on a test
    */
   @Test
   public void testToolInterpreter() throws Exception {
 
     // Extract extra file, contains key=value
-    final InputStream srcTestsSetting =
-        this.getClass().getResourceAsStream(SRC_TESTS_SETTING);
+    final InputStream srcTestsSetting = this.getClass().getResourceAsStream(SRC_TESTS_SETTING);
 
     String line = "";
     ToolTest tt = null;
@@ -118,20 +111,16 @@ public class GalaxyToolInterpreterTest {
         final String lineTrimmed = line.trim();
 
         // Skip empty line or comment
-        if (lineTrimmed.isEmpty()
-            || lineTrimmed.startsWith("#") || !lineTrimmed.contains("=")) {
+        if (lineTrimmed.isEmpty() || lineTrimmed.startsWith("#") || !lineTrimmed.contains("=")) {
           continue;
         }
 
         final int pos = lineTrimmed.indexOf("=");
 
-        if (pos < 0)
-          throw new Exception(
-              "Invalid entry key=value in file with " + lineTrimmed);
+        if (pos < 0) throw new Exception("Invalid entry key=value in file with " + lineTrimmed);
 
         final String key = lineTrimmed.substring(0, pos);
-        final String value =
-            (pos < lineTrimmed.length() ? lineTrimmed.substring(pos + 1) : "");
+        final String value = (pos < lineTrimmed.length() ? lineTrimmed.substring(pos + 1) : "");
 
         // Check if it is a new test
         if (key.equals(NEW_TEST_KEY)) {
@@ -160,7 +149,6 @@ public class GalaxyToolInterpreterTest {
     } catch (IOException e) {
       throw e;
     }
-
   }
 
   //
@@ -169,13 +157,15 @@ public class GalaxyToolInterpreterTest {
 
   /**
    * The class define a test corresponding to a tool and parameters associated.
+   *
    * @author Sandrine Perrin
    * @since 2.0
    */
-  final static class ToolTest {
+  static final class ToolTest {
 
     /** Keys expected from description file */
     private static final String TOOLSHEDXML_PATH_KEY = "toolshedxml";
+
     private static final String EXECUTABLE_PATH_KEY = "executable";
 
     private static final String COMMAND_KEY = "command";
@@ -196,58 +186,56 @@ public class GalaxyToolInterpreterTest {
 
     /**
      * Adds the data from extra file in test instance.
+     *
      * @param key the key
      * @param value the value
      * @throws EoulsanException it occurs if a data is invalid.
      */
-    public void addData(final String key, final String value)
-        throws EoulsanException {
+    public void addData(final String key, final String value) throws EoulsanException {
 
-      final String keyPrefix =
-          GuavaCompatibility.splitToList(SPLITTER_KEY, key).get(0);
+      final String keyPrefix = GuavaCompatibility.splitToList(SPLITTER_KEY, key).get(0);
       final String nameVariable = key.substring(key.indexOf('.') + 1);
 
       switch (keyPrefix) {
-      case TOOLSHEDXML_PATH_KEY:
-        // File save in test directory files
-        this.toolXMLPath = SRC_DIR + "/" + value;
+        case TOOLSHEDXML_PATH_KEY:
+          // File save in test directory files
+          this.toolXMLPath = SRC_DIR + "/" + value;
 
-        break;
+          break;
 
-      case EXECUTABLE_PATH_KEY:
-        this.executableToolPath = value;
-        break;
+        case EXECUTABLE_PATH_KEY:
+          this.executableToolPath = value;
+          break;
 
-      case COMMAND_KEY:
-        this.command = value;
-        break;
+        case COMMAND_KEY:
+          this.command = value;
+          break;
 
-      case INPUT_KEY:
-        this.inputCommandVariables.put(nameVariable, value);
-        break;
+        case INPUT_KEY:
+          this.inputCommandVariables.put(nameVariable, value);
+          break;
 
-      case OUTPUT_KEY:
-        this.outputCommandVariables.put(nameVariable, value);
-        break;
+        case OUTPUT_KEY:
+          this.outputCommandVariables.put(nameVariable, value);
+          break;
 
-      case PARAM_KEY:
-        addParam(nameVariable, value);
-        break;
+        case PARAM_KEY:
+          addParam(nameVariable, value);
+          break;
 
-      case OTHER_KEY:
-        this.otherCommandVariables.put(nameVariable, value);
-        break;
+        case OTHER_KEY:
+          this.otherCommandVariables.put(nameVariable, value);
+          break;
 
-      default:
+        default:
       }
-
     }
 
     /**
      * Launch test.
+     *
      * @throws FileNotFoundException the XML file is not found
-     * @throws EoulsanException if an error occurs during setting or execution
-     *           on a test
+     * @throws EoulsanException if an error occurs during setting or execution on a test
      */
     public void launchTest() throws FileNotFoundException, EoulsanException {
 
@@ -260,8 +248,7 @@ public class GalaxyToolInterpreterTest {
       // Init tool interpreter
       final InputStream is = this.getClass().getResourceAsStream(toolXMLPath);
       assertNotNull("Resource not found: " + toolXMLPath, is);
-      final GalaxyToolInterpreter interpreter =
-          new GalaxyToolInterpreter(is, toolXMLPath);
+      final GalaxyToolInterpreter interpreter = new GalaxyToolInterpreter(is, toolXMLPath);
 
       // Configure interpreter with parameters setting in workflow Eoulsan file
       interpreter.configure(setStepParameters);
@@ -275,29 +262,29 @@ public class GalaxyToolInterpreterTest {
 
       // Check input data names
       int inputCount = 0;
-      for (Map.Entry<String, ToolElement> e : interpreter.getInputs()
-          .entrySet()) {
+      for (Map.Entry<String, ToolElement> e : interpreter.getInputs().entrySet()) {
 
         if (e.getValue() instanceof DataToolElement) {
           inputCount++;
-          assertTrue(this.inputCommandVariables.containsKey(e.getKey())
-              || this.inputCommandVariables.containsKey(
-                  GalaxyToolInterpreter.removeNamespace(e.getKey())));
+          assertTrue(
+              this.inputCommandVariables.containsKey(e.getKey())
+                  || this.inputCommandVariables.containsKey(
+                      GalaxyToolInterpreter.removeNamespace(e.getKey())));
         }
       }
       assertEquals(this.inputCommandVariables.size(), inputCount);
 
       // Check output data names
       int outputCount = 0;
-      for (Map.Entry<String, ToolElement> e : interpreter.getOutputs()
-          .entrySet()) {
+      for (Map.Entry<String, ToolElement> e : interpreter.getOutputs().entrySet()) {
 
         if (e.getValue() instanceof DataToolElement) {
 
           outputCount++;
-          assertTrue(this.outputCommandVariables.containsKey(e.getKey())
-              || this.outputCommandVariables.containsKey(
-                  GalaxyToolInterpreter.removeNamespace(e.getKey())));
+          assertTrue(
+              this.outputCommandVariables.containsKey(e.getKey())
+                  || this.outputCommandVariables.containsKey(
+                      GalaxyToolInterpreter.removeNamespace(e.getKey())));
         }
       }
       assertEquals(this.outputCommandVariables.size(), outputCount);
@@ -308,17 +295,16 @@ public class GalaxyToolInterpreterTest {
       variables.putAll(this.outputCommandVariables);
 
       // Init Tool python interpreter
-      final CheetahInterpreter tpi =
-          new CheetahInterpreter(toolData.getCheetahScript(), variables);
+      final CheetahInterpreter tpi = new CheetahInterpreter(toolData.getCheetahScript(), variables);
 
       // Create command line and compare with command expected
       compareCommandLine(tpi.execute());
-
     }
 
     /**
-     * Compile parameters in interpreter instance, replace actions executed by
-     * GalaxyTool from StepContext instance, which is extract from the workflow.
+     * Compile parameters in interpreter instance, replace actions executed by GalaxyTool from
+     * StepContext instance, which is extract from the workflow.
+     *
      * @param interpreter the interpreter instance.
      */
     private void compileParameters(final GalaxyToolInterpreter interpreter) {
@@ -338,8 +324,8 @@ public class GalaxyToolInterpreterTest {
     }
 
     /**
-     * Compare command line, word by word from expected version to generate by
-     * Python interpreter.
+     * Compare command line, word by word from expected version to generate by Python interpreter.
+     *
      * @param commandLine the command line to compare
      */
     private void compareCommandLine(final String commandLine) {
@@ -354,21 +340,26 @@ public class GalaxyToolInterpreterTest {
       int length = commandExpected.size();
 
       // Compare length
-      assertEquals("Number words requiered is invalid, expected "
-          + length + " obtains by PythonInterpreter "
-          + commandBuildByInterpreter.size() + ": " + commandBuildByInterpreter,
-          length, commandBuildByInterpreter.size());
+      assertEquals(
+          "Number words requiered is invalid, expected "
+              + length
+              + " obtains by PythonInterpreter "
+              + commandBuildByInterpreter.size()
+              + ": "
+              + commandBuildByInterpreter,
+          length,
+          commandBuildByInterpreter.size());
 
       // Compare word by word
       assertTrue(
-          "Expected: "
-              + commandExpected + " but got " + commandBuildByInterpreter,
+          "Expected: " + commandExpected + " but got " + commandBuildByInterpreter,
           Objects.deepEquals(commandExpected, commandBuildByInterpreter));
     }
 
     /**
-     * Adds the parameter in test, it should prefixed with param in extra file,
-     * corresponding to value extract from workflow XML file.
+     * Adds the parameter in test, it should prefixed with param in extra file, corresponding to
+     * value extract from workflow XML file.
+     *
      * @param key the key
      * @param value the value
      */
@@ -377,7 +368,6 @@ public class GalaxyToolInterpreterTest {
       requireNonNull(key, "key for parameter");
 
       this.setStepParameters.add(new Parameter(key, value));
-
     }
 
     //
@@ -386,11 +376,11 @@ public class GalaxyToolInterpreterTest {
 
     /**
      * Constructor
+     *
      * @param description the description
      */
     ToolTest(final String description) {
       this.description = description;
     }
   }
-
 }

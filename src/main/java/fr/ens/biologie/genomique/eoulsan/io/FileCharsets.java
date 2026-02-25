@@ -28,6 +28,7 @@ import java.nio.charset.Charset;
 
 /**
  * This class define default charsets.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -43,31 +44,24 @@ public class FileCharsets {
   public static final String LATIN1_FILE_ENCODING = "ISO-8859-1";
 
   /** Latin1 charset. */
-  public static final Charset LATIN1_CHARSET =
-      Charset.forName(LATIN1_FILE_ENCODING);
+  public static final Charset LATIN1_CHARSET = Charset.forName(LATIN1_FILE_ENCODING);
 
   /** UTF-8 file encoding. */
   public static final String UTF8_FILE_ENCODING = "UTF-8";
 
   /** UTF-8 charset. */
-  public static final Charset UTF8_CHARSET =
-      Charset.forName(UTF8_FILE_ENCODING);
+  public static final Charset UTF8_CHARSET = Charset.forName(UTF8_FILE_ENCODING);
 
   /** The system default charset. */
-  public static final String SYSTEM_FILE_ENCODING =
-      System.getProperty("file.encoding");
+  public static final String SYSTEM_FILE_ENCODING = System.getProperty("file.encoding");
 
   /** The system default charset. */
-  public static final Charset SYSTEM_CHARSET =
-      Charset.forName(SYSTEM_FILE_ENCODING);
+  public static final Charset SYSTEM_CHARSET = Charset.forName(SYSTEM_FILE_ENCODING);
 
   //
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
-  private FileCharsets() {
-  }
+  /** Private constructor. */
+  private FileCharsets() {}
 }

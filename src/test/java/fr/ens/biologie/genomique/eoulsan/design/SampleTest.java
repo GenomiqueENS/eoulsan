@@ -70,7 +70,5 @@ public class SampleTest {
     } catch (IllegalArgumentException e) {
       assertTrue(false);
     }
-
   }
-
 }

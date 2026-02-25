@@ -2,6 +2,11 @@ package fr.ens.biologie.genomique.eoulsan.splitermergers;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,14 +15,9 @@ import java.io.Writer;
 import java.util.Iterator;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
-
 /**
  * This class define a splitter class for expression files.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -40,29 +40,26 @@ public class ExpressionSplitter implements Splitter {
     for (Parameter p : conf) {
 
       switch (p.getName()) {
+        case "max.entries":
+          this.splitMaxEntries = p.getIntValueGreaterOrEqualsTo(1);
+          break;
 
-      case "max.entries":
-        this.splitMaxEntries = p.getIntValueGreaterOrEqualsTo(1);
-        break;
-
-      default:
-        throw new EoulsanException("Unknown parameter for "
-            + getFormat().getName() + " splitter: " + p.getName());
+        default:
+          throw new EoulsanException(
+              "Unknown parameter for " + getFormat().getName() + " splitter: " + p.getName());
       }
-
     }
   }
 
   @Override
-  public void split(final DataFile inFile,
-      final Iterator<DataFile> outFileIterator) throws IOException {
+  public void split(final DataFile inFile, final Iterator<DataFile> outFileIterator)
+      throws IOException {
 
     final int max = this.splitMaxEntries;
     int readCount = 0;
     Writer writer = null;
 
-    try (BufferedReader reader =
-        new BufferedReader(new InputStreamReader(inFile.open(), UTF_8))) {
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(inFile.open(), UTF_8))) {
 
       String line = null;
       boolean first = true;
@@ -83,8 +80,7 @@ public class ExpressionSplitter implements Splitter {
           }
 
           // Create new writer
-          writer =
-              new OutputStreamWriter(outFileIterator.next().create(), UTF_8);
+          writer = new OutputStreamWriter(outFileIterator.next().create(), UTF_8);
           writer.write(EXPRESSION_FILE_HEADER);
         }
 
@@ -98,5 +94,4 @@ public class ExpressionSplitter implements Splitter {
       }
     }
   }
-
 }

@@ -26,11 +26,11 @@ package fr.ens.biologie.genomique.eoulsan.modules.mapping;
 
 /**
  * This enum define the names of the counters of the steps of this package.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
 public enum MappingCounters {
-
   INPUT_RAW_READS_COUNTER("input raw reads"),
   OUTPUT_PRETREATMENT_READS_COUNTER("output reads"),
   INVALID_INPUT_PRETREATMENT_READS_COUNTER("invalid input paired-end reads"),
@@ -39,8 +39,7 @@ public enum MappingCounters {
   OUTPUT_MAPPING_ALIGNMENTS_COUNTER("output mapping alignments"),
   INPUT_ALIGNMENTS_COUNTER("input alignments"),
   UNMAP_READS_COUNTER("unmapped reads"),
-  GOOD_QUALITY_ALIGNMENTS_COUNTER(
-      "alignments mapped and with " + "good mapping quality"),
+  GOOD_QUALITY_ALIGNMENTS_COUNTER("alignments mapped and with " + "good mapping quality"),
   MAPPER_WRITING_ERRORS("errors in mapper writing"),
   ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER("alignments rejected by filters"),
   ALIGNMENTS_WITH_INVALID_SAM_FORMAT("alignments in invalid sam format"),
@@ -51,6 +50,7 @@ public enum MappingCounters {
 
   /**
    * Get the name of the counter.
+   *
    * @return the name of the counter
    */
   public String counterName() {
@@ -71,5 +71,4 @@ public enum MappingCounters {
 
     this.counterName = counterName;
   }
-
 }

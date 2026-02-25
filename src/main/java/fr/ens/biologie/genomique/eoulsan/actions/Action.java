@@ -28,6 +28,7 @@ import java.util.List;
 
 /**
  * This interface define an action.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -35,38 +36,43 @@ public interface Action {
 
   /**
    * Get the name of the action.
+   *
    * @return the name of the action
    */
   String getName();
 
   /**
    * Get action description.
+   *
    * @return the description description
    */
   String getDescription();
 
   /**
    * Execute action.
+   *
    * @param arguments arguments of the action.
    */
   void action(List<String> arguments);
 
   /**
    * Test if the action can be executed in hadoop Jar mode.
+   *
    * @return true if the action can be executed in hadoop Jar mode
    */
   boolean isHadoopJarMode();
 
   /**
    * Test if the action can be executed with current platform.
+   *
    * @return true if the action can be executed with current platform
    */
   boolean isCurrentArchCompatible();
 
   /**
    * Test if the action must be hidden from the list of available actions.
+   *
    * @return true if the action must be hidden
    */
   boolean isHidden();
-
 }

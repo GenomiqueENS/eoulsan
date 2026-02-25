@@ -24,6 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.data.protocols;
 
+import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.io.PathConcatInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,17 +35,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
-import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.io.PathConcatInputStream;
-
 /**
  * This class define the HDFS protocol in Hadoop mode.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -73,8 +72,7 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
     final FileSystem fs = path.getFileSystem(this.conf);
 
     if (fs == null) {
-      throw new IOException(
-          "Unable to create InputSteam, The FileSystem is null");
+      throw new IOException("Unable to create InputSteam, The FileSystem is null");
     }
 
     final FileStatus fStatus = fs.getFileStatus(path);
@@ -91,12 +89,10 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
     return fs.open(path);
   }
 
-  private List<Path> getPathToConcat(final FileSystem fs, final Path path)
-      throws IOException {
+  private List<Path> getPathToConcat(final FileSystem fs, final Path path) throws IOException {
 
     // Get the list of files to contact
-    final FileStatus[] files =
-        fs.listStatus(path, p -> p.getName().matches("^part-.*[0-9]+$"));
+    final FileStatus[] files = fs.listStatus(path, p -> p.getName().matches("^part-.*[0-9]+$"));
 
     // Sort the list
     Arrays.sort(files, Comparator.comparing(f -> f.getPath().getName()));
@@ -131,8 +127,7 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
     final FileSystem fs = path.getFileSystem(this.conf);
 
     if (fs == null) {
-      throw new IOException(
-          "Unable to create the directory, The FileSystem is null");
+      throw new IOException("Unable to create the directory, The FileSystem is null");
     }
 
     if (!fs.mkdirs(path)) {
@@ -147,8 +142,7 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
   }
 
   @Override
-  public void delete(final DataFile file, final boolean recursive)
-      throws IOException {
+  public void delete(final DataFile file, final boolean recursive) throws IOException {
 
     final Path path = getPath(file);
 
@@ -162,8 +156,7 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
     final FileSystem fs = path.getFileSystem(this.conf);
 
     if (fs == null) {
-      throw new IOException(
-          "Unable to delete the file, The FileSystem is null");
+      throw new IOException("Unable to delete the file, The FileSystem is null");
     }
 
     if (!fs.delete(path, recursive)) {
@@ -192,8 +185,7 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
     final FileSystem fs = path.getFileSystem(this.conf);
 
     if (fs == null) {
-      throw new IOException(
-          "Unable to delete the file, The FileSystem is null");
+      throw new IOException("Unable to delete the file, The FileSystem is null");
     }
 
     FileStatus fileStatus = fs.getFileStatus(path);
@@ -226,16 +218,14 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
   }
 
   @Override
-  public void rename(final DataFile file, final DataFile dest)
-      throws IOException {
+  public void rename(final DataFile file, final DataFile dest) throws IOException {
 
     if (dest == null) {
       throw new NullPointerException("dest argument is null");
     }
 
     if (dest.getProtocol() != this) {
-      throw new IOException("the protocol of the dest is not "
-          + getName() + " protocol: " + dest);
+      throw new IOException("the protocol of the dest is not " + getName() + " protocol: " + dest);
     }
 
     final Path path = getPath(file);
@@ -251,5 +241,4 @@ public class HDFSPathDataProtocol extends PathDataProtocol {
 
     return true;
   }
-
 }

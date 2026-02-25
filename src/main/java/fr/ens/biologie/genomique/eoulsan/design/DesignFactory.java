@@ -28,6 +28,7 @@ import java.util.Objects;
 
 /**
  * This class is a factory for experimental design.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -35,6 +36,7 @@ public final class DesignFactory {
 
   /**
    * Create a design without targets.
+   *
    * @return a new DesignImpl
    */
   public static Design createEmptyDesign() {
@@ -44,6 +46,7 @@ public final class DesignFactory {
 
   /**
    * Create an unmodifiable wrapper around an existing design.
+   *
    * @param design the design
    * @return an unmodifiable wrapper
    */
@@ -62,7 +65,5 @@ public final class DesignFactory {
   // Constructor
   //
 
-  private DesignFactory() {
-  }
-
+  private DesignFactory() {}
 }

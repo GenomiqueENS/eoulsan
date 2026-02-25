@@ -27,6 +27,8 @@ package fr.ens.biologie.genomique.eoulsan.util.locker;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.kenetre.util.Utils.silentSleep;
 
+import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -34,12 +36,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
-import fr.ens.biologie.genomique.kenetre.util.StringUtils;
-
 /**
- * This class define a lock to prevent execution of a process simultaneously on
- * multiples JVM.
+ * This class define a lock to prevent execution of a process simultaneously on multiples JVM.
+ *
  * @since 1.1
  * @author Laurent Jourdren
  */
@@ -78,8 +77,7 @@ public class ExecLock implements Locker {
     try {
 
       if (!this.pidFile.toFile().createNewFile()) {
-        throw new IOException(
-            "Can not create pid file: " + this.pidFile.toAbsolutePath());
+        throw new IOException("Can not create pid file: " + this.pidFile.toAbsolutePath());
       }
       int count = 0;
 
@@ -93,12 +91,11 @@ public class ExecLock implements Locker {
           if (checkPid()) {
 
             if (!this.lockFile.toFile().createNewFile()) {
-              throw new IOException("Can not create lock file: "
-                  + this.lockFile.toAbsolutePath());
+              throw new IOException("Can not create lock file: " + this.lockFile.toAbsolutePath());
             }
             if (!this.pidLockFile.toFile().createNewFile()) {
-              throw new IOException("Can not create pid lock file: "
-                  + this.lockFile.toAbsolutePath());
+              throw new IOException(
+                  "Can not create pid lock file: " + this.lockFile.toAbsolutePath());
             }
             this.lock = true;
             return;
@@ -124,31 +121,31 @@ public class ExecLock implements Locker {
   public void unlock() {
 
     if (!this.lockFile.toFile().delete()) {
-      getLogger().warning(
-          "Can not delete lock file: " + this.lockFile.toAbsolutePath());
+      getLogger().warning("Can not delete lock file: " + this.lockFile.toAbsolutePath());
     }
     if (!this.pidLockFile.toFile().delete()) {
-      getLogger().warning("Can not delete pid lock file: "
-          + this.pidLockFile.toAbsolutePath());
+      getLogger().warning("Can not delete pid lock file: " + this.pidLockFile.toAbsolutePath());
     }
     if (!this.pidFile.toFile().delete()) {
-      getLogger().warning(
-          "Can not delete pid file: " + this.pidFile.toAbsolutePath());
+      getLogger().warning("Can not delete pid file: " + this.pidFile.toAbsolutePath());
     }
     this.lock = false;
     silentSleep(10000);
   }
 
   /**
-   * Check the pid that wait the resources are alive and if this JVM has the
-   * oldest registered pid.
+   * Check the pid that wait the resources are alive and if this JVM has the oldest registered pid.
+   *
    * @return true if the JVM has the oldest registered pid.
    */
   private boolean checkPid() {
 
-    File[] files = this.tmpDir.toFile()
-        .listFiles((arg0, arg1) -> arg1.startsWith(ExecLock.this.execName + "-")
-            && arg1.endsWith(PID_EXTENSION));
+    File[] files =
+        this.tmpDir
+            .toFile()
+            .listFiles(
+                (arg0, arg1) ->
+                    arg1.startsWith(ExecLock.this.execName + "-") && arg1.endsWith(PID_EXTENSION));
 
     if (files == null) {
       return true;
@@ -172,8 +169,7 @@ public class ExecLock implements Locker {
 
       if (!jvmPids.contains(fPid)) {
         if (!f.delete()) {
-          getLogger()
-              .warning("Can not delete pid file: " + f.getAbsolutePath());
+          getLogger().warning("Can not delete pid file: " + f.getAbsolutePath());
         }
         continue;
       }
@@ -182,7 +178,6 @@ public class ExecLock implements Locker {
         oldestPidFileDate = f.lastModified();
         oldestPid = fPid;
       }
-
     }
 
     return oldestPid == pid;
@@ -190,6 +185,7 @@ public class ExecLock implements Locker {
 
   /**
    * Return a set withs pid of existing JVMs.
+   *
    * @return a set of integers with pid of existing JVMs
    */
   private Set<Integer> getJVMsPIDs() {
@@ -197,19 +193,20 @@ public class ExecLock implements Locker {
     return ProcessUtils.getExecutablePids("java");
   }
 
-  /**
-   * Check that the JVM that lock the resource is alive.
-   */
+  /** Check that the JVM that lock the resource is alive. */
   private void checkLockJVMAlive() {
 
-    File[] files = this.tmpDir.toFile()
-        .listFiles((arg0, arg1) -> arg1.startsWith(ExecLock.this.execName + "-")
-            && arg1.endsWith(PID_LOCK_EXTENSION));
+    File[] files =
+        this.tmpDir
+            .toFile()
+            .listFiles(
+                (arg0, arg1) ->
+                    arg1.startsWith(ExecLock.this.execName + "-")
+                        && arg1.endsWith(PID_LOCK_EXTENSION));
 
     if (files == null || files.length == 0) {
       if (!this.lockFile.toFile().delete()) {
-        getLogger().warning(
-            "Can not delete lock file: " + this.lockFile.toAbsolutePath());
+        getLogger().warning("Can not delete lock file: " + this.lockFile.toAbsolutePath());
       }
       return;
     }
@@ -225,8 +222,7 @@ public class ExecLock implements Locker {
         fPid = Integer.parseInt(basename.substring(this.execName.length() + 1));
       } catch (NumberFormatException e) {
         if (!f.delete()) {
-          getLogger()
-              .warning("Can not delete pid file: " + f.getAbsolutePath());
+          getLogger().warning("Can not delete pid file: " + f.getAbsolutePath());
         }
         continue;
       }
@@ -236,26 +232,28 @@ public class ExecLock implements Locker {
       } else if (!f.delete()) {
         getLogger().warning("Can not delete pid file: " + f.getAbsolutePath());
       }
-
     }
 
     if (count == 0) {
       if (!this.lockFile.toFile().delete()) {
-        getLogger().warning(
-            "Can not delete lock file: " + this.lockFile.toAbsolutePath());
+        getLogger().warning("Can not delete lock file: " + this.lockFile.toAbsolutePath());
       }
     }
   }
 
   /**
    * Get the number of processes waiting.
+   *
    * @return the number of process waiting
    */
   public int getProcessesWaiting() {
 
-    File[] files = this.tmpDir.toFile()
-        .listFiles((arg0, arg1) -> arg1.startsWith(ExecLock.this.execName + "-")
-            && arg1.endsWith(PID_EXTENSION));
+    File[] files =
+        this.tmpDir
+            .toFile()
+            .listFiles(
+                (arg0, arg1) ->
+                    arg1.startsWith(ExecLock.this.execName + "-") && arg1.endsWith(PID_EXTENSION));
 
     if (files == null) {
       return 0;
@@ -270,6 +268,7 @@ public class ExecLock implements Locker {
 
   /**
    * Public constructor.
+   *
    * @param execName resource name
    * @param tmpDir temporary directory where to create lock files
    */
@@ -278,19 +277,17 @@ public class ExecLock implements Locker {
     this.execName = execName;
     this.tmpDir = tmpDir;
     this.lockFile = this.tmpDir.resolve(this.execName + LOCK_EXTENSION);
-    this.pidLockFile =
-        this.tmpDir.resolve(this.execName + "-" + pid + PID_LOCK_EXTENSION);
-    this.pidFile =
-        this.tmpDir.resolve(this.execName + "-" + pid + PID_EXTENSION);
+    this.pidLockFile = this.tmpDir.resolve(this.execName + "-" + pid + PID_LOCK_EXTENSION);
+    this.pidFile = this.tmpDir.resolve(this.execName + "-" + pid + PID_EXTENSION);
   }
 
   /**
    * Public constructor.
+   *
    * @param execName resource name
    */
   public ExecLock(final String execName) {
 
     this(execName, Path.of("/tmp"));
   }
-
 }

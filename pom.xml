@@ -1210,9 +1210,36 @@ o
 					<failOnViolations>False</failOnViolations>
 				</configuration>
 			</plugin>
+
+		      <plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>2.43.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					<phase>compile</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<java>
+						<includes>
+							<include>src/**/*.java</include>
+							<include>test/**/*.java</include>
+						</includes>
+						<googleJavaFormat>
+							<version>1.24.0</version>
+							<style>GOOGLE</style>
+						</googleJavaFormat>
+						<importOrder/>
+						<removeUnusedImports/>
+					</java>
+				</configuration>
+			</plugin>
+
 		</plugins>
-
-
 	</build>
 
 

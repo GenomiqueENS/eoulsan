@@ -7,6 +7,7 @@ import com.google.common.base.CharMatcher;
 
 /**
  * This class contains methods to validate workflow object names.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -16,11 +17,11 @@ public class Naming {
       inRange('a', 'z').or(inRange('A', 'Z')).or(inRange('0', '9'));
 
   /**
-   * Convert a string to a valid name string that can be used for step id or
-   * data name.
+   * Convert a string to a valid name string that can be used for step id or data name.
+   *
    * @param name the name to convert
-   * @return a string with only the name characters argument that are allowed by
-   *         the file naming convention
+   * @return a string with only the name characters argument that are allowed by the file naming
+   *     convention
    */
   public static String toValidName(final String name) {
 
@@ -43,10 +44,6 @@ public class Naming {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
-  private Naming() {
-  }
-
+  /** Private constructor. */
+  private Naming() {}
 }

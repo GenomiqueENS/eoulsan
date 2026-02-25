@@ -26,16 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.modules.mgmt.upload;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.annotations.Terminal;
@@ -58,9 +48,19 @@ import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopJarRepackager;
 import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class define a abstract module class for files uploading.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -83,8 +83,7 @@ public abstract class UploadModule extends AbstractModule {
   //
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     final StringBuilder log = new StringBuilder();
 
@@ -103,15 +102,13 @@ public abstract class UploadModule extends AbstractModule {
 
       // Check if destination path already exists
       if (getDest().exists()) {
-        throw new IOException(
-            "The uploading destination already exists: " + getDest());
+        throw new IOException("The uploading destination already exists: " + getDest());
       }
 
       // Repackage the jar file if necessary
       if (!context.getRuntime().getMode().isHadoopMode()) {
         repackagedJarFile = HadoopJarRepackager.repack();
-        final DataFile jarDataFile =
-            new DataFile(repackagedJarFile.toAbsolutePath());
+        final DataFile jarDataFile = new DataFile(repackagedJarFile.toAbsolutePath());
         filesToCopy.put(jarDataFile, getUploadedDataFile(jarDataFile));
       }
 
@@ -122,21 +119,17 @@ public abstract class UploadModule extends AbstractModule {
 
       // Obfuscate design is needed
       if (settings.isObfuscateDesign()) {
-        DesignUtils.obfuscate(design,
-            settings.isObfuscateDesignRemoveReplicateInfo());
+        DesignUtils.obfuscate(design, settings.isObfuscateDesignRemoveReplicateInfo());
       }
 
       // Create a new design file
       final File newDesignFile = writeTempDesignFile(context, design);
-      final DataFile uploadedDesignDataFile =
-          getUploadedDataFile(context.getDesignFile());
-      filesToCopy.put(new DataFile(newDesignFile.getAbsolutePath()),
-          uploadedDesignDataFile);
+      final DataFile uploadedDesignDataFile = getUploadedDataFile(context.getDesignFile());
+      filesToCopy.put(new DataFile(newDesignFile.getAbsolutePath()), uploadedDesignDataFile);
 
       // Add workflow file to the list of file to upload
       final DataFile currentParamDataFile = context.getWorkflowFile();
-      final DataFile uploadedParamDataFile =
-          getUploadedDataFile(currentParamDataFile);
+      final DataFile uploadedParamDataFile = getUploadedDataFile(currentParamDataFile);
       filesToCopy.put(currentParamDataFile, uploadedParamDataFile);
 
       // Create log entry
@@ -153,15 +146,12 @@ public abstract class UploadModule extends AbstractModule {
 
       // Remove temporary design file
       if (!newDesignFile.delete()) {
-        getLogger()
-            .warning("Cannot remove temporary design file: " + newDesignFile);
+        getLogger().warning("Cannot remove temporary design file: " + newDesignFile);
       }
 
       // Change the path of design and workflow file in the context
-      fullContext
-          .setDesignFile(new DataFile(uploadedDesignDataFile.getSource()));
-      fullContext
-          .setWorkflowFile(new DataFile(uploadedParamDataFile.getSource()));
+      fullContext.setDesignFile(new DataFile(uploadedDesignDataFile.getSource()));
+      fullContext.setWorkflowFile(new DataFile(uploadedParamDataFile.getSource()));
 
     } catch (IOException e) {
 
@@ -175,8 +165,7 @@ public abstract class UploadModule extends AbstractModule {
 
     // The path to the jar file
     if (!context.getRuntime().getMode().isHadoopMode()) {
-      fullContext.setJarFile(new DataFile(
-          getDest(), repackagedJarFile.getFileName().toString()));
+      fullContext.setJarFile(new DataFile(getDest(), repackagedJarFile.getFileName().toString()));
     }
 
     status.setProgressMessage(log.toString());
@@ -201,15 +190,16 @@ public abstract class UploadModule extends AbstractModule {
 
   /**
    * Generate the DataFile Object for the uploaded DataFile
+   *
    * @param file DataFile to upload
    * @return a new DataFile object with the path to the upload DataFile
    * @throws IOException if an error occurs while creating the result DataFile
    */
-  protected abstract DataFile getUploadedDataFile(final DataFile file)
-      throws IOException;
+  protected abstract DataFile getUploadedDataFile(final DataFile file) throws IOException;
 
   /**
    * Generate the DataFile Object for the uploaded DataFile
+   *
    * @param file DataFile to upload
    * @param step step that create the data
    * @param format the format of the file to upload
@@ -218,8 +208,12 @@ public abstract class UploadModule extends AbstractModule {
    * @return a new DataFile object with the path to the upload DataFile
    * @throws IOException if an error occurs while creating the result DataFile
    */
-  private DataFile getUploadedDataFile(final DataFile file, final Step step,
-      final Sample sample, final String portName, final DataFormat format)
+  private DataFile getUploadedDataFile(
+      final DataFile file,
+      final Step step,
+      final Sample sample,
+      final String portName,
+      final DataFormat format)
       throws IOException {
 
     return getUploadedDataFile(file, step, sample, portName, format, -1);
@@ -227,6 +221,7 @@ public abstract class UploadModule extends AbstractModule {
 
   /**
    * Generate the DataFile Object for the uploaded DataFile
+   *
    * @param file DataFile to upload
    * @param portName the port name
    * @param format the format of the file to upload
@@ -235,17 +230,22 @@ public abstract class UploadModule extends AbstractModule {
    * @return a new DataFile object with the path to the upload DataFile
    * @throws IOException if an error occurs while creating the result DataFile
    */
-  protected abstract DataFile getUploadedDataFile(final DataFile file,
-      final Step step, final Sample sample, final String portName,
-      final DataFormat format, final int fileIndex) throws IOException;
+  protected abstract DataFile getUploadedDataFile(
+      final DataFile file,
+      final Step step,
+      final Sample sample,
+      final String portName,
+      final DataFormat format,
+      final int fileIndex)
+      throws IOException;
 
   /**
    * Copy files to destinations.
+   *
    * @param files map with source and destination for each file
    * @throws IOException if an error occurs while copying files
    */
-  protected abstract void copy(Map<DataFile, DataFile> files)
-      throws IOException;
+  protected abstract void copy(Map<DataFile, DataFile> files) throws IOException;
 
   //
   // Other methods
@@ -253,11 +253,11 @@ public abstract class UploadModule extends AbstractModule {
 
   /**
    * Find DataFiles used by the steps of a Workflow for a sample
+   *
    * @return a set of DataFile used by the workflow for the sample
    * @throws IOException if an error occurs while finding files
    */
-  private Map<DataFile, DataFile> findDataFilesInWorkflow()
-      throws IOException {
+  private Map<DataFile, DataFile> findDataFilesInWorkflow() throws IOException {
 
     final Map<DataFile, DataFile> result = new HashMap<>();
 
@@ -268,8 +268,13 @@ public abstract class UploadModule extends AbstractModule {
     for (StepOutputDataFile file : inFiles) {
       final DataFile in = file.getDataFile();
       final DataFile out =
-          getUploadedDataFile(in, file.getStep(), file.getSample(),
-              file.getPortName(), file.getFormat(), file.getFileIndex());
+          getUploadedDataFile(
+              in,
+              file.getStep(),
+              file.getSample(),
+              file.getPortName(),
+              file.getFormat(),
+              file.getFileIndex());
       result.put(in, out);
     }
 
@@ -278,6 +283,7 @@ public abstract class UploadModule extends AbstractModule {
 
   /**
    * Remove the DataFiles that not exists in a set of DataFiles.
+   *
    * @param files Set of DataFile to filter
    */
   private void removeNotExistingDataFile(final Map<DataFile, DataFile> files) {
@@ -295,8 +301,8 @@ public abstract class UploadModule extends AbstractModule {
     }
   }
 
-  private void reWriteDesign(final TaskContext context,
-      final Map<DataFile, DataFile> filesToCopy) throws IOException {
+  private void reWriteDesign(final TaskContext context, final Map<DataFile, DataFile> filesToCopy)
+      throws IOException {
 
     final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
@@ -327,8 +333,7 @@ public abstract class UploadModule extends AbstractModule {
           final DataFile inFile = new DataFile(oldValues.get(0));
           // final DataFormat format = inFile.getDataFormat();
 
-          Set<DataFormat> formats =
-              registry.getDataFormatsFromExtension(inFile.getExtension());
+          Set<DataFormat> formats = registry.getDataFormatsFromExtension(inFile.getExtension());
 
           final DataFormat format;
 
@@ -342,11 +347,9 @@ public abstract class UploadModule extends AbstractModule {
           final DataFile outFile;
 
           if (format.getMaxFilesCount() == 1) {
-            outFile = getUploadedDataFile(inFile, designStep, s,
-                format.getName(), format);
+            outFile = getUploadedDataFile(inFile, designStep, s, format.getName(), format);
           } else {
-            outFile = getUploadedDataFile(inFile, designStep, s,
-                format.getName(), format, 0);
+            outFile = getUploadedDataFile(inFile, designStep, s, format.getName(), format, 0);
           }
 
           filesToCopy.put(inFile, outFile);
@@ -357,8 +360,8 @@ public abstract class UploadModule extends AbstractModule {
           for (int i = 0; i < nValues; i++) {
             final DataFile inFile = new DataFile(oldValues.get(i));
             final DataFormat format = inFile.getDataFormat();
-            final DataFile outFile = getUploadedDataFile(inFile, designStep, s,
-                format.getName(), format, i);
+            final DataFile outFile =
+                getUploadedDataFile(inFile, designStep, s, format.getName(), format, i);
             filesToCopy.put(inFile, outFile);
             newValues.add(outFile.toString());
           }
@@ -367,25 +370,23 @@ public abstract class UploadModule extends AbstractModule {
         // Replace old paths with new path in design
         s.getMetadata().set(field, newValues);
       }
-
     }
-
   }
 
   /**
    * Write temporary design file
+   *
    * @param context context object
    * @param design Design object
    * @return the temporary design file
    * @throws IOException if an error occurs while writing the design file
    */
-  private File writeTempDesignFile(final TaskContext context,
-      final Design design) throws IOException {
+  private File writeTempDesignFile(final TaskContext context, final Design design)
+      throws IOException {
 
     final File result = context.getRuntime().createTempFile("design-", ".txt");
 
-    DesignWriter writer =
-        new Eoulsan1DesignWriter(FileUtils.createOutputStream(result));
+    DesignWriter writer = new Eoulsan1DesignWriter(FileUtils.createOutputStream(result));
     writer.write(design);
 
     return result;
@@ -397,6 +398,7 @@ public abstract class UploadModule extends AbstractModule {
 
   /**
    * Public constructor.
+   *
    * @param destination destination of the uploaded files
    */
   public UploadModule(final DataFile destination) {
@@ -406,6 +408,5 @@ public abstract class UploadModule extends AbstractModule {
     }
 
     this.dest = destination;
-
   }
 }

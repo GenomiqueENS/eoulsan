@@ -27,22 +27,21 @@ package fr.ens.biologie.genomique.eoulsan;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Collections.singletonList;
 
+import fr.ens.biologie.genomique.eoulsan.Infos.Info;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.StreamHandler;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.util.VersionInfo;
 
-import fr.ens.biologie.genomique.eoulsan.Infos.Info;
-
 /**
  * Main class in Hadoop mode.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -55,8 +54,7 @@ public final class MainHadoop extends Main {
   @Override
   protected void initializeRuntime(final Settings settings) {
 
-    this.conf =
-        HadoopEoulsanRuntime.newEoulsanRuntime(settings).getConfiguration();
+    this.conf = HadoopEoulsanRuntime.newEoulsanRuntime(settings).getConfiguration();
   }
 
   @Override
@@ -80,13 +78,12 @@ public final class MainHadoop extends Main {
     // Create parent directory if necessary
     if (!loggerFs.exists(loggerPath.getParent())) {
       if (!loggerFs.mkdirs(loggerPath.getParent())) {
-        throw new IOException("Unable to create directory "
-            + parentPath + " for log file:" + logFile);
+        throw new IOException(
+            "Unable to create directory " + parentPath + " for log file:" + logFile);
       }
     }
 
-    return new StreamHandler(loggerFs.create(loggerPath),
-        Globals.LOG_FORMATTER);
+    return new StreamHandler(loggerFs.create(loggerPath), Globals.LOG_FORMATTER);
   }
 
   @Override
@@ -104,8 +101,7 @@ public final class MainHadoop extends Main {
       // Log the usage of the hadoop temporary directory partition
       java.nio.file.Path hadoopTmp = java.nio.file.Path.of(this.conf.get("hadoop.tmp.dir"));
       if (hadoopTmp != null) {
-        Infos.log(Level.INFO,
-            singletonList(Infos.diskFreeInfo(hadoopTmp.toFile())));
+        Infos.log(Level.INFO, singletonList(Infos.diskFreeInfo(hadoopTmp.toFile())));
       }
 
       // Log the usage of the Java temporary directory partition
@@ -115,14 +111,12 @@ public final class MainHadoop extends Main {
       }
 
     } catch (IOException e) {
-      getLogger()
-          .severe("Error while getting system information: " + e.getMessage());
+      getLogger().severe("Error while getting system information: " + e.getMessage());
     }
 
     // Log Hadoop information
     Infos.log(Level.INFO, new Info("Hadoop version", VersionInfo.getVersion()));
-    Infos.log(Level.INFO,
-        new Info("Hadoop revision", VersionInfo.getRevision()));
+    Infos.log(Level.INFO, new Info("Hadoop revision", VersionInfo.getRevision()));
     Infos.log(Level.INFO, new Info("Hadoop date", VersionInfo.getDate()));
     Infos.log(Level.INFO, new Info("Hadoop user", VersionInfo.getUser()));
     Infos.log(Level.INFO, new Info("Hadoop url", VersionInfo.getUrl()));
@@ -134,11 +128,11 @@ public final class MainHadoop extends Main {
 
   /**
    * Constructor.
+   *
    * @param args command line arguments
    */
   MainHadoop(final String[] args) {
 
     super(LAUNCH_MODE_NAME, args);
   }
-
 }

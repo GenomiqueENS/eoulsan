@@ -2,6 +2,12 @@ package fr.ens.biologie.genomique.eoulsan.modules.multiqc;
 
 import static java.util.Objects.requireNonNull;
 
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
+import fr.ens.biologie.genomique.eoulsan.data.Data;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -13,15 +19,9 @@ import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.data.Data;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
-
 /**
  * This class define a preprocessor for FastQC reports.
+ *
  * @since 2.2
  * @author Laurent Jourdren
  */
@@ -40,8 +40,9 @@ public class FastQCInputPreprocessor implements InputPreprocessor {
   }
 
   @Override
-  public void preprocess(final TaskContext context, final Data data,
-      final File multiQCInputDirectory) throws IOException {
+  public void preprocess(
+      final TaskContext context, final Data data, final File multiQCInputDirectory)
+      throws IOException {
 
     // Get data name
     String name = data.getName();
@@ -51,8 +52,9 @@ public class FastQCInputPreprocessor implements InputPreprocessor {
     for (int i = 0; i < fileCount; i++) {
 
       // Define symbolic link path
-      DataFile outputFile = new DataFile(multiQCInputDirectory,
-          name + (fileCount <= 1 ? "" : "_read" + i) + "_fastqc.zip");
+      DataFile outputFile =
+          new DataFile(
+              multiQCInputDirectory, name + (fileCount <= 1 ? "" : "_read" + i) + "_fastqc.zip");
 
       // Define target log file
       DataFile fastQCReportFile = data.getDataFile(i);
@@ -65,17 +67,16 @@ public class FastQCInputPreprocessor implements InputPreprocessor {
       // Update report with the data name
       updateFastqcResultZip(outputFile.toFile().toPath(), name);
     }
-
   }
 
   /**
    * Update fastqc_data.txt file inside the zip with the name of sample.
+   *
    * @param reportfile the zip file
    * @param name the name of the sample
    * @throws IOException if an error occurs while updating the file
    */
-  private static void updateFastqcResultZip(Path reportfile, String name)
-      throws IOException {
+  private static void updateFastqcResultZip(Path reportfile, String name) throws IOException {
 
     requireNonNull(reportfile);
     requireNonNull(name);
@@ -93,14 +94,14 @@ public class FastQCInputPreprocessor implements InputPreprocessor {
 
   /**
    * Look for the path of fastqc_data.txt file inside the zip file
+   *
    * @param reportfile the zip file
    * @return the path of the fastqc_data.txt file inside the zip file
    * @throws IOException if an error occurs while opening the zip file
    */
   private static String dataPathInZip(Path reportfile) throws IOException {
 
-    try (ZipInputStream zipIn =
-        new ZipInputStream(Files.newInputStream(reportfile))) {
+    try (ZipInputStream zipIn = new ZipInputStream(Files.newInputStream(reportfile))) {
       ZipEntry entry = zipIn.getNextEntry();
 
       // iterates over entries in the zip file
@@ -119,13 +120,13 @@ public class FastQCInputPreprocessor implements InputPreprocessor {
 
   /**
    * Update the fastqc_data.txt file.
+   *
    * @param src input file
    * @param dst output file
    * @param name name of the report
    * @throws IOException if an error occurs while updating the file
    */
-  private static void updateReport(Path src, Path dst, String name)
-      throws IOException {
+  private static void updateReport(Path src, Path dst, String name) throws IOException {
     try (BufferedReader br = Files.newBufferedReader(src);
         BufferedWriter bw = Files.newBufferedWriter(dst)) {
 
@@ -141,5 +142,4 @@ public class FastQCInputPreprocessor implements InputPreprocessor {
       }
     }
   }
-
 }

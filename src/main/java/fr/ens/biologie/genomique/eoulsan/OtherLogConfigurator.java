@@ -25,7 +25,6 @@
 package fr.ens.biologie.genomique.eoulsan;
 
 import java.io.IOException;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
@@ -33,6 +32,7 @@ import org.apache.log4j.RollingFileAppender;
 
 /**
  * This class allow to configure non Eoulsan log using Log4J.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -46,13 +46,12 @@ public class OtherLogConfigurator {
   //
 
   /**
-   * Configure Log4J. If no log level is provided, the INFO log level will be
-   * used.
+   * Configure Log4J. If no log level is provided, the INFO log level will be used.
+   *
    * @param logLevel logLevel as string.
    * @param logFilename the log filename
    */
-  public static void configureLog4J(final String logLevel,
-      final String logFilename) {
+  public static void configureLog4J(final String logLevel, final String logFilename) {
 
     if (logFilename == null) {
       throw new NullPointerException("The logFilename argument cannot be null");
@@ -66,13 +65,11 @@ public class OtherLogConfigurator {
     rootLogger.removeAllAppenders();
 
     // Define log pattern layout
-    final PatternLayout layout =
-        new PatternLayout("%p\t%d{yyyy.MM.dd HH:mm:ss}\t%m\n");
+    final PatternLayout layout = new PatternLayout("%p\t%d{yyyy.MM.dd HH:mm:ss}\t%m\n");
 
     try {
       // Define file appender with layout and output log file name
-      final RollingFileAppender fileAppender =
-          new RollingFileAppender(layout, logFilename);
+      final RollingFileAppender fileAppender = new RollingFileAppender(layout, logFilename);
 
       // Add the appender to root logger
       rootLogger.addAppender(fileAppender);
@@ -80,5 +77,4 @@ public class OtherLogConfigurator {
       EoulsanLogger.getLogger().warning("Failed to add appender !!");
     }
   }
-
 }

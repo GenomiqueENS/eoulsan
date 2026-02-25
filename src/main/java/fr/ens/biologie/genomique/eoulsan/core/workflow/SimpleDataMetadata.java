@@ -27,17 +27,17 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.data.DataMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class define a simple class for metadata of data objects.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -53,12 +53,12 @@ class SimpleDataMetadata extends AbstractDataMetadata {
   private static final String SAMPLE_NAME_TYPE = "design_sample_name";
   private static final String DESIGN_METADATA_TYPE = "design_metadata";
   private static final String SAMPLE_METADATA_TYPE = "design_sample_metadata";
-  private static final String EXPERIMENT_METADATA_TYPE =
-      "design_experiment_sample_metadata";
+  private static final String EXPERIMENT_METADATA_TYPE = "design_experiment_sample_metadata";
   private static final char SEPARATOR = ':';
 
   /**
    * Get the raw value of a metadata entry.
+   *
    * @param key the key
    * @return the raw entry if exists or null
    */
@@ -81,51 +81,47 @@ class SimpleDataMetadata extends AbstractDataMetadata {
     final String type = value.substring(0, value.indexOf(SEPARATOR));
 
     switch (type) {
+      case STRING_TYPE:
+        return value.substring(type.length() + 1);
 
-    case STRING_TYPE:
-      return value.substring(type.length() + 1);
+      case SAMPLE_NAME_TYPE:
+        final String sampleId1 = value.substring(type.length() + 1);
 
-    case SAMPLE_NAME_TYPE:
+        try {
+          return this.design.getSample(sampleId1).getName();
+        } catch (IllegalArgumentException e) {
+          return null;
+        }
 
-      final String sampleId1 = value.substring(type.length() + 1);
+      case SAMPLE_METADATA_TYPE:
+        final int endSampleId = value.indexOf(SEPARATOR, type.length() + 1);
 
-      try {
-        return this.design.getSample(sampleId1).getName();
-      } catch (IllegalArgumentException e) {
-        return null;
-      }
+        final String sampleId2 = value.substring(type.length() + 1, endSampleId);
+        final String sampleMDKey = value.substring(endSampleId + 1);
 
-    case SAMPLE_METADATA_TYPE:
+        try {
+          return this.design.getSample(sampleId2).getMetadata().get(sampleMDKey);
+        } catch (IllegalArgumentException e) {
+          return null;
+        }
 
-      final int endSampleId = value.indexOf(SEPARATOR, type.length() + 1);
+      case DESIGN_METADATA_TYPE:
+        final String designMDKey = value.substring(type.length() + 1);
 
-      final String sampleId2 = value.substring(type.length() + 1, endSampleId);
-      final String sampleMDKey = value.substring(endSampleId + 1);
+        try {
+          return this.design.getMetadata().get(designMDKey);
+        } catch (IllegalArgumentException e) {
+          return null;
+        }
 
-      try {
-        return this.design.getSample(sampleId2).getMetadata().get(sampleMDKey);
-      } catch (IllegalArgumentException e) {
-        return null;
-      }
-
-    case DESIGN_METADATA_TYPE:
-
-      final String designMDKey = value.substring(type.length() + 1);
-
-      try {
-        return this.design.getMetadata().get(designMDKey);
-      } catch (IllegalArgumentException e) {
-        return null;
-      }
-
-    default:
-      throw new IllegalStateException("Unknown metadata type: " + type);
+      default:
+        throw new IllegalStateException("Unknown metadata type: " + type);
     }
-
   }
 
   /**
    * Set the raw entry of a metadata.
+   *
    * @param key the key
    * @param value the raw value
    */
@@ -169,8 +165,7 @@ class SimpleDataMetadata extends AbstractDataMetadata {
     requireNonNull(key, "key argument cannot be null");
     checkArgument(sample.getMetadata().contains(key));
 
-    final String value =
-        SAMPLE_METADATA_TYPE + SEPARATOR + sample.getId() + SEPARATOR + key;
+    final String value = SAMPLE_METADATA_TYPE + SEPARATOR + sample.getId() + SEPARATOR + key;
 
     setRaw(key, value);
   }
@@ -267,24 +262,19 @@ class SimpleDataMetadata extends AbstractDataMetadata {
             "Invalid metadata key character found: " + key.charAt(i));
       }
     }
-
   }
 
   //
   // Constructor
   //
 
-  /**
-   * Constructor.
-   */
+  /** Constructor. */
   SimpleDataMetadata(final Design design) {
 
     this.design = design;
   }
 
-  /**
-   * Copy constructor.
-   */
+  /** Copy constructor. */
   SimpleDataMetadata(final SimpleDataMetadata metadata) {
 
     requireNonNull(metadata, "data argument cannot be null");
@@ -292,5 +282,4 @@ class SimpleDataMetadata extends AbstractDataMetadata {
     this.design = metadata.design;
     this.map.putAll(metadata.map);
   }
-
 }

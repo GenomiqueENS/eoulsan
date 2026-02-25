@@ -26,11 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.checkers;
 
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_FASTQ;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
@@ -42,9 +37,14 @@ import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 import fr.ens.biologie.genomique.kenetre.bio.IlluminaReadId;
 import fr.ens.biologie.genomique.kenetre.bio.ReadSequence;
 import fr.ens.biologie.genomique.kenetre.bio.io.FastqReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * This class define a checker on FASTQ files.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -74,13 +74,10 @@ public class ReadsChecker implements Checker {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
-  }
+  public void configure(final Set<Parameter> stepParameters) throws EoulsanException {}
 
   @Override
-  public boolean check(final Data data, final CheckStore checkInfo)
-      throws EoulsanException {
+  public boolean check(final Data data, final CheckStore checkInfo) throws EoulsanException {
 
     if (data == null) {
       throw new NullPointerException("The sample is null");
@@ -97,8 +94,7 @@ public class ReadsChecker implements Checker {
     }
 
     if (inFileCount > 2) {
-      throw new EoulsanException(
-          "Cannot handle more than 2 reads files at the same time.");
+      throw new EoulsanException("Cannot handle more than 2 reads files at the same time.");
     }
 
     // Get FASTQ format
@@ -126,8 +122,11 @@ public class ReadsChecker implements Checker {
     checkReadFile(file, format, false, -1);
   }
 
-  private void checkReadFile(final DataFile file, final FastqFormat format,
-      final boolean checkPairMember, final int pairMember)
+  private void checkReadFile(
+      final DataFile file,
+      final FastqFormat format,
+      final boolean checkPairMember,
+      final int pairMember)
       throws EoulsanException {
 
     // If the file does not exists do nothing
@@ -140,23 +139,34 @@ public class ReadsChecker implements Checker {
     try {
 
       is = file.open();
-      checkReadsFile(is, MAX_READS_TO_CHECK, format, checkPairMember,
-          pairMember);
+      checkReadsFile(is, MAX_READS_TO_CHECK, format, checkPairMember, pairMember);
 
     } catch (IOException e) {
-      throw new EoulsanException("Error while reading reads of sample "
-          + file.getSource() + " for checking: " + e.getMessage(), e);
+      throw new EoulsanException(
+          "Error while reading reads of sample "
+              + file.getSource()
+              + " for checking: "
+              + e.getMessage(),
+          e);
     } catch (BadBioEntryException e) {
-      throw new EoulsanException("Found bad read entry in sample "
-          + file.getSource() + " (cause: " + e.getMessage()
-          + ") when checking: " + e.getEntry(), e);
+      throw new EoulsanException(
+          "Found bad read entry in sample "
+              + file.getSource()
+              + " (cause: "
+              + e.getMessage()
+              + ") when checking: "
+              + e.getEntry(),
+          e);
     }
-
   }
 
-  private boolean checkReadsFile(final InputStream is, final int maxReadToCheck,
-      final FastqFormat format, final boolean checkPairMember,
-      final int pairMember) throws IOException, BadBioEntryException {
+  private boolean checkReadsFile(
+      final InputStream is,
+      final int maxReadToCheck,
+      final FastqFormat format,
+      final boolean checkPairMember,
+      final int pairMember)
+      throws IOException, BadBioEntryException {
 
     final FastqReader reader = new FastqReader(is);
 
@@ -180,8 +190,7 @@ public class ReadsChecker implements Checker {
           readPairMember = irid.getPairMember();
           if (readPairMember != pairMember) {
             throw new BadBioEntryException(
-                "Invalid pair member number, " + pairMember + " was excepted",
-                read.getName());
+                "Invalid pair member number, " + pairMember + " was excepted", read.getName());
           }
 
           // check the quality string
@@ -192,7 +201,9 @@ public class ReadsChecker implements Checker {
             if (invalidChar != -1) {
               throw new BadBioEntryException(
                   "Invalid quality character found for "
-                      + format.getName() + " format: " + (char) invalidChar,
+                      + format.getName()
+                      + " format: "
+                      + (char) invalidChar,
                   read.getQuality());
             }
           }
@@ -212,8 +223,7 @@ public class ReadsChecker implements Checker {
         if (readPairMember > 0 && readPairMember != pairMember) {
           reader.close();
           throw new BadBioEntryException(
-              "Invalid pair member number, " + pairMember + " was excepted",
-              read.getName());
+              "Invalid pair member number, " + pairMember + " was excepted", read.getName());
         }
       }
 
@@ -226,7 +236,9 @@ public class ReadsChecker implements Checker {
           reader.close();
           throw new BadBioEntryException(
               "Invalid quality character found for "
-                  + format.getName() + " format: " + (char) invalidChar,
+                  + format.getName()
+                  + " format: "
+                  + (char) invalidChar,
               read.getQuality());
         }
       }

@@ -26,52 +26,51 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-import java.util.concurrent.TimeUnit;
-
 import com.google.common.annotations.Beta;
 import com.google.common.annotations.GwtCompatible;
 import com.google.common.annotations.GwtIncompatible;
 import com.google.common.base.Ticker;
+import java.util.concurrent.TimeUnit;
 
 /*
- * This class is included in Eoulsan to avoid Guava version conflict with Guava version bundled in Hadoop. 
+ * This class is included in Eoulsan to avoid Guava version conflict with Guava version bundled in Hadoop.
  */
 
 /**
- * An object that measures elapsed time in nanoseconds. It is useful to measure
- * elapsed time using this class instead of direct calls to
- * {@link System#nanoTime} for a few reasons:
+ * An object that measures elapsed time in nanoseconds. It is useful to measure elapsed time using
+ * this class instead of direct calls to {@link System#nanoTime} for a few reasons:
+ *
  * <ul>
- * <li>An alternate time source can be substituted, for testing or performance
- * reasons.
- * <li>As documented by {@code nanoTime}, the value returned has no absolute
- * meaning, and can only be interpreted as relative to another timestamp
- * returned by {@code nanoTime} at a different time. {@code Stopwatch} is a more
- * effective abstraction because it exposes only these relative values, not the
- * absolute ones.
+ *   <li>An alternate time source can be substituted, for testing or performance reasons.
+ *   <li>As documented by {@code nanoTime}, the value returned has no absolute meaning, and can only
+ *       be interpreted as relative to another timestamp returned by {@code nanoTime} at a different
+ *       time. {@code Stopwatch} is a more effective abstraction because it exposes only these
+ *       relative values, not the absolute ones.
  * </ul>
- * <p>
- * Basic usage:
- * 
+ *
+ * <p>Basic usage:
+ *
  * <pre>
  *   Stopwatch stopwatch = Stopwatch.{@link #createStarted createStarted}();
  *   doSomething();
  *   stopwatch.{@link #stop stop}(); // optional
- * 
+ *
  *   long millis = stopwatch.elapsed(MILLISECONDS);
- * 
+ *
  *   log.info("time: " + stopwatch); // formatted string like "12.3 ms"
  * </pre>
- * <p>
- * Stopwatch methods are not idempotent; it is an error to start or stop a
- * stopwatch that is already in the desired state.
- * <p>
- * When testing code that uses this class, use {@link #createUnstarted(Ticker)}
- * or {@link #createStarted(Ticker)} to supply a fake or mock ticker. <!--
- * TODO(kevinb): restore the "such as" --> This allows you to simulate any valid
- * behavior of the stopwatch.
- * <p>
- * <b>Note:</b> This class is not thread-safe.
+ *
+ * <p>Stopwatch methods are not idempotent; it is an error to start or stop a stopwatch that is
+ * already in the desired state.
+ *
+ * <p>When testing code that uses this class, use {@link #createUnstarted(Ticker)} or {@link
+ * #createStarted(Ticker)} to supply a fake or mock ticker.
+ * <!--
+ * TODO(kevinb): restore the "such as" -->
+ * This allows you to simulate any valid behavior of the stopwatch.
+ *
+ * <p><b>Note:</b> This class is not thread-safe.
+ *
  * @author Kevin Bourrillion
  * @since 10.0
  */
@@ -84,8 +83,8 @@ final class Stopwatch {
   private long startTick;
 
   /**
-   * Creates (but does not start) a new stopwatch using {@link System#nanoTime}
-   * as its time source.
+   * Creates (but does not start) a new stopwatch using {@link System#nanoTime} as its time source.
+   *
    * @since 15.0
    */
   public static Stopwatch createUnstarted() {
@@ -93,8 +92,8 @@ final class Stopwatch {
   }
 
   /**
-   * Creates (but does not start) a new stopwatch, using the specified time
-   * source.
+   * Creates (but does not start) a new stopwatch, using the specified time source.
+   *
    * @since 15.0
    */
   public static Stopwatch createUnstarted(final Ticker ticker) {
@@ -102,8 +101,8 @@ final class Stopwatch {
   }
 
   /**
-   * Creates (and starts) a new stopwatch using {@link System#nanoTime} as its
-   * time source.
+   * Creates (and starts) a new stopwatch using {@link System#nanoTime} as its time source.
+   *
    * @since 15.0
    */
   public static Stopwatch createStarted() {
@@ -112,6 +111,7 @@ final class Stopwatch {
 
   /**
    * Creates (and starts) a new stopwatch, using the specified time source.
+   *
    * @since 15.0
    */
   public static Stopwatch createStarted(final Ticker ticker) {
@@ -119,8 +119,8 @@ final class Stopwatch {
   }
 
   /**
-   * Creates (but does not start) a new stopwatch using {@link System#nanoTime}
-   * as its time source.
+   * Creates (but does not start) a new stopwatch using {@link System#nanoTime} as its time source.
+   *
    * @deprecated Use {@link Stopwatch#createUnstarted()} instead.
    */
   @Deprecated
@@ -129,8 +129,8 @@ final class Stopwatch {
   }
 
   /**
-   * Creates (but does not start) a new stopwatch, using the specified time
-   * source.
+   * Creates (but does not start) a new stopwatch, using the specified time source.
+   *
    * @deprecated Use {@link Stopwatch#createUnstarted(Ticker)} instead.
    */
   @Deprecated
@@ -139,9 +139,8 @@ final class Stopwatch {
   }
 
   /**
-   * Returns {@code true} if {@link #start()} has been called on this stopwatch,
-   * and {@link #stop()} has not been called since the last call to
-   * {@code start()}.
+   * Returns {@code true} if {@link #start()} has been called on this stopwatch, and {@link #stop()}
+   * has not been called since the last call to {@code start()}.
    */
   public boolean isRunning() {
     return this.isRunning;
@@ -149,6 +148,7 @@ final class Stopwatch {
 
   /**
    * Starts the stopwatch.
+   *
    * @return this {@code Stopwatch} instance
    * @throws IllegalStateException if the stopwatch is already running.
    */
@@ -160,8 +160,9 @@ final class Stopwatch {
   }
 
   /**
-   * Stops the stopwatch. Future reads will return the fixed duration that had
-   * elapsed up to this point.
+   * Stops the stopwatch. Future reads will return the fixed duration that had elapsed up to this
+   * point.
+   *
    * @return this {@code Stopwatch} instance
    * @throws IllegalStateException if the stopwatch is already stopped.
    */
@@ -174,8 +175,8 @@ final class Stopwatch {
   }
 
   /**
-   * Sets the elapsed time for this stopwatch to zero, and places it in a
-   * stopped state.
+   * Sets the elapsed time for this stopwatch to zero, and places it in a stopped state.
+   *
    * @return this {@code Stopwatch} instance
    */
   public Stopwatch reset() {
@@ -191,21 +192,19 @@ final class Stopwatch {
   }
 
   /**
-   * Returns the current elapsed time shown on this stopwatch, expressed in the
-   * desired time unit, with any fraction rounded down.
-   * <p>
-   * Note that the overhead of measurement can be more than a microsecond, so it
-   * is generally not useful to specify {@link TimeUnit#NANOSECONDS} precision
-   * here.
+   * Returns the current elapsed time shown on this stopwatch, expressed in the desired time unit,
+   * with any fraction rounded down.
+   *
+   * <p>Note that the overhead of measurement can be more than a microsecond, so it is generally not
+   * useful to specify {@link TimeUnit#NANOSECONDS} precision here.
+   *
    * @since 14.0 (since 10.0 as {@code elapsedTime()})
    */
   public long elapsed(final TimeUnit desiredUnit) {
     return desiredUnit.convert(elapsedNanos(), NANOSECONDS);
   }
 
-  /**
-   * Returns a string representation of the current elapsed time.
-   */
+  /** Returns a string representation of the current elapsed time. */
   @GwtIncompatible("String.format()")
   @Override
   public String toString() {
@@ -242,22 +241,22 @@ final class Stopwatch {
 
   private static String abbreviate(final TimeUnit unit) {
     switch (unit) {
-    case NANOSECONDS:
-      return "ns";
-    case MICROSECONDS:
-      return "\u03bcs"; // Î¼s
-    case MILLISECONDS:
-      return "ms";
-    case SECONDS:
-      return "s";
-    case MINUTES:
-      return "min";
-    case HOURS:
-      return "h";
-    case DAYS:
-      return "d";
-    default:
-      throw new AssertionError();
+      case NANOSECONDS:
+        return "ns";
+      case MICROSECONDS:
+        return "\u03bcs"; // Î¼s
+      case MILLISECONDS:
+        return "ms";
+      case SECONDS:
+        return "s";
+      case MINUTES:
+        return "min";
+      case HOURS:
+        return "h";
+      case DAYS:
+        return "d";
+      default:
+        throw new AssertionError();
     }
   }
 }

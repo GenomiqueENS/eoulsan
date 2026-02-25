@@ -28,6 +28,7 @@ import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 
 /**
  * This class define the ftp protocol in local mode.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -42,5 +43,4 @@ public class FTPURLDataProtocol extends URLDataProtocol {
 
     return PROTOCOL_NAME;
   }
-
 }

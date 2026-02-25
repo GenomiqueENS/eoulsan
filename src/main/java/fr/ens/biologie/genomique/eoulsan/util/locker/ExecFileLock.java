@@ -32,6 +32,7 @@ import java.nio.channels.FileLock;
 
 /**
  * This class define a lock file.
+ *
  * @since 1.1
  * @author Laurent Jourdren
  */
@@ -77,6 +78,7 @@ public class ExecFileLock implements Locker {
 
   /**
    * Public constructor.
+   *
    * @param lockFile lock file to use
    */
   public ExecFileLock(final File lockFile) {

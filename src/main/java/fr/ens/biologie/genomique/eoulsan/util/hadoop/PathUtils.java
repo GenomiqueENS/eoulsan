@@ -24,6 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.util.hadoop;
 
+import fr.ens.biologie.genomique.eoulsan.io.FileCharsets;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -33,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -44,12 +46,9 @@ import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.io.compress.CompressionCodecFactory;
 
-import fr.ens.biologie.genomique.eoulsan.io.FileCharsets;
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
-import fr.ens.biologie.genomique.kenetre.util.StringUtils;
-
 /**
  * This class define utility method to manipulate the Hadoop Path object.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -57,6 +56,7 @@ public final class PathUtils {
 
   /**
    * Simple PathFilter to filter Paths with their suffix
+   *
    * @author Laurent Jourdren
    */
   public static final class SuffixPathFilter implements PathFilter {
@@ -74,8 +74,7 @@ public final class PathUtils {
       final String myName;
 
       if (this.allowCompressedFile) {
-        myName =
-            StringUtils.removeCompressedExtensionFromFilename(path.getName());
+        myName = StringUtils.removeCompressedExtensionFromFilename(path.getName());
       } else {
         myName = path.getName();
       }
@@ -93,6 +92,7 @@ public final class PathUtils {
 
     /**
      * Public constructor.
+     *
      * @param suffix suffix to use by ExtensionPathFilter
      */
     public SuffixPathFilter(final String suffix) {
@@ -102,11 +102,11 @@ public final class PathUtils {
 
     /**
      * Public constructor.
+     *
      * @param suffix suffix to use by ExtensionPathFilter
      * @param allowCompressedFile allow files with a compressed extension
      */
-    public SuffixPathFilter(final String suffix,
-        final boolean allowCompressedFile) {
+    public SuffixPathFilter(final String suffix, final boolean allowCompressedFile) {
 
       if (suffix == null) {
         throw new NullPointerException("The suffix is null");
@@ -115,11 +115,11 @@ public final class PathUtils {
       this.suffix = suffix;
       this.allowCompressedFile = allowCompressedFile;
     }
-
   }
 
   /**
    * Simple PathFilter to filter Paths with their beginning
+   *
    * @author Laurent Jourdren
    */
   public static final class PrefixPathFilter implements PathFilter {
@@ -137,8 +137,7 @@ public final class PathUtils {
       final String myName;
 
       if (this.allowCompressedFile) {
-        myName =
-            StringUtils.removeCompressedExtensionFromFilename(path.getName());
+        myName = StringUtils.removeCompressedExtensionFromFilename(path.getName());
       } else {
         myName = path.getName();
       }
@@ -156,6 +155,7 @@ public final class PathUtils {
 
     /**
      * Public constructor.
+     *
      * @param prefix extension to use by ExtensionPathFilter
      */
     public PrefixPathFilter(final String prefix) {
@@ -165,11 +165,11 @@ public final class PathUtils {
 
     /**
      * Public constructor.
+     *
      * @param prefix extension to use by ExtensionPathFilter
      * @param allowCompressedFile allow files with a compressed extension
      */
-    public PrefixPathFilter(final String prefix,
-        final boolean allowCompressedFile) {
+    public PrefixPathFilter(final String prefix, final boolean allowCompressedFile) {
 
       if (prefix == null) {
         throw new NullPointerException("The prefix is null");
@@ -178,71 +178,17 @@ public final class PathUtils {
       this.prefix = prefix;
       this.allowCompressedFile = allowCompressedFile;
     }
-
   }
 
   /**
    * Create an input stream from a path.
+   *
    * @param path Path of the file to open
    * @param conf configuration
    * @return an InputStream
    * @throws IOException if an error occurs while creating InputStream
    */
-  public static InputStream createInputStream(final Path path,
-      final Configuration conf) throws IOException {
-
-    if (path == null) {
-      throw new NullPointerException("Path to create is null");
-    }
-    if (conf == null) {
-      throw new NullPointerException("The configuration object is null");
-    }
-
-    final FileSystem fs = path.getFileSystem(conf);
-
-    if (fs == null) {
-      throw new IOException(
-          "Unable to create InputSteam, The FileSystem is null");
-    }
-
-    return fs.open(path);
-  }
-
-  /**
-   * Create an output stream from a path.
-   * @param path Path of the file to open
-   * @param conf configuration
-   * @return an InputStream
-   * @throws IOException if an error occurs while creating InputStream
-   */
-  public static OutputStream createOutputStream(final Path path,
-      final Configuration conf) throws IOException {
-
-    if (path == null) {
-      throw new NullPointerException("Path to create is null");
-    }
-    if (conf == null) {
-      throw new NullPointerException("The configuration object is null");
-    }
-
-    final FileSystem fs = path.getFileSystem(conf);
-
-    if (fs == null) {
-      throw new IOException(
-          "Unable to create InputSteam, The FileSystem is null");
-    }
-
-    return fs.create(path);
-  }
-
-  /**
-   * Get the length of a file.
-   * @param path Path of the file to open
-   * @param conf configuration
-   * @return an InputStream
-   * @throws IOException if an error occurs while creating InputStream
-   */
-  public static long getSize(final Path path, final Configuration conf)
+  public static InputStream createInputStream(final Path path, final Configuration conf)
       throws IOException {
 
     if (path == null) {
@@ -255,8 +201,60 @@ public final class PathUtils {
     final FileSystem fs = path.getFileSystem(conf);
 
     if (fs == null) {
-      throw new IOException(
-          "Unable to create InputSteam, The FileSystem is null");
+      throw new IOException("Unable to create InputSteam, The FileSystem is null");
+    }
+
+    return fs.open(path);
+  }
+
+  /**
+   * Create an output stream from a path.
+   *
+   * @param path Path of the file to open
+   * @param conf configuration
+   * @return an InputStream
+   * @throws IOException if an error occurs while creating InputStream
+   */
+  public static OutputStream createOutputStream(final Path path, final Configuration conf)
+      throws IOException {
+
+    if (path == null) {
+      throw new NullPointerException("Path to create is null");
+    }
+    if (conf == null) {
+      throw new NullPointerException("The configuration object is null");
+    }
+
+    final FileSystem fs = path.getFileSystem(conf);
+
+    if (fs == null) {
+      throw new IOException("Unable to create InputSteam, The FileSystem is null");
+    }
+
+    return fs.create(path);
+  }
+
+  /**
+   * Get the length of a file.
+   *
+   * @param path Path of the file to open
+   * @param conf configuration
+   * @return an InputStream
+   * @throws IOException if an error occurs while creating InputStream
+   */
+  public static long getSize(final Path path, final Configuration conf) throws IOException {
+
+    if (path == null) {
+      throw new NullPointerException("Path to create is null");
+    }
+    if (conf == null) {
+      throw new NullPointerException("The configuration object is null");
+    }
+
+    final FileSystem fs = path.getFileSystem(conf);
+
+    if (fs == null) {
+      throw new IOException("Unable to create InputSteam, The FileSystem is null");
     }
 
     return fs.getFileStatus(path).getLen();
@@ -264,20 +262,22 @@ public final class PathUtils {
 
   /**
    * Copy a file from a path to a local file. Don't remove original file.
+   *
    * @param srcPath Path of the file to copy
    * @param destFile Destination file
    * @param conf Configuration object * @return true if the copy is successful
    * @return true if the copy is successful
    * @throws IOException if an error occurs while copying file
    */
-  public static boolean copyFromPathToLocalFile(final Path srcPath,
-      final File destFile, final Configuration conf) throws IOException {
+  public static boolean copyFromPathToLocalFile(
+      final Path srcPath, final File destFile, final Configuration conf) throws IOException {
 
     return copyFromPathToLocalFile(srcPath, destFile, false, conf);
   }
 
   /**
    * Copy a file from a path to a local file
+   *
    * @param srcPath Path of the file to copy
    * @param destFile Destination file
    * @param removeOriginalFile true if the original file must be deleted
@@ -285,9 +285,12 @@ public final class PathUtils {
    * @return true if the copy is successful
    * @throws IOException if an error occurs while copying file
    */
-  public static boolean copyFromPathToLocalFile(final Path srcPath,
-      final File destFile, final boolean removeOriginalFile,
-      final Configuration conf) throws IOException {
+  public static boolean copyFromPathToLocalFile(
+      final Path srcPath,
+      final File destFile,
+      final boolean removeOriginalFile,
+      final Configuration conf)
+      throws IOException {
 
     if (srcPath == null) {
       throw new NullPointerException("The source path is null");
@@ -305,20 +308,22 @@ public final class PathUtils {
 
   /**
    * Copy a local file to a path
+   *
    * @param srcFile source file
    * @param destPath destination path
    * @param conf Configuration object
    * @return true if the copy is successful
    * @throws IOException if an error occurs while copying file
    */
-  public static boolean copyLocalFileToPath(final File srcFile,
-      final Path destPath, final Configuration conf) throws IOException {
+  public static boolean copyLocalFileToPath(
+      final File srcFile, final Path destPath, final Configuration conf) throws IOException {
 
     return copyLocalFileToPath(srcFile, destPath, false, conf);
   }
 
   /**
    * Copy a local file to a path
+   *
    * @param srcFile source file
    * @param destPath destination path
    * @param removeSrcFile true if the source file must be removed
@@ -326,9 +331,12 @@ public final class PathUtils {
    * @return true if the copy is successful
    * @throws IOException if an error occurs while copying file
    */
-  public static boolean copyLocalFileToPath(final File srcFile,
-      final Path destPath, final boolean removeSrcFile,
-      final Configuration conf) throws IOException {
+  public static boolean copyLocalFileToPath(
+      final File srcFile,
+      final Path destPath,
+      final boolean removeSrcFile,
+      final Configuration conf)
+      throws IOException {
 
     if (srcFile == null) {
       throw new NullPointerException("The source file is null");
@@ -340,20 +348,21 @@ public final class PathUtils {
       throw new NullPointerException("The configuration object is null");
     }
 
-    return FileUtil.copy(srcFile, FileSystem.get(destPath.toUri(), conf),
-        destPath, removeSrcFile, conf);
+    return FileUtil.copy(
+        srcFile, FileSystem.get(destPath.toUri(), conf), destPath, removeSrcFile, conf);
   }
 
   /**
    * Copy bytes from an InputStream to a path.
+   *
    * @param is the InputStream to read from
    * @param destPath destination path
    * @param conf Configuration object
    * @return the number of bytes copied
    * @throws IOException In case of an I/O problem
    */
-  public static long copyInputStreamToPath(final InputStream is,
-      final Path destPath, final Configuration conf) throws IOException {
+  public static long copyInputStreamToPath(
+      final InputStream is, final Path destPath, final Configuration conf) throws IOException {
 
     if (is == null) {
       throw new NullPointerException("The input stream is null");
@@ -372,20 +381,22 @@ public final class PathUtils {
 
   /**
    * Copy a local file to a path
+   *
    * @param srcFile source file
    * @param destPath destination path
    * @param conf Configuration object
    * @return true if the copy is successful
    * @throws IOException if an error occurs while copying file
    */
-  public static boolean copyAndCompressLocalFileToPath(final File srcFile,
-      final Path destPath, final Configuration conf) throws IOException {
+  public static boolean copyAndCompressLocalFileToPath(
+      final File srcFile, final Path destPath, final Configuration conf) throws IOException {
 
     return copyAndCompressLocalFileToPath(srcFile, destPath, false, conf);
   }
 
   /**
    * Copy a local file to a path
+   *
    * @param srcFile source file
    * @param destPath destination path
    * @param removeSrcFile true if the source file must be removed
@@ -393,9 +404,12 @@ public final class PathUtils {
    * @return true if the copy is successful
    * @throws IOException if an error occurs while copying file
    */
-  public static boolean copyAndCompressLocalFileToPath(final File srcFile,
-      final Path destPath, final boolean removeSrcFile,
-      final Configuration conf) throws IOException {
+  public static boolean copyAndCompressLocalFileToPath(
+      final File srcFile,
+      final Path destPath,
+      final boolean removeSrcFile,
+      final Configuration conf)
+      throws IOException {
 
     if (srcFile == null) {
       throw new NullPointerException("The source file is null");
@@ -407,20 +421,20 @@ public final class PathUtils {
       throw new NullPointerException("The configuration object is null");
     }
 
-    return copyAndCompressInputStreamToPath(
-        FileUtils.createInputStream(srcFile), destPath, conf);
+    return copyAndCompressInputStreamToPath(FileUtils.createInputStream(srcFile), destPath, conf);
   }
 
   /**
    * Copy bytes from an InputStream to a path.
+   *
    * @param is the InputStream to read from
    * @param destPath destination path
    * @param conf Configuration object
    * @return the number of bytes copied
    * @throws IOException In case of an I/O problem
    */
-  public static boolean copyAndCompressInputStreamToPath(final InputStream is,
-      final Path destPath, final Configuration conf) throws IOException {
+  public static boolean copyAndCompressInputStreamToPath(
+      final InputStream is, final Path destPath, final Configuration conf) throws IOException {
 
     if (is == null) {
       throw new NullPointerException("The input stream is null");
@@ -449,28 +463,33 @@ public final class PathUtils {
 
   /**
    * Unzip a zip file on local file system. Don't remove original zip file.
+   *
    * @param path Path of the zip file
    * @param outputDir Output directory of the content of the zip file
    * @param conf Configuration object
    * @throws IOException if an error occurs while unzipping the file
    */
-  public static void unZipPathToLocalFile(final Path path, final File outputDir,
-      final Configuration conf) throws IOException {
+  public static void unZipPathToLocalFile(
+      final Path path, final File outputDir, final Configuration conf) throws IOException {
 
     unZipPathToLocalFile(path, outputDir, false, conf);
   }
 
   /**
    * Unzip a zip file on local file system.
+   *
    * @param srcPath Path of the zip file
    * @param outputDir Output directory of the content of the zip file
    * @param removeOriginalZipFile true if the original zip file must be removed
    * @param conf Configuration object
    * @throws IOException if an error occurs while unzipping the file
    */
-  public static void unZipPathToLocalFile(final Path srcPath,
-      final File outputDir, final boolean removeOriginalZipFile,
-      final Configuration conf) throws IOException {
+  public static void unZipPathToLocalFile(
+      final Path srcPath,
+      final File outputDir,
+      final boolean removeOriginalZipFile,
+      final Configuration conf)
+      throws IOException {
 
     if (srcPath == null) {
       throw new NullPointerException("The source path is null");
@@ -489,20 +508,19 @@ public final class PathUtils {
     FileUtils.unzip(tmpZipFile, outputDir);
 
     if (!tmpZipFile.delete()) {
-      throw new IOException(
-          "Can't remove temporary zip file: " + tmpZipFile.getAbsolutePath());
+      throw new IOException("Can't remove temporary zip file: " + tmpZipFile.getAbsolutePath());
     }
   }
 
   /**
    * Fully delete a file of the content of a directory
+   *
    * @param path Path of the file
    * @param conf Configuration Object
    * @return true if the Path is successfully removed
    * @throws IOException if cannot delete the file
    */
-  public static boolean fullyDelete(final Path path, final Configuration conf)
-      throws IOException {
+  public static boolean fullyDelete(final Path path, final Configuration conf) throws IOException {
 
     if (path == null) {
       throw new NullPointerException("Path to delete is null");
@@ -522,33 +540,37 @@ public final class PathUtils {
 
   /**
    * Merge several file of a directory into one file.
+   *
    * @param srcPath source directory path
    * @param destPath destination path
    * @param conf Configuration object
    * @throws IOException if an error occurs while merging files
    */
-  public static void copyMerge(final Path srcPath, final Path destPath,
-      final Configuration conf) throws IOException {
+  public static void copyMerge(final Path srcPath, final Path destPath, final Configuration conf)
+      throws IOException {
 
     copyMerge(srcPath, destPath, false, conf, null);
   }
 
   /**
    * Merge several file of a directory into one file.
+   *
    * @param srcPath source directory path
    * @param destPath destination path
    * @param deleteSource delete source files
    * @param conf Configuration object
    * @throws IOException if an error occurs while merging files
    */
-  public static void copyMerge(final Path srcPath, final Path destPath,
-      final boolean deleteSource, final Configuration conf) throws IOException {
+  public static void copyMerge(
+      final Path srcPath, final Path destPath, final boolean deleteSource, final Configuration conf)
+      throws IOException {
 
     copyMerge(srcPath, destPath, deleteSource, conf, null);
   }
 
   /**
    * Merge several file of a directory into one file.
+   *
    * @param srcPath source directory path
    * @param destPath destination path
    * @param deleteSource delete source files
@@ -556,9 +578,13 @@ public final class PathUtils {
    * @param addString string to add
    * @throws IOException if an error occurs while merging files
    */
-  public static void copyMerge(final Path srcPath, final Path destPath,
-      final boolean deleteSource, final Configuration conf,
-      final String addString) throws IOException {
+  public static void copyMerge(
+      final Path srcPath,
+      final Path destPath,
+      final boolean deleteSource,
+      final Configuration conf,
+      final String addString)
+      throws IOException {
 
     if (srcPath == null) {
       throw new NullPointerException("The source path is null.");
@@ -575,20 +601,17 @@ public final class PathUtils {
     final FileSystem srcFs = srcPath.getFileSystem(conf);
     final FileSystem destFs = destPath.getFileSystem(conf);
 
-    FileUtil.copyMerge(srcFs, srcPath, destFs, destPath, deleteSource, conf,
-        addString);
-
+    FileUtil.copyMerge(srcFs, srcPath, destFs, destPath, deleteSource, conf, addString);
   }
 
   /**
-   * Create a new path with the same parent directory and basename but without
-   * another extension.
+   * Create a new path with the same parent directory and basename but without another extension.
+   *
    * @param path base path to use
    * @param extension extension to add
    * @return a new Path object
    */
-  public static Path newPathWithOtherExtension(final Path path,
-      final String extension) {
+  public static Path newPathWithOtherExtension(final Path path, final String extension) {
 
     if (path == null) {
       throw new NullPointerException("Path is null");
@@ -598,26 +621,27 @@ public final class PathUtils {
       throw new NullPointerException("Extension is null");
     }
 
-    return new Path(path.getParent(),
-        StringUtils.basename(path.getName()) + extension);
+    return new Path(path.getParent(), StringUtils.basename(path.getName()) + extension);
   }
 
   /**
    * Return a list of the file of a path
+   *
    * @param dir Path of the directory
    * @param prefix filter on suffix
    * @param conf Configuration
    * @return a list of Path
    * @throws IOException if an error occurs while listing the directory
    */
-  public static List<Path> listPathsByPrefix(final Path dir,
-      final String prefix, final Configuration conf) throws IOException {
+  public static List<Path> listPathsByPrefix(
+      final Path dir, final String prefix, final Configuration conf) throws IOException {
 
     return listPathsByPrefix(dir, prefix, false, conf);
   }
 
   /**
    * Return a list of the file of a path
+   *
    * @param dir Path of the directory
    * @param prefix filter on suffix
    * @param allowCompressedExtension Allow compressed extensions
@@ -625,9 +649,12 @@ public final class PathUtils {
    * @return a list of Path
    * @throws IOException if an error occurs while listing the directory
    */
-  public static List<Path> listPathsByPrefix(final Path dir,
-      final String prefix, final boolean allowCompressedExtension,
-      final Configuration conf) throws IOException {
+  public static List<Path> listPathsByPrefix(
+      final Path dir,
+      final String prefix,
+      final boolean allowCompressedExtension,
+      final Configuration conf)
+      throws IOException {
 
     if (dir == null) {
       throw new NullPointerException("Directory path is null");
@@ -646,8 +673,8 @@ public final class PathUtils {
       throw new IOException("Directory path is not a directory: " + dir);
     }
 
-    final FileStatus[] filesStatus = fs.listStatus(dir,
-        new PrefixPathFilter(prefix, allowCompressedExtension));
+    final FileStatus[] filesStatus =
+        fs.listStatus(dir, new PrefixPathFilter(prefix, allowCompressedExtension));
 
     if (filesStatus == null) {
       return Collections.emptyList();
@@ -664,20 +691,22 @@ public final class PathUtils {
 
   /**
    * Return a list of the file of a path
+   *
    * @param dir Path of the directory
    * @param suffix filter on suffix
    * @param conf Configuration
    * @return a list of Path
    * @throws IOException if an error occurs while listing the directory
    */
-  public static List<Path> listPathsBySuffix(final Path dir,
-      final String suffix, final Configuration conf) throws IOException {
+  public static List<Path> listPathsBySuffix(
+      final Path dir, final String suffix, final Configuration conf) throws IOException {
 
     return listPathsBySuffix(dir, suffix, false, conf);
   }
 
   /**
    * Return a list of the file of a path
+   *
    * @param dir Path of the directory
    * @param suffix filter on suffix
    * @param allowCompressedExtension Allow compressed extensions
@@ -685,9 +714,12 @@ public final class PathUtils {
    * @return a list of Path
    * @throws IOException if an error occurs while listing the directory
    */
-  public static List<Path> listPathsBySuffix(final Path dir,
-      final String suffix, final boolean allowCompressedExtension,
-      final Configuration conf) throws IOException {
+  public static List<Path> listPathsBySuffix(
+      final Path dir,
+      final String suffix,
+      final boolean allowCompressedExtension,
+      final Configuration conf)
+      throws IOException {
 
     if (dir == null) {
       throw new NullPointerException("Directory path is null");
@@ -706,8 +738,8 @@ public final class PathUtils {
       throw new IOException("Directory path is not a directory: " + dir);
     }
 
-    final FileStatus[] filesStatus = fs.listStatus(dir,
-        new SuffixPathFilter(suffix, allowCompressedExtension));
+    final FileStatus[] filesStatus =
+        fs.listStatus(dir, new SuffixPathFilter(suffix, allowCompressedExtension));
 
     if (filesStatus == null) {
       return Collections.emptyList();
@@ -724,6 +756,7 @@ public final class PathUtils {
 
   /**
    * Create a new temporary path. Nothing is created on the file system.
+   *
    * @param directory parent directory of the temporary file to create
    * @param prefix Prefix of the temporary file
    * @param suffix suffix of the temporary file
@@ -731,8 +764,9 @@ public final class PathUtils {
    * @return the new temporary file
    * @throws IOException if there is an error creating the temporary directory
    */
-  public static Path createTempPath(final Path directory, final String prefix,
-      final String suffix, final Configuration conf) throws IOException {
+  public static Path createTempPath(
+      final Path directory, final String prefix, final String suffix, final Configuration conf)
+      throws IOException {
 
     final Path myDir;
     final String myPrefix;
@@ -768,13 +802,14 @@ public final class PathUtils {
     do {
       attemptCount++;
       if (attemptCount > maxAttempts) {
-        throw new IOException("The highly improbable has occurred! Failed to "
-            + "create a unique temporary directory after " + maxAttempts
-            + " attempts.");
+        throw new IOException(
+            "The highly improbable has occurred! Failed to "
+                + "create a unique temporary directory after "
+                + maxAttempts
+                + " attempts.");
       }
 
-      final String filename =
-          myPrefix + UUID.randomUUID().toString() + mySuffix;
+      final String filename = myPrefix + UUID.randomUUID().toString() + mySuffix;
       tempFile = new Path(myDir, filename);
     } while (fs.isFile(tempFile));
 
@@ -783,20 +818,22 @@ public final class PathUtils {
 
   /**
    * Copy all files in a directory to one output file (merge).
+   *
    * @param paths list of path files to concat
    * @param dstPath destination path
    * @param conf Configuration
    * @return true if the concatenation is successful
    * @throws IOException if an error occurs
    */
-  public static boolean concat(final List<Path> paths, final Path dstPath,
-      final Configuration conf) throws IOException {
+  public static boolean concat(final List<Path> paths, final Path dstPath, final Configuration conf)
+      throws IOException {
 
     return concat(paths, dstPath, false, true, null);
   }
 
   /**
    * Copy all files in a directory to one output file (merge).
+   *
    * @param paths list of path files to concat
    * @param dstPath destination path
    * @param deleteSource true if the original files must be deleted
@@ -805,15 +842,20 @@ public final class PathUtils {
    * @return true if the concatenation is successful
    * @throws IOException if an error occurs
    */
-  public static boolean concat(final List<Path> paths, final Path dstPath,
-      final boolean deleteSource, final boolean overwrite,
-      final Configuration conf) throws IOException {
+  public static boolean concat(
+      final List<Path> paths,
+      final Path dstPath,
+      final boolean deleteSource,
+      final boolean overwrite,
+      final Configuration conf)
+      throws IOException {
 
     return concat(paths, dstPath, deleteSource, overwrite, conf, null);
   }
 
   /**
    * Copy all files in a directory to one output file (merge).
+   *
    * @param paths list of path files to concat
    * @param dstPath destination path
    * @param deleteSource true if the original files must be deleted
@@ -823,9 +865,14 @@ public final class PathUtils {
    * @return true if the concatenation is successful
    * @throws IOException if an error occurs
    */
-  public static boolean concat(final List<Path> paths, final Path dstPath,
-      final boolean deleteSource, final boolean overwrite,
-      final Configuration conf, final String addString) throws IOException {
+  public static boolean concat(
+      final List<Path> paths,
+      final Path dstPath,
+      final boolean deleteSource,
+      final boolean overwrite,
+      final Configuration conf,
+      final String addString)
+      throws IOException {
 
     if (paths == null) {
       throw new NullPointerException("The list of path to concat is null");
@@ -860,11 +907,9 @@ public final class PathUtils {
             if (addString != null) {
               out.write(addString.getBytes(FileCharsets.UTF8_CHARSET));
             }
-
           }
         }
       }
-
     }
 
     if (deleteSource) {
@@ -880,13 +925,14 @@ public final class PathUtils {
 
   /**
    * Check if a file exists
+   *
    * @param file File to test
    * @param conf Configuration
    * @param msgFileType message for the description of the file
    * @throws IOException if the file doesn't exists
    */
-  public static void checkExistingFile(final Path file,
-      final Configuration conf, final String msgFileType) throws IOException {
+  public static void checkExistingFile(
+      final Path file, final Configuration conf, final String msgFileType) throws IOException {
 
     if (msgFileType == null) {
       throw new NullPointerException("Message file type for check is null");
@@ -909,35 +955,36 @@ public final class PathUtils {
 
   /**
    * Check if a directory exists
+   *
    * @param directory directory to test
    * @param conf Configuration
    * @param conf the configuration object
    * @param msgFileType message for the description of the file
    * @throws IOException if the file doesn't exists
    */
-  public static void checkExistingDirectoryFile(final Path directory,
-      final Configuration conf, final String msgFileType) throws IOException {
+  public static void checkExistingDirectoryFile(
+      final Path directory, final Configuration conf, final String msgFileType) throws IOException {
 
     checkExistingFile(directory, conf, msgFileType);
 
     final FileSystem fs = directory.getFileSystem(conf);
 
     if (!fs.getFileStatus(directory).isDirectory()) {
-      throw new IOException(
-          "The " + msgFileType + " is not a directory: " + directory);
+      throw new IOException("The " + msgFileType + " is not a directory: " + directory);
     }
   }
 
   /**
    * Check if a directory exists
+   *
    * @param directory directory to test
    * @param conf Configuration
    * @param conf the configuration object
    * @return true is the directory exists
    * @throws IOException if an error occurs
    */
-  public static boolean isExistingDirectoryFile(final Path directory,
-      final Configuration conf) throws IOException {
+  public static boolean isExistingDirectoryFile(final Path directory, final Configuration conf)
+      throws IOException {
 
     if (directory == null) {
       throw new NullPointerException("The directory is null");
@@ -958,13 +1005,13 @@ public final class PathUtils {
 
   /**
    * Check if a file exists
+   *
    * @param file file to test
    * @param conf Configuration
    * @return true is the directory exists
    * @throws IOException if an unexpecting error occurs
    */
-  public static boolean isFile(final Path file, final Configuration conf)
-      throws IOException {
+  public static boolean isFile(final Path file, final Configuration conf) throws IOException {
 
     if (file == null) {
       throw new NullPointerException("The path is null");
@@ -981,62 +1028,65 @@ public final class PathUtils {
 
   /**
    * Check if a file exists
+   *
    * @param file File to test
    * @param conf Configuration
    * @param conf Configuration
    * @param msgFileType message for the description of the file
    * @throws IOException if the file doesn't exists
    */
-  public static void checkExistingStandardFile(final Path file,
-      final Configuration conf, final String msgFileType) throws IOException {
+  public static void checkExistingStandardFile(
+      final Path file, final Configuration conf, final String msgFileType) throws IOException {
 
     checkExistingFile(file, conf, msgFileType);
 
     final FileSystem fs = file.getFileSystem(conf);
 
     if (!fs.isFile(file)) {
-      throw new IOException(
-          "The " + msgFileType + " is  not a standard file: " + file);
+      throw new IOException("The " + msgFileType + " is  not a standard file: " + file);
     }
   }
 
   /**
    * Check if a file exists
+   *
    * @param file File to test
    * @param conf Configuration
    * @param conf Configuration
    * @param msgFileType message for the description of the file
    * @throws IOException if the file doesn't exists
    */
-  public static void checkExistingStandardFileOrDirectory(final Path file,
-      final Configuration conf, final String msgFileType) throws IOException {
+  public static void checkExistingStandardFileOrDirectory(
+      final Path file, final Configuration conf, final String msgFileType) throws IOException {
 
     checkExistingDirectoryFile(file, conf, msgFileType);
 
     final FileSystem fs = file.getFileSystem(conf);
 
     if (!fs.isFile(file) && !fs.getFileStatus(file).isDirectory()) {
-      throw new IOException("The "
-          + msgFileType + " is  not a standard file or a directory: " + file);
+      throw new IOException(
+          "The " + msgFileType + " is  not a standard file or a directory: " + file);
     }
   }
 
   /**
    * Copy file from a path to another path.
+   *
    * @param srcPath source path
    * @param destPath destination path
    * @param conf Configuration
    * @return true if the copy is successful
    * @throws IOException if an error occurs while copying
    */
-  public static boolean copy(final Path srcPath, final Path destPath,
-      final Configuration conf) throws IOException {
+  public static boolean copy(final Path srcPath, final Path destPath, final Configuration conf)
+      throws IOException {
 
     return copy(srcPath, destPath, true, conf);
   }
 
   /**
    * Copy file from a path to another path.
+   *
    * @param srcPath source path
    * @param destPath destination path
    * @param overwrite true if existing files must be overwritten
@@ -1044,8 +1094,9 @@ public final class PathUtils {
    * @return true if the copy is successful
    * @throws IOException if an error occurs while copying
    */
-  public static boolean copy(final Path srcPath, final Path destPath,
-      final boolean overwrite, final Configuration conf) throws IOException {
+  public static boolean copy(
+      final Path srcPath, final Path destPath, final boolean overwrite, final Configuration conf)
+      throws IOException {
 
     if (srcPath == null) {
       throw new NullPointerException("The source path is null.");
@@ -1062,26 +1113,27 @@ public final class PathUtils {
     final FileSystem srcFs = srcPath.getFileSystem(conf);
     final FileSystem destFs = destPath.getFileSystem(conf);
 
-    return FileUtil.copy(srcFs, srcPath, destFs, destPath, false, overwrite,
-        conf);
+    return FileUtil.copy(srcFs, srcPath, destFs, destPath, false, overwrite, conf);
   }
 
   /**
    * Move file from a path to another path.
+   *
    * @param srcPath source path
    * @param destPath destination path
    * @param conf Configuration
    * @return true if the copy is successful
    * @throws IOException if an error occurs while copying
    */
-  public static boolean move(final Path srcPath, final Path destPath,
-      final Configuration conf) throws IOException {
+  public static boolean move(final Path srcPath, final Path destPath, final Configuration conf)
+      throws IOException {
 
     return move(srcPath, destPath, true, conf);
   }
 
   /**
    * Move file from a path to another path.
+   *
    * @param srcPath source path
    * @param destPath destination path
    * @param overwrite true if existing files must be overwritten
@@ -1089,8 +1141,9 @@ public final class PathUtils {
    * @return true if the copy is successful
    * @throws IOException if an error occurs while copying
    */
-  public static boolean move(final Path srcPath, final Path destPath,
-      final boolean overwrite, final Configuration conf) throws IOException {
+  public static boolean move(
+      final Path srcPath, final Path destPath, final boolean overwrite, final Configuration conf)
+      throws IOException {
 
     if (srcPath == null) {
       throw new NullPointerException("The source path is null.");
@@ -1107,23 +1160,21 @@ public final class PathUtils {
     final FileSystem srcFs = srcPath.getFileSystem(conf);
     final FileSystem destFs = destPath.getFileSystem(conf);
 
-    return FileUtil.copy(srcFs, srcPath, destFs, destPath, true, overwrite,
-        conf);
+    return FileUtil.copy(srcFs, srcPath, destFs, destPath, true, overwrite, conf);
   }
 
   /**
    * Create a directory. If parent directories don't exists create it.
+   *
    * @param path Path of the directory to create
    * @param conf Configuration
    * @return true if the directory is successfully created
    * @throws IOException if an error occurs while creating the directory
    */
-  public static boolean mkdirs(final Path path, final Configuration conf)
-      throws IOException {
+  public static boolean mkdirs(final Path path, final Configuration conf) throws IOException {
 
     if (path == null) {
-      throw new NullPointerException(
-          "The path of the directory to create is null.");
+      throw new NullPointerException("The path of the directory to create is null.");
     }
 
     if (conf == null) {
@@ -1136,13 +1187,13 @@ public final class PathUtils {
 
   /**
    * Test if a path exists
+   *
    * @param path Path to test
    * @param conf Configuration
    * @return true if the path exists
    * @throws IOException if an error occurs while creating the directory
    */
-  public static boolean exists(final Path path, final Configuration conf)
-      throws IOException {
+  public static boolean exists(final Path path, final Configuration conf) throws IOException {
 
     final FileSystem fs = path.getFileSystem(conf);
 
@@ -1153,10 +1204,6 @@ public final class PathUtils {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
-  private PathUtils() {
-  }
-
+  /** Private constructor. */
+  private PathUtils() {}
 }

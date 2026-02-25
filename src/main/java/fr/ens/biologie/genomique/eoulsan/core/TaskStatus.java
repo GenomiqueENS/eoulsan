@@ -24,12 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.core;
 
-import java.util.Map;
-
 import fr.ens.biologie.genomique.kenetre.util.Reporter;
+import java.util.Map;
 
 /**
  * This interface define a step status.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -37,48 +37,56 @@ public interface TaskStatus extends Progress {
 
   /**
    * Get the sample counters.
+   *
    * @return the sample counters as a map
    */
   Map<String, Long> getCounters();
 
   /**
    * Get the context description.
+   *
    * @return a String with the context description
    */
   String getDescription();
 
   /**
    * Set the context description.
+   *
    * @param description the description to set
    */
   void setDescription(String description);
 
   /**
    * Get the context command line.
+   *
    * @return a String with the context command line
    */
   String getCommandLine();
 
   /**
    * Set the context command line.
+   *
    * @param commandLine the command line to set
    */
   void setCommandLine(String commandLine);
 
   /**
    * Get the context docker image.
+   *
    * @return a String with the context docker image
    */
   String getDockerImage();
 
   /**
    * Set the context docker image.
+   *
    * @param dockerImage the command line to set
    */
   void setDockerImage(String dockerImage);
 
   /**
    * Set the context counters.
+   *
    * @param reporter the reporter
    * @param counterGroup counter group to use with the reporter
    */
@@ -86,12 +94,14 @@ public interface TaskStatus extends Progress {
 
   /**
    * Create a TaskResult object for a successful result.
+   *
    * @return a TaskResult object
    */
   TaskResult createTaskResult();
 
   /**
    * Create a TaskResult object.
+   *
    * @param success true if the task is successful
    * @return a TaskResult object
    */
@@ -99,6 +109,7 @@ public interface TaskStatus extends Progress {
 
   /**
    * Create a TaskResult object.
+   *
    * @param exception exception of the error
    * @param exceptionMessage Error message
    * @return a TaskResult object
@@ -107,9 +118,9 @@ public interface TaskStatus extends Progress {
 
   /**
    * Create a TaskResult object.
+   *
    * @param exception exception of the error
    * @return a TaskResult object
    */
   TaskResult createTaskResult(Throwable exception);
-
 }

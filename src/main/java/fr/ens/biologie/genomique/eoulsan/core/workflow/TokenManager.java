@@ -36,24 +36,12 @@ import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.GENERATOR_STE
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.STANDARD_STEP;
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
 import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
-
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
@@ -74,9 +62,20 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.protocols.HDFSPathDataProtocol;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * This class define a token manager for a step.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -90,19 +89,14 @@ public class TokenManager implements Runnable {
   private final StepOutputPorts outputPorts;
 
   private final Set<Integer> receivedTokens = new HashSet<>();
-  private final HashMultiset<StepInputPort> receivedPortTokens =
-      HashMultiset.create();
-  private final HashMultiset<StepInputPort> expectedPortTokens =
-      HashMultiset.create();
+  private final HashMultiset<StepInputPort> receivedPortTokens = HashMultiset.create();
+  private final HashMultiset<StepInputPort> expectedPortTokens = HashMultiset.create();
   private int contextCount;
-  private final Multimap<InputPort, Data> inputTokens =
-      ArrayListMultimap.create();
-  private final Multimap<OutputPort, Data> outputTokens =
-      ArrayListMultimap.create();
+  private final Multimap<InputPort, Data> inputTokens = ArrayListMultimap.create();
+  private final Multimap<OutputPort, Data> outputTokens = ArrayListMultimap.create();
   private final Set<InputPort> closedPorts = new HashSet<>();
 
-  private final Set<ImmutableMap<InputPort, Data>> cartesianProductsUsed =
-      new HashSet<>();
+  private final Set<ImmutableMap<InputPort, Data>> cartesianProductsUsed = new HashSet<>();
 
   private final Set<Data> failedOutputDataToRemove = new HashSet<>();
 
@@ -115,6 +109,7 @@ public class TokenManager implements Runnable {
 
   /**
    * Test if there is no token to be received by the token manager.
+   *
    * @return true if no token to be received by the token manager
    */
   public boolean isNoTokenToReceive() {
@@ -123,6 +118,7 @@ public class TokenManager implements Runnable {
 
   /**
    * Get the number of context created by the token manager.
+   *
    * @return the number of context created by the token manager
    */
   public int getContextCount() {
@@ -131,6 +127,7 @@ public class TokenManager implements Runnable {
 
   /**
    * Test if this is the end of the step.
+   *
    * @return true if this is the end of the step
    */
   public boolean isEndOfStep() {
@@ -143,6 +140,7 @@ public class TokenManager implements Runnable {
 
   /**
    * Check if all the ports has received some data.
+   *
    * @return true if all the ports has received some data
    */
   private boolean checkIfAllPortsHasReceivedSomeData() {
@@ -158,6 +156,7 @@ public class TokenManager implements Runnable {
 
   /**
    * Check if all the list input ports are closed.
+   *
    * @return true if all the list ports are closed
    */
   private boolean checkIfAllListPortsAreClosed() {
@@ -181,11 +180,11 @@ public class TokenManager implements Runnable {
 
   /**
    * Log the token that are send by the step.
+   *
    * @param outputPort the output port
    * @param token the token sent
    */
-  private void logSendingToken(final StepOutputPort outputPort,
-      final Token token) {
+  private void logSendingToken(final StepOutputPort outputPort, final Token token) {
 
     Objects.requireNonNull(token);
     Objects.requireNonNull(outputPort);
@@ -203,8 +202,7 @@ public class TokenManager implements Runnable {
       }
 
       // Create compatibility link for result files
-      if (EoulsanRuntime.getSettings()
-          .getBooleanSetting("debug.compatibility.result.file.links")
+      if (EoulsanRuntime.getSettings().getBooleanSetting("debug.compatibility.result.file.links")
           && this.step.getType() == StepType.STANDARD_STEP) {
         createCompatibilityLinkResultFiles(data);
       }
@@ -213,8 +211,8 @@ public class TokenManager implements Runnable {
       createSymlinksInOutputDirectory(data);
 
       // Get the metadata storage
-      final DataMetadataStorage metadataStorage = DataMetadataStorage
-          .getInstance(this.step.getAbstractWorkflow().getOutputDirectory());
+      final DataMetadataStorage metadataStorage =
+          DataMetadataStorage.getInstance(this.step.getAbstractWorkflow().getOutputDirectory());
 
       // Store token metadata only if step is not skipped
       if (!this.step.isSkip()) {
@@ -224,8 +222,9 @@ public class TokenManager implements Runnable {
   }
 
   /**
-   * This method allow to create symbolic link on step result file with the same
-   * name as in Eoulsan 1.x.
+   * This method allow to create symbolic link on step result file with the same name as in Eoulsan
+   * 1.x.
+   *
    * @param data the data
    */
   private void createCompatibilityLinkResultFiles(final Data data) {
@@ -259,8 +258,7 @@ public class TokenManager implements Runnable {
           name.setSampleNumber(sampleNumber);
 
           // Create link name
-          final DataFile link =
-              new DataFile(parentDir, name.compatibilityFilename());
+          final DataFile link = new DataFile(parentDir, name.compatibilityFilename());
 
           // Create link only if not already exists
           if (!link.exists()) {
@@ -268,24 +266,22 @@ public class TokenManager implements Runnable {
           }
 
         } catch (IOException exp) {
-          getLogger().warning(
-              "Error while creating compatibility link: " + exp.getMessage());
+          getLogger().warning("Error while creating compatibility link: " + exp.getMessage());
         }
       }
     }
-
   }
 
   /**
    * Create symbolic links in output directory.
+   *
    * @param data the data
    */
   private void createSymlinksInOutputDirectory(final Data data) {
 
     requireNonNull(data, "data argument cannot be null");
 
-    final DataFile outputDir =
-        this.step.getAbstractWorkflow().getOutputDirectory();
+    final DataFile outputDir = this.step.getAbstractWorkflow().getOutputDirectory();
     final DataFile workingDir = this.step.getStepOutputDirectory();
 
     // Nothing to to if the step working directory is the output directory
@@ -313,8 +309,7 @@ public class TokenManager implements Runnable {
           // Create symbolic link
           file.symlink(link, true);
         } catch (IOException e) {
-          EoulsanLogger.getLogger()
-              .severe("Cannot create symbolic link: " + link);
+          EoulsanLogger.getLogger().severe("Cannot create symbolic link: " + link);
         }
       }
     }
@@ -355,6 +350,7 @@ public class TokenManager implements Runnable {
 
   /**
    * Post a token to the the token manager.
+   *
    * @param inputPort port where the token must be posted
    * @param token the token to post
    */
@@ -365,27 +361,31 @@ public class TokenManager implements Runnable {
 
     // Check origin step state
     final StepState originStepState = token.getOrigin().getStep().getState();
-    checkState(originStepState.isWorkingState() || originStepState == DONE,
+    checkState(
+        originStepState.isWorkingState() || originStepState == DONE,
         "Invalid token step origin state: " + originStepState);
 
     // Check if token has already been processed
-    checkState(!this.receivedTokens.contains(token.getId()),
+    checkState(
+        !this.receivedTokens.contains(token.getId()),
         "Token has been already received: " + token.getId());
 
     // Check if the input is linked to the step
-    checkState(this.inputPorts.contains(inputPort),
-        "Unknown port: " + inputPort);
+    checkState(this.inputPorts.contains(inputPort), "Unknown port: " + inputPort);
 
     // Check if the origin of the token and the input port are linked
-    checkState(inputPort.getLink() == token.getOrigin(),
+    checkState(
+        inputPort.getLink() == token.getOrigin(),
         "The input port ("
-            + inputPort + ") and the output port (" + token.getOrigin()
+            + inputPort
+            + ") and the output port ("
+            + token.getOrigin()
             + ") are not linked:");
 
     // Check if the input port is closed
-    checkState(!(this.closedPorts.contains(inputPort) && !this.step.isSkip()),
-        "The input port is closed for the step "
-            + this.step.getId() + ": " + inputPort.getName());
+    checkState(
+        !(this.closedPorts.contains(inputPort) && !this.step.isSkip()),
+        "The input port is closed for the step " + this.step.getId() + ": " + inputPort.getName());
 
     synchronized (this.receivedTokens) {
       this.receivedTokens.add(token.getId());
@@ -394,10 +394,10 @@ public class TokenManager implements Runnable {
     // Test if the token is an end token
     if (token.isEndOfStepToken()) {
 
-      checkState(token.getTokenCount() > -1,
-          "the number of expected token is not set");
+      checkState(token.getTokenCount() > -1, "the number of expected token is not set");
 
-      checkState(expectedPortTokens.count(inputPort) == 0,
+      checkState(
+          expectedPortTokens.count(inputPort) == 0,
           "the number of expected token has been already set");
 
       // Set the number of expected tokens
@@ -418,7 +418,6 @@ public class TokenManager implements Runnable {
       // Synchronized this part to avoid the lost of some data when creating
       // Cartesian product
       synchronized (this.cartesianProductsUsed) {
-
         if (data.isList()) {
           for (Data e : data.getListElements()) {
             addData(inputPort, e);
@@ -433,23 +432,22 @@ public class TokenManager implements Runnable {
     // Close ports if all the expected tokens has been received
     if (this.step.isSkip()
         || (this.expectedPortTokens.contains(inputPort)
-            && this.receivedPortTokens.count(
-                inputPort) == this.expectedPortTokens.count(inputPort))) {
+            && this.receivedPortTokens.count(inputPort)
+                == this.expectedPortTokens.count(inputPort))) {
 
       // Check if input port is empty for non skipped steps
       checkState(
           !(!this.step.isSkip() && this.inputTokens.get(inputPort).isEmpty()),
-          "No data receive for port on step "
-              + this.step.getId() + ": " + inputPort.getName());
+          "No data receive for port on step " + this.step.getId() + ": " + inputPort.getName());
 
       // The input port must be closed
       this.closedPorts.add(inputPort);
     }
-
   }
 
   /**
    * Add data to the token manager.
+   *
    * @param inputPort inputPort port for the data
    * @param data the data
    */
@@ -472,7 +470,6 @@ public class TokenManager implements Runnable {
       final Design design = this.step.getAbstractWorkflow().getDesign();
 
       synchronized (inputData) {
-
         if (inputData.isEmpty()) {
           dataList = new DataList(inputPort, design);
           inputData.add(dataList);
@@ -486,9 +483,7 @@ public class TokenManager implements Runnable {
     }
   }
 
-  /**
-   * Send end of step tokens.
-   */
+  /** Send end of step tokens. */
   private void sendEndOfStepTokens() {
 
     for (StepOutputPort outputPort : this.outputPorts) {
@@ -498,9 +493,7 @@ public class TokenManager implements Runnable {
     }
   }
 
-  /**
-   * Send all the tokens of a skip step.
-   */
+  /** Send all the tokens of a skip step. */
   private void sendSkipStepTokens() {
 
     // Create a map with the samples
@@ -520,20 +513,22 @@ public class TokenManager implements Runnable {
       }
 
       final Set<Data> existingData = port.getExistingData();
-      maxExistingDataCount =
-          Math.max(maxExistingDataCount, existingData.size());
+      maxExistingDataCount = Math.max(maxExistingDataCount, existingData.size());
 
       if (existingData.size() == 0) {
-        throw new EoulsanRuntimeException("No output files of the step \""
-            + this.step.getId() + "\" matching with "
-            + WorkflowFileNaming.glob(port) + " found");
+        throw new EoulsanRuntimeException(
+            "No output files of the step \""
+                + this.step.getId()
+                + "\" matching with "
+                + WorkflowFileNaming.glob(port)
+                + " found");
       }
 
       for (Data data : existingData) {
 
         // Get the metadata storage
-        final DataMetadataStorage metadataStorage = DataMetadataStorage
-            .getInstance(this.step.getAbstractWorkflow().getOutputDirectory());
+        final DataMetadataStorage metadataStorage =
+            DataMetadataStorage.getInstance(this.step.getAbstractWorkflow().getOutputDirectory());
 
         // Set the metadata of data from the storage of metadata
         final boolean isMetadataSet = metadataStorage.loadMetadata(data);
@@ -543,8 +538,7 @@ public class TokenManager implements Runnable {
 
           // Set the metadata from sample metadata
           if (samples.containsKey(data.getName())) {
-            WorkflowDataUtils.setDataMetaData(data,
-                samples.get(data.getName()));
+            WorkflowDataUtils.setDataMetaData(data, samples.get(data.getName()));
           }
         }
 
@@ -569,6 +563,7 @@ public class TokenManager implements Runnable {
 
   /**
    * Create output data for a new context.
+   *
    * @return a map with the output data
    */
   private Map<OutputPort, AbstractData> createContextOutputData() {
@@ -595,11 +590,11 @@ public class TokenManager implements Runnable {
 
   /**
    * Create the contexts of the step.
+   *
    * @param workflowContext the Workflow context
    * @return a set with the context
    */
-  private Set<TaskContextImpl> createContexts(
-      final WorkflowContext workflowContext) {
+  private Set<TaskContextImpl> createContexts(final WorkflowContext workflowContext) {
 
     final Set<TaskContextImpl> result = new HashSet<>();
 
@@ -608,13 +603,11 @@ public class TokenManager implements Runnable {
     // Process only the cartesian products of data that have not been converted
     // in Context
     synchronized (this.cartesianProductsUsed) {
-
-      if (!checkIfAllPortsHasReceivedSomeData()
-          || !checkIfAllListPortsAreClosed()) {
+      if (!checkIfAllPortsHasReceivedSomeData() || !checkIfAllListPortsAreClosed()) {
         cartesianProductToProcess = Collections.emptySet();
       } else {
-        cartesianProductToProcess = this.step.getDataProduct()
-            .makeProduct(this.inputPorts, this.inputTokens);
+        cartesianProductToProcess =
+            this.step.getDataProduct().makeProduct(this.inputPorts, this.inputTokens);
       }
 
       cartesianProductToProcess.removeAll(this.cartesianProductsUsed);
@@ -627,8 +620,7 @@ public class TokenManager implements Runnable {
       // Create the Data object for the output port
       Map<OutputPort, AbstractData> outputData = createContextOutputData();
       // Create the context object
-      result.add(new TaskContextImpl(workflowContext, this.step, inputData,
-          outputData));
+      result.add(new TaskContextImpl(workflowContext, this.step, inputData, outputData));
     }
 
     return result;
@@ -636,6 +628,7 @@ public class TokenManager implements Runnable {
 
   /**
    * Create a context when no input port exists.
+   *
    * @param workflowContext the workflow context
    * @return a singleton set with the context
    */
@@ -656,9 +649,7 @@ public class TokenManager implements Runnable {
   // Step results methods
   //
 
-  /**
-   * This method write the step result in a file.
-   */
+  /** This method write the step result in a file. */
   private void writeStepResult(final StepResult result) {
 
     if (result == null) {
@@ -667,7 +658,8 @@ public class TokenManager implements Runnable {
 
     // Step result file
     DataFile logFile =
-        new DataFile(this.step.getAbstractWorkflow().getJobDirectory(),
+        new DataFile(
+            this.step.getAbstractWorkflow().getJobDirectory(),
             this.step.getId() + STEP_RESULT_EXTENSION);
 
     try {
@@ -684,8 +676,10 @@ public class TokenManager implements Runnable {
     if (EoulsanRuntime.getSettings().isUseOldEoulsanResultFormat()) {
 
       // Step result file
-      logFile = new DataFile(this.step.getAbstractWorkflow().getJobDirectory(),
-          this.step.getId() + Globals.STEP_RESULT_OLD_FORMAT_EXTENSION);
+      logFile =
+          new DataFile(
+              this.step.getAbstractWorkflow().getJobDirectory(),
+              this.step.getId() + Globals.STEP_RESULT_OLD_FORMAT_EXTENSION);
 
       try {
 
@@ -696,33 +690,26 @@ public class TokenManager implements Runnable {
         Common.showAndLogErrorMessage(
             "Unable to create log file for " + this.step.getId() + " step.");
       }
-
     }
-
   }
 
   //
   // Cleanup methods
   //
 
-  /**
-   * Remove inputs of the step if required by user
-   */
+  /** Remove inputs of the step if required by user */
   private void removeInputsIfRequired() {
 
     final TokenManagerRegistry registry = TokenManagerRegistry.getInstance();
 
-    for (AbstractStep step : this.step.getWorkflowInputPorts()
-        .getLinkedSteps()) {
+    for (AbstractStep step : this.step.getWorkflowInputPorts().getLinkedSteps()) {
 
       final TokenManager tokenManager = registry.getTokenManager(step);
       tokenManager.removeOutputsIfRequired();
     }
   }
 
-  /**
-   * Remove outputs of the step if required by user
-   */
+  /** Remove outputs of the step if required by user */
   private void removeOutputsIfRequired() {
 
     // Do nothing if removing output as soon as possible is not required
@@ -731,8 +718,7 @@ public class TokenManager implements Runnable {
     }
 
     // Check if all the step that require step's output is done
-    for (AbstractStep step : this.step.getWorkflowOutputPorts()
-        .getLinkedSteps()) {
+    for (AbstractStep step : this.step.getWorkflowOutputPorts().getLinkedSteps()) {
 
       if (step.getState() != StepState.DONE) {
         return;
@@ -745,6 +731,7 @@ public class TokenManager implements Runnable {
 
   /**
    * Add a failed task.
+   *
    * @param failedContext failed task context
    */
   void addFailedOutputData(final TaskContextImpl failedContext) {
@@ -756,9 +743,7 @@ public class TokenManager implements Runnable {
     }
   }
 
-  /**
-   * Remove outputs to discard.
-   */
+  /** Remove outputs to discard. */
   void removeOutputsToDiscard() {
 
     // Remove output only for standard steps
@@ -766,18 +751,14 @@ public class TokenManager implements Runnable {
       return;
     }
 
-    final DataFile outputWorkflowDir =
-        this.step.getAbstractWorkflow().getOutputDirectory();
+    final DataFile outputWorkflowDir = this.step.getAbstractWorkflow().getOutputDirectory();
 
     // Only remove symbolic links if the output directory of the step is not the
     // expected output directory
-    final boolean remove =
-        this.step.getDiscardOutput() != Step.DiscardOutput.NO;
+    final boolean remove = this.step.getDiscardOutput() != Step.DiscardOutput.NO;
 
     // In debug mode do not remove links
-    if (!remove
-        && EoulsanRuntime.getSettings()
-            .getBooleanSetting("debug.keep.step.output.links")) {
+    if (!remove && EoulsanRuntime.getSettings().getBooleanSetting("debug.keep.step.output.links")) {
       return;
     }
 
@@ -809,19 +790,15 @@ public class TokenManager implements Runnable {
     }
   }
 
-  /**
-   * Remove all outputs of the step.
-   */
+  /** Remove all outputs of the step. */
   void removeAllOutputs() {
 
     // Remove output only for standard steps
-    if (!(this.step.getType() == STANDARD_STEP
-        || this.step.getType() == GENERATOR_STEP)) {
+    if (!(this.step.getType() == STANDARD_STEP || this.step.getType() == GENERATOR_STEP)) {
       return;
     }
 
-    final DataFile outputWorkflowDir =
-        this.step.getAbstractWorkflow().getOutputDirectory();
+    final DataFile outputWorkflowDir = this.step.getAbstractWorkflow().getOutputDirectory();
 
     final List<Data> list = new ArrayList<>();
     list.addAll(this.outputTokens.values());
@@ -845,23 +822,21 @@ public class TokenManager implements Runnable {
         }
       }
     }
-
   }
 
   /**
    * Remove a file and its symbolic link.
+   *
    * @param file file to remove
    * @param symlinkDir the directory where is the symbolic link to remove
    */
-  private void removeFileAndSymLink(final DataFile file,
-      final DataFile symlinkDir) {
+  private void removeFileAndSymLink(final DataFile file, final DataFile symlinkDir) {
 
     // Remove the file
     getLogger().fine("Remove output file: " + file);
     try {
 
-      if (HDFSPathDataProtocol.PROTOCOL_NAME
-          .equals(file.getProtocol().getName())) {
+      if (HDFSPathDataProtocol.PROTOCOL_NAME.equals(file.getProtocol().getName())) {
 
         // If file is on HDFS, file removing must be recursive
         file.delete(true);
@@ -871,8 +846,7 @@ public class TokenManager implements Runnable {
         file.delete();
       }
     } catch (IOException e) {
-      getLogger().severe("Cannot remove data to discard: "
-          + file + " (" + e.getMessage() + ")");
+      getLogger().severe("Cannot remove data to discard: " + file + " (" + e.getMessage() + ")");
     }
 
     // Remove the symbolic link
@@ -881,6 +855,7 @@ public class TokenManager implements Runnable {
 
   /**
    * Remove the symbolic link of a file.
+   *
    * @param file file to remove
    * @param symlinkDir the directory where is the symbolic link to remove
    */
@@ -895,8 +870,9 @@ public class TokenManager implements Runnable {
         link.delete();
       }
     } catch (IOException e) {
-      getLogger().severe("Cannot remove data symbolic link to discard: "
-          + link + " (" + e.getMessage() + ")");
+      getLogger()
+          .severe(
+              "Cannot remove data symbolic link to discard: " + link + " (" + e.getMessage() + ")");
     }
   }
 
@@ -904,9 +880,7 @@ public class TokenManager implements Runnable {
   // Thread methods
   //
 
-  /**
-   * Start the Token manager thread.
-   */
+  /** Start the Token manager thread. */
   void start() {
 
     // Do not start the thread if is a cluster task
@@ -915,8 +889,9 @@ public class TokenManager implements Runnable {
     }
 
     // Check if the thread has been already started
-    checkState(!this.isStarted, "The token manager thread for step "
-        + this.step.getId() + " is already started");
+    checkState(
+        !this.isStarted,
+        "The token manager thread for step " + this.step.getId() + " is already started");
 
     // Start the thread
     new Thread(this, "TokenManager_" + this.step.getId()).start();
@@ -926,6 +901,7 @@ public class TokenManager implements Runnable {
 
   /**
    * Test if the thread for the token is started.
+   *
    * @return true if the thread for the token is started
    */
   public boolean isStarted() {
@@ -933,14 +909,13 @@ public class TokenManager implements Runnable {
     return this.isStarted;
   }
 
-  /**
-   * Stop the Token manager thread.
-   */
+  /** Stop the Token manager thread. */
   void stop() {
 
     // Check if the thread has been started
-    checkState(this.isStarted, "The token manager thread for step "
-        + this.step.getId() + " is not started");
+    checkState(
+        this.isStarted,
+        "The token manager thread for step " + this.step.getId() + " is not started");
 
     this.isStarted = false;
     this.endOfStep = true;
@@ -1066,8 +1041,9 @@ public class TokenManager implements Runnable {
     } catch (Throwable exception) {
 
       // Stop the analysis
-      this.step.getAbstractWorkflow().emergencyStop(exception,
-          "Error while executing the workflow");
+      this.step
+          .getAbstractWorkflow()
+          .emergencyStop(exception, "Error while executing the workflow");
     }
 
     // Register the token manager to the event bus
@@ -1077,14 +1053,11 @@ public class TokenManager implements Runnable {
     removeInputsIfRequired();
   }
 
-  /**
-   * Log received tokens.
-   */
+  /** Log received tokens. */
   private void logReceivedTokens() {
 
-    String msg = "Step #"
-        + this.step.getNumber() + " " + this.step.getId()
-        + " has received tokens: ";
+    String msg =
+        "Step #" + this.step.getNumber() + " " + this.step.getId() + " has received tokens: ";
 
     if (this.inputTokens.size() == 0) {
       msg += "no token received";
@@ -1098,9 +1071,13 @@ public class TokenManager implements Runnable {
           size = this.inputTokens.get(port).iterator().next().size();
         }
 
-        list.add(port.getName()
-            + " (" + port.getFormat().getName() + "): " + size
-            + (port.isList() ? " [list]" : ""));
+        list.add(
+            port.getName()
+                + " ("
+                + port.getFormat().getName()
+                + "): "
+                + size
+                + (port.isList() ? " [list]" : ""));
       }
 
       msg += Joiner.on(", ").join(list);
@@ -1109,14 +1086,10 @@ public class TokenManager implements Runnable {
     getLogger().fine(msg);
   }
 
-  /**
-   * Log sent tokens.
-   */
+  /** Log sent tokens. */
   private void logSentTokens() {
 
-    String msg = "Step #"
-        + this.step.getNumber() + " " + this.step.getId()
-        + " has sent tokens: ";
+    String msg = "Step #" + this.step.getNumber() + " " + this.step.getId() + " has sent tokens: ";
 
     if (this.outputTokens.size() == 0) {
       msg += " no token sent";
@@ -1124,9 +1097,12 @@ public class TokenManager implements Runnable {
 
       List<String> list = new ArrayList<>();
       for (OutputPort port : this.outputTokens.keySet()) {
-        list.add(port.getName()
-            + " (" + port.getFormat().getName() + "): "
-            + this.outputTokens.get(port).size());
+        list.add(
+            port.getName()
+                + " ("
+                + port.getFormat().getName()
+                + "): "
+                + this.outputTokens.get(port).size());
       }
       msg += Joiner.on(", ").join(list);
     }
@@ -1140,6 +1116,7 @@ public class TokenManager implements Runnable {
 
   /**
    * Constructor.
+   *
    * @param step step that tokens must be managed by this instance
    */
   TokenManager(final AbstractStep step) {
@@ -1156,5 +1133,4 @@ public class TokenManager implements Runnable {
     // Register the token manager to the event bus
     WorkflowEventBus.getInstance().register(this);
   }
-
 }

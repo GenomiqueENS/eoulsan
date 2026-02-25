@@ -26,8 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.modules;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
@@ -38,9 +36,11 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.util.Set;
 
 /**
  * This module is a fake module.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -64,20 +64,17 @@ public class FakeModule extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) {
+  public void configure(
+      final StepConfigurationContext context, final Set<Parameter> stepParameters) {
 
     for (Parameter p : stepParameters) {
       getLogger().info("s: " + p.getName() + "\t" + p.getStringValue());
     }
-
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     return status.createTaskResult();
   }
-
 }

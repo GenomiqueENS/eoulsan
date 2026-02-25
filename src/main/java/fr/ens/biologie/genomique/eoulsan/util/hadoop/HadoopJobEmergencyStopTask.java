@@ -4,19 +4,18 @@ import static fr.ens.biologie.genomique.eoulsan.CommonHadoop.createConfiguration
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
+import fr.ens.biologie.genomique.eoulsan.core.workflow.EmergencyStopTask;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.EmergencyStopTasks;
 import java.io.IOException;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapred.JobClient;
 import org.apache.hadoop.mapred.JobID;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapreduce.Job;
 
-import fr.ens.biologie.genomique.eoulsan.core.workflow.EmergencyStopTask;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.EmergencyStopTasks;
-
 /**
  * This class define an EmergencyStopTask for Hadoop Jobs.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -83,6 +82,7 @@ public class HadoopJobEmergencyStopTask implements EmergencyStopTask {
 
   /**
    * Add an Hadoop Job to the EmergencyStopTasks.
+   *
    * @param job the Hadoop job
    * @throws IOException if an error occurs while getting the job id
    * @throws InterruptedException if an error occurs while getting the job id
@@ -95,6 +95,7 @@ public class HadoopJobEmergencyStopTask implements EmergencyStopTask {
 
   /**
    * Remove an Hadoop Job to the EmergencyStopTasks.
+   *
    * @param job the Hadoop job
    * @throws IOException if an error occurs while getting the job id
    * @throws InterruptedException if an error occurs while getting the job id
@@ -102,8 +103,7 @@ public class HadoopJobEmergencyStopTask implements EmergencyStopTask {
   public static void removeHadoopJobEmergencyStopTask(final Job job)
       throws IOException, InterruptedException {
 
-    EmergencyStopTasks.getInstance()
-        .remove(new HadoopJobEmergencyStopTask(job));
+    EmergencyStopTasks.getInstance().remove(new HadoopJobEmergencyStopTask(job));
   }
 
   //
@@ -112,16 +112,15 @@ public class HadoopJobEmergencyStopTask implements EmergencyStopTask {
 
   /**
    * Public constructor.
+   *
    * @param job the Hadoop job
    * @throws IOException if an error occurs while getting the job id
    * @throws InterruptedException if an error occurs while getting the job id
    */
-  public HadoopJobEmergencyStopTask(final Job job)
-      throws IOException, InterruptedException {
+  public HadoopJobEmergencyStopTask(final Job job) throws IOException, InterruptedException {
 
     requireNonNull(job, "job argument cannot be null");
 
     this.jobId = job.getStatus().getJobID().toString();
   }
-
 }

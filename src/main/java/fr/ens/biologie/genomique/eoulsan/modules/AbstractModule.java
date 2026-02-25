@@ -26,9 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.modules;
 
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.noInputPort;
 
-import java.util.Collections;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
@@ -39,11 +36,14 @@ import fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * This class define an abstract Module.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -86,13 +86,11 @@ public abstract class AbstractModule implements Module {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
-  }
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {}
 
   @Override
   public ParallelizationMode getParallelizationMode() {
     return ParallelizationMode.STANDARD;
   }
-
 }

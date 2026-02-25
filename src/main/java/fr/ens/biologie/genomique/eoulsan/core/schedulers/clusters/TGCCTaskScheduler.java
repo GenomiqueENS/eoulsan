@@ -28,8 +28,8 @@ import java.io.File;
 import java.nio.file.Path;
 
 /**
- * This class define a TGCC cluster scheduler. This scheduler is based on the
- * Bpipe slurm script.
+ * This class define a TGCC cluster scheduler. This scheduler is based on the Bpipe slurm script.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -50,5 +50,4 @@ public class TGCCTaskScheduler extends BpipeTaskScheduler {
 
     return Path.of(BPIPE_SCRIPT_PATH).toFile();
   }
-
 }

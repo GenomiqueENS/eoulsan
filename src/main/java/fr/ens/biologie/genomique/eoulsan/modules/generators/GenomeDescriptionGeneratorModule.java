@@ -30,8 +30,6 @@ import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.singleOu
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_FASTA;
 
-import java.io.IOException;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -47,9 +45,11 @@ import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.kenetre.bio.BadBioEntryException;
 import fr.ens.biologie.genomique.kenetre.bio.GenomeDescription;
 import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.IOException;
 
 /**
  * This class implements a genome description generator module.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -86,8 +86,7 @@ public class GenomeDescriptionGeneratorModule extends AbstractModule {
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     // Get input and output data
     final Data inData = context.getInputData(GENOME_FASTA);
@@ -102,12 +101,11 @@ public class GenomeDescriptionGeneratorModule extends AbstractModule {
       final DataFile genomeDescriptionDataFile = outData.getDataFile();
 
       getLogger().fine("Input genome file: " + genomeDataFile);
-      getLogger()
-          .fine("Output genome description file: " + genomeDescriptionDataFile);
+      getLogger().fine("Output genome description file: " + genomeDescriptionDataFile);
 
       // Create genome description DataFile
-      final GenomeDescription desc = new GenomeDescriptionCreator()
-          .createGenomeDescription(genomeDataFile);
+      final GenomeDescription desc =
+          new GenomeDescriptionCreator().createGenomeDescription(genomeDataFile);
 
       // Save the genome description in the analysis folder
       desc.save(genomeDescriptionDataFile.create());
@@ -125,20 +123,19 @@ public class GenomeDescriptionGeneratorModule extends AbstractModule {
 
   /**
    * Check if a genome description storage has been defined.
-   * @return a GenomeDescStorage object if genome storage has been defined or
-   *         null if not
+   *
+   * @return a GenomeDescStorage object if genome storage has been defined or null if not
    */
   static DataFileGenomeDescStorage checkForGenomeDescStore() {
 
-    final String genomeDescStoragePath =
-        EoulsanRuntime.getSettings().getGenomeDescStoragePath();
+    final String genomeDescStoragePath = EoulsanRuntime.getSettings().getGenomeDescStoragePath();
 
     if (genomeDescStoragePath == null) {
       return null;
     }
 
-    return (DataFileGenomeDescStorage) DataFileGenomeDescStorage.getInstance(
-        new DataFile(genomeDescStoragePath), EoulsanLogger.getGenericLogger());
+    return (DataFileGenomeDescStorage)
+        DataFileGenomeDescStorage.getInstance(
+            new DataFile(genomeDescStoragePath), EoulsanLogger.getGenericLogger());
   }
-
 }

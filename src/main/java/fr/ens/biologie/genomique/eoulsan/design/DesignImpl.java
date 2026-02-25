@@ -27,6 +27,8 @@ package fr.ens.biologie.genomique.eoulsan.design;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.MoreObjects;
+import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,12 +38,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.google.common.base.MoreObjects;
-
-import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
-
 /**
  * This class defines the default implementation of the design.
+ *
  * @author Xavier Bauquet
  * @since 2.0
  */
@@ -77,8 +76,7 @@ class DesignImpl implements Serializable, Design {
 
     final String id = sampleId.trim();
 
-    checkArgument(this.samples.containsKey(id),
-        "The sample does not exists in the design: " + id);
+    checkArgument(this.samples.containsKey(id), "The sample does not exists in the design: " + id);
 
     return samples.get(id);
   }
@@ -96,8 +94,8 @@ class DesignImpl implements Serializable, Design {
 
     final String id = experimentId.trim();
 
-    checkArgument(this.experiments.containsKey(id),
-        "The experiment does not exists in the design: " + id);
+    checkArgument(
+        this.experiments.containsKey(id), "The experiment does not exists in the design: " + id);
 
     return experiments.get(id);
   }
@@ -105,8 +103,7 @@ class DesignImpl implements Serializable, Design {
   @Override
   public List<Experiment> getExperiments() {
 
-    return Collections
-        .unmodifiableList(new ArrayList<>(this.experiments.values()));
+    return Collections.unmodifiableList(new ArrayList<>(this.experiments.values()));
   }
 
   @Override
@@ -135,7 +132,8 @@ class DesignImpl implements Serializable, Design {
   public void removeSample(String sampleId) {
 
     requireNonNull(sampleId, "sampleId argument cannot be null");
-    checkArgument(this.samples.containsKey(sampleId),
+    checkArgument(
+        this.samples.containsKey(sampleId),
         "The sample does not exists in the design: " + sampleId);
 
     this.samples.remove(sampleId.trim());
@@ -145,7 +143,8 @@ class DesignImpl implements Serializable, Design {
   public void removeExperiment(String experimentId) {
 
     requireNonNull(experimentId, "experimentId argument cannot be null");
-    checkArgument(this.experiments.containsKey(experimentId.trim()),
+    checkArgument(
+        this.experiments.containsKey(experimentId.trim()),
         "The experiment does not exists in the design: " + experimentId);
 
     this.experiments.remove(experimentId.trim());
@@ -212,9 +211,9 @@ class DesignImpl implements Serializable, Design {
 
     final String id = sampleId.trim();
 
-    checkArgument(!this.samples.containsKey(id),
-        "The sample already exists in the design: " + id);
-    checkArgument(FileNaming.isDataNameValid(sampleId),
+    checkArgument(!this.samples.containsKey(id), "The sample already exists in the design: " + id);
+    checkArgument(
+        FileNaming.isDataNameValid(sampleId),
         "The id of a sample can only contains letters and digit: " + sampleId);
 
     final SampleImpl newSample = new SampleImpl(this, id);
@@ -231,11 +230,11 @@ class DesignImpl implements Serializable, Design {
 
     final String id = experimentId.trim();
 
-    checkArgument(!this.experiments.containsKey(id),
-        "The experiment already exists in the design: " + id);
-    checkArgument(FileNaming.isDataNameValid(experimentId),
-        "The id of an experiment can only contains letters and digit: "
-            + experimentId);
+    checkArgument(
+        !this.experiments.containsKey(id), "The experiment already exists in the design: " + id);
+    checkArgument(
+        FileNaming.isDataNameValid(experimentId),
+        "The id of an experiment can only contains letters and digit: " + experimentId);
 
     final ExperimentImpl newExperiment = new ExperimentImpl(this, id);
 
@@ -273,16 +272,17 @@ class DesignImpl implements Serializable, Design {
 
     return MoreObjects.toStringHelper(this)
         .add("designNumber", this.designNumber)
-        .add("designName", this.designName).add("samples", this.samples)
+        .add("designName", this.designName)
+        .add("samples", this.samples)
         .add("experiments", this.experiments)
-        .add("designMetadata", this.designMetadata).toString();
+        .add("designMetadata", this.designMetadata)
+        .toString();
   }
 
   @Override
   public int hashCode() {
 
-    return Objects.hash(this.designName, this.samples,
-        this.experiments, this.designMetadata);
+    return Objects.hash(this.designName, this.samples, this.experiments, this.designMetadata);
   }
 
   @Override
@@ -308,10 +308,6 @@ class DesignImpl implements Serializable, Design {
   // Constructor
   //
 
-  /**
-   * Default constructor
-   */
-  DesignImpl() {
-  }
-
+  /** Default constructor */
+  DesignImpl() {}
 }

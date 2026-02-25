@@ -28,8 +28,6 @@ import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.GENERATOR_STEP;
 import static java.util.Objects.requireNonNull;
 
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters.ClusterTaskScheduler;
@@ -37,9 +35,11 @@ import fr.ens.biologie.genomique.eoulsan.core.workflow.AbstractStep;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepResult;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepStatus;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
+import java.util.Set;
 
 /**
  * This class defined a combined task scheduler for cluster mode.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -187,9 +187,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
   // Other method
   //
 
-  /**
-   * Check execution state.
-   */
+  /** Check execution state. */
   private void checkExecutionState() {
 
     synchronized (this) {
@@ -200,6 +198,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
 
   /**
    * Get the parallelization mode of a step.
+   *
    * @param step the step
    * @return the parallelization mode of the step
    */
@@ -212,6 +211,7 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
 
   /**
    * Get the task scheduler of a step.
+   *
    * @param step the step
    * @return the task scheduler that the step must use
    */
@@ -222,16 +222,15 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
     }
 
     switch (getParallelizationMode(step)) {
+      case NOT_NEEDED:
+        return this.noTaskScheduler;
 
-    case NOT_NEEDED:
-      return this.noTaskScheduler;
+      case STANDARD:
+      case OWN_PARALLELIZATION:
+        return this.clusterTaskScheduler;
 
-    case STANDARD:
-    case OWN_PARALLELIZATION:
-      return this.clusterTaskScheduler;
-
-    default:
-      throw new IllegalStateException("Unknown Parallelization mode");
+      default:
+        throw new IllegalStateException("Unknown Parallelization mode");
     }
   }
 
@@ -241,14 +240,14 @@ public class ClusterCombinedTaskScheduler implements TaskScheduler {
 
   /**
    * Constructor.
+   *
    * @param threadNumber number of thread to use by the task scheduler
    * @param clusterScheduler cluster scheduler to use
    */
-  public ClusterCombinedTaskScheduler(final int threadNumber,
-      final ClusterTaskScheduler clusterScheduler) {
+  public ClusterCombinedTaskScheduler(
+      final int threadNumber, final ClusterTaskScheduler clusterScheduler) {
 
-    requireNonNull(clusterScheduler,
-        "clusterScheduler argument cannot be null");
+    requireNonNull(clusterScheduler, "clusterScheduler argument cannot be null");
 
     // Create the schedulers
     this.noTaskScheduler = new MonoThreadTaskScheduler();

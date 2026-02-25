@@ -7,20 +7,7 @@ import static fr.ens.biologie.genomique.eoulsan.requirements.PathRequirement.new
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.base.Splitter;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -46,9 +33,21 @@ import fr.ens.biologie.genomique.kenetre.util.GuavaCompatibility;
 import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.kenetre.util.process.SimpleProcess;
 import fr.ens.biologie.genomique.kenetre.util.process.SystemSimpleProcess;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class define a module for MultiQC.
+ *
  * @since 2.2
  * @author Laurent Jourdren
  */
@@ -105,8 +104,8 @@ public class MultiQCModule extends AbstractModule {
   }
 
   @Override
-  public void configure(StepConfigurationContext context,
-      Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(StepConfigurationContext context, Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     // By default only process FastQC reports
     String reports = FastQCInputPreprocessor.REPORT_NAME;
@@ -114,36 +113,33 @@ public class MultiQCModule extends AbstractModule {
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
+        case "use.docker":
+          this.dockerMode = p.getBooleanValue();
+          break;
 
-      case "use.docker":
-        this.dockerMode = p.getBooleanValue();
-        break;
+        case "docker.image":
+          this.dockerImage = p.getStringValue().trim();
+          if (this.dockerImage.isEmpty()) {
+            Modules.badParameterValue(context, p, "The docker image name is empty");
+          }
+          break;
 
-      case "docker.image":
-        this.dockerImage = p.getStringValue().trim();
-        if (this.dockerImage.isEmpty()) {
-          Modules.badParameterValue(context, p,
-              "The docker image name is empty");
-        }
-        break;
+        case "reports":
+          reports = p.getStringValue();
+          break;
 
-      case "reports":
-        reports = p.getStringValue();
-        break;
+        case "debug":
+          this.keepTemporaryFiles = p.getBooleanValue();
+          break;
 
-      case "debug":
-        this.keepTemporaryFiles = p.getBooleanValue();
-        break;
-
-      default:
-        Modules.unknownParameter(context, p);
-        break;
+        default:
+          Modules.unknownParameter(context, p);
+          break;
       }
     }
 
     // Parse report parameter and set the formats to handle
-    for (InputPreprocessor ip : parseReportParameter(reports,
-        context.getCurrentStep().getId())) {
+    for (InputPreprocessor ip : parseReportParameter(reports, context.getCurrentStep().getId())) {
       DataFormat df = ip.getDataFormat();
       if (df != null) {
         this.formats.put(df, ip);
@@ -159,23 +155,20 @@ public class MultiQCModule extends AbstractModule {
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     // Define the output file
-    Path multiQCReportFile = context.getOutputData(MULTIQC_REPORT_HTML, "all")
-        .getDataFile().toPath();
+    Path multiQCReportFile =
+        context.getOutputData(MULTIQC_REPORT_HTML, "all").getDataFile().toPath();
 
     try {
 
       // Create a temporary directory where all the preprocessed files for
       // MultiQC while be saved
-      Path multiQCInputDir =
-          FileUtils.createTempDir(context.getLocalTempDirectory()).toPath();
+      Path multiQCInputDir = FileUtils.createTempDir(context.getLocalTempDirectory()).toPath();
 
       // Preprocess input data for MultiQC
-      for (Map.Entry<DataFormat, InputPreprocessor> e : this.formats
-          .entrySet()) {
+      for (Map.Entry<DataFormat, InputPreprocessor> e : this.formats.entrySet()) {
         for (Data d : context.getInputData(e.getKey()).getListElements()) {
           e.getValue().preprocess(context, d, multiQCInputDir.toFile());
         }
@@ -191,14 +184,22 @@ public class MultiQCModule extends AbstractModule {
       if (this.dockerMode) {
         context.getLogger().info("Docker image: " + this.dockerImage);
         status.setDockerImage(this.dockerImage);
-        commandLine = createMultiQCReportWithDocker(this.dockerImage,
-            multiQCInputDir, sampleNamesFile,
-            multiQCReportFile, context.getCommandName(),
-            context.getLocalTempDirectory().toPath());
+        commandLine =
+            createMultiQCReportWithDocker(
+                this.dockerImage,
+                multiQCInputDir,
+                sampleNamesFile,
+                multiQCReportFile,
+                context.getCommandName(),
+                context.getLocalTempDirectory().toPath());
       } else {
-        commandLine = createMultiQCReport(multiQCInputDir,
-            sampleNamesFile, multiQCReportFile,
-            context.getCommandName(), context.getLocalTempDirectory().toPath());
+        commandLine =
+            createMultiQCReport(
+                multiQCInputDir,
+                sampleNamesFile,
+                multiQCReportFile,
+                context.getCommandName(),
+                context.getLocalTempDirectory().toPath());
       }
 
       // Set command line in status
@@ -219,6 +220,7 @@ public class MultiQCModule extends AbstractModule {
 
   /**
    * Parse the "reports" step parameter.
+   *
    * @param reports the parameter value
    * @param stepId stepId
    * @return a collection of InputPreprocessor
@@ -228,14 +230,14 @@ public class MultiQCModule extends AbstractModule {
       final String reports, final String stepId) throws EoulsanException {
 
     // Get service instance
-    final InputPreprocessorService service =
-        InputPreprocessorService.getInstance();
+    final InputPreprocessorService service = InputPreprocessorService.getInstance();
 
     final Map<String, InputPreprocessor> result = new HashMap<>();
 
-    for (String report : GuavaCompatibility.splitToList(
-        Splitter.on(',').trimResults().omitEmptyStrings(),
-        reports.toLowerCase(Globals.DEFAULT_LOCALE))) {
+    for (String report :
+        GuavaCompatibility.splitToList(
+            Splitter.on(',').trimResults().omitEmptyStrings(),
+            reports.toLowerCase(Globals.DEFAULT_LOCALE))) {
 
       // Only process each report type once
       if (result.containsKey(report)) {
@@ -243,18 +245,19 @@ public class MultiQCModule extends AbstractModule {
       }
 
       if (!service.isService(report)) {
-        throw new EoulsanException("In step \""
-            + stepId
-            + "\", invalid MultiQC configuration: unknown report type: "
-            + report);
+        throw new EoulsanException(
+            "In step \""
+                + stepId
+                + "\", invalid MultiQC configuration: unknown report type: "
+                + report);
       }
 
       result.put(report, service.newService(report));
     }
 
     if (result.isEmpty()) {
-      throw new EoulsanException("In step \""
-          + stepId + "\", invalid MultiQC configuration: no report selected");
+      throw new EoulsanException(
+          "In step \"" + stepId + "\", invalid MultiQC configuration: no report selected");
     }
 
     return result.values();
@@ -262,6 +265,7 @@ public class MultiQCModule extends AbstractModule {
 
   /**
    * Create the MultiQC report using docker.
+   *
    * @param dockerImage docker image to use
    * @param inputDirectory input directory
    * @param sampleNamesFile sample names file
@@ -271,13 +275,16 @@ public class MultiQCModule extends AbstractModule {
    * @throws IOException if an error occurs while creating the report
    * @throws EoulsanException if MultiQC execution fails
    */
-  private List<String> createMultiQCReportWithDocker(final String dockerImage,
-      final Path inputDirectory, final Path sampleNamesFile,
-      final Path multiQCReportFile, final String projectName,
-      final Path temporaryDirectory) throws IOException, EoulsanException {
+  private List<String> createMultiQCReportWithDocker(
+      final String dockerImage,
+      final Path inputDirectory,
+      final Path sampleNamesFile,
+      final Path multiQCReportFile,
+      final String projectName,
+      final Path temporaryDirectory)
+      throws IOException, EoulsanException {
 
-    SimpleProcess process =
-        EoulsanDockerManager.getInstance().createImageInstance(dockerImage);
+    SimpleProcess process = EoulsanDockerManager.getInstance().createImageInstance(dockerImage);
 
     Path executionDirectory = multiQCReportFile.getParent();
     Path stdoutFile = executionDirectory.resolve("multiqc.stdout");
@@ -298,14 +305,18 @@ public class MultiQCModule extends AbstractModule {
     }
 
     // Create command line
-    List<String> commandLine = createCommandLine(inputDirectory,
-        sampleNamesFile, multiQCReportFile, projectName);
+    List<String> commandLine =
+        createCommandLine(inputDirectory, sampleNamesFile, multiQCReportFile, projectName);
 
     // Launch Docker container
     final int exitValue =
-        process.execute(commandLine, executionDirectory.toFile(),
-            temporaryDirectory.toFile(), stdoutFile.toFile(),
-            stderrFile.toFile(), filesUsed.toArray(new File[0]));
+        process.execute(
+            commandLine,
+            executionDirectory.toFile(),
+            temporaryDirectory.toFile(),
+            stdoutFile.toFile(),
+            stderrFile.toFile(),
+            filesUsed.toArray(new File[0]));
 
     if (exitValue > 0) {
       throw new EoulsanException("Invalid exit code of MultiQC: " + exitValue);
@@ -316,6 +327,7 @@ public class MultiQCModule extends AbstractModule {
 
   /**
    * Create the MultiQC report using docker.
+   *
    * @param inputDirectory input directory
    * @param sampleNamesFile sample names file
    * @param multiQCReportFile output report
@@ -324,9 +336,12 @@ public class MultiQCModule extends AbstractModule {
    * @throws IOException if an error occurs while creating the report
    * @throws EoulsanException if MultiQC execution fails
    */
-  private List<String> createMultiQCReport(final Path inputDirectory,
-      final Path sampleNamesFile, final Path multiQCReportFile,
-      final String projectName, final Path temporaryDirectory)
+  private List<String> createMultiQCReport(
+      final Path inputDirectory,
+      final Path sampleNamesFile,
+      final Path multiQCReportFile,
+      final String projectName,
+      final Path temporaryDirectory)
       throws IOException, EoulsanException {
 
     SimpleProcess process = new SystemSimpleProcess();
@@ -336,12 +351,17 @@ public class MultiQCModule extends AbstractModule {
     Path stderrFile = executionDirectory.resolve("multiqc.stderr");
 
     // Create command line
-    List<String> commandLine = createCommandLine(inputDirectory,
-        sampleNamesFile, multiQCReportFile, projectName);
+    List<String> commandLine =
+        createCommandLine(inputDirectory, sampleNamesFile, multiQCReportFile, projectName);
 
     // Launch Docker container
-    int exitValue = process.execute(commandLine, executionDirectory.toFile(),
-        temporaryDirectory.toFile(), stdoutFile.toFile(), stderrFile.toFile());
+    int exitValue =
+        process.execute(
+            commandLine,
+            executionDirectory.toFile(),
+            temporaryDirectory.toFile(),
+            stdoutFile.toFile(),
+            stderrFile.toFile());
 
     if (exitValue > 0) {
       throw new EoulsanException("Invalid exit code of MultiQC: " + exitValue);
@@ -352,6 +372,7 @@ public class MultiQCModule extends AbstractModule {
 
   /**
    * Creating MultiQC command line.
+   *
    * @param inputDirectory input directory
    * @param sampleNamesFile sample names file
    * @param multiQCReportFile output report
@@ -359,8 +380,10 @@ public class MultiQCModule extends AbstractModule {
    * @param projectName project name
    * @return a list with the MultiQC arguments
    */
-  private static List<String> createCommandLine(final Path inputDirectory,
-      final Path sampleNamesFile, final Path multiQCReportFile,
+  private static List<String> createCommandLine(
+      final Path inputDirectory,
+      final Path sampleNamesFile,
+      final Path multiQCReportFile,
       final String projectName) {
 
     List<String> result = new ArrayList<>();
@@ -384,12 +407,13 @@ public class MultiQCModule extends AbstractModule {
 
   /**
    * Create a sample name file for MultiQC.
+   *
    * @param design the Eoulsan design
    * @param sampleNamesFile the file to create
    * @throws IOException if an error occurs while creating the file
    */
-  private static void createSampleNamesFile(final Design design,
-      final Path sampleNamesFile) throws IOException {
+  private static void createSampleNamesFile(final Design design, final Path sampleNamesFile)
+      throws IOException {
 
     requireNonNull(design);
     requireNonNull(sampleNamesFile);
@@ -403,18 +427,15 @@ public class MultiQCModule extends AbstractModule {
     }
 
     List<String> result = new ArrayList<>();
-    result
-        .add("MultiQC Names\tNames" + (isDescription ? "\tDescriptions" : ""));
+    result.add("MultiQC Names\tNames" + (isDescription ? "\tDescriptions" : ""));
     for (Sample s : design.getSamples()) {
       String description = s.getMetadata().getDescription();
       if (description == null) {
         description = "";
       }
-      result.add(s.getId()
-          + '\t' + s.getName() + (isDescription ? '\t' + description : ""));
+      result.add(s.getId() + '\t' + s.getName() + (isDescription ? '\t' + description : ""));
     }
 
     Files.write(sampleNamesFile, result);
   }
-
 }

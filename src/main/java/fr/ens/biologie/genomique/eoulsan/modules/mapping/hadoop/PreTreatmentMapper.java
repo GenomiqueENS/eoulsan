@@ -28,17 +28,7 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.INPUT_RAW_READS_COUNTER;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.OUTPUT_PRETREATMENT_READS_COUNTER;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Mapper;
-
 import com.google.common.base.Splitter;
-
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -46,18 +36,25 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 import fr.ens.biologie.genomique.kenetre.bio.ReadSequence;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
 
 /**
- * This class defines a mapper for the pretreatment of paired-end data before
- * the reads filtering step.
+ * This class defines a mapper for the pretreatment of paired-end data before the reads filtering
+ * step.
+ *
  * @since 1.2
  * @author Claire Wallon
  */
 public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
 
   // Parameters keys
-  static final String FASTQ_FORMAT_KEY =
-      Globals.PARAMETER_PREFIX + ".pretreatment.fastq.format";
+  static final String FASTQ_FORMAT_KEY = Globals.PARAMETER_PREFIX + ".pretreatment.fastq.format";
 
   private String counterGroup;
 
@@ -71,8 +68,7 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
   //
 
   @Override
-  protected void setup(final Context context)
-      throws IOException, InterruptedException {
+  protected void setup(final Context context) throws IOException, InterruptedException {
 
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
@@ -87,8 +83,8 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     // Set the FastqFormat
     final FastqFormat fastqFormat =
-        FastqFormat.getFormatFromName(conf.get(FASTQ_FORMAT_KEY,
-            "" + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
+        FastqFormat.getFormatFromName(
+            conf.get(FASTQ_FORMAT_KEY, "" + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
     this.read.setFastqFormat(fastqFormat);
 
     getLogger().info("Fastq format: " + fastqFormat);
@@ -107,15 +103,14 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
   //
 
   /**
-   * 'key': offset of the beginning of the line from the beginning of the TFQ
-   * file. 'value': the TFQ record.
+   * 'key': offset of the beginning of the line from the beginning of the TFQ file. 'value': the TFQ
+   * record.
    */
   @Override
-  protected void map(final LongWritable key, final Text value,
-      final Context context) throws IOException, InterruptedException {
+  protected void map(final LongWritable key, final Text value, final Context context)
+      throws IOException, InterruptedException {
 
-    context.getCounter(this.counterGroup, INPUT_RAW_READS_COUNTER.counterName())
-        .increment(1);
+    context.getCounter(this.counterGroup, INPUT_RAW_READS_COUNTER.counterName()).increment(1);
 
     final String line = value.toString();
     this.fields.clear();
@@ -134,26 +129,23 @@ public class PreTreatmentMapper extends Mapper<LongWritable, Text, Text, Text> {
     if (!this.fields.get(0).contains("/")) {
       List<String> fields = Splitter.on(' ').splitToList(this.read.getName());
       outKey = new Text(fields.get(0));
-      outValue = new Text(fields.get(1)
-          + "\t" + this.read.getSequence() + "\t" + this.read.getQuality());
+      outValue =
+          new Text(fields.get(1) + "\t" + this.read.getSequence() + "\t" + this.read.getQuality());
     }
     // Before Casava 1.8 or technology other than Illumina
     else {
       List<String> fields = Splitter.on('/').splitToList(this.read.getName());
       outKey = new Text(fields.get(0) + "/");
-      outValue = new Text(fields.get(1)
-          + "\t" + this.read.getSequence() + "\t" + this.read.getQuality());
+      outValue =
+          new Text(fields.get(1) + "\t" + this.read.getSequence() + "\t" + this.read.getQuality());
     }
 
     context.write(outKey, outValue);
-    context.getCounter(this.counterGroup,
-        OUTPUT_PRETREATMENT_READS_COUNTER.counterName()).increment(1);
-
+    context
+        .getCounter(this.counterGroup, OUTPUT_PRETREATMENT_READS_COUNTER.counterName())
+        .increment(1);
   }
 
   @Override
-  protected void cleanup(final Context context)
-      throws IOException, InterruptedException {
-  }
-
+  protected void cleanup(final Context context) throws IOException, InterruptedException {}
 }

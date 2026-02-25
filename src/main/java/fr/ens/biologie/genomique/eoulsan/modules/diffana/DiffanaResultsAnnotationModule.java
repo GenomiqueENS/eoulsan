@@ -32,20 +32,7 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATED_EXPRE
 import static fr.ens.biologie.genomique.eoulsan.util.EoulsanTranslatorUtils.getLinksFileFromSettings;
 import static fr.ens.biologie.genomique.eoulsan.util.EoulsanTranslatorUtils.loadTranslator;
 
-import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.nio.file.PathMatcher;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.base.Splitter;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -73,10 +60,21 @@ import fr.ens.biologie.genomique.kenetre.translator.io.TranslatorOutputFormat;
 import fr.ens.biologie.genomique.kenetre.translator.io.XLSXTranslatorOutputFormat;
 import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * This class define a module that create annotated expression files in TSV, ODS
- * or XLSX format.
+ * This class define a module that create annotated expression files in TSV, ODS or XLSX format.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -86,11 +84,9 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
 
   public static final String MODULE_NAME = "diffanaresultsannotation";
 
-  private static final DataFormat DEFAULT_FORMAT =
-      ANNOTATED_EXPRESSION_RESULTS_TSV;
+  private static final DataFormat DEFAULT_FORMAT = ANNOTATED_EXPRESSION_RESULTS_TSV;
 
-  private static final String DEFAULT_FILE_INPUT_GLOB_PATTERN =
-      "{diffana_*.tsv,deseq2_*.tsv}";
+  private static final String DEFAULT_FILE_INPUT_GLOB_PATTERN = "{diffana_*.tsv,deseq2_*.tsv}";
 
   private final Map<String, DataFormat> outputFormats = new HashMap<>();
 
@@ -154,8 +150,8 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     String pattern = DEFAULT_FILE_INPUT_GLOB_PATTERN;
     this.outputPrefix = context.getCurrentStep().getId() + '_';
@@ -163,74 +159,69 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
     for (final Parameter p : stepParameters) {
 
       switch (p.getName()) {
+        case "annotationfile":
+          Modules.removedParameter(context, p);
+          break;
 
-      case "annotationfile":
-        Modules.removedParameter(context, p);
-        break;
+        case "use.additional.annotation.file":
+          this.useAdditionalAnnotationFile = p.getBooleanValue();
+          break;
 
-      case "use.additional.annotation.file":
-        this.useAdditionalAnnotationFile = p.getBooleanValue();
-        break;
-
-      case "outputformat":
-        Modules.renamedParameter(context, p, "output.format");
+        case "outputformat":
+          Modules.renamedParameter(context, p, "output.format");
         // fall through
-      case "output.format":
+        case "output.format":
 
-        // Set output format
-        for (String format : Splitter.on(',').trimResults().omitEmptyStrings()
-            .split(p.getValue())) {
+          // Set output format
+          for (String format :
+              Splitter.on(',').trimResults().omitEmptyStrings().split(p.getValue())) {
 
-          switch (format) {
+            switch (format) {
+              case "tsv":
+                this.outputFormats.put(format, ANNOTATED_EXPRESSION_RESULTS_TSV);
+                break;
 
-          case "tsv":
-            this.outputFormats.put(format, ANNOTATED_EXPRESSION_RESULTS_TSV);
-            break;
+              case "ods":
+                this.outputFormats.put(format, ANNOTATED_EXPRESSION_RESULTS_ODS);
+                break;
 
-          case "ods":
-            this.outputFormats.put(format, ANNOTATED_EXPRESSION_RESULTS_ODS);
-            break;
+              case "xlsx":
+                this.outputFormats.put(format, ANNOTATED_EXPRESSION_RESULTS_XLSX);
+                break;
 
-          case "xlsx":
-            this.outputFormats.put(format, ANNOTATED_EXPRESSION_RESULTS_XLSX);
-            break;
-
-          default:
-            throw new EoulsanException("Unknown output format: " + format);
+              default:
+                throw new EoulsanException("Unknown output format: " + format);
+            }
           }
-        }
 
-        break;
+          break;
 
-      case "files":
-        pattern = p.getStringValue();
-        break;
+        case "files":
+          pattern = p.getStringValue();
+          break;
 
-      case "output.prefix":
-        this.outputPrefix = p.getStringValue();
-        break;
+        case "output.prefix":
+          this.outputPrefix = p.getStringValue();
+          break;
 
-      default:
-        // Unknown option
-        Modules.unknownParameter(context, p);
-        break;
+        default:
+          // Unknown option
+          Modules.unknownParameter(context, p);
+          break;
       }
     }
 
     // Set the default format
     if (this.outputFormats.isEmpty()) {
-      this.outputFormats.put(DEFAULT_FORMAT.getDefaultExtension().substring(1),
-          DEFAULT_FORMAT);
+      this.outputFormats.put(DEFAULT_FORMAT.getDefaultExtension().substring(1), DEFAULT_FORMAT);
     }
 
     // Set the PathMatcher
-    this.pathMatcher =
-        FileSystems.getDefault().getPathMatcher("glob:" + pattern);
+    this.pathMatcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern);
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     // Avoid issue with AWT in ODF Toolkit
     System.setProperty("javax.accessibility.assistive_technologies", "");
@@ -246,12 +237,10 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
       if (this.useAdditionalAnnotationFile) {
 
         // If no annotation file parameter set
-        Data additionalAnnotationData =
-            context.getInputData(ADDITIONAL_ANNOTATION_TSV);
+        Data additionalAnnotationData = context.getInputData(ADDITIONAL_ANNOTATION_TSV);
 
         // Create translator with additional annotation file
-        translator =
-            loadTranslator(additionalAnnotationData.getDataFile(), linksFile);
+        translator = loadTranslator(additionalAnnotationData.getDataFile(), linksFile);
 
       } else {
 
@@ -272,8 +261,7 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
       final List<DataFile> files = new ArrayList<>();
       final List<DataFile> filesToConvert = new ArrayList<>();
 
-      context.getLogger()
-          .info("Search files in directory: " + context.getOutputDirectory());
+      context.getLogger().info("Search files in directory: " + context.getOutputDirectory());
       context.getLogger().info("Output directory: " + outputDir);
 
       // Handle step output directory
@@ -316,8 +304,8 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
           // Get format
           final DataFormat format = e.getValue();
 
-          final String prefix = this.outputPrefix
-              + StringUtils.filenameWithoutExtension(inFile.getName());
+          final String prefix =
+              this.outputPrefix + StringUtils.filenameWithoutExtension(inFile.getName());
 
           final TranslatorOutputFormat of;
           final DataFile outFile;
@@ -325,25 +313,27 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
           if (format == ANNOTATED_EXPRESSION_RESULTS_XLSX) {
 
             // XLSX output
-            outFile = new DataFile(outputDir, prefix
-                + ANNOTATED_EXPRESSION_RESULTS_XLSX.getDefaultExtension());
+            outFile =
+                new DataFile(
+                    outputDir, prefix + ANNOTATED_EXPRESSION_RESULTS_XLSX.getDefaultExtension());
             checkIfFileExists(outFile, context);
-            of = new XLSXTranslatorOutputFormat(outFile.create(),
-                context.getLocalTempDirectory());
+            of = new XLSXTranslatorOutputFormat(outFile.create(), context.getLocalTempDirectory());
 
           } else if (format == ANNOTATED_EXPRESSION_RESULTS_ODS) {
 
             // ODS output
-            outFile = new DataFile(outputDir, prefix
-                + ANNOTATED_EXPRESSION_RESULTS_ODS.getDefaultExtension());
+            outFile =
+                new DataFile(
+                    outputDir, prefix + ANNOTATED_EXPRESSION_RESULTS_ODS.getDefaultExtension());
             checkIfFileExists(outFile, context);
             of = new ODSTranslatorOutputFormat(outFile.create());
 
           } else {
 
             // TSV output
-            outFile = new DataFile(outputDir, prefix
-                + ANNOTATED_EXPRESSION_RESULTS_TSV.getDefaultExtension());
+            outFile =
+                new DataFile(
+                    outputDir, prefix + ANNOTATED_EXPRESSION_RESULTS_TSV.getDefaultExtension());
             checkIfFileExists(outFile, context);
             of = new TSVTranslatorOutputFormat(outFile.create());
           }
@@ -370,18 +360,20 @@ public class DiffanaResultsAnnotationModule extends AbstractModule {
 
   /**
    * Check if the output file already exists.
+   *
    * @param file the output file
    * @param context the step context
    * @throws IOException if the the output file already exists
    */
-  private static void checkIfFileExists(final DataFile file,
-      final TaskContext context) throws IOException {
+  private static void checkIfFileExists(final DataFile file, final TaskContext context)
+      throws IOException {
 
     if (file.exists()) {
-      throw new IOException("Output file of the \""
-          + context.getCurrentStep().getId() + "\" already exists: " + file);
+      throw new IOException(
+          "Output file of the \""
+              + context.getCurrentStep().getId()
+              + "\" already exists: "
+              + file);
     }
-
   }
-
 }

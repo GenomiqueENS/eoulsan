@@ -34,8 +34,8 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 
 /**
- * This class define the Runtime to execute low level IO operation for Eoulsan
- * in local mode.
+ * This class define the Runtime to execute low level IO operation for Eoulsan in local mode.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -56,20 +56,17 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
   }
 
   @Override
-  public InputStream getInputStream(final String dataSource)
-      throws IOException {
+  public InputStream getInputStream(final String dataSource) throws IOException {
 
     if (dataSource == null) {
       throw new IllegalArgumentException("The datasource is null.");
     }
 
-    return decompressInputStreamIsNeeded(
-        Files.newInputStream(Path.of(dataSource)), dataSource);
+    return decompressInputStreamIsNeeded(Files.newInputStream(Path.of(dataSource)), dataSource);
   }
 
   @Override
-  public InputStream getRawInputStream(final String dataSource)
-      throws IOException {
+  public InputStream getRawInputStream(final String dataSource) throws IOException {
 
     if (dataSource == null) {
       throw new IllegalArgumentException("The datasource is null.");
@@ -79,8 +76,7 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
   }
 
   @Override
-  public OutputStream getOutputStream(final String dataSource)
-      throws IOException {
+  public OutputStream getOutputStream(final String dataSource) throws IOException {
 
     if (dataSource == null) {
       throw new IllegalArgumentException("The datasource is null.");
@@ -91,6 +87,7 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
 
   /**
    * Set the cluster mode.
+   *
    * @param mode Eoulsan execution mode
    */
   public void setMode(final EoulsanExecMode mode) {
@@ -112,6 +109,7 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
 
   /**
    * Public constructor, initialize the runtime.
+   *
    * @param settings Settings of the application
    * @return a local Eoulsan runtime
    */
@@ -128,6 +126,7 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
 
   /**
    * Private constructor.
+   *
    * @param settings Settings of the application
    */
   private LocalEoulsanRuntime(final Settings settings) {
@@ -137,16 +136,15 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
 
   /**
    * Initialization Eoulsan runtime for external application who needed Eoulsan
+   *
    * @throws IOException if an error occurs while initializing the runtime
    * @throws EoulsanException if an error occurs while initializing the runtime
    */
-  public static void initEoulsanRuntimeForExternalApp()
-      throws IOException, EoulsanException {
+  public static void initEoulsanRuntimeForExternalApp() throws IOException, EoulsanException {
 
     if (!EoulsanRuntime.isRuntime()) {
       newEoulsanRuntime(new Settings(true));
-      ((LocalEoulsanRuntime) EoulsanRuntime.getRuntime())
-          .setMode(EoulsanExecMode.EXTERNAL_APP);
+      ((LocalEoulsanRuntime) EoulsanRuntime.getRuntime()).setMode(EoulsanExecMode.EXTERNAL_APP);
     }
 
     // Disable logging
@@ -157,5 +155,4 @@ public final class LocalEoulsanRuntime extends AbstractEoulsanRuntime {
       }
     }
   }
-
 }

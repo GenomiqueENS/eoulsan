@@ -1,5 +1,11 @@
 package fr.ens.biologie.genomique.eoulsan.modules.multiqc;
 
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
+import fr.ens.biologie.genomique.eoulsan.data.Data;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,15 +13,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.data.Data;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
-
 /**
  * This class define a preprocessor for Cutadapt reports.
+ *
  * @since 2.7
  * @author Laurent Jourdren
  */
@@ -32,13 +32,13 @@ public class CutAdaptInputPreprocessor implements InputPreprocessor {
 
   @Override
   public DataFormat getDataFormat() {
-    return DataFormatRegistry.getInstance()
-        .getDataFormatFromNameOrAlias("cutadapt_report");
+    return DataFormatRegistry.getInstance().getDataFormatFromNameOrAlias("cutadapt_report");
   }
 
   @Override
-  public void preprocess(final TaskContext context, final Data data,
-      final File multiQCInputDirectory) throws IOException {
+  public void preprocess(
+      final TaskContext context, final Data data, final File multiQCInputDirectory)
+      throws IOException {
 
     /// Get data name
     String name = data.getName();
@@ -47,8 +47,7 @@ public class CutAdaptInputPreprocessor implements InputPreprocessor {
     DataFile reportFile = data.getDataFile();
 
     // Define the name of the output file
-    DataFile outputFile =
-        new DataFile(multiQCInputDirectory, name + "_trimming_report.txt");
+    DataFile outputFile = new DataFile(multiQCInputDirectory, name + "_trimming_report.txt");
 
     // Create output file
     if (!outputFile.exists()) {
@@ -61,12 +60,12 @@ public class CutAdaptInputPreprocessor implements InputPreprocessor {
 
   /**
    * Update Cutadapt report file with the name of sample.
+   *
    * @param reportPath the report file
    * @param name the name of the sample
    * @throws IOException if an error occurs while updating the file
    */
-  private static void updateReportFile(Path reportPath, String name)
-      throws IOException {
+  private static void updateReportFile(Path reportPath, String name) throws IOException {
 
     List<String> lines = Files.readAllLines(reportPath);
     List<String> result = new ArrayList<>();
@@ -89,5 +88,4 @@ public class CutAdaptInputPreprocessor implements InputPreprocessor {
 
     Files.write(reportPath, result);
   }
-
 }

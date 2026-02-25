@@ -35,8 +35,8 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.kenetre.util.Version;
 
 /**
- * This class define a terminal task that do nothing. After this execution the
- * workflow will stop.
+ * This class define a terminal task that do nothing. After this execution the workflow will stop.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -61,10 +61,8 @@ public class TerminalModule extends AbstractModule {
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     return status.createTaskResult();
   }
-
 }

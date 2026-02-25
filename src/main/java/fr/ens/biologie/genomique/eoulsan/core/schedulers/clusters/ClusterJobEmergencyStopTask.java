@@ -3,14 +3,14 @@ package fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.EmergencyStopTask;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.EmergencyStopTasks;
+import java.io.IOException;
 
 /**
  * This class define an EmergencyStopTask for cluster Jobs.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -22,8 +22,8 @@ public class ClusterJobEmergencyStopTask implements EmergencyStopTask {
   @Override
   public void stop() {
 
-    getLogger().info("Try to kill "
-        + this.jobId + " " + this.scheduler.getSchedulerName() + " job");
+    getLogger()
+        .info("Try to kill " + this.jobId + " " + this.scheduler.getSchedulerName() + " job");
 
     try {
       this.scheduler.statusJob(this.jobId);
@@ -31,8 +31,7 @@ public class ClusterJobEmergencyStopTask implements EmergencyStopTask {
       EoulsanLogger.getLogger().severe(e.getMessage());
     }
 
-    getLogger().info(
-        this.scheduler.getSchedulerName() + " job " + this.jobId + " killed");
+    getLogger().info(this.scheduler.getSchedulerName() + " job " + this.jobId + " killed");
   }
 
   //
@@ -67,26 +66,26 @@ public class ClusterJobEmergencyStopTask implements EmergencyStopTask {
 
   /**
    * Add a cluster Job to the EmergencyStopTasks.
+   *
    * @param scheduler the cluster scheduler
    * @param jobId the job id
    */
   public static void addHadoopJobEmergencyStopTask(
       final ClusterTaskScheduler scheduler, final String jobId) {
 
-    EmergencyStopTasks.getInstance()
-        .add(new ClusterJobEmergencyStopTask(scheduler, jobId));
+    EmergencyStopTasks.getInstance().add(new ClusterJobEmergencyStopTask(scheduler, jobId));
   }
 
   /**
    * Remove a cluster Job to the EmergencyStopTasks.
+   *
    * @param scheduler the cluster scheduler
    * @param jobId the job id
    */
   public static void removeHadoopJobEmergencyStopTask(
       final ClusterTaskScheduler scheduler, final String jobId) {
 
-    EmergencyStopTasks.getInstance()
-        .remove(new ClusterJobEmergencyStopTask(scheduler, jobId));
+    EmergencyStopTasks.getInstance().remove(new ClusterJobEmergencyStopTask(scheduler, jobId));
   }
 
   //
@@ -95,11 +94,11 @@ public class ClusterJobEmergencyStopTask implements EmergencyStopTask {
 
   /**
    * Public constructor.
+   *
    * @param scheduler the cluster scheduler
    * @param jobId the job id
    */
-  public ClusterJobEmergencyStopTask(final ClusterTaskScheduler scheduler,
-      final String jobId) {
+  public ClusterJobEmergencyStopTask(final ClusterTaskScheduler scheduler, final String jobId) {
 
     requireNonNull(scheduler, "scheduler argument cannot be null");
     requireNonNull(jobId, "jobId argument cannot be null");
@@ -107,5 +106,4 @@ public class ClusterJobEmergencyStopTask implements EmergencyStopTask {
     this.scheduler = scheduler;
     this.jobId = jobId;
   }
-
 }

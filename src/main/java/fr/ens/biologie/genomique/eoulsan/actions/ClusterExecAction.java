@@ -24,15 +24,15 @@
 
 package fr.ens.biologie.genomique.eoulsan.actions;
 
-import java.util.List;
-
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.LocalEoulsanRuntime;
+import java.util.List;
 
 /**
  * This class define the cluster exec Action.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -59,8 +59,7 @@ public class ClusterExecAction extends ExecAction {
   public void action(final List<String> arguments) {
 
     // Get Eoulsan runtime
-    final LocalEoulsanRuntime localRuntime =
-        (LocalEoulsanRuntime) EoulsanRuntime.getRuntime();
+    final LocalEoulsanRuntime localRuntime = (LocalEoulsanRuntime) EoulsanRuntime.getRuntime();
 
     // Set the cluster mode
     localRuntime.setMode(EoulsanExecMode.CLUSTER);
@@ -68,5 +67,4 @@ public class ClusterExecAction extends ExecAction {
     // Launch the action like a standard exec action
     super.action(arguments);
   }
-
 }

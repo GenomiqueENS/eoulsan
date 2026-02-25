@@ -153,5 +153,4 @@ class UnmodifiableDesignMetadata implements DesignMetadata, Serializable {
   UnmodifiableDesignMetadata(final DesignMetadata md) {
     this.md = md;
   }
-
 }

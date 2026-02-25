@@ -28,6 +28,7 @@ import java.nio.file.Path;
 
 /**
  * Get information about processor on Linux systems.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -43,6 +44,7 @@ public class LinuxCpuInfo extends LinuxInfo {
 
   /**
    * Get the model of processor
+   *
    * @return the model of processor
    */
   public String getModelName() {
@@ -52,6 +54,7 @@ public class LinuxCpuInfo extends LinuxInfo {
 
   /**
    * Get the processor name.
+   *
    * @return the processor name
    */
   public String getProcessor() {
@@ -61,6 +64,7 @@ public class LinuxCpuInfo extends LinuxInfo {
 
   /**
    * Get CPU MHz.
+   *
    * @return the frequency of the processor
    */
   public String getCPUMHz() {
@@ -70,6 +74,7 @@ public class LinuxCpuInfo extends LinuxInfo {
 
   /**
    * Get processor bogomips.
+   *
    * @return the processor bogomips
    */
   public String getBogoMips() {
@@ -79,6 +84,7 @@ public class LinuxCpuInfo extends LinuxInfo {
 
   /**
    * Get the number of cores of the processor.
+   *
    * @return the number of core of the processor
    */
   public String getCores() {
@@ -90,12 +96,9 @@ public class LinuxCpuInfo extends LinuxInfo {
   // Constructor
   //
 
-  /**
-   * Public constructor.
-   */
+  /** Public constructor. */
   public LinuxCpuInfo() {
 
     parse();
   }
-
 }

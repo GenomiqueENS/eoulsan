@@ -33,24 +33,11 @@ import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.HadoopMap
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX;
 import static java.util.Collections.singletonList;
 
-import java.io.IOException;
-import java.util.List;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-
 import com.google.common.base.Joiner;
-
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
-import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.FastqInputFormat;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.FastqOutputFormat;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
@@ -62,9 +49,20 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsFilterModule;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.MapReduceUtils;
+import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
+import java.io.IOException;
+import java.util.List;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 /**
  * This class is the main class for the filter reads program in hadoop mode.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  * @author Claire Wallon
@@ -72,10 +70,8 @@ import fr.ens.biologie.genomique.eoulsan.util.hadoop.MapReduceUtils;
 @HadoopOnly
 public class ReadsFilterHadoopModule extends AbstractReadsFilterModule {
 
-  static final String OUTPUT_FILE1_KEY =
-      Globals.PARAMETER_PREFIX + ".filter.reads.output.file1";
-  static final String OUTPUT_FILE2_KEY =
-      Globals.PARAMETER_PREFIX + ".filter.reads.output.file2";
+  static final String OUTPUT_FILE1_KEY = Globals.PARAMETER_PREFIX + ".filter.reads.output.file1";
+  static final String OUTPUT_FILE2_KEY = Globals.PARAMETER_PREFIX + ".filter.reads.output.file2";
 
   private static final String TEMP_DIR_SUFFIX = ".tmp";
 
@@ -90,8 +86,7 @@ public class ReadsFilterHadoopModule extends AbstractReadsFilterModule {
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     // Create configuration object
     final Configuration conf = createConfiguration();
@@ -119,8 +114,7 @@ public class ReadsFilterHadoopModule extends AbstractReadsFilterModule {
         final DataFile outFile = outData.getDataFile(0);
         final List<String> filenames = singletonList(inFile.getName());
 
-        job = createJobConf(conf, dataName, inFile, filenames, READS_FASTQ,
-            fastqFormat, outFile);
+        job = createJobConf(conf, dataName, inFile, filenames, READS_FASTQ, fastqFormat, outFile);
       } else {
 
         // Define input and output files
@@ -128,26 +122,28 @@ public class ReadsFilterHadoopModule extends AbstractReadsFilterModule {
         final DataFile inFile2 = inData.getDataFile(1);
         final DataFile outFile1 = outData.getDataFile(0);
         final DataFile outFile2 = outData.getDataFile(1);
-        final List<String> filenames =
-            newArrayList(inFile1.getName(), inFile2.getName());
+        final List<String> filenames = newArrayList(inFile1.getName(), inFile2.getName());
 
-        tfqFile = new DataFile(inFile1.getParent(),
-            inFile1.getBasename() + READS_TFQ.getDefaultExtension());
+        tfqFile =
+            new DataFile(
+                inFile1.getParent(), inFile1.getBasename() + READS_TFQ.getDefaultExtension());
 
         // Convert FASTQ files to TFQ
         MapReduceUtils.submitAndWaitForJob(
-            PairedEndFastqToTfq.convert(conf, inFile1, inFile2, tfqFile,
-                getReducerTaskCount()),
-            inData.getName(), CommonHadoop.CHECK_COMPLETION_TIME, status,
+            PairedEndFastqToTfq.convert(conf, inFile1, inFile2, tfqFile, getReducerTaskCount()),
+            inData.getName(),
+            CommonHadoop.CHECK_COMPLETION_TIME,
+            status,
             COUNTER_GROUP);
 
-        job = createJobConf(conf, dataName, tfqFile, filenames, READS_TFQ,
-            fastqFormat, outFile1, outFile2);
+        job =
+            createJobConf(
+                conf, dataName, tfqFile, filenames, READS_TFQ, fastqFormat, outFile1, outFile2);
       }
 
       // Submit main job
-      MapReduceUtils.submitAndWaitForJob(job, inData.getName(),
-          CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
+      MapReduceUtils.submitAndWaitForJob(
+          job, inData.getName(), CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
 
       // Cleanup paired-end
       if (inData.getDataFileCount() > 1) {
@@ -155,8 +151,7 @@ public class ReadsFilterHadoopModule extends AbstractReadsFilterModule {
         final DataFile outFile1 = outData.getDataFile(0);
         final DataFile outFile2 = outData.getDataFile(1);
 
-        final DataFile tmpDir =
-            new DataFile(outFile1.getSource() + TEMP_DIR_SUFFIX);
+        final DataFile tmpDir = new DataFile(outFile1.getSource() + TEMP_DIR_SUFFIX);
 
         final DataFile outTmpFile1 = new DataFile(tmpDir, outFile1.getName());
         final DataFile outTmpFile2 = new DataFile(tmpDir, outFile2.getName());
@@ -173,13 +168,13 @@ public class ReadsFilterHadoopModule extends AbstractReadsFilterModule {
 
     } catch (IOException | EoulsanException e) {
 
-      return status.createTaskResult(e,
-          "Error while running job: " + e.getMessage());
+      return status.createTaskResult(e, "Error while running job: " + e.getMessage());
     }
   }
 
   /**
    * Create a filter reads job.
+   *
    * @param parentConf Hadoop configuration
    * @param dataName data name
    * @param inFile input file in FASTQ or TFQ format
@@ -190,10 +185,14 @@ public class ReadsFilterHadoopModule extends AbstractReadsFilterModule {
    * @return a Job object
    * @throws IOException if an error occurs while creating the job
    */
-  private Job createJobConf(final Configuration parentConf,
-      final String dataName, final DataFile inFile,
-      final List<String> filenames, final DataFormat inputFormat,
-      final FastqFormat fastqFormat, final DataFile... outFiles)
+  private Job createJobConf(
+      final Configuration parentConf,
+      final String dataName,
+      final DataFile inFile,
+      final List<String> filenames,
+      final DataFormat inputFormat,
+      final FastqFormat fastqFormat,
+      final DataFile... outFiles)
       throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
@@ -208,8 +207,7 @@ public class ReadsFilterHadoopModule extends AbstractReadsFilterModule {
     jobConf.set(ReadsFilterMapper.FASTQ_FORMAT_KEY, fastqFormat.getName());
 
     // Set read filter parameters
-    addParametersToJobConf(getReadFilterParameters(),
-        READ_FILTER_PARAMETER_KEY_PREFIX, jobConf);
+    addParametersToJobConf(getReadFilterParameters(), READ_FILTER_PARAMETER_KEY_PREFIX, jobConf);
 
     // Set outputs
     if (outFiles.length > 1) {
@@ -219,8 +217,9 @@ public class ReadsFilterHadoopModule extends AbstractReadsFilterModule {
 
     // Set Job name
     // Create the job and its name
-    final Job job = Job.getInstance(jobConf, "Filter reads ("
-        + dataName + ", " + Joiner.on(", ").join(filenames) + ")");
+    final Job job =
+        Job.getInstance(
+            jobConf, "Filter reads (" + dataName + ", " + Joiner.on(", ").join(filenames) + ")");
 
     // Set the jar
     job.setJarByClass(ReadsFilterHadoopModule.class);
@@ -251,8 +250,8 @@ public class ReadsFilterHadoopModule extends AbstractReadsFilterModule {
     job.setNumReduceTasks(0);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job, new Path(outFiles[0].getSource()
-        + (outFiles.length > 1 ? TEMP_DIR_SUFFIX : "")));
+    FileOutputFormat.setOutputPath(
+        job, new Path(outFiles[0].getSource() + (outFiles.length > 1 ? TEMP_DIR_SUFFIX : "")));
 
     return job;
   }

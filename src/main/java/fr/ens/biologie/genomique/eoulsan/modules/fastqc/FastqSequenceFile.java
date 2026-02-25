@@ -26,18 +26,18 @@ package fr.ens.biologie.genomique.eoulsan.modules.fastqc;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.kenetre.bio.ReadSequence;
 import fr.ens.biologie.genomique.kenetre.bio.io.FastqReader;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import uk.ac.babraham.FastQC.Sequence.Sequence;
 import uk.ac.babraham.FastQC.Sequence.SequenceFormatException;
 
 /**
  * This class define a SequenceFile for FASTQ files.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -83,8 +83,7 @@ public class FastqSequenceFile implements CounterSequenceFile {
     final ReadSequence read = this.reader.next();
     this.count++;
 
-    return new Sequence(this, read.getSequence(), read.getQuality(),
-        read.getName());
+    return new Sequence(this, read.getSequence(), read.getQuality(), read.getName());
   }
 
   @Override
@@ -99,6 +98,7 @@ public class FastqSequenceFile implements CounterSequenceFile {
 
   /**
    * Public constructor.
+   *
    * @param fastqFile FASTQ input file
    * @throws IOException if an error occurs when opening the file
    */
@@ -109,5 +109,4 @@ public class FastqSequenceFile implements CounterSequenceFile {
     this.file = fastqFile;
     this.reader = new FastqReader(fastqFile.open());
   }
-
 }

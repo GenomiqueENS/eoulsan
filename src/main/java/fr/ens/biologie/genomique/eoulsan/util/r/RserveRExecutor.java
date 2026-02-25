@@ -3,6 +3,8 @@ package fr.ens.biologie.genomique.eoulsan.util.r;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -10,15 +12,12 @@ import java.io.Writer;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
-
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngineException;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-
 /**
  * This class define a RServe RExecutor.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -48,8 +47,7 @@ public class RserveRExecutor extends AbstractRExecutor {
       for (String filename : filenames) {
 
         // Retrieve the file
-        this.rConnection.getFile(filename,
-            getOutputDirectory().resolve(filename));
+        this.rConnection.getFile(filename, getOutputDirectory().resolve(filename));
 
         // Delete the file
         removeFile(filename);
@@ -99,13 +97,11 @@ public class RserveRExecutor extends AbstractRExecutor {
   }
 
   @Override
-  protected void putFile(final DataFile inputFile, final String inputFilename)
-      throws IOException {
+  protected void putFile(final DataFile inputFile, final String inputFilename) throws IOException {
 
     checkConnection();
 
-    getLogger()
-        .info("Put file on RServe: " + inputFile + " to " + inputFilename);
+    getLogger().info("Put file on RServe: " + inputFile + " to " + inputFilename);
 
     try {
       this.rConnection.putFile(inputFile.open(), inputFilename);
@@ -115,8 +111,7 @@ public class RserveRExecutor extends AbstractRExecutor {
   }
 
   @Override
-  public void writeFile(final String content, final String outputFilename)
-      throws IOException {
+  public void writeFile(final String content, final String outputFilename) throws IOException {
 
     checkConnection();
 
@@ -128,19 +123,22 @@ public class RserveRExecutor extends AbstractRExecutor {
       throw new NullPointerException("outputFilename argument cannot be null");
     }
 
-    try (Writer writer = new OutputStreamWriter(
-        this.rConnection.getFileOutputStream(outputFilename), UTF_8)) {
+    try (Writer writer =
+        new OutputStreamWriter(this.rConnection.getFileOutputStream(outputFilename), UTF_8)) {
       writer.write(content);
     } catch (REngineException e) {
       throw new IOException(e);
     }
-
   }
 
   @Override
-  protected void executeRScript(final Path rScriptFile, final boolean sweave,
-      final String sweaveOuput, final Path workflowOutputDir,
-      final String... scriptArguments) throws IOException {
+  protected void executeRScript(
+      final Path rScriptFile,
+      final boolean sweave,
+      final String sweaveOuput,
+      final Path workflowOutputDir,
+      final String... scriptArguments)
+      throws IOException {
 
     checkConnection();
 
@@ -177,8 +175,7 @@ public class RserveRExecutor extends AbstractRExecutor {
   }
 
   @Override
-  public void executeR(String code, File workflowOutputDir)
-      throws IOException {
+  public void executeR(String code, File workflowOutputDir) throws IOException {
 
     try {
       this.rConnection.executeR(code);
@@ -197,7 +194,6 @@ public class RserveRExecutor extends AbstractRExecutor {
     if (this.rConnection == null) {
       throw new IllegalStateException("Connection has not been openned");
     }
-
   }
 
   //
@@ -206,13 +202,14 @@ public class RserveRExecutor extends AbstractRExecutor {
 
   /**
    * Public constructor.
+   *
    * @param outputDirectory the output directory
    * @param temporaryDirectory the temporary directory
    * @param serverName Rserve server name
    * @throws IOException if an error occurs
    */
-  public RserveRExecutor(final File outputDirectory,
-      final File temporaryDirectory, final String serverName)
+  public RserveRExecutor(
+      final File outputDirectory, final File temporaryDirectory, final String serverName)
       throws IOException {
 
     super(outputDirectory, temporaryDirectory);
@@ -222,5 +219,4 @@ public class RserveRExecutor extends AbstractRExecutor {
     }
     this.serverName = serverName.trim();
   }
-
 }

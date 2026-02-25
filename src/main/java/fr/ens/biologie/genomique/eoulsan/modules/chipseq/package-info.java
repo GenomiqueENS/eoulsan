@@ -24,6 +24,7 @@
 
 /**
  * This packages contains the ChIP-Seq modules.
+ *
  * @author Celine Hernandez - CSB lab - ENS - Paris
  * @since 2.0
  */

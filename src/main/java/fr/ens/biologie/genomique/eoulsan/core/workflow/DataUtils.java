@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 /**
  * This class define useful methods to handle Data object.
+ *
  * @since 2.4
  * @author Laurent Jourdren
  */
@@ -11,6 +12,7 @@ class DataUtils {
 
   /**
    * Copy a Data object
+   *
    * @param data data to copy
    * @return the copied data
    */
@@ -28,8 +30,6 @@ class DataUtils {
       return new DataList((DataList) data);
     }
 
-    throw new IllegalArgumentException(
-        "This method cannot handle unmodifiable Data objects");
+    throw new IllegalArgumentException("This method cannot handle unmodifiable Data objects");
   }
-
 }

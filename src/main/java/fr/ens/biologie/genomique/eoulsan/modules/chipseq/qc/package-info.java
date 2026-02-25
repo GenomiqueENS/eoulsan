@@ -24,6 +24,7 @@
 
 /**
  * This packages contains all the quality check modules for ChIP-Seq.
+ *
  * @author Celine Hernandez - CSB lab - ENS - Paris
  * @since 2.0
  */

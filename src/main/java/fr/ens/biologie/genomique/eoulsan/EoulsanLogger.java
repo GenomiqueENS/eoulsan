@@ -24,6 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan;
 
+import fr.ens.biologie.genomique.kenetre.log.GenericLogger;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,18 +33,16 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import fr.ens.biologie.genomique.kenetre.log.GenericLogger;
-
 /**
- * This class allow to change the logger name for all Eoulsan classes. The
- * setLoggerName() method must be called before any other Eoulsan method.
+ * This class allow to change the logger name for all Eoulsan classes. The setLoggerName() method
+ * must be called before any other Eoulsan method.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
 public class EoulsanLogger {
 
-  private static class EoulsanRuntimeLogger
-      implements GenericLogger, Serializable {
+  private static class EoulsanRuntimeLogger implements GenericLogger, Serializable {
 
     private static final long serialVersionUID = 7316420644292128626L;
 
@@ -68,13 +67,10 @@ public class EoulsanLogger {
     }
 
     @Override
-    public void flush() {
-    }
+    public void flush() {}
 
     @Override
-    public void close() {
-    }
-
+    public void close() {}
   }
 
   private static String loggerName = Globals.APP_NAME;
@@ -85,6 +81,7 @@ public class EoulsanLogger {
 
   /**
    * Get the logger object.
+   *
    * @return a logger object for Eoulsan
    */
   public static Logger getLogger() {
@@ -114,6 +111,7 @@ public class EoulsanLogger {
 
   /**
    * Set the logger name.
+   *
    * @param newLoggerName the new logger name
    */
   public static void setLoggerName(final String newLoggerName) {
@@ -128,6 +126,7 @@ public class EoulsanLogger {
 
   /**
    * Get the logger name.
+   *
    * @return the logger name
    */
   public static String getLoggerName() {
@@ -137,11 +136,11 @@ public class EoulsanLogger {
 
   /**
    * Register a logger for a thread group.
+   *
    * @param threadGroup thread group
    * @param logger logger to register
    */
-  public static void registerThreadGroupLogger(final ThreadGroup threadGroup,
-      final Logger logger) {
+  public static void registerThreadGroupLogger(final ThreadGroup threadGroup, final Logger logger) {
 
     if (threadGroup == null || logger == null) {
       return;
@@ -152,6 +151,7 @@ public class EoulsanLogger {
 
   /**
    * Remove a logger for a thread group.
+   *
    * @param threadGroup thread group
    */
   public static void removeThreadGroupLogger(final ThreadGroup threadGroup) {
@@ -164,8 +164,8 @@ public class EoulsanLogger {
   }
 
   /**
-   * Initialize the console logger handler for Hadoop mappers and reducers. This
-   * method set the Eoulsan logger format and define the logger level.
+   * Initialize the console logger handler for Hadoop mappers and reducers. This method set the
+   * Eoulsan logger format and define the logger level.
    */
   public static void initConsoleHandler() {
     initConsoleHandler(null);
@@ -173,6 +173,7 @@ public class EoulsanLogger {
 
   /**
    * Initialize the console logger handler for Hadoop mappers and reducers.
+   *
    * @param level log level to use
    */
   public static void initConsoleHandler(final Level level) {
@@ -194,6 +195,7 @@ public class EoulsanLogger {
 
   /**
    * Log an SEVERE message using <code>getLogger().severe()</code>.
+   *
    * @param msg The string message
    */
   public static void logSevere(final String msg) {
@@ -203,6 +205,7 @@ public class EoulsanLogger {
 
   /**
    * Log an WARNING message using <code>getLogger().warning()</code>.
+   *
    * @param msg The string message
    */
   public static void logWarning(final String msg) {
@@ -212,6 +215,7 @@ public class EoulsanLogger {
 
   /**
    * Log an INFO message using <code>getLogger().info()</code>.
+   *
    * @param msg The string message
    */
   public static void logInfo(final String msg) {
@@ -221,6 +225,7 @@ public class EoulsanLogger {
 
   /**
    * Log a CONFIG message using <code>getLogger().config()</code>.
+   *
    * @param msg The string message
    */
   public static void logConfig(final String msg) {
@@ -230,6 +235,7 @@ public class EoulsanLogger {
 
   /**
    * Log a FINER message using <code>getLogger().finer()</code>.
+   *
    * @param msg The string message
    */
   public static void logFiner(final String msg) {
@@ -239,6 +245,7 @@ public class EoulsanLogger {
 
   /**
    * Log a FINEST message using <code>getLogger().finest()</code>.
+   *
    * @param message The string message
    */
   public static void logFinest(final String message) {
@@ -248,11 +255,11 @@ public class EoulsanLogger {
 
   /**
    * Get the logger.
+   *
    * @return a GenericLogger object
    */
   public static GenericLogger getGenericLogger() {
 
     return new EoulsanRuntimeLogger();
   }
-
 }

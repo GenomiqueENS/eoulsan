@@ -7,6 +7,7 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
 
 /**
  * This class contains DESeq2 module parameters.
+ *
  * @author Laurent Jourdren
  * @since 2.7
  */
@@ -35,18 +36,17 @@ public class DESeq2Parameters {
    * the size factor.
    */
   public enum SizeFactorsType {
-
-    RATIO, ITERATE;
+    RATIO,
+    ITERATE;
 
     /**
      * Get the size factors type to be used in DESeq2.
+     *
      * @param value value to set
      * @return the size factors type value
-     * @throws EoulsanException if the size factors type value is different from
-     *           ratio or iterate
+     * @throws EoulsanException if the size factors type value is different from ratio or iterate
      */
-    public static SizeFactorsType get(final String value)
-        throws EoulsanException {
+    public static SizeFactorsType get(final String value) throws EoulsanException {
 
       requireNonNull(value, "parameter argument cannot be null");
 
@@ -64,6 +64,7 @@ public class DESeq2Parameters {
 
     /**
      * Convert the enum name into DESeq2 value.
+     *
      * @return DESeq2 value
      */
     public String toDESeq2Value() {
@@ -72,19 +73,18 @@ public class DESeq2Parameters {
     }
   }
 
-  /**
-   * Enum for the fitType option in DESeq2 related to the dispersion estimation.
-   */
+  /** Enum for the fitType option in DESeq2 related to the dispersion estimation. */
   public enum FitType {
-
-    PARAMETRIC, LOCAL, MEAN;
+    PARAMETRIC,
+    LOCAL,
+    MEAN;
 
     /**
      * Get the fit type to be used in DESeq2.
+     *
      * @param value value to set
      * @return the fit type value
-     * @throws EoulsanException if the fit type value is different from
-     *           parametric, local or mean
+     * @throws EoulsanException if the fit type value is different from parametric, local or mean
      */
     public static FitType get(final String value) throws EoulsanException {
 
@@ -104,6 +104,7 @@ public class DESeq2Parameters {
 
     /**
      * Convert the enum name into DESeq2 value.
+     *
      * @return DESeq2 value
      */
     public String toDESeq2Value() {
@@ -113,17 +114,18 @@ public class DESeq2Parameters {
   }
 
   /**
-   * Enum for the statisticTest option in DESeq2 related to the statistic test
-   * to be used during the differential expression analysis
+   * Enum for the statisticTest option in DESeq2 related to the statistic test to be used during the
+   * differential expression analysis
    */
   public enum StatisticTest {
-
-    WALD("Wald"), LRT("LRT");
+    WALD("Wald"),
+    LRT("LRT");
 
     private final String name;
 
     /**
      * Get the parameter value for DESeq2 argument.
+     *
      * @return a String with the DESeq2 argument
      */
     public String toDESeq2Value() {
@@ -133,13 +135,12 @@ public class DESeq2Parameters {
 
     /**
      * Get the statistic test to be used in DESeq2.
+     *
      * @param value value to set
      * @return the statistic test value
-     * @throws EoulsanException if the statistic test value is different from
-     *           Wald or LRT
+     * @throws EoulsanException if the statistic test value is different from Wald or LRT
      */
-    public static StatisticTest get(final String value)
-        throws EoulsanException {
+    public static StatisticTest get(final String value) throws EoulsanException {
 
       requireNonNull(value, "parameter argument annot be null");
 
@@ -147,8 +148,7 @@ public class DESeq2Parameters {
 
       for (StatisticTest dem : StatisticTest.values()) {
 
-        if (dem.toDESeq2Value().toLowerCase(Globals.DEFAULT_LOCALE)
-            .equals(lowerName)) {
+        if (dem.toDESeq2Value().toLowerCase(Globals.DEFAULT_LOCALE).equals(lowerName)) {
           return dem;
         }
       }
@@ -158,13 +158,13 @@ public class DESeq2Parameters {
 
     /**
      * Constructor.
+     *
      * @param method, dispersion estimation method
      */
     StatisticTest(final String method) {
 
       this.name = method;
     }
-
   }
 
   //
@@ -173,6 +173,7 @@ public class DESeq2Parameters {
 
   /**
    * Get the normFig parameter value.
+   *
    * @return the normFig
    */
   public boolean isNormFig() {
@@ -181,6 +182,7 @@ public class DESeq2Parameters {
 
   /**
    * Get the diffanaFig parameter value.
+   *
    * @return the diffanaFig
    */
   public boolean isDiffanaFig() {
@@ -189,6 +191,7 @@ public class DESeq2Parameters {
 
   /**
    * Get the normDiffana parameter value.
+   *
    * @return the normDiffana
    */
   public boolean isNormDiffana() {
@@ -197,6 +200,7 @@ public class DESeq2Parameters {
 
   /**
    * Get the diffana parameter value.
+   *
    * @return the diffana
    */
   public boolean isDiffana() {
@@ -205,6 +209,7 @@ public class DESeq2Parameters {
 
   /**
    * Get the sizeFactorsType parameter value.
+   *
    * @return the sizeFactorsType
    */
   public SizeFactorsType getSizeFactorsType() {
@@ -213,6 +218,7 @@ public class DESeq2Parameters {
 
   /**
    * Get the fitType parameter value.
+   *
    * @return the fitType
    */
   public FitType getFitType() {
@@ -221,6 +227,7 @@ public class DESeq2Parameters {
 
   /**
    * Get the statisticTest parameter value.
+   *
    * @return the statisticTest
    */
   public StatisticTest getStatisticTest() {
@@ -229,6 +236,7 @@ public class DESeq2Parameters {
 
   /**
    * Get the expHeader parameter value.
+   *
    * @return the expHeader
    */
   public boolean isExpHeader() {
@@ -237,6 +245,7 @@ public class DESeq2Parameters {
 
   /**
    * Get the easy contrasts version to use.
+   *
    * @return the easy contrasts version to use
    */
   public int getEasyContrastsVersion() {
@@ -245,6 +254,7 @@ public class DESeq2Parameters {
 
   /**
    * Get the weight contrast.
+   *
    * @return the weightContrast
    */
   public boolean isWeightContrast() {
@@ -253,6 +263,7 @@ public class DESeq2Parameters {
 
   /**
    * Get the URL of the logo.
+   *
    * @return the logoUrl
    */
   public String getLogoUrl() {
@@ -261,6 +272,7 @@ public class DESeq2Parameters {
 
   /**
    * Get the author Name.
+   *
    * @return the author name
    */
   public String getAuthorName() {
@@ -269,6 +281,7 @@ public class DESeq2Parameters {
 
   /**
    * Get the author email
+   *
    * @return the author email
    */
   public String getAuthorEmail() {
@@ -281,6 +294,7 @@ public class DESeq2Parameters {
 
   /**
    * Set the normFig parameter value.
+   *
    * @param normFig the normFig to set
    */
   public void setNormFig(boolean normFig) {
@@ -294,6 +308,7 @@ public class DESeq2Parameters {
 
   /**
    * Set the diffanaFig parameter value.
+   *
    * @param diffanaFig the diffanaFig to set
    */
   public void setDiffanaFig(boolean diffanaFig) {
@@ -307,6 +322,7 @@ public class DESeq2Parameters {
 
   /**
    * Set the normDiffana parameter value.
+   *
    * @param normDiffana the normDiffana to set
    */
   public void setNormDiffana(boolean normDiffana) {
@@ -320,6 +336,7 @@ public class DESeq2Parameters {
 
   /**
    * Set the diffana parameter value.
+   *
    * @param diffana the diffana to set
    */
   public void setDiffana(boolean diffana) {
@@ -333,12 +350,12 @@ public class DESeq2Parameters {
 
   /**
    * Set the size factors type parameter value.
+   *
    * @param parameterName parameter name
    * @param value value to set
    * @throws EoulsanException if the parameter value is not valid
    */
-  public void setSizeFactorsType(String parameterName, String value)
-      throws EoulsanException {
+  public void setSizeFactorsType(String parameterName, String value) throws EoulsanException {
 
     if (this.frozen) {
       throw new IllegalStateException();
@@ -346,9 +363,12 @@ public class DESeq2Parameters {
 
     var result = SizeFactorsType.get(value);
     if (result == null) {
-      throw new EoulsanException("The value: "
-          + value + " is not an acceptable value for the " + parameterName
-          + " parameter.");
+      throw new EoulsanException(
+          "The value: "
+              + value
+              + " is not an acceptable value for the "
+              + parameterName
+              + " parameter.");
     }
 
     this.sizeFactorsType = result;
@@ -356,12 +376,12 @@ public class DESeq2Parameters {
 
   /**
    * Set the fit type parameter value.
+   *
    * @param parameterName parameter name
    * @param value value to set
    * @throws EoulsanException if the parameter value is not valid
    */
-  public void setFitType(String parameterName, String value)
-      throws EoulsanException {
+  public void setFitType(String parameterName, String value) throws EoulsanException {
 
     if (this.frozen) {
       throw new IllegalStateException();
@@ -369,9 +389,12 @@ public class DESeq2Parameters {
 
     var result = FitType.get(value);
     if (result == null) {
-      throw new EoulsanException("The value: "
-          + value + " is not an acceptable value for the " + parameterName
-          + " parameter.");
+      throw new EoulsanException(
+          "The value: "
+              + value
+              + " is not an acceptable value for the "
+              + parameterName
+              + " parameter.");
     }
 
     this.fitType = result;
@@ -379,12 +402,12 @@ public class DESeq2Parameters {
 
   /**
    * Set the statistic test parameter value.
+   *
    * @param parameterName parameter name
    * @param value value to set
    * @throws EoulsanException if the parameter value is not valid
    */
-  public void setStatisticTest(String parameterName, String value)
-      throws EoulsanException {
+  public void setStatisticTest(String parameterName, String value) throws EoulsanException {
 
     if (this.frozen) {
       throw new IllegalStateException();
@@ -392,9 +415,12 @@ public class DESeq2Parameters {
 
     var result = StatisticTest.get(value);
     if (result == null) {
-      throw new EoulsanException("The value: "
-          + value + " is not an acceptable value for the " + parameterName
-          + " parameter.");
+      throw new EoulsanException(
+          "The value: "
+              + value
+              + " is not an acceptable value for the "
+              + parameterName
+              + " parameter.");
     }
 
     this.statisticTest = result;
@@ -402,6 +428,7 @@ public class DESeq2Parameters {
 
   /**
    * Set the expHeader parameter value.
+   *
    * @param expHeader the expHeader to set
    */
   public void setExpHeader(boolean expHeader) {
@@ -415,6 +442,7 @@ public class DESeq2Parameters {
 
   /**
    * Set the easy contrasts version to use.
+   *
    * @param version the version
    */
   public void setEasyContrastsVersion(int version) {
@@ -428,6 +456,7 @@ public class DESeq2Parameters {
 
   /**
    * Set the weight contrast to use.
+   *
    * @param weightContrast the weightContrast to set
    */
   public void setWeightContrast(boolean weightContrast) {
@@ -441,6 +470,7 @@ public class DESeq2Parameters {
 
   /**
    * Set the URL of the logo to use.
+   *
    * @param logoUrl the logoUrl to set
    */
   public void setLogoUrl(String logoUrl) {
@@ -456,6 +486,7 @@ public class DESeq2Parameters {
 
   /**
    * Set the author name.
+   *
    * @param authorName the authorName to set
    */
   public void setAuthorName(String authorName) {
@@ -471,6 +502,7 @@ public class DESeq2Parameters {
 
   /**
    * Set the author email.
+   *
    * @param authorEmail the authormail to set
    */
   public void setAuthorEmail(String authorEmail) {
@@ -484,9 +516,7 @@ public class DESeq2Parameters {
     this.authorEmail = authorEmail;
   }
 
-  /**
-   * Freeze the values in the object.
-   */
+  /** Freeze the values in the object. */
   public void freeze() {
     this.frozen = true;
   }
@@ -495,16 +525,11 @@ public class DESeq2Parameters {
   // Other methods
   //
 
-  /**
-   * Check DESeq2 parameters.
-   */
+  /** Check DESeq2 parameters. */
   public void check() {
 
-    requireNonNull(this.sizeFactorsType,
-        "sizeFactorsType argument cannot be null");
+    requireNonNull(this.sizeFactorsType, "sizeFactorsType argument cannot be null");
     requireNonNull(this.fitType, "fitType argument cannot be null");
     requireNonNull(this.statisticTest, "statisticTest argument cannot be null");
-
   }
-
 }

@@ -24,17 +24,17 @@
 
 package fr.ens.biologie.genomique.eoulsan.splitermergers;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * This interface define a splitter.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -42,12 +42,14 @@ public interface Merger {
 
   /**
    * Get the format related to the splitter.
+   *
    * @return a DataFormat object
    */
   DataFormat getFormat();
 
   /**
    * Configure the merger.
+   *
    * @param conf configuration
    * @throws EoulsanException if the configuration is invalid
    */
@@ -55,11 +57,10 @@ public interface Merger {
 
   /**
    * Merger data.
+   *
    * @param inFileIterator iterator over DataFile to merger
    * @param outFile output DataFile
    * @throws IOException if an error occurs while split data
    */
-  void merge(Iterator<DataFile> inFileIterator, DataFile outFile)
-      throws IOException;
-
+  void merge(Iterator<DataFile> inFileIterator, DataFile outFile) throws IOException;
 }

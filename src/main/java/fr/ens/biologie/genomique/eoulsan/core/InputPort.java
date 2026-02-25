@@ -24,12 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.core;
 
-import java.util.EnumSet;
-
 import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import java.util.EnumSet;
 
 /**
  * This interface define an input port of a step.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -37,18 +37,18 @@ public interface InputPort extends Port {
 
   /**
    * Test if the port accept a compressed input format.
+   *
    * @return a set with the compression type allowed by the step for the port
    */
   EnumSet<CompressionType> getCompressionsAccepted();
 
   /**
-   * Test if input data of the port is required in the working directory. This
-   * method allow to declare the input data that need to be copied in the
-   * working directory before starting the step. As an example, it is used to
-   * copy files from a local file system to a distributed file system like HDFS.
-   * After that mapreduce jobs can be efficiency launched.
+   * Test if input data of the port is required in the working directory. This method allow to
+   * declare the input data that need to be copied in the working directory before starting the
+   * step. As an example, it is used to copy files from a local file system to a distributed file
+   * system like HDFS. After that mapreduce jobs can be efficiency launched.
+   *
    * @return true if the input data need to be copied in the working directory.
    */
   boolean isRequiredInWorkingDirectory();
-
 }

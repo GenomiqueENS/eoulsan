@@ -23,8 +23,9 @@
  */
 
 /**
- * This package contains general I/O classes for Eoulsan (not dedicated to
- * <code>fr.ens.biologie.genomique.eoulsan.bio</code> package).
+ * This package contains general I/O classes for Eoulsan (not dedicated to <code>
+ * fr.ens.biologie.genomique.eoulsan.bio</code> package).
+ *
  * @since 1.0
  */
 package fr.ens.biologie.genomique.eoulsan.io;

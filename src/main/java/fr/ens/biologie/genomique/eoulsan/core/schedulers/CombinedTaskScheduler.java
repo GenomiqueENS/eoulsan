@@ -29,8 +29,6 @@ import static com.google.common.base.Preconditions.checkState;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
 import fr.ens.biologie.genomique.eoulsan.core.ParallelizationMode;
@@ -39,10 +37,12 @@ import fr.ens.biologie.genomique.eoulsan.core.workflow.AbstractStep;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepResult;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepStatus;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
+import java.util.Set;
 
 /**
- * This class defined a combined task scheduler that use several context
- * schedulers according to the parallelization mode of the step.
+ * This class defined a combined task scheduler that use several context schedulers according to the
+ * parallelization mode of the step.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -163,7 +163,8 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
         + this.stdTaskScheduler.getTotalTaskDoneCount()
         + this.ownTaskScheduler.getTotalTaskDoneCount()
         + (this.hadoopCompatibleTaskScheduler != null
-            ? this.hadoopCompatibleTaskScheduler.getTotalTaskDoneCount() : 0);
+            ? this.hadoopCompatibleTaskScheduler.getTotalTaskDoneCount()
+            : 0);
   }
 
   @Override
@@ -213,9 +214,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
   // Other method
   //
 
-  /**
-   * Check execution state.
-   */
+  /** Check execution state. */
   private void checkExecutionState() {
 
     synchronized (this) {
@@ -226,6 +225,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
 
   /**
    * Get the parallelization mode of a step.
+   *
    * @param step the step
    * @return the parallelization mode of the step
    */
@@ -238,6 +238,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
 
   /**
    * Get the Eoulsan mode of a step.
+   *
    * @param step the step
    * @return the Eoulsan mode of the step
    */
@@ -250,39 +251,38 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
 
   /**
    * Get the task scheduler of a step.
+   *
    * @param step the step
    * @return the task scheduler that the step must use
    */
   private TaskScheduler getTaskScheduler(final Step step) {
 
     switch (step.getType()) {
-
-    case GENERATOR_STEP:
-    case CHECKER_STEP:
-      return this.stdTaskScheduler;
-    default:
-      break;
+      case GENERATOR_STEP:
+      case CHECKER_STEP:
+        return this.stdTaskScheduler;
+      default:
+        break;
     }
 
     switch (getParallelizationMode(step)) {
+      case NOT_NEEDED:
+        return this.noTaskScheduler;
 
-    case NOT_NEEDED:
-      return this.noTaskScheduler;
+      case STANDARD:
+        if (this.hadoopCompatibleTaskScheduler == null) {
+          return this.stdTaskScheduler;
+        }
 
-    case STANDARD:
+        return getEoulsanMode(step) == ExecutionMode.HADOOP_COMPATIBLE
+            ? this.hadoopCompatibleTaskScheduler
+            : this.stdTaskScheduler;
 
-      if (this.hadoopCompatibleTaskScheduler == null) {
-        return this.stdTaskScheduler;
-      }
+      case OWN_PARALLELIZATION:
+        return this.ownTaskScheduler;
 
-      return getEoulsanMode(step) == ExecutionMode.HADOOP_COMPATIBLE
-          ? this.hadoopCompatibleTaskScheduler : this.stdTaskScheduler;
-
-    case OWN_PARALLELIZATION:
-      return this.ownTaskScheduler;
-
-    default:
-      throw new IllegalStateException("Unknown Parallelization mode");
+      default:
+        throw new IllegalStateException("Unknown Parallelization mode");
     }
   }
 
@@ -302,8 +302,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
     while (!stopped) {
 
       // Is there some task to do by ownTaskScheduler ?
-      if (this.ownTaskScheduler.isPaused()
-          && this.ownTaskScheduler.getTotalWaitingCount() > 0) {
+      if (this.ownTaskScheduler.isPaused() && this.ownTaskScheduler.getTotalWaitingCount() > 0) {
 
         // If standard scheduler running, pause it
         if (!this.stdTaskScheduler.isPaused()) {
@@ -344,6 +343,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
 
   /**
    * Constructor.
+   *
    * @param threadNumber number of thread to use by the task scheduler
    */
   public CombinedTaskScheduler(final int threadNumber) {
@@ -357,8 +357,7 @@ public class CombinedTaskScheduler implements TaskScheduler, Runnable {
 
     this.hadoopCompatibleTaskScheduler =
         EoulsanRuntime.getRuntime().getMode().isHadoopMode()
-            ? new HadoopCompatibleTaskScheduler() : null;
-
+            ? new HadoopCompatibleTaskScheduler()
+            : null;
   }
-
 }

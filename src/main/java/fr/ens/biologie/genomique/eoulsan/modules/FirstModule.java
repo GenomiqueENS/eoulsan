@@ -35,8 +35,9 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.kenetre.util.Version;
 
 /**
- * This class define a first module that do nothing. All generator steps must be
- * added before this step.
+ * This class define a first module that do nothing. All generator steps must be added before this
+ * step.
+ *
  * @since 1.1
  * @author Laurent Jourdren
  */
@@ -60,13 +61,11 @@ public final class FirstModule extends AbstractModule {
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     // Clear the CheckStore before the start of the "real" steps
     CheckStore.getCheckStore().clear();
 
     return status.createTaskResult();
   }
-
 }

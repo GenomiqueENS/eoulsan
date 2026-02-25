@@ -26,21 +26,21 @@ package fr.ens.biologie.genomique.eoulsan.modules.fastqc;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMRecordIterator;
 import htsjdk.samtools.SamInputResource;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import uk.ac.babraham.FastQC.Sequence.Sequence;
 import uk.ac.babraham.FastQC.Sequence.SequenceFormatException;
 
 /**
  * This class define a SequenceFile for SAM files.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -97,8 +97,8 @@ public class SAMSequenceFile implements CounterSequenceFile {
     final SAMRecord record = this.iterator.next();
     this.count++;
 
-    return new Sequence(this, record.getReadString(),
-        record.getBaseQualityString(), record.getReadName());
+    return new Sequence(
+        this, record.getReadString(), record.getBaseQualityString(), record.getReadName());
   }
 
   @Override
@@ -113,6 +113,7 @@ public class SAMSequenceFile implements CounterSequenceFile {
 
   /**
    * Public constructor.
+   *
    * @param inFile SAM input file
    * @throws IOException if an error occurs when opening the file
    */
@@ -121,9 +122,7 @@ public class SAMSequenceFile implements CounterSequenceFile {
     requireNonNull(inFile, "file argument cannot be null");
 
     this.file = inFile;
-    this.reader =
-        SamReaderFactory.makeDefault().open(SamInputResource.of(inFile.open()));
+    this.reader = SamReaderFactory.makeDefault().open(SamInputResource.of(inFile.open()));
     this.iterator = reader.iterator();
   }
-
 }

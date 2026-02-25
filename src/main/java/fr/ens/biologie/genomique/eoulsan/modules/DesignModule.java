@@ -26,14 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.modules;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.google.common.collect.Sets;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
@@ -49,7 +42,6 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
@@ -61,9 +53,16 @@ import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This class define a design module.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -104,8 +103,8 @@ public class DesignModule extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     // Get the metadata keys of the design and the samples
     final Set<String> designMetadataKeys = this.design.getMetadata().keySet();
@@ -121,8 +120,8 @@ public class DesignModule extends AbstractModule {
 
         final String key = format.getDesignMetadataKeyName();
 
-        builder.addPort(key, !format.isOneFilePerAnalysis(), format,
-            compressionTypeOfDesignMetadata(key));
+        builder.addPort(
+            key, !format.isOneFilePerAnalysis(), format, compressionTypeOfDesignMetadata(key));
 
         this.designPortNames.add(key);
       }
@@ -132,12 +131,10 @@ public class DesignModule extends AbstractModule {
 
         final String key = format.getSampleMetadataKeyName();
 
-        builder.addPort(key, !format.isOneFilePerAnalysis(), format,
-            compressionTypeOfField(key));
+        builder.addPort(key, !format.isOneFilePerAnalysis(), format, compressionTypeOfField(key));
 
         this.samplePortNames.add(key);
       }
-
     }
 
     // Create the output ports
@@ -148,8 +145,9 @@ public class DesignModule extends AbstractModule {
   }
 
   /**
-   * Get the compression of a field of the design. The compression returned is
-   * the first compression found in the field.
+   * Get the compression of a field of the design. The compression returned is the first compression
+   * found in the field.
+   *
    * @param fieldname the name of the field
    * @return a compression type
    */
@@ -175,6 +173,7 @@ public class DesignModule extends AbstractModule {
 
   /**
    * Get the compression of a metadata of the design.
+   *
    * @param key the key of the metadata
    * @return a compression type
    */
@@ -196,8 +195,7 @@ public class DesignModule extends AbstractModule {
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     final Set<DataFile> files = new HashSet<>();
     final Set<String> dataNames = new HashSet<>();
@@ -227,7 +225,6 @@ public class DesignModule extends AbstractModule {
         // Multi-file data
         DataUtils.setDataFiles(data, dataFiles);
       }
-
     }
 
     for (Sample sample : this.design.getSamples()) {
@@ -255,8 +252,7 @@ public class DesignModule extends AbstractModule {
         }
 
         // Get the data object
-        final Data dataList =
-            context.getOutputData(port.getName(), dataListName);
+        final Data dataList = context.getOutputData(port.getName(), dataListName);
         final Data data;
 
         // Set metadata
@@ -266,10 +262,13 @@ public class DesignModule extends AbstractModule {
 
           // Check if the data name has already used
           if (dataNames.contains(dataName)) {
-            return status.createTaskResult(new EoulsanException(
-                "The design contains two or more sample with the same name after renaming: "
-                    + dataName + " ( original sample name: " + sample.getId()
-                    + ")"));
+            return status.createTaskResult(
+                new EoulsanException(
+                    "The design contains two or more sample with the same name after renaming: "
+                        + dataName
+                        + " ( original sample name: "
+                        + sample.getId()
+                        + ")"));
           }
           dataNames.add(dataName);
 
@@ -292,14 +291,11 @@ public class DesignModule extends AbstractModule {
           DataUtils.setDataFiles(data, dataFiles);
 
           // Set paired-end metadata
-          if (DataFormats.READS_FASTQ.equals(port.getFormat())
-              && dataFiles.size() > 1) {
+          if (DataFormats.READS_FASTQ.equals(port.getFormat()) && dataFiles.size() > 1) {
             data.getMetadata().setPairedEnd(true);
           }
-
         }
       }
-
     }
 
     return status.createTaskResult();
@@ -307,12 +303,12 @@ public class DesignModule extends AbstractModule {
 
   /**
    * Create a list of data files from a sample and a port
+   *
    * @param sample the sample
    * @param port the port
    * @return a list with the data files
    */
-  private List<DataFile> getSampleDatafilesPort(final Sample sample,
-      final OutputPort port) {
+  private List<DataFile> getSampleDatafilesPort(final Sample sample, final OutputPort port) {
 
     requireNonNull(sample, "sample argument cannot be null");
     requireNonNull(port, "port argument cannot be null");
@@ -340,12 +336,12 @@ public class DesignModule extends AbstractModule {
 
   /**
    * Create a list of data files from a sample and a port
+   *
    * @param design the design
    * @param port the port
    * @return a list with the data files
    */
-  private List<DataFile> getDesignDatafilesPort(final Design design,
-      final OutputPort port) {
+  private List<DataFile> getDesignDatafilesPort(final Design design, final OutputPort port) {
 
     requireNonNull(design, "design argument cannot be null");
     requireNonNull(port, "port argument cannot be null");
@@ -373,6 +369,7 @@ public class DesignModule extends AbstractModule {
 
   /**
    * Get the underlying file if the file is available via a StorageDataProtocol.
+   *
    * @param file the input file
    * @return the underlying file if exist or the original file
    */
@@ -402,6 +399,7 @@ public class DesignModule extends AbstractModule {
 
   /**
    * Constructor.
+   *
    * @param design design
    * @param checkeModule the checker module instance
    */
@@ -413,5 +411,4 @@ public class DesignModule extends AbstractModule {
     this.design = design;
     this.checkerModule = checkeModule;
   }
-
 }

@@ -27,6 +27,12 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.DefaultExecutorInterpreter;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.DockerExecutorInterpreter;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.ExecutorInterpreter;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.GenericExecutorInterpreter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -36,15 +42,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.DefaultExecutorInterpreter;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.DockerExecutorInterpreter;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.ExecutorInterpreter;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.GenericExecutorInterpreter;
-
 /**
  * The class define an executor on tool set in XML file.
+ *
  * @author Sandrine Perrin
  * @since 2.0
  */
@@ -60,33 +60,32 @@ public class ToolExecutor {
 
   /**
    * Execute a tool.
+   *
    * @return a ToolExecutorResult object
    * @throws IOException if an error occurs while executing the tool
    */
   ToolExecutorResult execute() throws IOException {
 
-    checkArgument(!this.commandLine.isEmpty(),
-        "Command line for Galaxy tool is empty");
+    checkArgument(!this.commandLine.isEmpty(), "Command line for Galaxy tool is empty");
 
-    final String interpreter = this.toolData.getInterpreter(
-        this.stepContext.getSettings().isDockerConnectionDefined());
+    final String interpreter =
+        this.toolData.getInterpreter(this.stepContext.getSettings().isDockerConnectionDefined());
 
     // Define the interpreter to use
     final ExecutorInterpreter ti;
     switch (interpreter) {
+      case "":
+      case DefaultExecutorInterpreter.INTERPRETER_NAME:
+        ti = new DefaultExecutorInterpreter();
+        break;
 
-    case "":
-    case DefaultExecutorInterpreter.INTERPRETER_NAME:
-      ti = new DefaultExecutorInterpreter();
-      break;
+      case DockerExecutorInterpreter.INTERPRETER_NAME:
+        ti = new DockerExecutorInterpreter(this.toolData.getDockerImage());
+        break;
 
-    case DockerExecutorInterpreter.INTERPRETER_NAME:
-      ti = new DockerExecutorInterpreter(this.toolData.getDockerImage());
-      break;
-
-    default:
-      ti = new GenericExecutorInterpreter(interpreter);
-      break;
+      default:
+        ti = new GenericExecutorInterpreter(interpreter);
+        break;
     }
 
     // Create the command line
@@ -99,8 +98,10 @@ public class ToolExecutor {
     final Path logDirectory = context.getTaskOutputDirectory().toPath();
     final File tempDirectory = context.getLocalTempDirectory();
 
-    final File stdoutFile = logDirectory.resolve(context.getTaskFilePrefix() + STDOUT_SUFFIX).toFile();
-    final File stderrFile = logDirectory.resolve(context.getTaskFilePrefix() + STDERR_SUFFIX).toFile();
+    final File stdoutFile =
+        logDirectory.resolve(context.getTaskFilePrefix() + STDOUT_SUFFIX).toFile();
+    final File stderrFile =
+        logDirectory.resolve(context.getTaskFilePrefix() + STDERR_SUFFIX).toFile();
 
     getLogger().info("Interpreter: " + interpreter);
     getLogger().info("Command: " + command);
@@ -110,12 +111,18 @@ public class ToolExecutor {
     getLogger().info("Stdout: " + stdoutFile);
     getLogger().info("Stderr: " + stderrFile);
 
-    return ti.execute(command, executionDirectory, tempDirectory, stdoutFile,
-        stderrFile, toArray(inputFiles, workflowOutputDirectory));
+    return ti.execute(
+        command,
+        executionDirectory,
+        tempDirectory,
+        stdoutFile,
+        stderrFile,
+        toArray(inputFiles, workflowOutputDirectory));
   }
 
   /**
    * Convert collection and array of File objects into an Array.
+   *
    * @param collection the collection to convert
    * @param files the array to convert
    * @return an Array of File
@@ -137,14 +144,19 @@ public class ToolExecutor {
 
   /**
    * Constructor a new galaxy tool executor.
+   *
    * @param context the context
    * @param toolData the tool data
    * @param commandLine the command line
    * @param inputFiles input files to use
    * @throws IOException if an error occurs while executing the command
    */
-  public ToolExecutor(final TaskContext context, final ToolInfo toolData,
-      final String commandLine, final Set<File> inputFiles) throws IOException {
+  public ToolExecutor(
+      final TaskContext context,
+      final ToolInfo toolData,
+      final String commandLine,
+      final Set<File> inputFiles)
+      throws IOException {
 
     requireNonNull(commandLine, "commandLine is null.");
     requireNonNull(context, "Step context is null.");
@@ -154,5 +166,4 @@ public class ToolExecutor {
     this.stepContext = context;
     this.inputFiles = inputFiles;
   }
-
 }

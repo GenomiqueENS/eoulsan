@@ -28,18 +28,10 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Collections.emptySet;
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.core.SimpleOutputPort;
@@ -49,10 +41,17 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
- * This class define a workflow output port. It is like a standard OutputPort
- * but it contains also the step of the port.
+ * This class define a workflow output port. It is like a standard OutputPort but it contains also
+ * the step of the port.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -65,6 +64,7 @@ class StepOutputPort extends SimpleOutputPort {
 
   /**
    * Get the step related to the port.
+   *
    * @return a step object
    */
   public AbstractStep getStep() {
@@ -74,6 +74,7 @@ class StepOutputPort extends SimpleOutputPort {
 
   /**
    * Get the output port linked to this input port.
+   *
    * @return the linked output port if exists or null
    */
   public Set<StepInputPort> getLinks() {
@@ -82,6 +83,7 @@ class StepOutputPort extends SimpleOutputPort {
 
   /**
    * Test if the port is linked.
+   *
    * @return true if the port is linked
    */
   public boolean isLinked() {
@@ -91,6 +93,7 @@ class StepOutputPort extends SimpleOutputPort {
 
   /**
    * Set the link for the port.
+   *
    * @param inputPort the output of the link
    */
   public void addLink(final StepInputPort inputPort) {
@@ -99,10 +102,14 @@ class StepOutputPort extends SimpleOutputPort {
     requireNonNull(inputPort, "inputPort argument cannot be null");
 
     // Check the ports are not on the same step
-    checkArgument(inputPort.getStep() != this.step,
+    checkArgument(
+        inputPort.getStep() != this.step,
         "cannot link a step ("
-            + this.step.getId() + ") to itself (input port: "
-            + inputPort.getName() + ", output port: " + getName());
+            + this.step.getId()
+            + ") to itself (input port: "
+            + inputPort.getName()
+            + ", output port: "
+            + getName());
 
     // Check if a link already exists
     if (this.links.contains(inputPort)) {
@@ -111,10 +118,19 @@ class StepOutputPort extends SimpleOutputPort {
 
     // Check if format are compatible
     if (!getFormat().equals(inputPort.getFormat())) {
-      throw new EoulsanRuntimeException("Incompatible format: "
-          + inputPort.getStep().getId() + "." + inputPort.getName() + " -> "
-          + inputPort.getFormat().getName() + " and " + getStep().getId() + "."
-          + getName() + " <- " + getFormat().getName());
+      throw new EoulsanRuntimeException(
+          "Incompatible format: "
+              + inputPort.getStep().getId()
+              + "."
+              + inputPort.getName()
+              + " -> "
+              + inputPort.getFormat().getName()
+              + " and "
+              + getStep().getId()
+              + "."
+              + getName()
+              + " <- "
+              + getFormat().getName());
     }
 
     this.links.add(inputPort);
@@ -122,6 +138,7 @@ class StepOutputPort extends SimpleOutputPort {
 
   /**
    * Test if output files of the port exists.
+   *
    * @return true if output files of the port exists
    */
   public List<DataFile> getExistingOutputFiles() {
@@ -155,6 +172,7 @@ class StepOutputPort extends SimpleOutputPort {
 
   /**
    * Get Existing Data.
+   *
    * @return a set with Data elements
    */
   public Set<Data> getExistingData() {
@@ -190,8 +208,7 @@ class StepOutputPort extends SimpleOutputPort {
     for (String key : map.keySet()) {
 
       // Set the data name
-      final DataElement data =
-          new DataElement(getFormat(), map.get(key), design);
+      final DataElement data = new DataElement(getFormat(), map.get(key), design);
       data.setName(key.substring(0, key.indexOf('\t')));
 
       result.add(data);
@@ -202,6 +219,7 @@ class StepOutputPort extends SimpleOutputPort {
 
   /**
    * Test if all the links of the port had target on skipped steps.
+   *
    * @return true if all the links of the port had target on skipped steps
    */
   public boolean isAllLinksToSkippedSteps() {
@@ -235,9 +253,11 @@ class StepOutputPort extends SimpleOutputPort {
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this).add("name", getName())
+    return MoreObjects.toStringHelper(this)
+        .add("name", getName())
         .add("format", getFormat().getName())
-        .add("compression", getCompression()).add("step", getStep().getId())
+        .add("compression", getCompression())
+        .add("step", getStep().getId())
         .toString();
   }
 
@@ -247,13 +267,17 @@ class StepOutputPort extends SimpleOutputPort {
 
   /**
    * Constructor.
+   *
    * @param step the step related to the port
    * @param name name of the port
    * @param format format of the port
    * @param compression compression of the output
    */
-  public StepOutputPort(final AbstractStep step, final String name,
-      final boolean list, final DataFormat format,
+  public StepOutputPort(
+      final AbstractStep step,
+      final String name,
+      final boolean list,
+      final DataFormat format,
       final CompressionType compression) {
 
     super(name, list, format, compression);
@@ -264,5 +288,4 @@ class StepOutputPort extends SimpleOutputPort {
 
     this.step = step;
   }
-
 }

@@ -25,26 +25,26 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.newEoulsanException;
 
-import org.w3c.dom.Element;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
+import org.w3c.dom.Element;
 
 /**
  * This class define an integer tool element parameter.
+ *
  * @author Sandrine Perrin
  * @since 2.0
  */
 public class IntegerParameterToolElement extends TextParameterToolElement {
 
   /** The Constant TYPE. */
-  public final static String TYPE = "integer";
+  public static final String TYPE = "integer";
 
   /** The Constant ATT_MIN_KEY. */
-  private final static String ATT_MIN_KEY = "min";
+  private static final String ATT_MIN_KEY = "min";
 
   /** The Constant ATT_MAX_KEY. */
-  private final static String ATT_MAX_KEY = "max";
+  private static final String ATT_MAX_KEY = "max";
 
   /** The min. */
   private final int min;
@@ -82,10 +82,16 @@ public class IntegerParameterToolElement extends TextParameterToolElement {
     super.setValue(value);
 
     if (!this.isParameterValueValid()) {
-      throw newEoulsanException(this.toolInfo, getName(),
+      throw newEoulsanException(
+          this.toolInfo,
+          getName(),
           "invalid value for parameter: "
-              + getValue() + " (the value must be in interval [" + this.min
-              + " - " + this.max + "])");
+              + getValue()
+              + " (the value must be in interval ["
+              + this.min
+              + " - "
+              + this.max
+              + "])");
     }
   }
 
@@ -96,7 +102,12 @@ public class IntegerParameterToolElement extends TextParameterToolElement {
   @Override
   public String toString() {
     return "ToolParameterInteger [min="
-        + this.min + ", max=" + this.max + ", value=" + getValue() + "]";
+        + this.min
+        + ", max="
+        + this.max
+        + ", value="
+        + getValue()
+        + "]";
   }
 
   //
@@ -105,24 +116,27 @@ public class IntegerParameterToolElement extends TextParameterToolElement {
 
   /**
    * Instantiates a new integer tool element parameter.
+   *
    * @param toolInfo the ToolInfo object
    * @param param the parameter
    * @throws EoulsanException if an error occurs while setting the value
    */
-  public IntegerParameterToolElement(final ToolInfo toolInfo,
-      final Element param) throws EoulsanException {
+  public IntegerParameterToolElement(final ToolInfo toolInfo, final Element param)
+      throws EoulsanException {
     this(toolInfo, param, null);
   }
 
   /**
    * Instantiates a new integer tool element parameter.
+   *
    * @param toolInfo the ToolInfo object
    * @param param the parameter
    * @param nameSpace the name space
    * @throws EoulsanException if an error occurs while setting the value
    */
-  public IntegerParameterToolElement(final ToolInfo toolInfo,
-      final Element param, final String nameSpace) throws EoulsanException {
+  public IntegerParameterToolElement(
+      final ToolInfo toolInfo, final Element param, final String nameSpace)
+      throws EoulsanException {
 
     super(toolInfo, param, nameSpace);
     this.toolInfo = toolInfo;
@@ -132,8 +146,7 @@ public class IntegerParameterToolElement extends TextParameterToolElement {
     try {
       this.min = value.isEmpty() ? Integer.MIN_VALUE : Integer.parseInt(value);
     } catch (final NumberFormatException e) {
-      throw newEoulsanException(toolInfo, getName(),
-          "Failed to extract min value: " + value);
+      throw newEoulsanException(toolInfo, getName(), "Failed to extract min value: " + value);
     }
 
     // Get maximal value
@@ -141,9 +154,7 @@ public class IntegerParameterToolElement extends TextParameterToolElement {
     try {
       this.max = value.isEmpty() ? Integer.MAX_VALUE : Integer.parseInt(value);
     } catch (final NumberFormatException e) {
-      throw newEoulsanException(toolInfo, getName(),
-          "Failed to extract max value: " + value);
+      throw newEoulsanException(toolInfo, getName(), "Failed to extract max value: " + value);
     }
   }
-
 }

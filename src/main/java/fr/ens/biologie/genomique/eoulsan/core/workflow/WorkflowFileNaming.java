@@ -7,6 +7,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 
 /**
  * This class contains methods to create workflow data file names.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -18,6 +19,7 @@ public class WorkflowFileNaming extends FileNaming {
 
   /**
    * Set several field of the object from a workflow output port.
+   *
    * @param port the workflow output port
    */
   private void set(final StepOutputPort port) {
@@ -36,6 +38,7 @@ public class WorkflowFileNaming extends FileNaming {
 
   /**
    * Create the prefix of a filename.
+   *
    * @param port output port that generate the file
    * @return a String with the prefix of the file
    */
@@ -49,6 +52,7 @@ public class WorkflowFileNaming extends FileNaming {
 
   /**
    * Create the glob for the port.
+   *
    * @param port name of the port
    * @return a glob in a string
    */
@@ -66,13 +70,14 @@ public class WorkflowFileNaming extends FileNaming {
 
   /**
    * Create the middle of a filename.
+   *
    * @param port output port that generate the file
    * @param data the data
    * @param fileIndex file index
    * @return a String with the suffix of a file
    */
-  public static String fileMiddle(final StepOutputPort port,
-      final DataElement data, final int fileIndex) {
+  public static String fileMiddle(
+      final StepOutputPort port, final DataElement data, final int fileIndex) {
 
     final WorkflowFileNaming f = new WorkflowFileNaming();
     f.set(port);
@@ -84,14 +89,15 @@ public class WorkflowFileNaming extends FileNaming {
 
   /**
    * Create the middle of a filename.
+   *
    * @param port output port that generate the file
    * @param dataName data name
    * @param fileIndex file index
    * @param part file part
    * @return a String with the suffix of a file
    */
-  public static String fileMiddle(final StepOutputPort port,
-      final String dataName, final int fileIndex, final int part) {
+  public static String fileMiddle(
+      final StepOutputPort port, final String dataName, final int fileIndex, final int part) {
 
     final WorkflowFileNaming f = new WorkflowFileNaming();
     f.set(port);
@@ -108,6 +114,7 @@ public class WorkflowFileNaming extends FileNaming {
 
   /**
    * Create the suffix of a filename.
+   *
    * @param port a workflow port
    * @return a string with the suffix that correspond to the filename
    */
@@ -125,13 +132,14 @@ public class WorkflowFileNaming extends FileNaming {
 
   /**
    * Create the name of a data file of the workflow.
+   *
    * @param port port that generate the data
    * @param data data
    * @param fileIndex file index
    * @return a String with the name of the file
    */
-  public static String filename(final StepOutputPort port,
-      final DataElement data, final int fileIndex) {
+  public static String filename(
+      final StepOutputPort port, final DataElement data, final int fileIndex) {
 
     final WorkflowFileNaming f = new WorkflowFileNaming();
     f.set(port);
@@ -147,27 +155,22 @@ public class WorkflowFileNaming extends FileNaming {
 
   /**
    * Create a DataFile object for a file of the workflow.
+   *
    * @param port port that generate the data
    * @param data data
    * @param fileIndex file index
    * @return a DataFile object
    */
-  public static DataFile file(final StepOutputPort port, final DataElement data,
-      final int fileIndex) {
+  public static DataFile file(
+      final StepOutputPort port, final DataElement data, final int fileIndex) {
 
-    return new DataFile(port.getStep().getStepOutputDirectory(),
-        filename(port, data, fileIndex));
+    return new DataFile(port.getStep().getStepOutputDirectory(), filename(port, data, fileIndex));
   }
 
   //
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
-  private WorkflowFileNaming() {
-
-  }
-
+  /** Private constructor. */
+  private WorkflowFileNaming() {}
 }

@@ -27,6 +27,8 @@ package fr.ens.biologie.genomique.eoulsan.io;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import com.google.common.base.Strings;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -35,12 +37,7 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.Test;
-
-import com.google.common.base.Strings;
-
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 
 public class FileConcatInputStreamTest {
 
@@ -101,5 +98,4 @@ public class FileConcatInputStreamTest {
     writer.close();
     return f;
   }
-
 }

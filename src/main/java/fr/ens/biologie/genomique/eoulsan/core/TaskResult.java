@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.core;
 
 /**
  * This class define the result of a step.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -37,26 +38,29 @@ public interface TaskResult {
 
   /**
    * Get the duration of the step.
+   *
    * @return duration in milliseconds
    */
   long getDuration();
 
   /**
    * Test the result of the step is successful.
+   *
    * @return Returns the success
    */
   boolean isSuccess();
 
   /**
    * Get the exception.
+   *
    * @return Returns the exception
    */
   Throwable getException();
 
   /**
    * Get the error message.
+   *
    * @return Returns the errorMessage
    */
   String getErrorMessage();
-
 }

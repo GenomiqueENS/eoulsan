@@ -27,6 +27,10 @@ package fr.ens.biologie.genomique.eoulsan.util;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.kenetre.util.Utils.silentSleep;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import fr.ens.biologie.genomique.eoulsan.io.FileCharsets;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -41,35 +45,29 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-
-import fr.ens.biologie.genomique.eoulsan.io.FileCharsets;
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
-
 /**
  * Utility class for launching external process.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
 public final class ProcessUtils {
 
   /* Default Charset. */
-  private static final Charset CHARSET =
-      Charset.forName(System.getProperty("file.encoding"));
+  private static final Charset CHARSET = Charset.forName(System.getProperty("file.encoding"));
 
   private static Random random;
 
   /**
    * Execute a command.
+   *
    * @param cmd command to execute
    * @return the exit error of the program
    * @throws IOException if an error occurs while executing the command
    */
   public static int system(final String cmd) throws IOException {
 
-    getLogger().fine(
-        "execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
+    getLogger().fine("execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
 
     final Process p = Runtime.getRuntime().exec(cmd);
 
@@ -82,6 +80,7 @@ public final class ProcessUtils {
 
   /**
    * Execute a command.
+   *
    * @param cmd command to execute
    * @return the exit error of the program
    * @throws IOException if an error occurs while executing the command
@@ -93,14 +92,13 @@ public final class ProcessUtils {
 
   /**
    * Execute a command.
+   *
    * @param cmd command to execute
    * @param temporaryDirectory temporary where create the temporary shell file
    * @return the exit error of the program
    * @throws IOException if an error occurs while executing the command
    */
-
-  public static int sh(final List<String> cmd, final File temporaryDirectory)
-      throws IOException {
+  public static int sh(final List<String> cmd, final File temporaryDirectory) throws IOException {
 
     ProcessBuilder pb;
     Process p = null;
@@ -117,8 +115,7 @@ public final class ProcessUtils {
 
       p = pb.start();
 
-      final Thread terr =
-          new Thread(new ProcessThreadErrOutput(p.getErrorStream()));
+      final Thread terr = new Thread(new ProcessThreadErrOutput(p.getErrorStream()));
       terr.start();
 
       terr.join();
@@ -133,24 +130,21 @@ public final class ProcessUtils {
 
   /**
    * Execute a command with the OS.
+   *
    * @param cmd Command to execute
-   * @param stdOutput don't show the result of the command on the standard
-   *          output
+   * @param stdOutput don't show the result of the command on the standard output
    * @throws IOException if an error occurs while running the process
    */
-  public static void exec(final String cmd, final boolean stdOutput)
-      throws IOException {
+  public static void exec(final String cmd, final boolean stdOutput) throws IOException {
 
-    getLogger().fine(
-        "execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
+    getLogger().fine("execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
 
     final long startTime = System.currentTimeMillis();
 
     Process p = Runtime.getRuntime().exec(cmd);
 
     InputStream std = p.getInputStream();
-    BufferedReader stdr =
-        new BufferedReader(new InputStreamReader(std, CHARSET));
+    BufferedReader stdr = new BufferedReader(new InputStreamReader(std, CHARSET));
 
     String l = null;
 
@@ -161,8 +155,7 @@ public final class ProcessUtils {
     }
 
     InputStream err = p.getInputStream();
-    BufferedReader errr =
-        new BufferedReader(new InputStreamReader(err, CHARSET));
+    BufferedReader errr = new BufferedReader(new InputStreamReader(err, CHARSET));
 
     String l2 = null;
 
@@ -178,15 +171,14 @@ public final class ProcessUtils {
 
   /**
    * Execute a command with the OS and save the output in file.
+   *
    * @param cmd Command to execute
    * @param outputFile The output file
    * @throws IOException if an error occurs while running the process
    */
-  public static void execWriteOutput(final String cmd, final File outputFile)
-      throws IOException {
+  public static void execWriteOutput(final String cmd, final File outputFile) throws IOException {
 
-    getLogger().fine(
-        "execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
+    getLogger().fine("execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
 
     final long startTime = System.currentTimeMillis();
 
@@ -199,8 +191,7 @@ public final class ProcessUtils {
     FileUtils.copy(std, fos);
 
     InputStream err = p.getInputStream();
-    BufferedReader errr =
-        new BufferedReader(new InputStreamReader(err, CHARSET));
+    BufferedReader errr = new BufferedReader(new InputStreamReader(err, CHARSET));
 
     String l2 = null;
 
@@ -216,6 +207,7 @@ public final class ProcessUtils {
 
   /**
    * Execute a command with the OS and return the output in a string.
+   *
    * @param cmd Command to execute
    * @return a string with the output the command
    * @throws IOException if an error occurs while running the process
@@ -227,27 +219,25 @@ public final class ProcessUtils {
 
   /**
    * Execute a command with the OS and return the output in a string.
+   *
    * @param cmd Command to execute
    * @param addStdErr add the output of stderr in the result
    * @param checkExitCode if true exit code will be checked
    * @return a string with the output the command
    * @throws IOException if an error occurs while running the process
    */
-  public static String execToString(final String cmd, final boolean addStdErr,
-      final boolean checkExitCode) throws IOException {
+  public static String execToString(
+      final String cmd, final boolean addStdErr, final boolean checkExitCode) throws IOException {
 
-    getLogger().fine(
-        "execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
+    getLogger().fine("execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
 
     final long startTime = System.currentTimeMillis();
 
-    final Process p =
-        Runtime.getRuntime().exec(new String[] {"/bin/sh", "-c", cmd});
+    final Process p = Runtime.getRuntime().exec(new String[] {"/bin/sh", "-c", cmd});
 
     final InputStream std = p.getInputStream();
 
-    final BufferedReader stdr =
-        new BufferedReader(new InputStreamReader(std, CHARSET));
+    final BufferedReader stdr = new BufferedReader(new InputStreamReader(std, CHARSET));
 
     final StringBuilder sb = new StringBuilder();
     String l1 = null;
@@ -258,8 +248,7 @@ public final class ProcessUtils {
     }
 
     InputStream err = p.getErrorStream();
-    BufferedReader errr =
-        new BufferedReader(new InputStreamReader(err, CHARSET));
+    BufferedReader errr = new BufferedReader(new InputStreamReader(err, CHARSET));
 
     String l2 = null;
 
@@ -284,13 +273,14 @@ public final class ProcessUtils {
 
   /**
    * Log the time of execution of a process.
+   *
    * @param p Process to log
    * @param cmd Command of the process
    * @param startTime Start time in ms
    * @throws IOException if an error occurs at the end of the process
    */
-  public static void logEndTime(final Process p, final String cmd,
-      final long startTime) throws IOException {
+  public static void logEndTime(final Process p, final String cmd, final long startTime)
+      throws IOException {
 
     try {
 
@@ -299,50 +289,55 @@ public final class ProcessUtils {
 
       throwExitCodeException(exitValue, cmd);
 
-      getLogger().fine("Done (Thread "
-          + Thread.currentThread().getId() + ", exit code: " + exitValue
-          + ") in " + (endTime - startTime) + " ms.");
+      getLogger()
+          .fine(
+              "Done (Thread "
+                  + Thread.currentThread().getId()
+                  + ", exit code: "
+                  + exitValue
+                  + ") in "
+                  + (endTime - startTime)
+                  + " ms.");
     } catch (InterruptedException e) {
 
       getLogger().severe("Interrupted exception: " + e.getMessage());
     }
-
   }
 
   /**
    * Throw an IOException if the exit code of a process is not equals to 0.
+   *
    * @param exitCode the exit code
    * @param command the executed command
    * @throws IOException if the exit code if not 0
    */
-  public static void throwExitCodeException(final int exitCode,
-      final String command) throws IOException {
+  public static void throwExitCodeException(final int exitCode, final String command)
+      throws IOException {
 
     switch (exitCode) {
+      case 0:
+        return;
 
-    case 0:
-      return;
+      case 126:
+        throw new IOException("Command invoked cannot execute: " + command);
 
-    case 126:
-      throw new IOException("Command invoked cannot execute: " + command);
+      case 127:
+        throw new IOException("Command not found: " + command);
 
-    case 127:
-      throw new IOException("Command not found: " + command);
+      case 134:
+        throw new IOException("Abort: " + command);
 
-    case 134:
-      throw new IOException("Abort: " + command);
+      case 139:
+        throw new IOException("Segmentation fault: " + command);
 
-    case 139:
-      throw new IOException("Segmentation fault: " + command);
-
-    default:
-      throw new IOException(
-          "Error while executing (exit code " + exitCode + "): " + command);
+      default:
+        throw new IOException("Error while executing (exit code " + exitCode + "): " + command);
     }
   }
 
   /**
    * Return a set withs pid of existing executable.
+   *
    * @param executableName executable name
    * @return a set of integers with pid of existing executable
    */
@@ -355,8 +350,7 @@ public final class ProcessUtils {
     Set<Integer> result = new HashSet<>();
 
     try {
-      final String s =
-          ProcessUtils.execToString("pgrep -x " + executableName.trim());
+      final String s = ProcessUtils.execToString("pgrep -x " + executableName.trim());
 
       for (String line : Splitter.on('\n').split(s)) {
         try {
@@ -375,6 +369,7 @@ public final class ProcessUtils {
 
   /**
    * Wait the end of the execution of all the instance of an executable.
+   *
    * @param executableName name of the executable
    */
   public static void waitUntilExecutableRunning(final String executableName) {
@@ -393,11 +388,11 @@ public final class ProcessUtils {
 
       silentSleep(5000);
     }
-
   }
 
   /**
    * Wait a random number of milliseconds.
+   *
    * @param maxMilliseconds the maximum number of milliseconds to wait
    */
   public static void waitRandom(final int maxMilliseconds) {
@@ -413,9 +408,7 @@ public final class ProcessUtils {
     silentSleep(random.nextInt(maxMilliseconds));
   }
 
-  /**
-   * This class allow to fetch standard error of the process, without printing
-   */
+  /** This class allow to fetch standard error of the process, without printing */
   public static final class ProcessThreadErrOutput implements Runnable {
     final InputStream err;
     public String exceptionMessage;
@@ -424,10 +417,9 @@ public final class ProcessUtils {
     @Override
     public void run() {
       try {
-        while (new BufferedReader(
-            new InputStreamReader(this.err, FileCharsets.LATIN1_CHARSET))
-                .readLine() != null) {
-        }
+        while (new BufferedReader(new InputStreamReader(this.err, FileCharsets.LATIN1_CHARSET))
+                .readLine()
+            != null) {}
 
         this.err.close();
       } catch (IOException e) {
@@ -442,6 +434,7 @@ public final class ProcessUtils {
 
   /**
    * This class allow to write on a PrintStream the content of a BufferedReader
+   *
    * @author Laurent Jourdren
    */
   @SuppressWarnings("CatchAndPrintStackTrace")
@@ -469,19 +462,18 @@ public final class ProcessUtils {
       this.reader = reader;
       this.pw = pw;
     }
-
   }
 
   /**
-   * Execute a command and write the content of the standard output and error to
-   * System.out and System.err.
+   * Execute a command and write the content of the standard output and error to System.out and
+   * System.err.
+   *
    * @param cmd Command to execute
    * @throws IOException if an error occurs while executing the command
    */
   public static void execThreadOutput(final String cmd) throws IOException {
 
-    getLogger().fine(
-        "execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
+    getLogger().fine("execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
 
     final long startTime = System.currentTimeMillis();
 
@@ -499,15 +491,16 @@ public final class ProcessUtils {
   }
 
   /**
-   * Execute a command and write the content of the standard output and error to
-   * System.out and System.err.
+   * Execute a command and write the content of the standard output and error to System.out and
+   * System.err.
+   *
    * @param cmd array with the command to execute
    * @throws IOException if an error occurs while executing the command
    */
   public static void execThreadOutput(final String[] cmd) throws IOException {
 
-    getLogger().fine("execute (Thread "
-        + Thread.currentThread().getId() + "): " + Arrays.toString(cmd));
+    getLogger()
+        .fine("execute (Thread " + Thread.currentThread().getId() + "): " + Arrays.toString(cmd));
 
     final long startTime = System.currentTimeMillis();
 
@@ -524,7 +517,5 @@ public final class ProcessUtils {
     logEndTime(p, Joiner.on(' ').join(cmd), startTime);
   }
 
-  private ProcessUtils() {
-  }
-
+  private ProcessUtils() {}
 }

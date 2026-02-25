@@ -28,10 +28,6 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toLetter;
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -41,14 +37,17 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * This class define an output file of workflow set.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
-public final class StepOutputDataFile
-    implements Comparable<StepOutputDataFile> {
+public final class StepOutputDataFile implements Comparable<StepOutputDataFile> {
 
   private final AbstractStep step;
   private final String portName;
@@ -60,6 +59,7 @@ public final class StepOutputDataFile
 
   /**
    * Get the workflow step that produced the file.
+   *
    * @return the workflow step
    */
   public AbstractStep getStep() {
@@ -69,6 +69,7 @@ public final class StepOutputDataFile
 
   /**
    * Get the port name that produced the file.
+   *
    * @return the port name
    */
   public String getPortName() {
@@ -78,6 +79,7 @@ public final class StepOutputDataFile
 
   /**
    * Get the format of the output
+   *
    * @return the DataFormat of the output
    */
   public DataFormat getFormat() {
@@ -87,6 +89,7 @@ public final class StepOutputDataFile
 
   /**
    * Get the sample that produced the file.
+   *
    * @return the Sample
    */
   public Sample getSample() {
@@ -96,6 +99,7 @@ public final class StepOutputDataFile
 
   /**
    * Get file index.
+   *
    * @return the file index
    */
   public int getFileIndex() {
@@ -110,6 +114,7 @@ public final class StepOutputDataFile
 
   /**
    * Get the file as a DataFile.
+   *
    * @return a DataFile
    */
   public DataFile getDataFile() {
@@ -123,22 +128,22 @@ public final class StepOutputDataFile
 
   /**
    * Create a new DataFile object from the step, format, sample and file index.
+   *
    * @param step step of the file
    * @param format format of the file
    * @param sample sample of the file
    * @param fileIndex file index of the file for multi-file data
    * @return a new DataFile object
    */
-  private static DataFile newDataFile(final AbstractStep step,
-      final DataFormat format, final Sample sample, final int fileIndex) {
+  private static DataFile newDataFile(
+      final AbstractStep step, final DataFormat format, final Sample sample, final int fileIndex) {
 
     requireNonNull(format, "Format argument cannot be null");
     requireNonNull(sample, "Sample argument cannot be null");
 
     switch (step.getType()) {
-
-    case STANDARD_STEP:
-    case GENERATOR_STEP:
+      case STANDARD_STEP:
+      case GENERATOR_STEP:
 
       // if (!step.getStep().getOutputFormats().contains(portName))
       // throw new EoulsanRuntimeException("The "
@@ -150,47 +155,49 @@ public final class StepOutputDataFile
       // sample, fileIndex, step.getOutputPorts().getPort(portName)
       // .getCompression());
 
-    case DESIGN_STEP:
+      case DESIGN_STEP:
 
-      // Get the values for the format and the sample in the design
-      final List<String> designValues =
-          getDesignValues(step.getWorkflow().getDesign(), format, sample);
+        // Get the values for the format and the sample in the design
+        final List<String> designValues =
+            getDesignValues(step.getWorkflow().getDesign(), format, sample);
 
-      return newDesignDataFile(designValues, format, sample, fileIndex);
+        return newDesignDataFile(designValues, format, sample, fileIndex);
 
-    default:
-      return null;
+      default:
+        return null;
     }
-
   }
 
   /**
    * Get the field values in the design for a format and a sample.
+   *
    * @param design design object
    * @param format format of the file
    * @param sample sample of the file
    * @return a list with the values in the design
    */
-  private static List<String> getDesignValues(final Design design,
-      final DataFormat format, final Sample sample) {
+  private static List<String> getDesignValues(
+      final Design design, final DataFormat format, final Sample sample) {
 
     final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
-    final String designMetadataKey =
-        registry.getDesignMetadataKeyForDataFormat(design, format);
+    final String designMetadataKey = registry.getDesignMetadataKeyForDataFormat(design, format);
 
     if (designMetadataKey != null) {
       return design.getMetadata().getAsList(designMetadataKey);
     }
 
-    final String sampleMetadataKey =
-        registry.getSampleMetadataKeyForDataFormat(sample, format);
+    final String sampleMetadataKey = registry.getSampleMetadataKeyForDataFormat(sample, format);
 
     if (sampleMetadataKey == null) {
-      throw new EoulsanRuntimeException("The "
-          + format.getName()
-          + " format was not found in the design file for sample "
-          + sample.getId() + " (" + sample.getName() + ")");
+      throw new EoulsanRuntimeException(
+          "The "
+              + format.getName()
+              + " format was not found in the design file for sample "
+              + sample.getId()
+              + " ("
+              + sample.getName()
+              + ")");
     }
 
     return sample.getMetadata().getAsList(sampleMetadataKey);
@@ -198,27 +205,37 @@ public final class StepOutputDataFile
 
   /**
    * Create a new DataFile object defined in the design.
+   *
    * @param fieldValues field values in the design
    * @param format format of the file
    * @param sample sample of the file
    * @param fileIndex file index of the file for multi-file data
    * @return a new DataFile object
    */
-  private static DataFile newDesignDataFile(final List<String> fieldValues,
-      final DataFormat format, final Sample sample, final int fileIndex) {
+  private static DataFile newDesignDataFile(
+      final List<String> fieldValues,
+      final DataFormat format,
+      final Sample sample,
+      final int fileIndex) {
 
     if (fileIndex >= 0 && fileIndex > fieldValues.size()) {
       return null;
     }
 
-    final DataFile file =
-        new DataFile(fieldValues.get(fileIndex == -1 ? 0 : fileIndex));
+    final DataFile file = new DataFile(fieldValues.get(fileIndex == -1 ? 0 : fileIndex));
 
     if (!isDesignDataFileValidFormat(file, format)) {
-      throw new EoulsanRuntimeException("The file "
-          + file + " in design file is not a " + format.getName()
-          + format.getName() + " format for " + sample.getId() + " ("
-          + sample.getName() + ")");
+      throw new EoulsanRuntimeException(
+          "The file "
+              + file
+              + " in design file is not a "
+              + format.getName()
+              + format.getName()
+              + " format for "
+              + sample.getId()
+              + " ("
+              + sample.getName()
+              + ")");
     }
 
     return file;
@@ -226,6 +243,7 @@ public final class StepOutputDataFile
 
   /**
    * Create a DataFile object that correspond to a standard Eoulsan output file.
+   *
    * @param step step that generated the file
    * @param portName the port that generated the file
    * @param format format of the file
@@ -233,9 +251,13 @@ public final class StepOutputDataFile
    * @param fileIndex file index of the file for multi-file data
    * @return a new DataFile object
    */
-  private static DataFile newStandardDataFile(final AbstractStep step,
-      final String portName, final DataFormat format, final Sample sample,
-      final int fileIndex, final CompressionType compression) {
+  private static DataFile newStandardDataFile(
+      final AbstractStep step,
+      final String portName,
+      final DataFormat format,
+      final Sample sample,
+      final int fileIndex,
+      final CompressionType compression) {
 
     final StringBuilder sb = new StringBuilder();
 
@@ -246,20 +268,19 @@ public final class StepOutputDataFile
       sb.append('/');
     }
 
-    sb.append(newStandardFilename(step, portName, format, sample, fileIndex,
-        compression));
+    sb.append(newStandardFilename(step, portName, format, sample, fileIndex, compression));
 
     return new DataFile(sb.toString());
   }
 
   /**
    * Check if a DataFile from the design has a the good format.
+   *
    * @param file the DataFile to test
    * @param df the DataFormat
    * @return true if a DataFile from the design has a the good format
    */
-  private static boolean isDesignDataFileValidFormat(final DataFile file,
-      final DataFormat df) {
+  private static boolean isDesignDataFileValidFormat(final DataFile file, final DataFormat df) {
 
     if (file == null || df == null) {
       return false;
@@ -270,8 +291,7 @@ public final class StepOutputDataFile
     try {
       md = file.getMetaData();
     } catch (IOException e) {
-      getLogger().warning("Error while getting metadata for file "
-          + file + ": " + e.getMessage());
+      getLogger().warning("Error while getting metadata for file " + file + ": " + e.getMessage());
       md = null;
     }
 
@@ -281,8 +301,7 @@ public final class StepOutputDataFile
 
     final DataFormatRegistry dfr = DataFormatRegistry.getInstance();
 
-    for (DataFormat sourceDf : dfr
-        .getDataFormatsFromExtension(file.getExtension())) {
+    for (DataFormat sourceDf : dfr.getDataFormatsFromExtension(file.getExtension())) {
 
       if (sourceDf.equals(df)) {
         return true;
@@ -332,6 +351,7 @@ public final class StepOutputDataFile
 
   /**
    * Create a standard filename.
+   *
    * @param step the step that generated the file
    * @param portName the port name that generated the file
    * @param format the format of the file
@@ -340,9 +360,13 @@ public final class StepOutputDataFile
    * @param compression the compression of the file
    * @return a file name as a String
    */
-  public static String newStandardFilename(final Step step,
-      final String portName, final DataFormat format, final Sample sample,
-      final int fileIndex, final CompressionType compression) {
+  public static String newStandardFilename(
+      final Step step,
+      final String portName,
+      final DataFormat format,
+      final Sample sample,
+      final int fileIndex,
+      final CompressionType compression) {
 
     requireNonNull(step, "step argument cannot be null");
     requireNonNull(portName, "portName argument cannot be null");
@@ -386,16 +410,16 @@ public final class StepOutputDataFile
   }
 
   /**
-   * Get the count of files that exists for a step, a format and sample (case of
-   * multi-files data).
+   * Get the count of files that exists for a step, a format and sample (case of multi-files data).
+   *
    * @param outputPort output port that create the file
    * @param sample sample of the file
-   * @param existingFiles true if existence of file must be tested. If false the
-   *          return value will be the maximum number files
+   * @param existingFiles true if existence of file must be tested. If false the return value will
+   *     be the maximum number files
    * @return the number of files
    */
-  public static int dataFileCount(final StepOutputPort outputPort,
-      final Sample sample, final boolean existingFiles) {
+  public static int dataFileCount(
+      final StepOutputPort outputPort, final Sample sample, final boolean existingFiles) {
 
     requireNonNull(outputPort, "outputPort cannot be null");
     requireNonNull(sample, "Sample argument cannot be null");
@@ -405,43 +429,37 @@ public final class StepOutputDataFile
     final CompressionType compression = outputPort.getCompression();
 
     if (format.getMaxFilesCount() < 2) {
-      throw new EoulsanRuntimeException(
-          "Only multi-files DataFormat are handled by this method.");
+      throw new EoulsanRuntimeException("Only multi-files DataFormat are handled by this method.");
     }
 
     switch (step.getType()) {
-
-    case STANDARD_STEP:
-
-      if (!existingFiles) {
-        return format.getMaxFilesCount();
-      }
-
-      int count = 0;
-      boolean found;
-
-      do {
-
-        final DataFile file = newStandardDataFile(step, outputPort.getName(),
-            format, sample, count, compression);
-
-        found = file.exists();
-        if (found) {
-          count++;
+      case STANDARD_STEP:
+        if (!existingFiles) {
+          return format.getMaxFilesCount();
         }
-      } while (found);
 
-      return count;
+        int count = 0;
+        boolean found;
 
-    case DESIGN_STEP:
+        do {
 
-      return getDesignValues(step.getWorkflow().getDesign(), format, sample)
-          .size();
+          final DataFile file =
+              newStandardDataFile(step, outputPort.getName(), format, sample, count, compression);
 
-    default:
-      return 0;
+          found = file.exists();
+          if (found) {
+            count++;
+          }
+        } while (found);
+
+        return count;
+
+      case DESIGN_STEP:
+        return getDesignValues(step.getWorkflow().getDesign(), format, sample).size();
+
+      default:
+        return 0;
     }
-
   }
 
   //
@@ -450,23 +468,24 @@ public final class StepOutputDataFile
 
   /**
    * Constructor.
+   *
    * @param outputPort output port that create the file
    * @param sample sample of the file
    */
-  public StepOutputDataFile(final StepOutputPort outputPort,
-      final Sample sample) {
+  public StepOutputDataFile(final StepOutputPort outputPort, final Sample sample) {
 
     this(outputPort, sample, -1);
   }
 
   /**
    * Constructor.
+   *
    * @param outputPort output port that create the file
    * @param sample sample of the file
    * @param fileIndex file index of the file for multi-file data
    */
-  public StepOutputDataFile(final StepOutputPort outputPort,
-      final Sample sample, final int fileIndex) {
+  public StepOutputDataFile(
+      final StepOutputPort outputPort, final Sample sample, final int fileIndex) {
 
     requireNonNull(outputPort, "outputPort cannot be null");
     requireNonNull(sample, "sample cannot be null");
@@ -474,25 +493,24 @@ public final class StepOutputDataFile
     final DataFormat format = outputPort.getFormat();
 
     if (format.getMaxFilesCount() == 1 && fileIndex != -1) {
-      throw new IllegalArgumentException(
-          "file index must be used for multi files formats");
+      throw new IllegalArgumentException("file index must be used for multi files formats");
     }
 
     if (format.getMaxFilesCount() > 1 && fileIndex < 0) {
-      throw new IllegalArgumentException("file index ("
-          + fileIndex
-          + ") must be greater or equals to 0 for multi files formats ("
-          + format.getName() + ")");
+      throw new IllegalArgumentException(
+          "file index ("
+              + fileIndex
+              + ") must be greater or equals to 0 for multi files formats ("
+              + format.getName()
+              + ")");
     }
 
     this.step = outputPort.getStep();
     this.portName = outputPort.getName();
     this.format = format;
     this.sample = format.isOneFilePerAnalysis() ? null : sample;
-    this.file =
-        newDataFile(this.step, format, sample, fileIndex);
+    this.file = newDataFile(this.step, format, sample, fileIndex);
     this.fileIndex = fileIndex;
     this.mayNotExist = fileIndex > 0;
   }
-
 }

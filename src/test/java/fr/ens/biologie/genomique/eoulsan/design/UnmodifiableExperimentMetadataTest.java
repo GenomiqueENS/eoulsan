@@ -97,7 +97,6 @@ public class UnmodifiableExperimentMetadataTest {
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
-
   }
 
   @Test
@@ -175,7 +174,5 @@ public class UnmodifiableExperimentMetadataTest {
     assertEquals("toto", uem.getContrastFile());
     // test containsContrastFile
     assertTrue(uem.containsContrastFile());
-
   }
-
 }

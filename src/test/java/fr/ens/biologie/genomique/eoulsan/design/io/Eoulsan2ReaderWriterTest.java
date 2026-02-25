@@ -26,13 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.design.io;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collections;
-
-import org.junit.Test;
-
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignFactory;
 import fr.ens.biologie.genomique.eoulsan.design.DesignMetadata;
@@ -41,6 +34,11 @@ import fr.ens.biologie.genomique.eoulsan.design.ExperimentMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSampleMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import org.junit.Test;
 
 public class Eoulsan2ReaderWriterTest {
 
@@ -102,14 +100,10 @@ public class Eoulsan2ReaderWriterTest {
     exp2.addSample(sample1);
     exp2.addSample(sample2);
 
-    ExperimentSampleMetadata exp1Sample1MD =
-        exp1.getExperimentSample(sample1).getMetadata();
-    ExperimentSampleMetadata exp1Sample2MD =
-        exp1.getExperimentSample(sample2).getMetadata();
-    ExperimentSampleMetadata exp2Sample1MD =
-        exp2.getExperimentSample(sample1).getMetadata();
-    ExperimentSampleMetadata exp2Sample2MD =
-        exp2.getExperimentSample(sample2).getMetadata();
+    ExperimentSampleMetadata exp1Sample1MD = exp1.getExperimentSample(sample1).getMetadata();
+    ExperimentSampleMetadata exp1Sample2MD = exp1.getExperimentSample(sample2).getMetadata();
+    ExperimentSampleMetadata exp2Sample1MD = exp2.getExperimentSample(sample1).getMetadata();
+    ExperimentSampleMetadata exp2Sample2MD = exp2.getExperimentSample(sample2).getMetadata();
 
     exp1Sample1MD.set("type", "WT");
     exp1Sample2MD.set("type", "KO");
@@ -137,8 +131,7 @@ public class Eoulsan2ReaderWriterTest {
   public void test2() throws IOException {
 
     // Read a design file
-    final InputStream is =
-        this.getClass().getResourceAsStream("/design-v2.txt");
+    final InputStream is = this.getClass().getResourceAsStream("/design-v2.txt");
     Design design = new Eoulsan2DesignReader(is).read();
 
     // Rewrite the the read design

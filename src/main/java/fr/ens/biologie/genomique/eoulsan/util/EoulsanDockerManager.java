@@ -24,14 +24,14 @@
 
 package fr.ens.biologie.genomique.eoulsan.util;
 
-import java.io.IOException;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.kenetre.util.process.DockerManager;
 import fr.ens.biologie.genomique.kenetre.util.process.DockerManager.ClientType;
+import java.io.IOException;
 
 /**
  * This class define a Docker manager configurated with Eoulsan settings.
+ *
  * @since 2.6
  * @author Laurent Jourdren
  */
@@ -39,14 +39,14 @@ public class EoulsanDockerManager {
 
   /**
    * Get the instance of the DockerManager.
+   *
    * @return the instance of the DockerManager
-   * @throws IOException if an error occurs while creating the DockerManager
-   *           instance
+   * @throws IOException if an error occurs while creating the DockerManager instance
    */
   public static DockerManager getInstance() throws IOException {
 
-    return DockerManager.getInstance(findClientForEoulsan(),
-        EoulsanRuntime.getSettings().getDockerConnectionURI());
+    return DockerManager.getInstance(
+        findClientForEoulsan(), EoulsanRuntime.getSettings().getDockerConnectionURI());
   }
 
   //
@@ -55,21 +55,18 @@ public class EoulsanDockerManager {
 
   private static ClientType findClientForEoulsan() {
 
-    if (EoulsanRuntime.isRuntime()
-        && EoulsanRuntime.getSettings().isDockerBySingularityEnabled()) {
+    if (EoulsanRuntime.isRuntime() && EoulsanRuntime.getSettings().isDockerBySingularityEnabled()) {
 
       return ClientType.SINGULARITY;
     }
 
-    if (EoulsanRuntime.isRuntime()
-        && EoulsanRuntime.getRuntime().getMode().isHadoopMode()) {
+    if (EoulsanRuntime.isRuntime() && EoulsanRuntime.getRuntime().getMode().isHadoopMode()) {
 
       return ClientType.FALLBACK;
     }
 
     if (EoulsanRuntime.isRuntime()) {
-      return ClientType
-          .parseClientName(EoulsanRuntime.getSettings().getDockerBackend());
+      return ClientType.parseClientName(EoulsanRuntime.getSettings().getDockerBackend());
     }
 
     return ClientType.FALLBACK;
@@ -83,5 +80,4 @@ public class EoulsanDockerManager {
 
     throw new IllegalStateException();
   }
-
 }

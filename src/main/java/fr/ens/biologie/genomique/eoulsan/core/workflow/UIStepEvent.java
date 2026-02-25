@@ -4,13 +4,16 @@ import fr.ens.biologie.genomique.eoulsan.core.Step;
 
 /**
  * This class define a UI step event.
+ *
  * @author Laurent Jourdren
  * @since 2.3
  */
 public class UIStepEvent extends UIEvent {
 
   enum StepStatusMessage {
-    PROGRESS, TASK_PROGRESS, NOTE,
+    PROGRESS,
+    TASK_PROGRESS,
+    NOTE,
   }
 
   private final Step step;
@@ -24,6 +27,7 @@ public class UIStepEvent extends UIEvent {
 
   /**
    * Get the step.
+   *
    * @return the step
    */
   public Step getStep() {
@@ -32,6 +36,7 @@ public class UIStepEvent extends UIEvent {
 
   /**
    * Get the message type
+   *
    * @return the message type
    */
   public StepStatusMessage getStatus() {
@@ -40,6 +45,7 @@ public class UIStepEvent extends UIEvent {
 
   /**
    * Get the context id.
+   *
    * @return the context id
    */
   public int getContextId() {
@@ -48,6 +54,7 @@ public class UIStepEvent extends UIEvent {
 
   /**
    * Get the context name.
+   *
    * @return the context name
    */
   public String getContextName() {
@@ -56,6 +63,7 @@ public class UIStepEvent extends UIEvent {
 
   /**
    * Get the progress.
+   *
    * @return the progress
    */
   public double getProgress() {
@@ -64,6 +72,7 @@ public class UIStepEvent extends UIEvent {
 
   /**
    * Get the number of terminated tasks.
+   *
    * @return the number of terminated tasks
    */
   public int getTerminatedTasks() {
@@ -72,6 +81,7 @@ public class UIStepEvent extends UIEvent {
 
   /**
    * Get the number of submitted tasks.
+   *
    * @return the number of submitted tasks
    */
   public int getSubmittedTasks() {
@@ -80,6 +90,7 @@ public class UIStepEvent extends UIEvent {
 
   /**
    * Get the note.
+   *
    * @return the note
    */
   public String getNote() {
@@ -92,13 +103,14 @@ public class UIStepEvent extends UIEvent {
 
   /**
    * Constructor.
+   *
    * @param step the step
    * @param contextId the context id
    * @param contextName the context name
    * @param progress the progress
    */
-  UIStepEvent(final Step step, final int contextId, final String contextName,
-      final double progress) {
+  UIStepEvent(
+      final Step step, final int contextId, final String contextName, final double progress) {
 
     this.step = step;
     this.status = StepStatusMessage.PROGRESS;
@@ -113,13 +125,14 @@ public class UIStepEvent extends UIEvent {
 
   /**
    * Constructor.
+   *
    * @param step the step.
    * @param terminatedTasks the number of terminated tasks
    * @param submittedTasks the number of submitted tasks
    * @param progress the progress
    */
-  UIStepEvent(final Step step, final int terminatedTasks, int submittedTasks,
-      final double progress) {
+  UIStepEvent(
+      final Step step, final int terminatedTasks, int submittedTasks, final double progress) {
 
     this.step = step;
     this.status = StepStatusMessage.TASK_PROGRESS;
@@ -134,6 +147,7 @@ public class UIStepEvent extends UIEvent {
 
   /**
    * Constructor.
+   *
    * @param step the step
    * @param note the note
    */
@@ -149,5 +163,4 @@ public class UIStepEvent extends UIEvent {
     this.contextId = -1;
     this.contextName = null;
   }
-
 }

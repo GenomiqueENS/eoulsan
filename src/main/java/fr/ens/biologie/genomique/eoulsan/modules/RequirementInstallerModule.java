@@ -24,8 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules;
 
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -36,13 +34,15 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.requirements.AbstractRequirement;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.requirements.RequirementService;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.util.Set;
 
 /**
  * This class allow to install a requirement.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -72,8 +72,8 @@ public class RequirementInstallerModule extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     String requirementName = null;
 
@@ -86,27 +86,23 @@ public class RequirementInstallerModule extends AbstractModule {
     }
 
     // Get an instance of the requirement
-    this.requirement =
-        RequirementService.getInstance().newService(requirementName);
+    this.requirement = RequirementService.getInstance().newService(requirementName);
 
     if (this.requirement == null) {
-      Modules.invalidConfiguration(context,
-          "Unknown requirement: " + requirementName);
+      Modules.invalidConfiguration(context, "Unknown requirement: " + requirementName);
     }
 
     // Configure the requirement
     this.requirement.configure(stepParameters);
 
     if (!this.requirement.isInstallable()) {
-      Modules.invalidConfiguration(context,
-          "The requirement is not installable: " + requirementName);
+      Modules.invalidConfiguration(
+          context, "The requirement is not installable: " + requirementName);
     }
-
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     try {
 
@@ -119,5 +115,4 @@ public class RequirementInstallerModule extends AbstractModule {
 
     return status.createTaskResult();
   }
-
 }

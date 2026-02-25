@@ -1,17 +1,17 @@
 package fr.ens.biologie.genomique.eoulsan.util.r;
 
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
+import fr.ens.biologie.genomique.eoulsan.util.EoulsanDockerManager;
+import fr.ens.biologie.genomique.kenetre.util.process.SimpleProcess;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Path;
 
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
-import fr.ens.biologie.genomique.eoulsan.util.EoulsanDockerManager;
-import fr.ens.biologie.genomique.kenetre.util.process.SimpleProcess;
-
 /**
  * This class define a Docker RExecutor.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -29,6 +29,7 @@ public class DockerRExecutor extends ProcessRExecutor {
 
   /**
    * Get the Docker image used.
+   *
    * @return the Docker image used
    */
   public String getDockerImage() {
@@ -36,11 +37,9 @@ public class DockerRExecutor extends ProcessRExecutor {
   }
 
   @Override
-  protected void putFile(final DataFile inputFile, final String outputFilename)
-      throws IOException {
+  protected void putFile(final DataFile inputFile, final String outputFilename) throws IOException {
 
-    final DataFile outputFile =
-        new DataFile(getOutputDirectory(), outputFilename);
+    final DataFile outputFile = new DataFile(getOutputDirectory(), outputFilename);
 
     // Check if the input and output file are the same
     if (isSameLocalPath(inputFile, outputFile)) {
@@ -75,6 +74,7 @@ public class DockerRExecutor extends ProcessRExecutor {
 
   /**
    * Test if a file is in a sub directory of another file.
+   *
    * @param a first file
    * @param b second file
    * @return true if a file is in a sub directory of another file
@@ -91,8 +91,9 @@ public class DockerRExecutor extends ProcessRExecutor {
   }
 
   /**
-   * Get the canonical file of a file or the absolute file of the file if the
-   * canonical file cannot be revolved.
+   * Get the canonical file of a file or the absolute file of the file if the canonical file cannot
+   * be revolved.
+   *
    * @param f the file
    * @return the canonical file or the absolute file
    */
@@ -117,13 +118,14 @@ public class DockerRExecutor extends ProcessRExecutor {
 
   /**
    * Constructor.
+   *
    * @param outputDirectory the output directory
    * @param temporaryDirectory the temporary directory
    * @param dockerImage docker image to use
    * @throws IOException if an error occurs while creating the object
    */
-  public DockerRExecutor(final File outputDirectory,
-      final File temporaryDirectory, final String dockerImage)
+  public DockerRExecutor(
+      final File outputDirectory, final File temporaryDirectory, final String dockerImage)
       throws IOException {
     super(outputDirectory, temporaryDirectory);
 
@@ -133,5 +135,4 @@ public class DockerRExecutor extends ProcessRExecutor {
 
     this.dockerImage = dockerImage;
   }
-
 }

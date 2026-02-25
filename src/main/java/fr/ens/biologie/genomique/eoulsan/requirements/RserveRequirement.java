@@ -3,18 +3,17 @@ package fr.ens.biologie.genomique.eoulsan.requirements;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
-import java.util.Collections;
-import java.util.Set;
-
-import org.rosuda.REngine.REngineException;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Progress;
 import fr.ens.biologie.genomique.eoulsan.util.r.RSConnection;
+import java.util.Collections;
+import java.util.Set;
+import org.rosuda.REngine.REngineException;
 
 /**
  * This class define a Rserve server requirement.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -38,14 +37,13 @@ public class RserveRequirement extends AbstractRequirement {
     for (Parameter p : parameters) {
 
       switch (p.getName()) {
+        case SERVER_NAME_PARAMETER:
+          this.serverName = p.getValue();
+          break;
 
-      case SERVER_NAME_PARAMETER:
-        this.serverName = p.getValue();
-        break;
-
-      default:
-        super.configure(Collections.singleton(p));
-        break;
+        default:
+          super.configure(Collections.singleton(p));
+          break;
       }
     }
   }
@@ -87,28 +85,27 @@ public class RserveRequirement extends AbstractRequirement {
 
   /**
    * Create a new mandatory Rserve requirement.
+   *
    * @param rserveServerName the Rserve server name
    * @return a new Requirement object
    */
-  public static Requirement newRserveRequirement(
-      final String rserveServerName) {
+  public static Requirement newRserveRequirement(final String rserveServerName) {
 
     return newRserveRequirement(rserveServerName, false);
   }
 
   /**
    * Create a new Rserve requirement.
+   *
    * @param rserveServerName the Rserve server name
    * @param optional true if the Rserve server is a mandatory requirement
    * @return a new Requirement object
    */
-  public static Requirement newRserveRequirement(final String rserveServerName,
-      final boolean optional) {
+  public static Requirement newRserveRequirement(
+      final String rserveServerName, final boolean optional) {
 
-    requireNonNull(rserveServerName,
-        "rserveServerName argument cannot be null");
-    checkArgument(!rserveServerName.trim().isEmpty(),
-        "rserveServerName argument cannot be empty");
+    requireNonNull(rserveServerName, "rserveServerName argument cannot be null");
+    checkArgument(!rserveServerName.trim().isEmpty(), "rserveServerName argument cannot be empty");
 
     final RserveRequirement result = new RserveRequirement();
 
@@ -127,5 +124,4 @@ public class RserveRequirement extends AbstractRequirement {
   public String toString() {
     return "Rserve server: " + this.serverName;
   }
-
 }

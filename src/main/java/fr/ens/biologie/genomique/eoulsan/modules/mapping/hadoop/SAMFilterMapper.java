@@ -27,24 +27,22 @@ package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Mapper;
-
 import com.google.common.base.Splitter;
-
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
 
 /**
  * This class defines a mapper for alignment filtering.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -64,8 +62,7 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
   private final Text outValue = new Text();
 
   @Override
-  protected void setup(final Context context)
-      throws IOException, InterruptedException {
+  protected void setup(final Context context) throws IOException, InterruptedException {
 
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
@@ -85,16 +82,15 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
     }
 
     // SAM header writer
-    this.samHeaderWriter = new SAMHeaderHadoopUtils.SAMHeaderWriter(
-        context.getTaskAttemptID().toString());
+    this.samHeaderWriter =
+        new SAMHeaderHadoopUtils.SAMHeaderWriter(context.getTaskAttemptID().toString());
 
     getLogger().info("End of setup()");
   }
 
   /**
-   * 'key': offset of the beginning of the line from the beginning of the SAM
-   * file if data are in single-end mode or in TSAM file if data are in
-   * paired-end mode. 'value': the SAM or TSAM line.
+   * 'key': offset of the beginning of the line from the beginning of the SAM file if data are in
+   * single-end mode or in TSAM file if data are in paired-end mode. 'value': the SAM or TSAM line.
    */
   @Override
   protected void map(final Text key, final Text value, final Context context)
@@ -107,9 +103,7 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
       return;
     }
 
-    context
-        .getCounter(this.counterGroup, INPUT_ALIGNMENTS_COUNTER.counterName())
-        .increment(1);
+    context.getCounter(this.counterGroup, INPUT_ALIGNMENTS_COUNTER.counterName()).increment(1);
 
     final int indexOfFirstTab = line.indexOf("\t");
     String completeId = line.substring(0, indexOfFirstTab);
@@ -155,8 +149,7 @@ public class SAMFilterMapper extends Mapper<Text, Text, Text, Text> {
   }
 
   @Override
-  protected void cleanup(final Context context)
-      throws IOException, InterruptedException {
+  protected void cleanup(final Context context) throws IOException, InterruptedException {
 
     // Write SAM header if there is no SAM entries
     this.samHeaderWriter.close(context);

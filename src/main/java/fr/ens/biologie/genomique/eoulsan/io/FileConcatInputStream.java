@@ -26,16 +26,16 @@ package fr.ens.biologie.genomique.eoulsan.io;
 
 import static java.util.Objects.requireNonNull;
 
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.List;
 
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
-
 /**
  * This class define an InputStream that concatenate files in an InputStream.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -61,6 +61,7 @@ public class FileConcatInputStream extends AbstractConcatInputStream {
 
   /**
    * Constructor.
+   *
    * @param files files to concatenate in the InputStream.
    */
   public FileConcatInputStream(final List<File> files) {
@@ -69,5 +70,4 @@ public class FileConcatInputStream extends AbstractConcatInputStream {
 
     this.it = files.iterator();
   }
-
 }

@@ -27,13 +27,13 @@ package fr.ens.biologie.genomique.eoulsan.io;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 
 /**
- * This class allow to create input and output stream for compression codecs of
- * the Apache Common Compression library.
+ * This class allow to create input and output stream for compression codecs of the Apache Common
+ * Compression library.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -45,12 +45,12 @@ public class ApacheCommonCompressionCodecs {
 
   /**
    * Create a bzip2 input stream.
+   *
    * @param is input stream
    * @return an uncompressed input stream
    * @throws IOException if an error occurs while creating the input stream
    */
-  public static InputStream createBZip2InputStream(final InputStream is)
-      throws IOException {
+  public static InputStream createBZip2InputStream(final InputStream is) throws IOException {
 
     return new BZip2CompressorInputStream(is);
   }
@@ -61,14 +61,13 @@ public class ApacheCommonCompressionCodecs {
 
   /**
    * Create a bzip2 output stream.
+   *
    * @param os the output stream to compress
    * @return a compressed output stream
    * @throws IOException if an error occurs while creating the output stream
    */
-  public static OutputStream createBZip2OutputStream(final OutputStream os)
-      throws IOException {
+  public static OutputStream createBZip2OutputStream(final OutputStream os) throws IOException {
 
     return new BZip2CompressorOutputStream(os);
   }
-
 }

@@ -2,6 +2,8 @@ package fr.ens.biologie.genomique.eoulsan.design.io;
 
 import static java.util.Objects.requireNonNull;
 
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.design.Design;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -9,11 +11,9 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.design.Design;
-
 /**
  * This class allow to read a design file whatever the underlying design format.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -24,8 +24,7 @@ public class DefaultDesignReader implements DesignReader {
   @Override
   public Design read() throws IOException {
 
-    try (final DesignFormatFinderInputStream dffis =
-        new DesignFormatFinderInputStream(is)) {
+    try (final DesignFormatFinderInputStream dffis = new DesignFormatFinderInputStream(is)) {
 
       return dffis.getDesignReader().read();
     }
@@ -35,9 +34,9 @@ public class DefaultDesignReader implements DesignReader {
   // Constructor
   //
 
-
   /**
    * Public constructor.
+   *
    * @param file file to read
    * @throws FileNotFoundException if the file cannot be found
    */
@@ -50,6 +49,7 @@ public class DefaultDesignReader implements DesignReader {
 
   /**
    * Public constructor.
+   *
    * @param file file to read
    * @throws IOException if the file cannot be found
    */
@@ -62,6 +62,7 @@ public class DefaultDesignReader implements DesignReader {
 
   /**
    * Public constructor.
+   *
    * @param file file to read
    * @throws IOException if an error occurs while opening the file
    */
@@ -74,6 +75,7 @@ public class DefaultDesignReader implements DesignReader {
 
   /**
    * Public constructor
+   *
    * @param is Input stream to read
    * @throws IOException if an error occurs while reading the file
    */
@@ -86,15 +88,14 @@ public class DefaultDesignReader implements DesignReader {
 
   /**
    * Public constructor
+   *
    * @param filename File to read
    * @throws IOException if the file doesn't exist
    */
-  public DefaultDesignReader(final String filename)
-      throws IOException {
+  public DefaultDesignReader(final String filename) throws IOException {
 
     requireNonNull(filename, "filename argument cannot be null");
 
     this.is = Files.newInputStream(Path.of(filename));
   }
-
 }

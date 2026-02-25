@@ -27,13 +27,13 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
+import fr.ens.biologie.genomique.eoulsan.core.workflow.UITaskEvent.TaskStatusMessage;
 import java.util.HashMap;
 import java.util.Map;
 
-import fr.ens.biologie.genomique.eoulsan.core.workflow.UITaskEvent.TaskStatusMessage;
-
 /**
  * This class define a step status.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -52,6 +52,7 @@ public class StepStatus {
 
   /**
    * Get the note.
+   *
    * @return the note
    */
   public String getNote() {
@@ -61,6 +62,7 @@ public class StepStatus {
 
   /**
    * Get the progress of the step.
+   *
    * @return a double between O and 1
    */
   public double getProgress() {
@@ -75,9 +77,7 @@ public class StepStatus {
         }
       }
 
-      return sum
-          / TokenManagerRegistry.getInstance().getTokenManager(this.step)
-              .getContextCount();
+      return sum / TokenManagerRegistry.getInstance().getTokenManager(this.step).getContextCount();
     }
 
     return this.progress;
@@ -85,9 +85,9 @@ public class StepStatus {
 
   /**
    * Get the name of a task.
+   *
    * @param contextId the id of the task
-   * @return a String with the name of the context or null if the context not
-   *         exists
+   * @return a String with the name of the context or null if the context not exists
    */
   public String getTaskName(final int contextId) {
 
@@ -96,6 +96,7 @@ public class StepStatus {
 
   /**
    * Get the progress of a task.
+   *
    * @param contextId the id of the task
    * @return a double between O and 1
    */
@@ -106,6 +107,7 @@ public class StepStatus {
 
   /**
    * Get the number of submitted tasks.
+   *
    * @return the number of submitted tasks
    */
   public int getSubmittedTasks() {
@@ -115,6 +117,7 @@ public class StepStatus {
 
   /**
    * Get the number of terminated tasks.
+   *
    * @return the number of terminated tasks
    */
   public int getTerminatedTasks() {
@@ -138,6 +141,7 @@ public class StepStatus {
 
   /**
    * Set the note.
+   *
    * @param note the note to set
    */
   public void setNote(final String note) {
@@ -150,6 +154,7 @@ public class StepStatus {
 
   /**
    * Set the progress of a step.
+   *
    * @param min minimal value
    * @param max maximal value
    * @param value value to set
@@ -167,6 +172,7 @@ public class StepStatus {
 
   /**
    * Set the progress of a step.
+   *
    * @param progress value to set
    */
   public void setProgress(final double progress) {
@@ -183,33 +189,38 @@ public class StepStatus {
 
   /**
    * Set the progress of a task.
+   *
    * @param contextId id of the context
    * @param contextName name of the context
    * @param min minimal value
    * @param max maximal value
    * @param value value to set
    */
-  public void setTaskProgress(final int contextId, final String contextName,
-      final int min, final int max, final int value) {
+  public void setTaskProgress(
+      final int contextId,
+      final String contextName,
+      final int min,
+      final int max,
+      final int value) {
 
     checkProgress(min, max, value);
 
     if (min == max) {
       setTaskProgress(contextId, contextName, 1.0);
     } else {
-      setTaskProgress(contextId, contextName,
-          ((double) (value - min)) / (max - min));
+      setTaskProgress(contextId, contextName, ((double) (value - min)) / (max - min));
     }
   }
 
   /**
    * Set the progress of a task.
+   *
    * @param contextId id of the context
    * @param contextName name of the context
    * @param progress progress value to set
    */
-  public void setTaskProgress(final int contextId, final String contextName,
-      final double progress) {
+  public void setTaskProgress(
+      final int contextId, final String contextName, final double progress) {
 
     checkContext(contextName);
     checkProgress(progress);
@@ -234,32 +245,35 @@ public class StepStatus {
 
   /**
    * Set task submitted.
+   *
    * @param contextId id of the context
    */
   public void setTaskSubmitted(final int contextId) {
 
-    WorkflowEventBus.getInstance().postUIEvent(
-        new UITaskEvent(this.step, TaskStatusMessage.SUBMITTED, contextId));
+    WorkflowEventBus.getInstance()
+        .postUIEvent(new UITaskEvent(this.step, TaskStatusMessage.SUBMITTED, contextId));
   }
 
   /**
    * Set task running.
+   *
    * @param contextId id of the context
    */
   public void setTaskRunning(final int contextId) {
 
-    WorkflowEventBus.getInstance().postUIEvent(
-        new UITaskEvent(this.step, TaskStatusMessage.RUNNING, contextId));
+    WorkflowEventBus.getInstance()
+        .postUIEvent(new UITaskEvent(this.step, TaskStatusMessage.RUNNING, contextId));
   }
 
   /**
    * Set task done.
+   *
    * @param contextId id of the context
    */
   public void setTaskDone(final int contextId) {
 
-    WorkflowEventBus.getInstance().postUIEvent(
-        new UITaskEvent(this.step, TaskStatusMessage.DONE, contextId));
+    WorkflowEventBus.getInstance()
+        .postUIEvent(new UITaskEvent(this.step, TaskStatusMessage.DONE, contextId));
   }
 
   //
@@ -268,33 +282,30 @@ public class StepStatus {
 
   /**
    * Inform observers that the status has been changed.
+   *
    * @param contextId id of the context
    * @param contextName name of the context
    * @param progress progress value
    */
-  private void progressTaskStatusUpdated(final int contextId,
-      final String contextName, final double progress) {
-
-    WorkflowEventBus.getInstance().postUIEvent(
-        new UIStepEvent(this.step, contextId, contextName, progress));
-  }
-
-  /**
-   * Inform observers that the status has been changed.
-   */
-  private void progressStatusUpdated() {
-
-    WorkflowEventBus.getInstance().postUIEvent(new UIStepEvent(this.step,
-        getTerminatedTasks(), getSubmittedTasks(), getProgress()));
-  }
-
-  /**
-   * Inform observers that the status has been changed.
-   */
-  private void noteStatusUpdated() {
+  private void progressTaskStatusUpdated(
+      final int contextId, final String contextName, final double progress) {
 
     WorkflowEventBus.getInstance()
-        .postUIEvent(new UIStepEvent(this.step, this.note));
+        .postUIEvent(new UIStepEvent(this.step, contextId, contextName, progress));
+  }
+
+  /** Inform observers that the status has been changed. */
+  private void progressStatusUpdated() {
+
+    WorkflowEventBus.getInstance()
+        .postUIEvent(
+            new UIStepEvent(this.step, getTerminatedTasks(), getSubmittedTasks(), getProgress()));
+  }
+
+  /** Inform observers that the status has been changed. */
+  private void noteStatusUpdated() {
+
+    WorkflowEventBus.getInstance().postUIEvent(new UIStepEvent(this.step, this.note));
   }
 
   //
@@ -314,8 +325,7 @@ public class StepStatus {
     checkArgument(!Double.isNaN(progress), "Progress is NaN");
   }
 
-  private static void checkProgress(final int min, final int max,
-      final int value) {
+  private static void checkProgress(final int min, final int max, final int value) {
 
     checkArgument(min <= max, "Max is lower than min");
     checkArgument(min <= value, "Value is lower than min");
@@ -331,7 +341,5 @@ public class StepStatus {
     requireNonNull(step, "Step is null");
 
     this.step = step;
-
   }
-
 }

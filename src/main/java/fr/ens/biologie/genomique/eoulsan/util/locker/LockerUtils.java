@@ -24,12 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.util.locker;
 
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
+import java.util.Set;
 
 /**
  * Utility class for the locker classes.
+ *
  * @since 1.1
  * @author Laurent Jourdren
  */
@@ -37,6 +37,7 @@ public final class LockerUtils {
 
   /**
    * Return a set withs pid of existing JVMs.
+   *
    * @return a set of integers with pid of existing JVMs
    */
   public static Set<Integer> getJVMsPIDs() {

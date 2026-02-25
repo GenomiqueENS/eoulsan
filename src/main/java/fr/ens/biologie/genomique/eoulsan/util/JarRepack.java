@@ -35,6 +35,7 @@ import java.util.zip.ZipOutputStream;
 
 /**
  * This class allow to repackage a jar file.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -47,8 +48,7 @@ public class JarRepack {
 
   private void copy(final Path file) throws IOException {
 
-    final ZipInputStream zin =
-        new ZipInputStream(Files.newInputStream(file));
+    final ZipInputStream zin = new ZipInputStream(Files.newInputStream(file));
     final byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
 
     ZipEntry entry = zin.getNextEntry();
@@ -66,8 +66,8 @@ public class JarRepack {
       }
 
       if (entry.getSize() != count) {
-        throw new IOException("Copied size of zip entry "
-            + count + " is not as excepted: " + entry.getSize());
+        throw new IOException(
+            "Copied size of zip entry " + count + " is not as excepted: " + entry.getSize());
       }
 
     } while ((entry = zin.getNextEntry()) != null);
@@ -77,12 +77,12 @@ public class JarRepack {
 
   /**
    * Add a file to the jar file.
+   *
    * @param file file to add
    * @param destDir destination in the jar file
    * @throws IOException if an error occurs while adding the file
    */
-  public void addFile(final Path file, final String destDir)
-      throws IOException {
+  public void addFile(final Path file, final String destDir) throws IOException {
 
     if (file == null) {
       return;
@@ -93,8 +93,7 @@ public class JarRepack {
     this.zos.putNextEntry(new ZipEntry(destDir + file.getFileName()));
     final InputStream fis = Files.newInputStream(file);
 
-    BufferedInputStream origin =
-        new BufferedInputStream(fis, DEFAULT_BUFFER_SIZE);
+    BufferedInputStream origin = new BufferedInputStream(fis, DEFAULT_BUFFER_SIZE);
 
     long count = 0;
     int n;
@@ -105,16 +104,16 @@ public class JarRepack {
 
     if (Files.size(file) != count) {
       origin.close();
-      throw new IOException("Copied size of zip entry "
-          + count + " is not as excepted: " + Files.size(file));
+      throw new IOException(
+          "Copied size of zip entry " + count + " is not as excepted: " + Files.size(file));
     }
 
     origin.close();
-
   }
 
   /**
    * Close the repackaged file.
+   *
    * @throws IOException if an error occurs while closing the repackaged file
    */
   public void close() throws IOException {
@@ -128,6 +127,7 @@ public class JarRepack {
 
   /**
    * Public constructor.
+   *
    * @param inFile the source jar file to repackage
    * @param outFile the path to the new repackaged file
    * @throws IOException if an error occurs while opening the source jar file
@@ -145,5 +145,4 @@ public class JarRepack {
     this.zos = new ZipOutputStream(Files.newOutputStream(outFile));
     copy(inFile);
   }
-
 }

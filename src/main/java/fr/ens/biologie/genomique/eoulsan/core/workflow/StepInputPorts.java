@@ -24,17 +24,17 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.core.AbstractPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPort;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class define a group of Workflow input ports.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -44,6 +44,7 @@ class StepInputPorts extends AbstractPorts<StepInputPort> {
 
   /**
    * Get the steps linked to the ports.
+   *
    * @return a set with the steps related to the ports
    */
   public Set<AbstractStep> getLinkedSteps() {
@@ -69,12 +70,12 @@ class StepInputPorts extends AbstractPorts<StepInputPort> {
 
   /**
    * Convert an OutputPorts object to a set of WorkflowOutputPort
+   *
    * @param step step related to the WorkflowOutputPort objects
    * @param ports ports to convert
    * @return a new set
    */
-  private static Set<StepInputPort> convert(final AbstractStep step,
-      final InputPorts ports) {
+  private static Set<StepInputPort> convert(final AbstractStep step, final InputPorts ports) {
 
     if (ports == null) {
       throw new NullPointerException("Ports is null");
@@ -88,11 +89,15 @@ class StepInputPorts extends AbstractPorts<StepInputPort> {
 
     for (InputPort port : ports) {
       if (port != null) {
-        result.add(new StepInputPort(step, port.getName(), port.isList(),
-            port.getFormat(), port.getCompressionsAccepted(),
-            hadoopMode ? true : port.isRequiredInWorkingDirectory()));
+        result.add(
+            new StepInputPort(
+                step,
+                port.getName(),
+                port.isList(),
+                port.getFormat(),
+                port.getCompressionsAccepted(),
+                hadoopMode ? true : port.isRequiredInWorkingDirectory()));
       }
-
     }
 
     return result;
@@ -104,6 +109,7 @@ class StepInputPorts extends AbstractPorts<StepInputPort> {
 
   /**
    * Constructor.
+   *
    * @param ports ports to add.
    */
   StepInputPorts(final Set<StepInputPort> ports) {
@@ -112,6 +118,7 @@ class StepInputPorts extends AbstractPorts<StepInputPort> {
 
   /**
    * Constructor.
+   *
    * @param step step related to the WorkflowOutputPort objects
    * @param ports port to convert
    */
@@ -119,5 +126,4 @@ class StepInputPorts extends AbstractPorts<StepInputPort> {
 
     super(convert(step, ports));
   }
-
 }

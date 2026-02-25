@@ -26,27 +26,27 @@ package fr.ens.biologie.genomique.eoulsan.data;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
-
 import fr.ens.biologie.genomique.eoulsan.data.protocols.DataProtocol;
 import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import java.io.IOException;
 
 /**
  * This class contains utility methods on DataFile objects.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
 public class DataFiles {
 
   /**
-   * Copy a file, if input data is compressed, data will be uncompressed and if
-   * output require to be compressed output will be compressed.
+   * Copy a file, if input data is compressed, data will be uncompressed and if output require to be
+   * compressed output will be compressed.
+   *
    * @param input input file
    * @param output output file.
    * @throws IOException if an error occurs while copying data
    */
-  public static void copy(final DataFile input, final DataFile output)
-      throws IOException {
+  public static void copy(final DataFile input, final DataFile output) throws IOException {
 
     requireNonNull(input, "input file cannot be null");
     requireNonNull(output, "output file cannot be null");
@@ -62,12 +62,12 @@ public class DataFiles {
 
   /**
    * Copy a file.
+   *
    * @param input input file
    * @param output output file.
    * @throws IOException if an error occurs while copying data
    */
-  public static void rawCopy(final DataFile input, final DataFile output)
-      throws IOException {
+  public static void rawCopy(final DataFile input, final DataFile output) throws IOException {
 
     requireNonNull(input, "input file cannot be null");
     requireNonNull(output, "output file cannot be null");
@@ -76,32 +76,29 @@ public class DataFiles {
   }
 
   /**
-   * Create a symbolic link if the input and output use the same protocol and if
-   * symbolic links are supported by the protocol. If symbolic link cannot be
-   * created, the input file will be copied.
+   * Create a symbolic link if the input and output use the same protocol and if symbolic links are
+   * supported by the protocol. If symbolic link cannot be created, the input file will be copied.
+   *
    * @param input input file
    * @param output output file
-   * @throws IOException if an error occurs while copying data or creating the
-   *           symbolic link
+   * @throws IOException if an error occurs while copying data or creating the symbolic link
    */
-  public static void symlinkOrCopy(final DataFile input, final DataFile output)
-      throws IOException {
+  public static void symlinkOrCopy(final DataFile input, final DataFile output) throws IOException {
 
     symlinkOrCopy(input, output, false);
   }
 
   /**
-   * Create a symbolic link if the input and output use the same protocol and if
-   * symbolic links are supported by the protocol. If symbolic link cannot be
-   * created, the input file will be copied.
+   * Create a symbolic link if the input and output use the same protocol and if symbolic links are
+   * supported by the protocol. If symbolic link cannot be created, the input file will be copied.
+   *
    * @param input input file
    * @param output output file
    * @param relativize relativize the link target path
-   * @throws IOException if an error occurs while copying data or creating the
-   *           symbolic link
+   * @throws IOException if an error occurs while copying data or creating the symbolic link
    */
-  public static void symlinkOrCopy(final DataFile input, final DataFile output,
-      final boolean relativize) throws IOException {
+  public static void symlinkOrCopy(
+      final DataFile input, final DataFile output, final boolean relativize) throws IOException {
 
     requireNonNull(input, "input file cannot be null");
     requireNonNull(output, "output file cannot be null");
@@ -125,5 +122,4 @@ public class DataFiles {
       }
     }
   }
-
 }

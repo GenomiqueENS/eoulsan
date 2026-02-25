@@ -88,7 +88,5 @@ public class UnmodifiableSampleTest {
     } catch (IllegalArgumentException e) {
       assertTrue(false);
     }
-
   }
-
 }

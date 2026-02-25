@@ -26,11 +26,11 @@ package fr.ens.biologie.genomique.eoulsan.design;
 
 /**
  * This class defines the default implementation of the design metadata.
+ *
  * @author Xavier Bauquet
  * @since 2.0
  */
-public class DesignMetadataImpl extends AbstractMetadata
-    implements DesignMetadata {
+public class DesignMetadataImpl extends AbstractMetadata implements DesignMetadata {
 
   /** Serialization version UID. */
   private static final long serialVersionUID = -2481571646937449716L;
@@ -111,10 +111,6 @@ public class DesignMetadataImpl extends AbstractMetadata
   // Constructor
   //
 
-  /**
-   * Constructor.
-   */
-  DesignMetadataImpl() {
-  }
-
+  /** Constructor. */
+  DesignMetadataImpl() {}
 }

@@ -1,13 +1,13 @@
 package fr.ens.biologie.genomique.eoulsan.data.protocols;
 
-import java.util.List;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
+import java.util.List;
 
 /**
  * This class define a annotation protocol.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -33,5 +33,4 @@ public class GTFDataProtocol extends StorageDataProtocol {
 
     return EoulsanRuntime.getSettings().getGTFStoragePath();
   }
-
 }

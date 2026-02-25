@@ -28,11 +28,11 @@ import fr.ens.biologie.genomique.kenetre.util.ServiceNameLoader;
 
 /**
  * This class define a service to retrieve a ClusterTaskScheduler.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class ClusterTaskSchedulerService
-    extends ServiceNameLoader<ClusterTaskScheduler> {
+public class ClusterTaskSchedulerService extends ServiceNameLoader<ClusterTaskScheduler> {
 
   private static ClusterTaskSchedulerService service;
 
@@ -42,6 +42,7 @@ public class ClusterTaskSchedulerService
 
   /**
    * Retrieve the singleton static instance of an ClusterTaskSchedulerService.
+   *
    * @return A ActionService instance
    */
   public static synchronized ClusterTaskSchedulerService getInstance() {
@@ -73,11 +74,8 @@ public class ClusterTaskSchedulerService
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
+  /** Private constructor. */
   private ClusterTaskSchedulerService() {
     super(ClusterTaskScheduler.class);
   }
-
 }

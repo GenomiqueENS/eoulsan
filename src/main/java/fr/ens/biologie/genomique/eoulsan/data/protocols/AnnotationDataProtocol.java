@@ -28,6 +28,7 @@ import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
 
 /**
  * This class define a annotation protocol.
+ *
  * @since 1.1
  * @author Laurent Jourdren
  */
@@ -46,12 +47,9 @@ public class AnnotationDataProtocol extends DeprecatedDataProtocol {
   // Constructor
   //
 
-  /**
-   * Public constructor.
-   */
+  /** Public constructor. */
   public AnnotationDataProtocol() {
 
     super(GFFDataProtocol.PROTOCOL_NAME);
   }
-
 }

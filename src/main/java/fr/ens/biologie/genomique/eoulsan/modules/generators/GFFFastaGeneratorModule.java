@@ -30,15 +30,12 @@ import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.singleOu
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GFF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_FASTA;
 
-import java.io.IOException;
-
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
@@ -47,10 +44,12 @@ import fr.ens.biologie.genomique.kenetre.bio.io.FastaWriter;
 import fr.ens.biologie.genomique.kenetre.bio.io.GFFFastaReader;
 import fr.ens.biologie.genomique.kenetre.bio.io.SequenceReader;
 import fr.ens.biologie.genomique.kenetre.bio.io.SequenceWriter;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.IOException;
 
 /**
- * This generator allow to generate a genome fasta file from the fasta section
- * of a GFF file.
+ * This generator allow to generate a genome fasta file from the fasta section of a GFF file.
+ *
  * @since 1.1
  * @author Laurent Jourdren
  */
@@ -87,8 +86,7 @@ public class GFFFastaGeneratorModule extends AbstractModule {
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     try {
 
@@ -105,8 +103,7 @@ public class GFFFastaGeneratorModule extends AbstractModule {
       getLogger().info("Input annotation file: " + annotationDataFile);
       getLogger().info("Output genome file: " + genomeDataFile);
 
-      final SequenceReader reader =
-          new GFFFastaReader(annotationDataFile.open());
+      final SequenceReader reader = new GFFFastaReader(annotationDataFile.open());
       final SequenceWriter writer = new FastaWriter(genomeDataFile.create());
 
       for (final Sequence sequence : reader) {
@@ -125,5 +122,4 @@ public class GFFFastaGeneratorModule extends AbstractModule {
     status.setProgressMessage("Genome fasta creation");
     return status.createTaskResult();
   }
-
 }

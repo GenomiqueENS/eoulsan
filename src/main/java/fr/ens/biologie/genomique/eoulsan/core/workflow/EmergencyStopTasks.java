@@ -8,6 +8,7 @@ import java.util.Set;
 
 /**
  * This class define a class where the emergency tasks are stored
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -15,12 +16,12 @@ public class EmergencyStopTasks {
 
   private static EmergencyStopTasks instance;
 
-  private final Set<EmergencyStopTask> tasks =
-      Collections.synchronizedSet(new HashSet<>());
+  private final Set<EmergencyStopTask> tasks = Collections.synchronizedSet(new HashSet<>());
   private volatile boolean stopped;
 
   /**
    * Add an emergency task.
+   *
    * @param task the task to add
    */
   public void add(final EmergencyStopTask task) {
@@ -37,6 +38,7 @@ public class EmergencyStopTasks {
 
   /**
    * Remove an emergency task.
+   *
    * @param task the task to add
    */
   public void remove(final EmergencyStopTask task) {
@@ -49,9 +51,7 @@ public class EmergencyStopTasks {
     }
   }
 
-  /**
-   * Stop all the tasks.
-   */
+  /** Stop all the tasks. */
   public void stop() {
 
     // Do nothing if already stopped
@@ -75,6 +75,7 @@ public class EmergencyStopTasks {
 
   /**
    * Get the singleton instance of the class.
+   *
    * @return the singleton instance of the class
    */
   public static synchronized EmergencyStopTasks getInstance() {
@@ -90,9 +91,6 @@ public class EmergencyStopTasks {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
-  private EmergencyStopTasks() {
-  }
+  /** Private constructor. */
+  private EmergencyStopTasks() {}
 }

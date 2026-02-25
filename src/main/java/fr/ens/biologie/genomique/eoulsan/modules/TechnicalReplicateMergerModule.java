@@ -31,6 +31,7 @@ import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
 
 /**
  * This class define a merger module for technical replicates.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -65,5 +66,4 @@ public class TechnicalReplicateMergerModule extends MergerModule {
 
     return MODULE_NAME;
   }
-
 }

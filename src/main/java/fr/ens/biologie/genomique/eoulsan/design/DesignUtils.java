@@ -26,6 +26,15 @@ package fr.ens.biologie.genomique.eoulsan.design;
 
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
+import fr.ens.biologie.genomique.eoulsan.design.io.DefaultDesignReader;
+import fr.ens.biologie.genomique.eoulsan.design.io.DesignReader;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -36,19 +45,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.CharMatcher;
-import com.google.common.base.Splitter;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
-import fr.ens.biologie.genomique.eoulsan.design.io.DefaultDesignReader;
-import fr.ens.biologie.genomique.eoulsan.design.io.DesignReader;
-import fr.ens.biologie.genomique.kenetre.util.StringUtils;
-
 /**
  * Utils methods for Design.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  * @author Xavier Bauquet
@@ -57,6 +56,7 @@ public final class DesignUtils {
 
   /**
    * Show a design
+   *
    * @param design Design to show
    */
   public static void showDesign(final Design design) {
@@ -125,8 +125,7 @@ public final class DesignUtils {
 
       final String prefix = "Exp." + experiment.getId() + ".";
 
-      final List<String> experimentMDKeys =
-          getExperimentSampleAllMetadataKeys(experiment);
+      final List<String> experimentMDKeys = getExperimentSampleAllMetadataKeys(experiment);
       for (String key : experimentMDKeys) {
 
         sb.append('\t');
@@ -162,8 +161,7 @@ public final class DesignUtils {
         final ExperimentSampleMetadata expSampleMetadata =
             experiment.getExperimentSample(sample).getMetadata();
 
-        final List<String> experimentMDKeys =
-            getExperimentSampleAllMetadataKeys(experiment);
+        final List<String> experimentMDKeys = getExperimentSampleAllMetadataKeys(experiment);
 
         for (String key : experimentMDKeys) {
 
@@ -173,7 +171,6 @@ public final class DesignUtils {
             sb.append(expSampleMetadata.get(key));
           }
         }
-
       }
       sb.append('\n');
     }
@@ -183,6 +180,7 @@ public final class DesignUtils {
 
   /**
    * Get all the sample metadata keys of the samples of a design.
+   *
    * @param design the design
    * @return a list with the sample metadata keys of the samples of a design
    */
@@ -210,11 +208,11 @@ public final class DesignUtils {
 
   /**
    * Get all the experiment metadata keys of the samples of a design.
+   *
    * @param experiment the experiment
    * @return a list with the experiment metadata keys of the samples of a design
    */
-  public static List<String> getExperimentSampleAllMetadataKeys(
-      final Experiment experiment) {
+  public static List<String> getExperimentSampleAllMetadataKeys(final Experiment experiment) {
 
     requireNonNull(experiment, "design argument cannot be null");
 
@@ -240,14 +238,12 @@ public final class DesignUtils {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
-  private DesignUtils() {
-  }
+  /** Private constructor. */
+  private DesignUtils() {}
 
   /**
    * Check if there are duplicate samples in the design.
+   *
    * @param design Design to test
    * @return if there are no duplicate
    */
@@ -270,12 +266,12 @@ public final class DesignUtils {
 
   /**
    * Check if there are duplicate samples in the design.
+   *
    * @param design Design to test
    * @return if there are no duplicate
    * @throws EoulsanException if a source is a duplicate
    */
-  private static boolean checkSamplesWithException(final Design design)
-      throws EoulsanException {
+  private static boolean checkSamplesWithException(final Design design) throws EoulsanException {
 
     final Set<String> samplesSources = new HashSet<>();
 
@@ -285,7 +281,10 @@ public final class DesignUtils {
         if (samplesSources.contains(fileSource)) {
           throw new EoulsanException(
               "Error: The design contains one or more duplicate sample sources: "
-                  + fileSource + " (sample " + s.getId() + ")");
+                  + fileSource
+                  + " (sample "
+                  + s.getId()
+                  + ")");
         }
 
         samplesSources.add(fileSource);
@@ -297,6 +296,7 @@ public final class DesignUtils {
 
   /**
    * Check if there is more than one genome in the design
+   *
    * @param design Design to test
    * @return true if there is more than one genome in the genome
    */
@@ -307,6 +307,7 @@ public final class DesignUtils {
 
   /**
    * Check if there is more than one annotation in the design
+   *
    * @param design Design to test
    * @return true if there is more than one annotation in the genome
    */
@@ -317,12 +318,12 @@ public final class DesignUtils {
 
   /**
    * Read and Check design
+   *
    * @param is InputStream for the design
    * @return a Design object
    * @throws EoulsanException if an error occurs while reading the design
    */
-  public static Design readAndCheckDesign(final InputStream is)
-      throws EoulsanException {
+  public static Design readAndCheckDesign(final InputStream is) throws EoulsanException {
 
     try {
       final DesignReader dr = new DefaultDesignReader(is);
@@ -331,13 +332,11 @@ public final class DesignUtils {
       DesignUtils.checkSamplesWithException(design);
 
       if (!DesignUtils.checkGenomes(design)) {
-        throw new EoulsanException(
-            "Warning: The design contains more than one genome file.");
+        throw new EoulsanException("Warning: The design contains more than one genome file.");
       }
 
       if (!DesignUtils.checkAnnotations(design)) {
-        throw new EoulsanException(
-            "Warning: The design contains more than one annotation file.");
+        throw new EoulsanException("Warning: The design contains more than one annotation file.");
       }
 
       return design;
@@ -349,11 +348,11 @@ public final class DesignUtils {
 
   /**
    * Remove optional description fields and obfuscate condition field.
+   *
    * @param design design object to obfuscate
    * @param removeReplicateInformation if replicate information must be removed
    */
-  public static void obfuscate(final Design design,
-      final boolean removeReplicateInformation) {
+  public static void obfuscate(final Design design, final boolean removeReplicateInformation) {
 
     if (design == null) {
       return;
@@ -364,12 +363,9 @@ public final class DesignUtils {
     removeSampleMedataIfExists(design, SampleMetadata.OPERATOR_KEY);
 
     if (removeReplicateInformation) {
-      removeExperimentSampleMedataIfExists(design,
-          ExperimentSampleMetadata.CONDITION_KEY);
-      removeExperimentSampleMedataIfExists(design,
-          ExperimentSampleMetadata.REP_TECH_GROUP_KEY);
-      removeExperimentSampleMedataIfExists(design,
-          ExperimentSampleMetadata.REFERENCE_KEY);
+      removeExperimentSampleMedataIfExists(design, ExperimentSampleMetadata.CONDITION_KEY);
+      removeExperimentSampleMedataIfExists(design, ExperimentSampleMetadata.REP_TECH_GROUP_KEY);
+      removeExperimentSampleMedataIfExists(design, ExperimentSampleMetadata.REFERENCE_KEY);
     }
 
     final Map<Experiment, Integer> mapExperiment = new HashMap<>();
@@ -412,9 +408,7 @@ public final class DesignUtils {
 
           esmd.setRepTechGroup("g" + mapRepTechGroup.get(rtg));
         }
-
       }
-
     }
 
     for (Sample s : design.getSamples()) {
@@ -424,11 +418,9 @@ public final class DesignUtils {
         s.setName(newSampleName);
       }
     }
-
   }
 
-  private static void removeSampleMedataIfExists(final Design design,
-      final String fieldName) {
+  private static void removeSampleMedataIfExists(final Design design, final String fieldName) {
 
     if (design == null || fieldName == null) {
       return;
@@ -442,11 +434,10 @@ public final class DesignUtils {
         smd.remove(fieldName);
       }
     }
-
   }
 
-  private static void removeExperimentSampleMedataIfExists(final Design design,
-      final String fieldName) {
+  private static void removeExperimentSampleMedataIfExists(
+      final Design design, final String fieldName) {
 
     if (design == null || fieldName == null) {
       return;
@@ -466,15 +457,15 @@ public final class DesignUtils {
   }
 
   /**
-   * Replace the local paths in the design by paths to symbolic links in a
-   * directory.
+   * Replace the local paths in the design by paths to symbolic links in a directory.
+   *
    * @param design Design object to modify
    * @param symlinksDir path to the directory where create symbolic links
-   * @throws IOException if an error occurs while creating symbolic links of if
-   *           a path the design file does not exists
+   * @throws IOException if an error occurs while creating symbolic links of if a path the design
+   *     file does not exists
    */
-  public static void replaceLocalPathBySymlinks(final Design design,
-      final DataFile symlinksDir) throws IOException {
+  public static void replaceLocalPathBySymlinks(final Design design, final DataFile symlinksDir)
+      throws IOException {
 
     if (design == null) {
       return;
@@ -497,8 +488,7 @@ public final class DesignUtils {
 
     final DesignMetadata dmd = design.getMetadata();
     for (final String field : designKeysToModify) {
-      dmd.set(field, replaceLocalPathBySymlinks(dmd.getAsList(field),
-          symlinksDir, createdLinks));
+      dmd.set(field, replaceLocalPathBySymlinks(dmd.getAsList(field), symlinksDir, createdLinks));
     }
 
     //
@@ -519,23 +509,23 @@ public final class DesignUtils {
 
       final SampleMetadata smd = s.getMetadata();
       for (final String field : sampleKeysToModify) {
-        smd.set(field, replaceLocalPathBySymlinks(smd.getAsList(field),
-            symlinksDir, createdLinks));
+        smd.set(field, replaceLocalPathBySymlinks(smd.getAsList(field), symlinksDir, createdLinks));
       }
     }
   }
 
   /**
-   * Replace values with the path of a symbolic link that will be created by
-   * this method.
+   * Replace values with the path of a symbolic link that will be created by this method.
+   *
    * @param values the values to change
    * @param symlinksDir the directory of the symbolic links
    * @param createdLinks a set with the name of the created symbolic link
    * @return a list with the new values
    * @throws IOException if the link cannot be created
    */
-  private static List<String> replaceLocalPathBySymlinks(List<String> values,
-      final DataFile symlinksDir, Set<String> createdLinks) throws IOException {
+  private static List<String> replaceLocalPathBySymlinks(
+      List<String> values, final DataFile symlinksDir, Set<String> createdLinks)
+      throws IOException {
 
     final List<String> result = new ArrayList<>();
 
@@ -554,8 +544,7 @@ public final class DesignUtils {
         }
 
         if (outFile.exists()) {
-          throw new IOException(
-              "The symlink to create, already exists: " + outFile);
+          throw new IOException("The symlink to create, already exists: " + outFile);
         }
 
         try {
@@ -576,12 +565,12 @@ public final class DesignUtils {
 
   /**
    * Find a link filename that has not been yet used.
+   *
    * @param createdLinks the created links
    * @param filename the filename to create
    * @return the filename to create
    */
-  private static String findLinkFilename(Set<String> createdLinks,
-      String filename) {
+  private static String findLinkFilename(Set<String> createdLinks, String filename) {
 
     if (!createdLinks.contains(filename)) {
       return filename;
@@ -589,10 +578,10 @@ public final class DesignUtils {
 
     // Get the basename of the file and its extensions
     String compressionExtension = StringUtils.compressionExtension(filename);
-    String extension =
-        StringUtils.extensionWithoutCompressionExtension(filename);
-    String basename = filename.substring(0,
-        filename.length() - compressionExtension.length() - extension.length());
+    String extension = StringUtils.extensionWithoutCompressionExtension(filename);
+    String basename =
+        filename.substring(
+            0, filename.length() - compressionExtension.length() - extension.length());
 
     int count = 1;
     String newName;
@@ -610,12 +599,12 @@ public final class DesignUtils {
 
   /**
    * Get the Condition metadata value for an experimentSample. First look in
+   *
    * @param experiment the experiment
    * @param sample the sample
    * @return the Condition value
    */
-  public static String getCondition(final Experiment experiment,
-      final Sample sample) {
+  public static String getCondition(final Experiment experiment, final Sample sample) {
 
     requireNonNull(experiment, "experiment argument cannot be null");
     requireNonNull(sample, "sample argument cannot be null");
@@ -627,13 +616,13 @@ public final class DesignUtils {
 
   /**
    * Get the Condition metadata value for an experimentSample. First look in
+   *
    * @param experimentSample the experiment sample
    * @return the Condition value
    */
   public static String getCondition(final ExperimentSample experimentSample) {
 
-    requireNonNull(experimentSample,
-        "experimentSample argument cannot be null");
+    requireNonNull(experimentSample, "experimentSample argument cannot be null");
 
     final ExperimentSampleMetadata esm = experimentSample.getMetadata();
 
@@ -650,12 +639,12 @@ public final class DesignUtils {
 
   /**
    * Get the RepTechGroup metadata value for an experimentSample. First look in
+   *
    * @param experiment the experiment
    * @param sample the sample
    * @return the Condition value
    */
-  public static String getRepTechGroup(final Experiment experiment,
-      final Sample sample) {
+  public static String getRepTechGroup(final Experiment experiment, final Sample sample) {
 
     requireNonNull(experiment, "experiment argument cannot be null");
     requireNonNull(sample, "sample argument cannot be null");
@@ -667,14 +656,13 @@ public final class DesignUtils {
 
   /**
    * Get the Condition metadata value for an experimentSample. First look in
+   *
    * @param experimentSample the experiment sample
    * @return the Condition value
    */
-  public static String getRepTechGroup(
-      final ExperimentSample experimentSample) {
+  public static String getRepTechGroup(final ExperimentSample experimentSample) {
 
-    requireNonNull(experimentSample,
-        "experimentSample argument cannot be null");
+    requireNonNull(experimentSample, "experimentSample argument cannot be null");
 
     final ExperimentSampleMetadata esm = experimentSample.getMetadata();
 
@@ -691,13 +679,14 @@ public final class DesignUtils {
 
   /**
    * Get a metadata value for an experiment and a sample. First look in
+   *
    * @param experiment the experiment
    * @param sample the sample
    * @param key the metadata key to get
    * @return the Condition value
    */
-  public static String getMetadata(final Experiment experiment,
-      final Sample sample, final String key) {
+  public static String getMetadata(
+      final Experiment experiment, final Sample sample, final String key) {
 
     requireNonNull(experiment, "experiment argument cannot be null");
     requireNonNull(sample, "sample argument cannot be null");
@@ -709,15 +698,14 @@ public final class DesignUtils {
 
   /**
    * Get a metadata value for an experimentSample. First look in
+   *
    * @param experimentSample the experiment sample
    * @param key the metadata key to get
    * @return the Condition value
    */
-  public static String getMetadata(final ExperimentSample experimentSample,
-      final String key) {
+  public static String getMetadata(final ExperimentSample experimentSample, final String key) {
 
-    requireNonNull(experimentSample,
-        "experimentSample argument cannot be null");
+    requireNonNull(experimentSample, "experimentSample argument cannot be null");
     requireNonNull(key, "key argument cannot be null");
 
     final ExperimentSampleMetadata esm = experimentSample.getMetadata();
@@ -735,6 +723,7 @@ public final class DesignUtils {
 
   /**
    * Test if an experiement is skipped.
+   *
    * @param experiment the experiment
    * @return true if the experiment must be skipped
    */
@@ -749,6 +738,7 @@ public final class DesignUtils {
 
   /**
    * Test if an experiment contains reference fields.
+   *
    * @param experiment the experiment object
    * @return true if an experiment contains reference fields
    */
@@ -776,12 +766,12 @@ public final class DesignUtils {
 
   /**
    * Get the reference of a sample.
+   *
    * @param experiment the experiment
    * @param sample the sample
    * @return the reference of a sample
    */
-  public static String getReference(final Experiment experiment,
-      final Sample sample) {
+  public static String getReference(final Experiment experiment, final Sample sample) {
 
     requireNonNull(experiment, "experiment argument cannot be null");
     requireNonNull(sample, "sample argument cannot be null");
@@ -793,13 +783,13 @@ public final class DesignUtils {
 
   /**
    * Get the reference of a sample.
+   *
    * @param experimentSample the experiment sample
    * @return the reference of a sample
    */
   public static String getReference(final ExperimentSample experimentSample) {
 
-    requireNonNull(experimentSample,
-        "experimentSample argument cannot be null");
+    requireNonNull(experimentSample, "experimentSample argument cannot be null");
 
     final ExperimentSampleMetadata esmd = experimentSample.getMetadata();
 
@@ -818,12 +808,12 @@ public final class DesignUtils {
 
   /**
    * Convert a reference value to an integer.
+   *
    * @param value the reference value
    * @param experiementReference experiment reference
    * @return an integer
    */
-  public static int referenceValueToInt(final String value,
-      final String experiementReference) {
+  public static int referenceValueToInt(final String value, final String experiementReference) {
 
     if (value == null) {
       return 0;
@@ -836,24 +826,24 @@ public final class DesignUtils {
     }
 
     switch (s.toLowerCase(Globals.DEFAULT_LOCALE)) {
-    case "t":
-    case "true":
-    case "y":
-    case "yes":
-      return 1;
+      case "t":
+      case "true":
+      case "y":
+      case "yes":
+        return 1;
 
-    default:
-
-      try {
-        return Integer.parseInt(s);
-      } catch (NumberFormatException e) {
-        return 0;
-      }
+      default:
+        try {
+          return Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+          return 0;
+        }
     }
   }
 
   /**
    * Get the column names used in DESeq2 model.
+   *
    * @param experiment the experiment
    * @return a set with the column names
    */
@@ -875,12 +865,11 @@ public final class DesignUtils {
       return result;
     }
 
-    for (String s : Splitter.on(CharMatcher.anyOf("~+: ")).omitEmptyStrings()
-        .split(em.getModel())) {
+    for (String s :
+        Splitter.on(CharMatcher.anyOf("~+: ")).omitEmptyStrings().split(em.getModel())) {
       result.add(s);
     }
 
     return result;
   }
-
 }

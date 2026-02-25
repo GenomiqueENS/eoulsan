@@ -6,13 +6,16 @@ import fr.ens.biologie.genomique.eoulsan.core.Step;
 
 /**
  * This class define a UI task event.
+ *
  * @author Laurent Jourdren
  * @since 2.3
  */
 public class UITaskEvent extends UIEvent {
 
   enum TaskStatusMessage {
-    SUBMITTED, RUNNING, DONE,
+    SUBMITTED,
+    RUNNING,
+    DONE,
   }
 
   private final Step step;
@@ -21,6 +24,7 @@ public class UITaskEvent extends UIEvent {
 
   /**
    * Get the step.
+   *
    * @return the step
    */
   Step getStep() {
@@ -29,6 +33,7 @@ public class UITaskEvent extends UIEvent {
 
   /**
    * Get the event type
+   *
    * @return the event type
    */
   TaskStatusMessage getTaskStatusMessage() {
@@ -37,6 +42,7 @@ public class UITaskEvent extends UIEvent {
 
   /**
    * Get the context Id related to the event
+   *
    * @return the context id
    */
   int getContextId() {
@@ -49,12 +55,12 @@ public class UITaskEvent extends UIEvent {
 
   /**
    * Constructor.
+   *
    * @param step the step
    * @param status the event type
    * @param contextId the context id related to the event
    */
-  public UITaskEvent(final Step step, final TaskStatusMessage status,
-      final int contextId) {
+  public UITaskEvent(final Step step, final TaskStatusMessage status, final int contextId) {
 
     requireNonNull(step, "step argument cannot be null");
     requireNonNull(status, "step argument cannot be null");

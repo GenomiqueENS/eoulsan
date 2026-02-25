@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan;
 
 /**
  * A nestable Eoulsan error. This class came from from BioJava Code.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  * @author Matthew Pocock
@@ -37,15 +38,14 @@ public class EoulsanError extends Error {
 
   /**
    * Create a new EoulsanError with a message.
+   *
    * @param message the message
    */
   public EoulsanError(final String message) {
     super(message);
   }
 
-  /**
-   * Create a new EoulsanError.
-   */
+  /** Create a new EoulsanError. */
   public EoulsanError() {
     super();
   }

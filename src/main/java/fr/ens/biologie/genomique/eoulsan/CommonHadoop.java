@@ -28,27 +28,25 @@ import org.apache.hadoop.conf.Configuration;
 
 /**
  * This class define common constants and other methods specific to Hadoop mode.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
 public class CommonHadoop {
 
-  public static final String AWS_S3_SECRET_ACCESS_KEY_PARAM_NAME =
-      "fs.s3n.awsSecretAccessKey";
-  public static final String AWS_S3_ACCESS_KEY_ID_PARAM_KEY =
-      "fs.s3n.awsAccessKeyId";
+  public static final String AWS_S3_SECRET_ACCESS_KEY_PARAM_NAME = "fs.s3n.awsSecretAccessKey";
+  public static final String AWS_S3_ACCESS_KEY_ID_PARAM_KEY = "fs.s3n.awsAccessKeyId";
 
-  public static final String HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME =
-      "hadoop.reducer.task.count";
+  public static final String HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME = "hadoop.reducer.task.count";
 
   public static final int CHECK_COMPLETION_TIME = 5000;
   public static final String HADOOP_PARAMETER_PREFIX = "hadoop.conf.";
 
-  public static final String COUNTER_GROUP_KEY =
-      Globals.PARAMETER_PREFIX + ".counter.group";
+  public static final String COUNTER_GROUP_KEY = Globals.PARAMETER_PREFIX + ".counter.group";
 
   /**
    * Create a new Configuration object from Eoulsan runtime settings.
+   *
    * @return a new Configuration object
    */
   public static Configuration createConfiguration() {
@@ -58,6 +56,7 @@ public class CommonHadoop {
 
   /**
    * Create a new Configuration object from settings.
+   *
    * @param settings Settings of the application
    * @return a new Configuration object
    */
@@ -73,8 +72,7 @@ public class CommonHadoop {
 
       if (keyName.startsWith(HADOOP_PARAMETER_PREFIX)) {
 
-        final String hadoopKey =
-            keyName.substring(HADOOP_PARAMETER_PREFIX.length());
+        final String hadoopKey = keyName.substring(HADOOP_PARAMETER_PREFIX.length());
 
         conf.set(hadoopKey, settings.getSetting(keyName));
       }
@@ -82,5 +80,4 @@ public class CommonHadoop {
 
     return conf;
   }
-
 }

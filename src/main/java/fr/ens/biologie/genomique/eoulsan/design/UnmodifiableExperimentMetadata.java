@@ -6,8 +6,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
-public class UnmodifiableExperimentMetadata
-    implements ExperimentMetadata, Serializable {
+public class UnmodifiableExperimentMetadata implements ExperimentMetadata, Serializable {
 
   private static final long serialVersionUID = -426306838693570333L;
 
@@ -211,5 +210,4 @@ public class UnmodifiableExperimentMetadata
   UnmodifiableExperimentMetadata(final ExperimentMetadata md) {
     this.md = md;
   }
-
 }

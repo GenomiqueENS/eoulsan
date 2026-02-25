@@ -2,6 +2,14 @@ package fr.ens.biologie.genomique.eoulsan.splitermergers;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,18 +19,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
-
 /**
  * This class define a merger class for expression files.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -39,14 +38,13 @@ public class ExpressionMerger implements Merger {
 
     // The merge does not need any parameter
     for (Parameter p : conf) {
-      throw new EoulsanException("Unknown parameter for "
-          + getFormat().getName() + " merger: " + p.getName());
+      throw new EoulsanException(
+          "Unknown parameter for " + getFormat().getName() + " merger: " + p.getName());
     }
   }
 
   @Override
-  public void merge(final Iterator<DataFile> inFileIterator, DataFile outFile)
-      throws IOException {
+  public void merge(final Iterator<DataFile> inFileIterator, DataFile outFile) throws IOException {
 
     final Multiset<String> counts = HashMultiset.create();
     final Set<String> emptyCounts = new HashSet<>();
@@ -56,8 +54,7 @@ public class ExpressionMerger implements Merger {
       // Get input file
       final DataFile inFile = inFileIterator.next();
 
-      EoulsanLogger.getLogger()
-          .info("Merge " + inFile.getName() + " to " + outFile.getName());
+      EoulsanLogger.getLogger().info("Merge " + inFile.getName() + " to " + outFile.getName());
 
       boolean first = true;
 
@@ -121,7 +118,5 @@ public class ExpressionMerger implements Merger {
         writer.write(id + "\t0\n");
       }
     }
-
   }
-
 }

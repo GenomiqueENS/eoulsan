@@ -26,23 +26,22 @@ package fr.ens.biologie.genomique.eoulsan.util.hadoop;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.DF;
-import org.apache.hadoop.util.VersionInfo;
-
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.util.LinuxCpuInfo;
 import fr.ens.biologie.genomique.eoulsan.util.LinuxMemInfo;
 import fr.ens.biologie.genomique.kenetre.util.StringUtils;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.DF;
+import org.apache.hadoop.util.VersionInfo;
 
 /**
  * This class show in log some Hadoop information.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -61,8 +60,7 @@ public class HadoopInfo {
     logHadoopVersionInfo();
 
     // Get Eoulsan Hadoop runtime
-    HadoopEoulsanRuntime runtime =
-        (HadoopEoulsanRuntime) EoulsanRuntime.getRuntime();
+    HadoopEoulsanRuntime runtime = (HadoopEoulsanRuntime) EoulsanRuntime.getRuntime();
 
     if (EoulsanRuntime.getSettings().isDebug()) {
       sysInfo(runtime.getConfiguration());
@@ -97,8 +95,7 @@ public class HadoopInfo {
       }
     } catch (IOException e) {
 
-      getLogger()
-          .warning("Error while get system information: " + e.getMessage());
+      getLogger().warning("Error while get system information: " + e.getMessage());
     }
   }
 
@@ -112,16 +109,14 @@ public class HadoopInfo {
     final String bogomips = cpuinfo.getBogoMips();
     final String cores = cpuinfo.getCores();
 
-    getLogger().info(
-        "SYSINFO CPU model name: " + (modelName == null ? "NA" : modelName));
-    getLogger().info("SYSINFO CPU count: "
-        + (processor == null
-            ? "NA" : "" + (Integer.parseInt(processor.trim()) + 1)));
-    getLogger().info("SYSINFO CPU cores: " + (cores == null ? "NA" : cores));
-    getLogger().info(
-        "SYSINFO CPU clock: " + (cpuMHz == null ? "NA" : cpuMHz) + " MHz");
+    getLogger().info("SYSINFO CPU model name: " + (modelName == null ? "NA" : modelName));
     getLogger()
-        .info("SYSINFO Bogomips: " + (bogomips == null ? "NA" : bogomips));
+        .info(
+            "SYSINFO CPU count: "
+                + (processor == null ? "NA" : "" + (Integer.parseInt(processor.trim()) + 1)));
+    getLogger().info("SYSINFO CPU cores: " + (cores == null ? "NA" : cores));
+    getLogger().info("SYSINFO CPU clock: " + (cpuMHz == null ? "NA" : cpuMHz) + " MHz");
+    getLogger().info("SYSINFO Bogomips: " + (bogomips == null ? "NA" : bogomips));
   }
 
   private static void parseMeminfo() throws IOException {
@@ -129,21 +124,26 @@ public class HadoopInfo {
     final LinuxMemInfo meminfo = new LinuxMemInfo();
     final String memTotal = meminfo.getMemTotal();
 
-    getLogger()
-        .info("SYSINFO Mem Total: " + (memTotal == null ? "NA" : memTotal));
+    getLogger().info("SYSINFO Mem Total: " + (memTotal == null ? "NA" : memTotal));
   }
 
-  private static void df(final Path f, final Configuration conf)
-      throws IOException {
+  private static void df(final Path f, final Configuration conf) throws IOException {
 
     DF df = new DF(f.toFile(), conf);
 
-    getLogger().info("SYSINFO "
-        + f + " " + StringUtils.sizeToHumanReadable(df.getCapacity())
-        + " capacity, " + StringUtils.sizeToHumanReadable(df.getUsed())
-        + " used, " + StringUtils.sizeToHumanReadable(df.getAvailable())
-        + " available, " + df.getPercentUsed() + "% used");
-
+    getLogger()
+        .info(
+            "SYSINFO "
+                + f
+                + " "
+                + StringUtils.sizeToHumanReadable(df.getCapacity())
+                + " capacity, "
+                + StringUtils.sizeToHumanReadable(df.getUsed())
+                + " used, "
+                + StringUtils.sizeToHumanReadable(df.getAvailable())
+                + " available, "
+                + df.getPercentUsed()
+                + "% used");
   }
 
   private static void logHadoopVersionInfo() {
@@ -154,5 +154,4 @@ public class HadoopInfo {
     getLogger().info("SYSINFO Hadoop user: " + VersionInfo.getUser());
     getLogger().info("SYSINFO Hadoop url: " + VersionInfo.getUrl());
   }
-
 }

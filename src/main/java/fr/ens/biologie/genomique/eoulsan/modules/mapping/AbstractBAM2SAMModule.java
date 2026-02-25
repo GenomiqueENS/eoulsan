@@ -6,8 +6,6 @@ import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.singleInp
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_BAM;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
@@ -15,11 +13,13 @@ import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.util.Set;
 
 /**
  * This class define a module for converting BAM files into SAM.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -36,6 +36,7 @@ public abstract class AbstractBAM2SAMModule extends AbstractModule {
 
   /**
    * Get the reducer task count.
+   *
    * @return the reducer task count
    */
   protected int getReducerTaskCount() {
@@ -77,27 +78,24 @@ public abstract class AbstractBAM2SAMModule extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
+        case "input.format":
+          getLogger().warning("Deprecated parameter \"" + p.getName() + "\" for step " + getName());
+          break;
 
-      case "input.format":
-        getLogger().warning("Deprecated parameter \""
-            + p.getName() + "\" for step " + getName());
-        break;
+        case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
+          this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
+          break;
 
-      case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
-        this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
-        break;
-
-      default:
-        throw new EoulsanException(
-            "Unknown parameter for " + getName() + " step: " + p.getName());
+        default:
+          throw new EoulsanException(
+              "Unknown parameter for " + getName() + " step: " + p.getName());
       }
     }
   }
-
 }

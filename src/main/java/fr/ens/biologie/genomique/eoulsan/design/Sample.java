@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.design;
 
 /**
  * This interface defines a sample.
+ *
  * @author Xavier Bauquet
  * @since 2.0
  */
@@ -33,45 +34,52 @@ public interface Sample {
 
   /** Sample Id field. */
   String SAMPLE_ID_FIELD = "SampleId";
+
   /** Sample Name field. */
   String SAMPLE_NAME_FIELD = "SampleName";
+
   /** Sample Name field. */
   String SAMPLE_NUMBER_FIELD = "SampleNumber";
 
   /**
    * Get the design related to the sample.
+   *
    * @return the Design object related to the sample
    */
   Design getDesign();
 
   /**
    * Get the sample id.
+   *
    * @return the sample id
    */
   String getId();
 
   /**
    * Get the sample number.
+   *
    * @return the sample number
    */
   int getNumber();
 
   /**
    * Get the sample name.
+   *
    * @return the sample name
    */
   String getName();
 
   /**
    * Get the sample metadata.
+   *
    * @return an object SampleMetadata
    */
   SampleMetadata getMetadata();
 
   /**
    * Set the sample name.
+   *
    * @param newSampleName the new sample name
    */
   void setName(String newSampleName);
-
 }

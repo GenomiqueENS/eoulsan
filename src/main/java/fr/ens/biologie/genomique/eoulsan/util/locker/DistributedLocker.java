@@ -2,16 +2,16 @@ package fr.ens.biologie.genomique.eoulsan.util.locker;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
-
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 
 /**
- * This class implements a locker using Zookeeper based on Twiter's
- * DistributedLock class. See @see <a href=
+ * This class implements a locker using Zookeeper based on Twiter's DistributedLock class. See @see
+ * <a href=
  * "https://github.com/twitter/commons/blob/master/src/java/com/twitter/common/zookeeper/DistributedLock.java">
  * Twitter Commons code</a>.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -46,15 +46,19 @@ public class DistributedLocker implements Locker, Watcher {
 
   /**
    * Public constructor.
+   *
    * @param connectString Zookeeper connection string
    * @param sessionTimeout session time out
    * @param lockBasePath lock base path
    * @param lockName lock name
-   * @throws IOException if an error occurs while creating the ZooKeeper
-   *           connection
+   * @throws IOException if an error occurs while creating the ZooKeeper connection
    */
-  public DistributedLocker(final String connectString, final int sessionTimeout,
-      final String lockBasePath, final String lockName) throws IOException {
+  public DistributedLocker(
+      final String connectString,
+      final int sessionTimeout,
+      final String lockBasePath,
+      final String lockName)
+      throws IOException {
 
     ZooKeeper zk = new ZooKeeper(connectString, sessionTimeout, this);
     try {
@@ -65,5 +69,4 @@ public class DistributedLocker implements Locker, Watcher {
 
     this.lock = new DistributedLock(zk, lockBasePath + '/' + lockName);
   }
-
 }

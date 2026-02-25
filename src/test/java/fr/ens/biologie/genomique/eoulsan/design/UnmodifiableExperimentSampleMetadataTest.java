@@ -77,7 +77,6 @@ public class UnmodifiableExperimentSampleMetadataTest {
     } catch (UnsupportedOperationException ex) {
       assertTrue(true);
     }
-
   }
 
   @Test
@@ -121,5 +120,4 @@ public class UnmodifiableExperimentSampleMetadataTest {
     // test containsReference
     assertTrue(uesm.containsReference());
   }
-
 }

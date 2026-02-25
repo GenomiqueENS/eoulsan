@@ -24,6 +24,7 @@
 
 /**
  * This package contain classes related to upload data to HDFS and Cloud.
+ *
  * @since 1.0
  */
 package fr.ens.biologie.genomique.eoulsan.modules.mgmt.upload;

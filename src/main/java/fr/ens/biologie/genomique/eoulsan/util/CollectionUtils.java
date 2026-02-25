@@ -28,8 +28,8 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * This class define an utility class that contains useful methods for
- * collections.
+ * This class define an utility class that contains useful methods for collections.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -37,6 +37,7 @@ public class CollectionUtils {
 
   /**
    * Return an empty collection if the input collection is null.
+   *
    * @param <E> collection type
    * @param c input collection
    * @return a collection
@@ -55,10 +56,6 @@ public class CollectionUtils {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
-  private CollectionUtils() {
-  }
-
+  /** Private constructor. */
+  private CollectionUtils() {}
 }

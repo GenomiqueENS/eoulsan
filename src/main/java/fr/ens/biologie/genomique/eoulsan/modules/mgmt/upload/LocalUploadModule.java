@@ -29,9 +29,6 @@ import static fr.ens.biologie.genomique.kenetre.io.CompressionType.BZIP2;
 import static fr.ens.biologie.genomique.kenetre.io.CompressionType.removeCompressionExtension;
 import static fr.ens.biologie.genomique.kenetre.util.StringUtils.compressionExtension;
 
-import java.io.IOException;
-import java.util.Map;
-
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepOutputDataFile;
@@ -40,9 +37,12 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatConverter;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * This class define a Step for local mode file uploading.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -50,27 +50,33 @@ import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 public class LocalUploadModule extends UploadModule {
 
   @Override
-  protected DataFile getUploadedDataFile(final DataFile file)
-      throws IOException {
+  protected DataFile getUploadedDataFile(final DataFile file) throws IOException {
 
     final String filename;
 
     if (file.getName().endsWith(".zip")
-        || file.getName().endsWith(".jar") || file.getName().endsWith(".xml")
+        || file.getName().endsWith(".jar")
+        || file.getName().endsWith(".xml")
         || file.getName().endsWith(".txt")) {
       filename = file.getName();
     } else {
-      filename = CompressionType.removeCompressionExtension(file.getName())
-          + CompressionType.BZIP2.getExtension();
+      filename =
+          CompressionType.removeCompressionExtension(file.getName())
+              + CompressionType.BZIP2.getExtension();
     }
 
     return new DataFile(getDest(), filename);
   }
 
   @Override
-  protected DataFile getUploadedDataFile(final DataFile file, final Step step,
-      final Sample sample, final String portName, final DataFormat format,
-      final int fileIndex) throws IOException {
+  protected DataFile getUploadedDataFile(
+      final DataFile file,
+      final Step step,
+      final Sample sample,
+      final String portName,
+      final DataFormat format,
+      final int fileIndex)
+      throws IOException {
 
     final String filename;
 
@@ -83,8 +89,9 @@ public class LocalUploadModule extends UploadModule {
       filename = file.getName();
     } else {
 
-      filename = StepOutputDataFile.newStandardFilename(step, portName, format,
-          sample, fileIndex, CompressionType.NONE);
+      filename =
+          StepOutputDataFile.newStandardFilename(
+              step, portName, format, sample, fileIndex, CompressionType.NONE);
     }
 
     // Don't compress ZIP files
@@ -92,8 +99,7 @@ public class LocalUploadModule extends UploadModule {
       return new DataFile(getDest(), filename);
     }
 
-    return new DataFile(getDest(),
-        removeCompressionExtension(filename) + BZIP2.getExtension());
+    return new DataFile(getDest(), removeCompressionExtension(filename) + BZIP2.getExtension());
   }
 
   @Override
@@ -115,7 +121,6 @@ public class LocalUploadModule extends UploadModule {
       getLogger().info("Convert " + src + " to " + dest);
       new DataFormatConverter(src, dest).convert();
     }
-
   }
 
   //
@@ -124,11 +129,11 @@ public class LocalUploadModule extends UploadModule {
 
   /**
    * Public constructor.
+   *
    * @param dest destination of the files to upload
    */
   public LocalUploadModule(final DataFile dest) {
 
     super(dest);
   }
-
 }

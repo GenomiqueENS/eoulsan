@@ -1,15 +1,5 @@
 package fr.ens.biologie.genomique.eoulsan.actions;
 
-import java.io.IOException;
-import java.util.List;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.help.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -18,10 +8,19 @@ import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.CommandWorkflowParser;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import java.io.IOException;
+import java.util.List;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 
 /**
- * This class define an abstract action that show the some Eoulsan configuration
- * and available modules
+ * This class define an abstract action that show the some Eoulsan configuration and available
+ * modules
+ *
  * @author Laurent Jourdren
  * @since 2.3
  */
@@ -42,16 +41,14 @@ public abstract class AbstractInfoAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[0]), true);
+      final CommandLine line = parser.parse(options, arguments.toArray(new String[0]), true);
 
       // Help option
       if (line.hasOption("help")) {
         help(options);
       }
     } catch (ParseException e) {
-      Common.errorExit(e,
-          "Error while parsing command line arguments: " + e.getMessage());
+      Common.errorExit(e, "Error while parsing command line arguments: " + e.getMessage());
     }
 
     // Get the settings
@@ -60,18 +57,18 @@ public abstract class AbstractInfoAction extends AbstractAction {
     final DataFile workflowFile;
 
     switch (arguments.size()) {
-    case 0:
-      workflowFile = null;
-      break;
+      case 0:
+        workflowFile = null;
+        break;
 
-    case 1:
-      workflowFile = new DataFile(arguments.get(0));
-      break;
+      case 1:
+        workflowFile = new DataFile(arguments.get(0));
+        break;
 
-    default:
-      help(options);
-      workflowFile = null;
-      break;
+      default:
+        help(options);
+        workflowFile = null;
+        break;
     }
 
     if (workflowFile != null) {
@@ -82,11 +79,9 @@ public abstract class AbstractInfoAction extends AbstractAction {
         }
 
       } catch (IOException e) {
-        Common.errorExit(e,
-            "Error while reading workflow file: " + e.getMessage());
+        Common.errorExit(e, "Error while reading workflow file: " + e.getMessage());
       } catch (EoulsanException e) {
-        Common.errorExit(e,
-            "Error while parsing workflow file: " + e.getMessage());
+        Common.errorExit(e, "Error while parsing workflow file: " + e.getMessage());
       }
     }
 
@@ -96,6 +91,7 @@ public abstract class AbstractInfoAction extends AbstractAction {
 
   /**
    * Show the information on stdout
+   *
    * @param settings the Eoulsan settings
    */
   protected abstract void showInfo(final Settings settings);
@@ -106,6 +102,7 @@ public abstract class AbstractInfoAction extends AbstractAction {
 
   /**
    * Create options for command line
+   *
    * @return an Options object
    */
   @SuppressWarnings("static-access")
@@ -122,23 +119,24 @@ public abstract class AbstractInfoAction extends AbstractAction {
 
   /**
    * Show command line help.
+   *
    * @param options Options of the software
    */
   private void help(final Options options) {
 
     // Show help message
-    final HelpFormatter formatter =
-        HelpFormatter.builder().setShowSince(false).get();
+    final HelpFormatter formatter = HelpFormatter.builder().setShowSince(false).get();
     try {
       formatter.printHelp(
-          Globals.APP_NAME_LOWER_CASE
-              + ".sh " + getName() + " [options] [workflowfile]",
-          "", options, "", false);
+          Globals.APP_NAME_LOWER_CASE + ".sh " + getName() + " [options] [workflowfile]",
+          "",
+          options,
+          "",
+          false);
     } catch (IOException e) {
       Common.errorExit(e, "Error while creating help message.");
     }
 
     Common.exit(0);
   }
-
 }

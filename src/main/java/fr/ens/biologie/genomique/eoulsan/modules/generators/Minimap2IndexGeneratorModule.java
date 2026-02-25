@@ -28,10 +28,6 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getGenericLogger;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_FASTA;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.Generator;
@@ -45,15 +41,19 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.MapperIndexDataFormat;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.Mapper;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperBuilder;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.Minimap2MapperProvider;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * This class define a module that generate a Minimap2 mapper index.
+ *
  * @since 2.1
  * @author Laurent Jourdren
  */
@@ -64,8 +64,7 @@ public class Minimap2IndexGeneratorModule extends AbstractModule {
   public static final String MODULE_NAME = "minimap2indexgenerator";
 
   private final Mapper mapper =
-      new MapperBuilder(Minimap2MapperProvider.MAPPER_NAME)
-          .withLogger(getGenericLogger()).build();
+      new MapperBuilder(Minimap2MapperProvider.MAPPER_NAME).withLogger(getGenericLogger()).build();
 
   private String indexerArguments = "";
 
@@ -90,50 +89,50 @@ public class Minimap2IndexGeneratorModule extends AbstractModule {
   @Override
   public InputPorts getInputPorts() {
 
-    return new InputPortsBuilder().addPort("genome", GENOME_FASTA)
-        .addPort("genomedescription", GENOME_DESC_TXT).create();
+    return new InputPortsBuilder()
+        .addPort("genome", GENOME_FASTA)
+        .addPort("genomedescription", GENOME_DESC_TXT)
+        .create();
   }
 
   @Override
   public OutputPorts getOutputPorts() {
-    return OutputPortsBuilder
-        .singleOutputPort(new MapperIndexDataFormat(this.mapper));
+    return OutputPortsBuilder.singleOutputPort(new MapperIndexDataFormat(this.mapper));
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     if (stepParameters == null) {
-      throw new EoulsanException(
-          "No parameters set in " + getName() + " generator");
+      throw new EoulsanException("No parameters set in " + getName() + " generator");
     }
 
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
+        case "indexer.arguments":
+          this.indexerArguments = p.getStringValue();
+          break;
 
-      case "indexer.arguments":
-        this.indexerArguments = p.getStringValue();
-        break;
-
-      default:
-        throw new EoulsanException(
-            "Unknown parameter for " + getName() + " step: " + p.getName());
+        default:
+          throw new EoulsanException(
+              "Unknown parameter for " + getName() + " step: " + p.getName());
       }
     }
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     try {
 
       status.setProgressMessage(this.mapper.getName() + " index creation");
 
       // Create the index
-      GenomeMapperIndexGeneratorModule.execute(this.mapper, context,
+      GenomeMapperIndexGeneratorModule.execute(
+          this.mapper,
+          context,
           this.indexerArguments,
           Collections.singletonMap("indexer.arguments", this.indexerArguments));
 
@@ -144,5 +143,4 @@ public class Minimap2IndexGeneratorModule extends AbstractModule {
 
     return status.createTaskResult();
   }
-
 }

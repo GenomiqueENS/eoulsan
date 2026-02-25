@@ -30,6 +30,7 @@ import java.util.Set;
 
 /**
  * This interface defines common methods for metadata.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -37,6 +38,7 @@ public interface Metadata {
 
   /**
    * Get the value according the key.
+   *
    * @param key the key
    * @return the value
    */
@@ -44,6 +46,7 @@ public interface Metadata {
 
   /**
    * Get the trimmed value according the key.
+   *
    * @param key the key
    * @return the value
    */
@@ -51,6 +54,7 @@ public interface Metadata {
 
   /**
    * Set the value according the key.
+   *
    * @param key the key
    * @param value the value
    */
@@ -58,6 +62,7 @@ public interface Metadata {
 
   /**
    * Set the value as a list according the key.
+   *
    * @param key the key
    * @param value the value as a list
    */
@@ -65,18 +70,21 @@ public interface Metadata {
 
   /**
    * Get the number of metadata.
+   *
    * @return the number of metadata
    */
   int size();
 
   /**
    * Test if there is no metadata.
+   *
    * @return true if there is no metadata
    */
   boolean isEmpty();
 
   /**
    * Test if the key is in md.
+   *
    * @param key the key
    * @return true if the key is in md
    */
@@ -84,6 +92,7 @@ public interface Metadata {
 
   /**
    * Get the value according the key as a list.
+   *
    * @param key the key
    * @return the value as a list
    */
@@ -91,6 +100,7 @@ public interface Metadata {
 
   /**
    * Get the value according the key as a boolean.
+   *
    * @param key the key
    * @return the value as a boolean
    */
@@ -98,20 +108,22 @@ public interface Metadata {
 
   /**
    * Get the keys of the metadata
+   *
    * @return a set with the keys of the metadata
    */
   Set<String> keySet();
 
   /**
    * Get an entry set of the metadata.
+   *
    * @return a set of entries
    */
   Set<Map.Entry<String, String>> entrySet();
 
   /**
    * Remove the value according the key.
+   *
    * @param key the key
    */
   void remove(String key);
-
 }

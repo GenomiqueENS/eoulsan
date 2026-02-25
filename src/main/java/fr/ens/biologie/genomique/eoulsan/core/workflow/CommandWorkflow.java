@@ -30,21 +30,9 @@ import static fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUti
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.GENERATOR_STEP;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.STANDARD_STEP;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
@@ -62,17 +50,28 @@ import fr.ens.biologie.genomique.eoulsan.data.protocols.DataProtocol;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
-import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.modules.CopyInputDataModule;
 import fr.ens.biologie.genomique.eoulsan.modules.CopyOutputDataModule;
 import fr.ens.biologie.genomique.eoulsan.modules.RequirementInstallerModule;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 import fr.ens.biologie.genomique.kenetre.util.Utils;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class define a workflow based on a Command object (workflow file).
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -95,6 +94,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   /**
    * Add a step.
+   *
    * @param step step to add.
    * @throws EoulsanException if an error occurs while adding a step
    */
@@ -105,12 +105,12 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   /**
    * Add a step.
+   *
    * @param pos position of the step in list of steps.
    * @param step step to add.
    * @throws EoulsanException if an error occurs while adding a step
    */
-  private void addStep(final int pos, final CommandStep step)
-      throws EoulsanException {
+  private void addStep(final int pos, final CommandStep step) throws EoulsanException {
 
     if (step == null) {
       throw new EoulsanException("Cannot add null step");
@@ -123,15 +123,13 @@ public class CommandWorkflow extends AbstractWorkflow {
     }
 
     if (step.getType() != GENERATOR_STEP && this.stepsIds.contains(stepId)) {
-      throw new EoulsanException(
-          "Cannot add step because it already had been added: " + stepId);
+      throw new EoulsanException("Cannot add step because it already had been added: " + stepId);
     }
 
     if (step.getType() == STANDARD_STEP || step.getType() == GENERATOR_STEP) {
       for (StepType t : StepType.values()) {
         if (t.name().equals(stepId)) {
-          throw new EoulsanException(
-              "Cannot add a step with a reserved id: " + stepId);
+          throw new EoulsanException("Cannot add a step with a reserved id: " + stepId);
         }
       }
     }
@@ -147,6 +145,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   /**
    * Get the index of step in the list of step.
+   *
    * @param step the step to search
    * @return the index of the step or -1 if the step is not found
    */
@@ -161,6 +160,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   /**
    * Create the list of steps.
+   *
    * @throws EoulsanException if an error occurs while creating the step
    */
   private void addMainSteps() throws EoulsanException {
@@ -196,13 +196,27 @@ public class CommandWorkflow extends AbstractWorkflow {
       final int requiredProcessors = c.getStepRequiredProcessors(stepId);
       final String dataProduct = c.getStepDataProduct(stepId);
 
-      getLogger().info("Create "
-          + (skip ? "skipped step" : "step ") + stepId + " (" + moduleName
-          + ") step.");
+      getLogger()
+          .info(
+              "Create "
+                  + (skip ? "skipped step" : "step ")
+                  + stepId
+                  + " ("
+                  + moduleName
+                  + ") step.");
 
-      addStep(new CommandStep(this, stepId, moduleName, stepVersion,
-          stepParameters, skip, discardOutput, requiredMemory,
-          requiredProcessors, dataProduct));
+      addStep(
+          new CommandStep(
+              this,
+              stepId,
+              moduleName,
+              stepVersion,
+              stepParameters,
+              skip,
+              discardOutput,
+              requiredMemory,
+              requiredProcessors,
+              dataProduct));
     }
 
     // Check if there one or more step to execute
@@ -213,11 +227,11 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   /**
    * Add some steps at the start of the Workflow.
+   *
    * @param firstModules list of modules to add
    * @throws EoulsanException if an error occurs while adding a step
    */
-  private void addFirstSteps(final List<Module> firstModules)
-      throws EoulsanException {
+  private void addFirstSteps(final List<Module> firstModules) throws EoulsanException {
 
     if (firstModules != null) {
       for (Module module : Utils.listWithoutNull(firstModules)) {
@@ -241,11 +255,11 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   /**
    * Add some steps at the end of the Workflow.
+   *
    * @param endModules list of modules to add
    * @throws EoulsanException if an error occurs while adding a step
    */
-  private void addEndSteps(final List<Module> endModules)
-      throws EoulsanException {
+  private void addEndSteps(final List<Module> endModules) throws EoulsanException {
 
     if (endModules == null) {
       return;
@@ -259,6 +273,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   /**
    * Configure the steps of the Workflow.
+   *
    * @throws EoulsanException if an error occurs while creating the step
    */
   private void configureSteps() throws EoulsanException {
@@ -268,8 +283,7 @@ public class CommandWorkflow extends AbstractWorkflow {
       step.configure();
     }
 
-    Multimap<CommandStep, Requirement> requirements =
-        ArrayListMultimap.create();
+    Multimap<CommandStep, Requirement> requirements = ArrayListMultimap.create();
 
     // Get the requiement of all steps
     for (CommandStep step : this.steps) {
@@ -288,21 +302,22 @@ public class CommandWorkflow extends AbstractWorkflow {
       final Requirement r = e.getValue();
 
       if (r.isAvailable()) {
-        getLogger()
-            .fine("Requierement found for step \"" + stepId + "\": " + r);
+        getLogger().fine("Requierement found for step \"" + stepId + "\": " + r);
         continue;
       }
 
-      getLogger()
-          .fine("Requierement not found for step \"" + stepId + "\": " + r);
+      getLogger().fine("Requierement not found for step \"" + stepId + "\": " + r);
 
       if (!r.isInstallable()) {
 
         if (r.isOptional()) {
           continue;
         } else {
-          throw new EoulsanException("Requirement for step \""
-              + e.getKey().getId() + "\" is not available: " + r.toString());
+          throw new EoulsanException(
+              "Requirement for step \""
+                  + e.getKey().getId()
+                  + "\" is not available: "
+                  + r.toString());
         }
       }
 
@@ -310,10 +325,17 @@ public class CommandWorkflow extends AbstractWorkflow {
 
       // Create an installer step
       final CommandStep step =
-          new CommandStep(this, r.getName() + "install" + installerCount,
+          new CommandStep(
+              this,
+              r.getName() + "install" + installerCount,
               RequirementInstallerModule.MODULE_NAME,
-              Globals.APP_VERSION.toString(), r.getParameters(), false,
-              Step.DiscardOutput.NO, -1, -1, "");
+              Globals.APP_VERSION.toString(),
+              r.getParameters(),
+              false,
+              Step.DiscardOutput.NO,
+              -1,
+              -1,
+              "");
 
       // Configure the installer step
       step.configure();
@@ -324,14 +346,15 @@ public class CommandWorkflow extends AbstractWorkflow {
   }
 
   /**
-   * Add a dependency. Add an additional step that copy/(un)compress data if
-   * necessary.
+   * Add a dependency. Add an additional step that copy/(un)compress data if necessary.
+   *
    * @param inputPort input port of the step
    * @param dependencyOutputPort output port the dependency
    * @throws EoulsanException if an error occurs while adding the dependency
    */
-  private void addDependency(final StepInputPort inputPort,
-      final StepOutputPort dependencyOutputPort) throws EoulsanException {
+  private void addDependency(
+      final StepInputPort inputPort, final StepOutputPort dependencyOutputPort)
+      throws EoulsanException {
 
     try {
 
@@ -339,49 +362,44 @@ public class CommandWorkflow extends AbstractWorkflow {
       final AbstractStep dependencyStep = dependencyOutputPort.getStep();
 
       final DataFile stepDir = inputPort.getStep().getStepOutputDirectory();
-      final DataFile depDir =
-          dependencyOutputPort.getStep().getStepOutputDirectory();
+      final DataFile depDir = dependencyOutputPort.getStep().getStepOutputDirectory();
 
       final DataProtocol stepProtocol = stepDir.getProtocol();
       final DataProtocol depProtocol = depDir.getProtocol();
 
-      final EnumSet<CompressionType> stepCompressionsAllowed =
-          inputPort.getCompressionsAccepted();
+      final EnumSet<CompressionType> stepCompressionsAllowed = inputPort.getCompressionsAccepted();
 
-      final CompressionType depOutputCompression =
-          dependencyOutputPort.getCompression();
+      final CompressionType depOutputCompression = dependencyOutputPort.getCompression();
 
       CommandStep newStep = null;
 
       // Check if copy is needed in the working directory
-      if ((step.getType() == StepType.STANDARD_STEP
-          || step.getType() == StepType.GENERATOR_STEP)
-          && !step.isSkip() && stepProtocol != depProtocol
+      if ((step.getType() == StepType.STANDARD_STEP || step.getType() == StepType.GENERATOR_STEP)
+          && !step.isSkip()
+          && stepProtocol != depProtocol
           && inputPort.isRequiredInWorkingDirectory()) {
-        newStep = newInputFormatCopyStep(this, inputPort, depOutputCompression,
-            stepCompressionsAllowed);
+        newStep =
+            newInputFormatCopyStep(this, inputPort, depOutputCompression, stepCompressionsAllowed);
       }
 
       // Check if (un)compression is needed
       if (newStep == null
-          && (step.getType() == StepType.STANDARD_STEP
-              || step.getType() == StepType.GENERATOR_STEP)
-          && !step.isSkip() && !inputPort.getCompressionsAccepted()
-              .contains(depOutputCompression)) {
-        newStep = newInputFormatCopyStep(this, inputPort, depOutputCompression,
-            stepCompressionsAllowed);
+          && (step.getType() == StepType.STANDARD_STEP || step.getType() == StepType.GENERATOR_STEP)
+          && !step.isSkip()
+          && !inputPort.getCompressionsAccepted().contains(depOutputCompression)) {
+        newStep =
+            newInputFormatCopyStep(this, inputPort, depOutputCompression, stepCompressionsAllowed);
       }
 
       // If the dependency if design step and step does not allow all the
       // compression types as input, (un)compress data
       if (newStep == null
-          && (step.getType() == StepType.STANDARD_STEP
-              || step.getType() == StepType.GENERATOR_STEP)
-          && !step.isSkip() && dependencyStep == this.getDesignStep()
-          && !EnumSet.allOf(CompressionType.class)
-              .containsAll(stepCompressionsAllowed)) {
-        newStep = newInputFormatCopyStep(this, inputPort, depOutputCompression,
-            stepCompressionsAllowed);
+          && (step.getType() == StepType.STANDARD_STEP || step.getType() == StepType.GENERATOR_STEP)
+          && !step.isSkip()
+          && dependencyStep == this.getDesignStep()
+          && !EnumSet.allOf(CompressionType.class).containsAll(stepCompressionsAllowed)) {
+        newStep =
+            newInputFormatCopyStep(this, inputPort, depOutputCompression, stepCompressionsAllowed);
       }
 
       // Set the dependencies
@@ -393,12 +411,10 @@ public class CommandWorkflow extends AbstractWorkflow {
         addStep(indexOfStep(step), newStep);
 
         // Add the copy dependency
-        newStep.addDependency(newStep.getWorkflowInputPorts().getFirstPort(),
-            dependencyOutputPort);
+        newStep.addDependency(newStep.getWorkflowInputPorts().getFirstPort(), dependencyOutputPort);
 
         // Add the step dependency
-        step.addDependency(inputPort,
-            newStep.getWorkflowOutputPorts().getFirstPort());
+        step.addDependency(inputPort, newStep.getWorkflowOutputPorts().getFirstPort());
 
       } else {
 
@@ -412,6 +428,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   /**
    * Create a new step that copy/(un)compress input data of a step.
+   *
    * @param workflow workflow where adding the step
    * @param inputPort input port
    * @param inputCompression compression format of the data to read
@@ -420,7 +437,8 @@ public class CommandWorkflow extends AbstractWorkflow {
    * @throws EoulsanException if an error occurs while creating the step
    */
   private static CommandStep newInputFormatCopyStep(
-      final CommandWorkflow workflow, final StepInputPort inputPort,
+      final CommandWorkflow workflow,
+      final StepInputPort inputPort,
       final CompressionType inputCompression,
       final EnumSet<CompressionType> outputCompressionsAllowed)
       throws EoulsanException {
@@ -454,23 +472,34 @@ public class CommandWorkflow extends AbstractWorkflow {
 
     // Set parameters
     final Set<Parameter> parameters = new HashSet<>();
-    parameters.add(new Parameter(CopyInputDataModule.FORMAT_PARAMETER,
-        inputPort.getFormat().getName()));
-    parameters.add(new Parameter(
-        CopyInputDataModule.OUTPUT_COMPRESSION_PARAMETER, comp.name()));
     parameters.add(
-        new Parameter(CopyInputDataModule.OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER,
+        new Parameter(CopyInputDataModule.FORMAT_PARAMETER, inputPort.getFormat().getName()));
+    parameters.add(new Parameter(CopyInputDataModule.OUTPUT_COMPRESSION_PARAMETER, comp.name()));
+    parameters.add(
+        new Parameter(
+            CopyInputDataModule.OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER,
             CopyInputDataModule.encodeAllowedCompressionsParameterValue(
                 outputCompressionsAllowed)));
 
     // Get outputDirectory
     final DataFile outputDirectory =
-        StepOutputDirectory.getInstance().workingDirectory(workflow,
-            inputPort.getStep(), inputPort.getStep().getModule());
+        StepOutputDirectory.getInstance()
+            .workingDirectory(workflow, inputPort.getStep(), inputPort.getStep().getModule());
 
     // Create step
-    CommandStep step = new CommandStep(workflow, stepId, stepName, null,
-        parameters, false, DiscardOutput.ASAP, -1, -1, "", outputDirectory);
+    CommandStep step =
+        new CommandStep(
+            workflow,
+            stepId,
+            stepName,
+            null,
+            parameters,
+            false,
+            DiscardOutput.ASAP,
+            -1,
+            -1,
+            "",
+            outputDirectory);
 
     // Configure step
     step.configure();
@@ -480,14 +509,14 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   /**
    * Create a new step that copy output data of a step.
+   *
    * @param workflow workflow where adding the step
    * @param outputPorts output ports where data must be copied
    * @return a new step
    * @throws EoulsanException if an error occurs while creating the step
    */
   private static List<CommandStep> newOutputFormatCopyStep(
-      final CommandWorkflow workflow, final StepOutputPorts outputPorts)
-      throws EoulsanException {
+      final CommandWorkflow workflow, final StepOutputPorts outputPorts) throws EoulsanException {
 
     final List<CommandStep> result = new ArrayList<>();
 
@@ -512,19 +541,29 @@ public class CommandWorkflow extends AbstractWorkflow {
 
       // Set parameters
       final Set<Parameter> parameters = new HashSet<>();
-      parameters.add(new Parameter(CopyOutputDataModule.PORTS_PARAMETER,
-          outputPort.getName()));
-      parameters.add(new Parameter(CopyOutputDataModule.FORMATS_PARAMETER,
-          outputPort.getFormat().getName()));
+      parameters.add(new Parameter(CopyOutputDataModule.PORTS_PARAMETER, outputPort.getName()));
+      parameters.add(
+          new Parameter(CopyOutputDataModule.FORMATS_PARAMETER, outputPort.getFormat().getName()));
 
       // Get outputDirectory
       final DataFile outputDirectory =
-          StepOutputDirectory.getInstance().workflowDirectory(workflow,
-              outputPort.getStep(), outputPort.getStep().getModule());
+          StepOutputDirectory.getInstance()
+              .workflowDirectory(workflow, outputPort.getStep(), outputPort.getStep().getModule());
 
       // Create step
-      CommandStep step = new CommandStep(workflow, stepId, stepName, null,
-          parameters, false, DiscardOutput.NO, -1, -1, "", outputDirectory);
+      CommandStep step =
+          new CommandStep(
+              workflow,
+              stepId,
+              stepName,
+              null,
+              parameters,
+              false,
+              DiscardOutput.NO,
+              -1,
+              -1,
+              "",
+              outputDirectory);
 
       // Configure step
       step.configure();
@@ -537,6 +576,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   /**
    * Add user defined dependencies.
+   *
    * @throws EoulsanException if an error occurs while setting dependencies
    */
   private void addManualDependencies() throws EoulsanException {
@@ -550,8 +590,7 @@ public class CommandWorkflow extends AbstractWorkflow {
     // Use a copy of this.step as new new steps can be added
     for (CommandStep toStep : Lists.newArrayList(this.steps)) {
 
-      final Map<String, StepPort> inputs =
-          this.workflowCommand.getStepInputs(toStep.getId());
+      final Map<String, StepPort> inputs = this.workflowCommand.getStepInputs(toStep.getId());
 
       for (Map.Entry<String, StepPort> e : inputs.entrySet()) {
 
@@ -564,27 +603,26 @@ public class CommandWorkflow extends AbstractWorkflow {
 
         // Check if fromStep step exists
         if (fromStep == null) {
-          throw new EoulsanException(
-              "No workflow step found with id: " + fromStepId);
+          throw new EoulsanException("No workflow step found with id: " + fromStepId);
         }
 
         // Check if the fromPort exists
         if (!fromStep.getWorkflowOutputPorts().contains(fromPortName)) {
-          throw new EoulsanException("No port with name \""
-              + fromPortName + "\" found for step with id: "
-              + fromStep.getId());
+          throw new EoulsanException(
+              "No port with name \""
+                  + fromPortName
+                  + "\" found for step with id: "
+                  + fromStep.getId());
         }
 
         // Check if the toPort exists
         if (!toStep.getWorkflowInputPorts().contains(toPortName)) {
-          throw new EoulsanException("No port with name \""
-              + toPortName + "\" found for step with id: " + toStep.getId());
+          throw new EoulsanException(
+              "No port with name \"" + toPortName + "\" found for step with id: " + toStep.getId());
         }
 
-        final StepOutputPort fromPort =
-            fromStep.getWorkflowOutputPorts().getPort(fromPortName);
-        final StepInputPort toPort =
-            toStep.getWorkflowInputPorts().getPort(toPortName);
+        final StepOutputPort fromPort = fromStep.getWorkflowOutputPorts().getPort(fromPortName);
+        final StepInputPort toPort = toStep.getWorkflowInputPorts().getPort(toPortName);
 
         addDependency(toPort, fromPort);
       }
@@ -593,6 +631,7 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   /**
    * Search dependency between steps.
+   *
    * @throws EoulsanException if an error occurs while search dependencies
    */
   private void searchDependencies() throws EoulsanException {
@@ -604,13 +643,14 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   /**
    * Search dependency between steps.
+   *
    * @param generatorAdded generator added
    * @param lastStepWithoutOutput last step without output
    * @throws EoulsanException if an error occurs while search dependencies
    */
   private void searchDependencies(
-      final Map<DataFormat, CommandStep> generatorAdded,
-      final CommandStep lastStepWithoutOutput) throws EoulsanException {
+      final Map<DataFormat, CommandStep> generatorAdded, final CommandStep lastStepWithoutOutput)
+      throws EoulsanException {
 
     final List<CommandStep> steps = this.steps;
     CommandStep currentLastStepWithoutOutput = lastStepWithoutOutput;
@@ -620,8 +660,7 @@ public class CommandWorkflow extends AbstractWorkflow {
       final CommandStep step = steps.get(i);
 
       // If step is a generator, move the step just after the checker
-      if (step.getType() == StepType.GENERATOR_STEP
-          && !generatorAdded.containsValue(step)) {
+      if (step.getType() == StepType.GENERATOR_STEP && !generatorAdded.containsValue(step)) {
 
         // Move step just after the checker step
         final int generatorIndex = indexOfStep(step);
@@ -629,18 +668,16 @@ public class CommandWorkflow extends AbstractWorkflow {
         this.steps.add(indexOfStep(getCheckerStep()) + 1, step);
 
         if (step.getOutputPorts().isEmpty()) {
-          throw new EoulsanException("Step \""
-              + step.getId() + "\" is a generator but not generate anything.");
+          throw new EoulsanException(
+              "Step \"" + step.getId() + "\" is a generator but not generate anything.");
         }
 
         if (step.getOutputPorts().size() > 1) {
-          throw new EoulsanException("Step \""
-              + step.getId()
-              + "\" is a generator but generate more than one format.");
+          throw new EoulsanException(
+              "Step \"" + step.getId() + "\" is a generator but generate more than one format.");
         }
 
-        generatorAdded.put(step.getOutputPorts().getFirstPort().getFormat(),
-            step);
+        generatorAdded.put(step.getOutputPorts().getFirstPort().getFormat(), step);
 
         searchDependencies(generatorAdded, currentLastStepWithoutOutput);
         return;
@@ -682,18 +719,18 @@ public class CommandWorkflow extends AbstractWorkflow {
 
         // Check if more than one input have the same type
         int formatCount = 0;
-        for (StepInputPort p : step.getWorkflowInputPorts()
-            .getPortsWithDataFormat(format)) {
+        for (StepInputPort p : step.getWorkflowInputPorts().getPortsWithDataFormat(format)) {
           if (!p.isLinked()) {
             formatCount++;
           }
         }
         if (formatCount > 1) {
-          throw new EoulsanException("Step \""
-              + step.getId()
-              + "\" contains more than one of port of the same format ("
-              + format
-              + "). Please manually define all inputs for this ports.");
+          throw new EoulsanException(
+              "Step \""
+                  + step.getId()
+                  + "\" contains more than one of port of the same format ("
+                  + format
+                  + "). Please manually define all inputs for this ports.");
         }
 
         boolean found = false;
@@ -704,8 +741,8 @@ public class CommandWorkflow extends AbstractWorkflow {
           final CommandStep stepTested = steps.get(j);
 
           // Test each port
-          for (StepOutputPort outputPort : stepTested.getWorkflowOutputPorts()
-              .getPortsWithDataFormat(format)) {
+          for (StepOutputPort outputPort :
+              stepTested.getWorkflowOutputPorts().getPortsWithDataFormat(format)) {
 
             // The tested step is a standard/generator step
             if (stepTested.getType() == StepType.STANDARD_STEP
@@ -755,14 +792,18 @@ public class CommandWorkflow extends AbstractWorkflow {
             if (step.getType() == StepType.GENERATOR_STEP) {
 
               // Swap generators order
-              Collections.swap(this.steps, indexOfStep(step),
-                  indexOfStep(generatorAdded.get(format)));
+              Collections.swap(
+                  this.steps, indexOfStep(step), indexOfStep(generatorAdded.get(format)));
               searchDependencies(generatorAdded, currentLastStepWithoutOutput);
               return;
             }
 
-            throw new EoulsanException("Cannot found input data format \""
-                + format.getName() + "\" for step " + step.getId() + ".");
+            throw new EoulsanException(
+                "Cannot found input data format \""
+                    + format.getName()
+                    + "\" for step "
+                    + step.getId()
+                    + ".");
           }
         }
       }
@@ -788,8 +829,8 @@ public class CommandWorkflow extends AbstractWorkflow {
     for (CommandStep step : Lists.newArrayList(this.steps)) {
 
       if (step.getDiscardOutput().isCopyResultsToOutput()
-          && !step.getStepOutputDirectory().equals(
-              dispatcher.workflowDirectory(this, step, step.getModule()))
+          && !step.getStepOutputDirectory()
+              .equals(dispatcher.workflowDirectory(this, step, step.getModule()))
           && !step.getWorkflowOutputPorts().isEmpty()) {
 
         final List<CommandStep> newSteps =
@@ -802,11 +843,9 @@ public class CommandWorkflow extends AbstractWorkflow {
           addStep(indexOfStep(step) + 1, newStep);
 
           // Add the copy dependencies
-          final StepInputPort newStepInputPort =
-              newStep.getWorkflowInputPorts().getFirstPort();
-          newStep.addDependency(newStepInputPort, step.getWorkflowOutputPorts()
-              .getPort(newStepInputPort.getName()));
-
+          final StepInputPort newStepInputPort = newStep.getWorkflowInputPorts().getFirstPort();
+          newStep.addDependency(
+              newStepInputPort, step.getWorkflowOutputPorts().getPort(newStepInputPort.getName()));
         }
       }
     }
@@ -815,19 +854,22 @@ public class CommandWorkflow extends AbstractWorkflow {
     for (CommandStep step : this.steps) {
       for (StepInputPort inputPort : step.getWorkflowInputPorts()) {
         if (!inputPort.isLinked()) {
-          throw new EoulsanException("The \""
-              + inputPort.getName() + "\" port ("
-              + inputPort.getFormat().getName() + " format) of step \""
-              + inputPort.getStep().getId() + "\" is not linked");
+          throw new EoulsanException(
+              "The \""
+                  + inputPort.getName()
+                  + "\" port ("
+                  + inputPort.getFormat().getName()
+                  + " format) of step \""
+                  + inputPort.getStep().getId()
+                  + "\" is not linked");
         }
       }
     }
   }
 
   /**
-   * For all the steps with the @RequiresAllPreviousStep annotation add as
-   * dependencies all the previous steps that are not a dependency of another
-   * step.
+   * For all the steps with the @RequiresAllPreviousStep annotation add as dependencies all the
+   * previous steps that are not a dependency of another step.
    */
   private void searchAllPreviousStepsDependencies() {
 
@@ -863,11 +905,11 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   /**
    * Search all the connected dependencies of a step.
+   *
    * @param step the step
    * @param steps a set with all the dependencies
    */
-  private void searchIndirectDependencies(final AbstractStep step,
-      Set<AbstractStep> steps) {
+  private void searchIndirectDependencies(final AbstractStep step, Set<AbstractStep> steps) {
 
     for (AbstractStep s : step.getStepStateDependencies().getRequiredSteps()) {
 
@@ -882,10 +924,7 @@ public class CommandWorkflow extends AbstractWorkflow {
   // Convert S3 URL methods
   //
 
-  /**
-   * Convert the S3 URLs to S3N URLs in source, genome and annotation fields of
-   * the design.
-   */
+  /** Convert the S3 URLs to S3N URLs in source, genome and annotation fields of the design. */
   private void convertDesignS3URLs() {
 
     final Design design = getDesign();
@@ -893,13 +932,11 @@ public class CommandWorkflow extends AbstractWorkflow {
     for (Sample s : design.getSamples()) {
 
       // Convert read file URL
-      final List<String> readsSources =
-          Lists.newArrayList(s.getMetadata().getReads());
+      final List<String> readsSources = Lists.newArrayList(s.getMetadata().getReads());
       for (int i = 0; i < readsSources.size(); i++) {
         readsSources.set(i, convertS3URL(readsSources.get(i)));
       }
       s.getMetadata().setReads(readsSources);
-
     }
 
     final DesignMetadata dmd = design.getMetadata();
@@ -916,14 +953,13 @@ public class CommandWorkflow extends AbstractWorkflow {
 
     // Convert additional annotation file URL
     if (dmd.containsAdditionalAnnotationFile()) {
-      dmd.setAdditionalAnnotationFile(
-          convertS3URL(dmd.getAdditionalAnnotationFile()));
+      dmd.setAdditionalAnnotationFile(convertS3URL(dmd.getAdditionalAnnotationFile()));
     }
-
   }
 
   /**
    * Convert a s3:// URL to a s3n:// URL
+   *
    * @param url input URL
    * @return converted URL
    */
@@ -946,8 +982,8 @@ public class CommandWorkflow extends AbstractWorkflow {
       }
 
       // Create a shortcut link to the current job directory
-      final DataFile latest = new DataFile(jobDir.getParent(),
-          Globals.APP_NAME_LOWER_CASE + LATEST_SUFFIX);
+      final DataFile latest =
+          new DataFile(jobDir.getParent(), Globals.APP_NAME_LOWER_CASE + LATEST_SUFFIX);
       try {
 
         if (latest.exists()) {
@@ -955,21 +991,19 @@ public class CommandWorkflow extends AbstractWorkflow {
         }
         new DataFile(jobDir.getName()).symlink(latest);
       } catch (IOException e) {
-        EoulsanLogger.getLogger().severe(
-            "Cannot create the new shortcut to the jod directory: " + latest);
+        EoulsanLogger.getLogger()
+            .severe("Cannot create the new shortcut to the jod directory: " + latest);
       }
 
       // Save workflow file
-      BufferedWriter writer = FileUtils.createBufferedWriter(
-          new DataFile(jobDir, WORKFLOW_COPY_FILENAME).create());
+      BufferedWriter writer =
+          FileUtils.createBufferedWriter(new DataFile(jobDir, WORKFLOW_COPY_FILENAME).create());
       writer.write(this.workflowCommand.toXML());
       writer.close();
 
     } catch (IOException | EoulsanRuntimeException e) {
-      throw new EoulsanException(
-          "Error while writing workflow file: " + e.getMessage(), e);
+      throw new EoulsanException("Error while writing workflow file: " + e.getMessage(), e);
     }
-
   }
 
   //
@@ -978,18 +1012,20 @@ public class CommandWorkflow extends AbstractWorkflow {
 
   /**
    * Public constructor.
+   *
    * @param executionArguments execution arguments
-   * @param workflowCommand Command object with the content of the parameter
-   *          file
+   * @param workflowCommand Command object with the content of the parameter file
    * @param firstSteps optional steps to add at the beginning of the workflow
    * @param endSteps optional steps to add at the end of the workflow
    * @param design Design to use with the workflow
-   * @throws EoulsanException if the creation of the CommandWorkflow object
-   *           fails
+   * @throws EoulsanException if the creation of the CommandWorkflow object fails
    */
-  public CommandWorkflow(final ExecutorArguments executionArguments,
-      final CommandWorkflowModel workflowCommand, final List<Module> firstSteps,
-      final List<Module> endSteps, final Design design)
+  public CommandWorkflow(
+      final ExecutorArguments executionArguments,
+      final CommandWorkflowModel workflowCommand,
+      final List<Module> firstSteps,
+      final List<Module> endSteps,
+      final Design design)
       throws EoulsanException {
 
     super(executionArguments, design);
@@ -1034,5 +1070,4 @@ public class CommandWorkflow extends AbstractWorkflow {
     // Search others input format sources
     searchDependencies();
   }
-
 }

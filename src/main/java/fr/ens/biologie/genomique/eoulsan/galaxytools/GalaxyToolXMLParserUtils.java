@@ -25,29 +25,26 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools;
 
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElementFactory.newToolElement;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import com.google.common.base.Splitter;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ConditionalToolElement;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.DataToolElement;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElement;
 import fr.ens.biologie.genomique.kenetre.util.XMLUtils;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
- * This class define static utils methods to extract data in Galaxy tool XML
- * file.
+ * This class define static utils methods to extract data in Galaxy tool XML file.
+ *
  * @author Sandrine Perrin
  * @since 2.0
  */
@@ -94,6 +91,7 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Extract parameter elements.
+   *
    * @param toolInfo the ToolInfo object
    * @param parent the parent
    * @param elementName the element name
@@ -109,6 +107,7 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Extract parameter elements.
+   *
    * @param toolInfo the ToolInfo object
    * @param parent the parent
    * @param elementName the element name
@@ -117,14 +116,16 @@ public final class GalaxyToolXMLParserUtils {
    * @throws EoulsanException the Eoulsan exception
    */
   public static Map<String, ToolElement> extractParamElement(
-      final ToolInfo toolInfo, final Element parent, final String elementName,
-      final Map<String, Parameter> stepParameters) throws EoulsanException {
+      final ToolInfo toolInfo,
+      final Element parent,
+      final String elementName,
+      final Map<String, Parameter> stepParameters)
+      throws EoulsanException {
 
     final Map<String, ToolElement> results = new HashMap<>();
 
     // Extract all param tag
-    final List<Element> simpleParams =
-        extractChildElementsByTagName(parent, elementName);
+    final List<Element> simpleParams = extractChildElementsByTagName(parent, elementName);
 
     for (final Element param : simpleParams) {
       final ToolElement toolElement = newToolElement(toolInfo, param);
@@ -139,12 +140,14 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Set the tool element value.
+   *
    * @param toolElement tool element
    * @param stepParameters step parameters
    * @throws EoulsanException if an error occurs while setting the value
    */
-  public static void setElementValue(final ToolElement toolElement,
-      final Map<String, Parameter> stepParameters) throws EoulsanException {
+  public static void setElementValue(
+      final ToolElement toolElement, final Map<String, Parameter> stepParameters)
+      throws EoulsanException {
 
     if (!(toolElement instanceof DataToolElement)) {
 
@@ -164,6 +167,7 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Extract conditional param element.
+   *
    * @param toolInfo tool info object
    * @param parent the parent
    * @return the map
@@ -177,6 +181,7 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Extract conditional param element.
+   *
    * @param toolInfo tool info object
    * @param parent the parent
    * @param stepParameters the step parameters
@@ -184,18 +189,17 @@ public final class GalaxyToolXMLParserUtils {
    * @throws EoulsanException the Eoulsan exception
    */
   public static Map<String, ToolElement> extractConditionalParamElement(
-      final ToolInfo toolInfo, final Element parent,
-      final Map<String, Parameter> stepParameters) throws EoulsanException {
+      final ToolInfo toolInfo, final Element parent, final Map<String, Parameter> stepParameters)
+      throws EoulsanException {
 
     final Map<String, ToolElement> results = new HashMap<>();
 
     // Extract conditional element, can be empty
-    final List<Element> condParams = GalaxyToolXMLParserUtils
-        .extractChildElementsByTagName(parent, CONDITIONAL);
+    final List<Element> condParams =
+        GalaxyToolXMLParserUtils.extractChildElementsByTagName(parent, CONDITIONAL);
 
     for (final Element param : condParams) {
-      final ConditionalToolElement tce =
-          new ConditionalToolElement(toolInfo, param);
+      final ConditionalToolElement tce = new ConditionalToolElement(toolInfo, param);
 
       final ToolElement parameterSelect = tce.getToolElementSelected();
       results.put(parameterSelect.getName(), parameterSelect);
@@ -211,19 +215,21 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Extract elements by tag name.
+   *
    * @param toolInfo tool info object
    * @param doc the doc
    * @param tagName the tag name
    * @return the list
    * @throws EoulsanException the Eoulsan exception
    */
-  public static List<Element> extractElementsByTagName(final ToolInfo toolInfo,
-      final Document doc, final String tagName) throws EoulsanException {
+  public static List<Element> extractElementsByTagName(
+      final ToolInfo toolInfo, final Document doc, final String tagName) throws EoulsanException {
     return extractElementsByTagName(toolInfo, doc, tagName, -1);
   }
 
   /**
    * Extract elements by tag name.
+   *
    * @param toolInfo ToolInfo object
    * @param doc the doc
    * @param tagName the tag name
@@ -231,8 +237,8 @@ public final class GalaxyToolXMLParserUtils {
    * @return the list
    * @throws EoulsanException the Eoulsan exception
    */
-  public static List<Element> extractElementsByTagName(final ToolInfo toolInfo,
-      final Document doc, final String tagName, final int expectedCount)
+  public static List<Element> extractElementsByTagName(
+      final ToolInfo toolInfo, final Document doc, final String tagName, final int expectedCount)
       throws EoulsanException {
 
     final List<Element> result = XMLUtils.getElementsByTagName(doc, tagName);
@@ -240,15 +246,19 @@ public final class GalaxyToolXMLParserUtils {
     // Expected count available
     if (expectedCount > 0) {
       if (result.isEmpty()) {
-        throw new EoulsanException(
-            "Parsing tool XML file: no " + tagName + " tag found.");
+        throw new EoulsanException("Parsing tool XML file: no " + tagName + " tag found.");
       }
 
       if (result.size() != expectedCount) {
-        throw newEoulsanException(toolInfo,
+        throw newEoulsanException(
+            toolInfo,
             "invalid entry count found in \""
-                + tagName + "\" tag (expected " + expectedCount + " found "
-                + result.size() + ")");
+                + tagName
+                + "\" tag (expected "
+                + expectedCount
+                + " found "
+                + result.size()
+                + ")");
       }
     }
 
@@ -261,57 +271,65 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Create an EoulsanException.
+   *
    * @param toolInfo toolInfo object
    * @param message error message
    * @return a new EoulsanException
    * @throws EoulsanException in any case
    */
-  public static EoulsanException newEoulsanException(final ToolInfo toolInfo,
-      final String message) throws EoulsanException {
+  public static EoulsanException newEoulsanException(final ToolInfo toolInfo, final String message)
+      throws EoulsanException {
 
-    return new EoulsanException("Error while parsing \""
-        + toolInfo.getToolSource() + "\" Galaxy tool file: " + message);
+    return new EoulsanException(
+        "Error while parsing \"" + toolInfo.getToolSource() + "\" Galaxy tool file: " + message);
   }
 
   /**
    * Create an EoulsanException.
+   *
    * @param toolInfo toolInfo object
    * @param parameterName parameter name
    * @param message error message
    * @return a new EoulsanException
    * @throws EoulsanException in any case
    */
-  public static EoulsanException newEoulsanException(final ToolInfo toolInfo,
-      final String parameterName, final String message)
+  public static EoulsanException newEoulsanException(
+      final ToolInfo toolInfo, final String parameterName, final String message)
       throws EoulsanException {
 
-    return new EoulsanException("Error while parsing \""
-        + parameterName + "\" parameter of the \"" + toolInfo.getToolSource()
-        + "\" Galaxy tool file: " + message);
+    return new EoulsanException(
+        "Error while parsing \""
+            + parameterName
+            + "\" parameter of the \""
+            + toolInfo.getToolSource()
+            + "\" Galaxy tool file: "
+            + message);
   }
 
   /**
    * Extract elements by tag name.
+   *
    * @param parent the parent
    * @param tagName the tag name
    * @return the list
    * @throws EoulsanException the Eoulsan exception
    */
-  public static List<Element> extractElementsByTagName(final Element parent,
-      final String tagName) throws EoulsanException {
+  public static List<Element> extractElementsByTagName(final Element parent, final String tagName)
+      throws EoulsanException {
     return extractElementsByTagName(parent, tagName, -1);
   }
 
   /**
    * Extract elements by tag name.
+   *
    * @param parent the parent
    * @param tagName the tag name
    * @param expectedCount the expected count
    * @return the list
    * @throws EoulsanException the Eoulsan exception
    */
-  public static List<Element> extractElementsByTagName(final Element parent,
-      final String tagName, final int expectedCount) throws EoulsanException {
+  public static List<Element> extractElementsByTagName(
+      final Element parent, final String tagName, final int expectedCount) throws EoulsanException {
 
     final List<Element> result =
         GalaxyToolXMLParserUtils.extractChildElementsByTagName(parent, tagName);
@@ -319,14 +337,18 @@ public final class GalaxyToolXMLParserUtils {
     // Expected count available
     if (expectedCount > 0) {
       if (result.isEmpty()) {
-        throw new EoulsanException(
-            "Parsing tool XML file: no " + tagName + " tag found.");
+        throw new EoulsanException("Parsing tool XML file: no " + tagName + " tag found.");
       }
 
       if (result.size() != expectedCount) {
-        throw new EoulsanException("Parsing tool XML file: tag "
-            + tagName + " invalid entry count found (expected " + expectedCount
-            + " founded " + result.size() + ".");
+        throw new EoulsanException(
+            "Parsing tool XML file: tag "
+                + tagName
+                + " invalid entry count found (expected "
+                + expectedCount
+                + " founded "
+                + result.size()
+                + ".");
       }
     }
 
@@ -339,6 +361,7 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Extract child elements by tag name.
+   *
    * @param parentElement the parent element
    * @param elementName the element name
    * @return the list
@@ -362,8 +385,7 @@ public final class GalaxyToolXMLParserUtils {
       final Node node = nStepsList.item(i);
 
       // Check element found
-      if (node == null)
-        continue;
+      if (node == null) continue;
 
       if (node.getNodeType() == Node.ELEMENT_NODE) {
         final Element e = (Element) node;
@@ -383,52 +405,48 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Extract all output parameters define in document.
+   *
    * @param toolInfo the tool information
    * @param doc document represented tool xml
    * @param stepParameters parameters for analysis
    * @return all output parameters
    * @throws EoulsanException if none output parameter found
    */
-  public static Map<String, ToolElement> extractOutputs(final ToolInfo toolInfo,
-      final Document doc, final Map<String, Parameter> stepParameters)
+  public static Map<String, ToolElement> extractOutputs(
+      final ToolInfo toolInfo, final Document doc, final Map<String, Parameter> stepParameters)
       throws EoulsanException {
 
     final Map<String, ToolElement> results = new HashMap<>();
 
-    final Element outputElement =
-        extractElementsByTagName(toolInfo, doc, OUTPUTS_TAG, 1).get(0);
+    final Element outputElement = extractElementsByTagName(toolInfo, doc, OUTPUTS_TAG, 1).get(0);
 
-    results.putAll(
-        extractParamElement(toolInfo, outputElement, DATA_TAG, stepParameters));
+    results.putAll(extractParamElement(toolInfo, outputElement, DATA_TAG, stepParameters));
 
-    results.putAll(extractConditionalParamElement(toolInfo, outputElement,
-        stepParameters));
+    results.putAll(extractConditionalParamElement(toolInfo, outputElement, stepParameters));
 
     return results;
   }
 
   /**
    * Extract all input parameters define in document.
+   *
    * @param toolInfo the tool information
    * @param doc document represented tool xml
    * @param stepParameters parameters for analysis
    * @return all input parameters
    * @throws EoulsanException if none input parameter found
    */
-  public static Map<String, ToolElement> extractInputs(final ToolInfo toolInfo,
-      final Document doc, final Map<String, Parameter> stepParameters)
+  public static Map<String, ToolElement> extractInputs(
+      final ToolInfo toolInfo, final Document doc, final Map<String, Parameter> stepParameters)
       throws EoulsanException {
 
     final Map<String, ToolElement> results = new HashMap<>();
 
-    final Element inputElement =
-        extractElementsByTagName(toolInfo, doc, INPUTS_TAG, 1).get(0);
+    final Element inputElement = extractElementsByTagName(toolInfo, doc, INPUTS_TAG, 1).get(0);
 
-    results.putAll(
-        extractParamElement(toolInfo, inputElement, PARAM_TAG, stepParameters));
+    results.putAll(extractParamElement(toolInfo, inputElement, PARAM_TAG, stepParameters));
 
-    results.putAll(
-        extractConditionalParamElement(toolInfo, inputElement, stepParameters));
+    results.putAll(extractConditionalParamElement(toolInfo, inputElement, stepParameters));
 
     // Extract input
     return results;
@@ -436,6 +454,7 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Extract command tag in string.
+   *
    * @param doc document represented tool xml
    * @return command string
    */
@@ -445,6 +464,7 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Extract interpreter attribute in string.
+   *
    * @param doc document represented tool xml
    * @return interpreter names
    */
@@ -452,8 +472,10 @@ public final class GalaxyToolXMLParserUtils {
 
     List<String> result = new ArrayList<>();
 
-    for (String s : Splitter.on(',').trimResults()
-        .split(extractValueFromElement(doc, COMMAND_TAG, 0, INTERPRETER_TAG))) {
+    for (String s :
+        Splitter.on(',')
+            .trimResults()
+            .split(extractValueFromElement(doc, COMMAND_TAG, 0, INTERPRETER_TAG))) {
       result.add(s);
     }
 
@@ -462,6 +484,7 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Extract docker image attribute in string.
+   *
    * @param doc document represented tool xml
    * @return the docker image name
    */
@@ -471,6 +494,7 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Extract description tag in string.
+   *
    * @param doc document represented tool xml
    * @return description
    */
@@ -480,6 +504,7 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Extract tool version attribute in string.
+   *
    * @param doc document represented tool xml
    * @return tool version string
    */
@@ -490,6 +515,7 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Extract tool name tag in string.
+   *
    * @param doc document represented tool xml
    * @return tool name string
    */
@@ -500,6 +526,7 @@ public final class GalaxyToolXMLParserUtils {
 
   /**
    * Extract tool id tag in string.
+   *
    * @param doc document represented tool xml
    * @return tool id string
    */
@@ -509,18 +536,18 @@ public final class GalaxyToolXMLParserUtils {
   }
 
   /**
-   * Extract text from DOM from tag name, at the index place. If attribute name
-   * defined return value attribute, otherwise return content text of element.
+   * Extract text from DOM from tag name, at the index place. If attribute name defined return value
+   * attribute, otherwise return content text of element.
+   *
    * @param doc document represented tool xml
    * @param elementName element name to extract
    * @param index index of element name to extract
    * @param attributeName attribute name from element name to extract
-   * @return value corresponding to element name content or attribute of element
-   *         name. Return null, if none corresponding element or attribute
-   *         found.
+   * @return value corresponding to element name content or attribute of element name. Return null,
+   *     if none corresponding element or attribute found.
    */
-  public static String extractValueFromElement(final Document doc,
-      final String elementName, final int index, final String attributeName) {
+  public static String extractValueFromElement(
+      final Document doc, final String elementName, final int index, final String attributeName) {
 
     // List element
     final List<Element> e = XMLUtils.getElementsByTagName(doc, elementName);
@@ -542,5 +569,4 @@ public final class GalaxyToolXMLParserUtils {
     // Return value of attribute
     return e.get(index).getAttribute(attributeName);
   }
-
 }

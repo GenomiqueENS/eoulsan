@@ -26,6 +26,9 @@ package fr.ens.biologie.genomique.eoulsan.design;
 
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.MoreObjects;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -34,13 +37,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import com.google.common.base.MoreObjects;
-
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.kenetre.util.StringUtils;
-
 /**
  * This abstract class defines methods for metadata.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -87,17 +86,16 @@ public abstract class AbstractMetadata implements Metadata, Serializable {
     requireNonNull(value, "value argument cannot be null");
 
     switch (value.size()) {
+      case 0:
+        set(key, "");
+        break;
 
-    case 0:
-      set(key, "");
-      break;
+      case 1:
+        set(key, value.get(0));
+        break;
 
-    case 1:
-      set(key, value.get(0));
-      break;
-
-    default:
-      set(key, StringUtils.serializeStringArray(value));
+      default:
+        set(key, StringUtils.serializeStringArray(value));
     }
   }
 
@@ -168,8 +166,7 @@ public abstract class AbstractMetadata implements Metadata, Serializable {
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this)
-        .add("metadata", this.metadata).toString();
+    return MoreObjects.toStringHelper(this).add("metadata", this.metadata).toString();
   }
 
   @Override
@@ -193,5 +190,4 @@ public abstract class AbstractMetadata implements Metadata, Serializable {
 
     return Objects.equals(this.metadata, that.metadata);
   }
-
 }

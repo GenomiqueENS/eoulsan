@@ -26,9 +26,8 @@ package fr.ens.biologie.genomique.eoulsan.core;
 
 /**
  * This interface define a group of input ports.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
-public interface InputPorts extends Ports<InputPort> {
-
-}
+public interface InputPorts extends Ports<InputPort> {}

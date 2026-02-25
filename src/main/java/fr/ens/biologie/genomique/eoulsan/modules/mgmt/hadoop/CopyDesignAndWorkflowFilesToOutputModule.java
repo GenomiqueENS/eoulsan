@@ -26,13 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.modules.mgmt.hadoop;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
-import java.io.IOException;
-import java.util.Set;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -43,14 +36,20 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan1DesignWriter;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.PathUtils;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.IOException;
+import java.util.Set;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 
 /**
  * This module copy design and workflow file to output directory.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -85,15 +84,14 @@ public class CopyDesignAndWorkflowFilesToOutputModule extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     this.conf = CommonHadoop.createConfiguration(EoulsanRuntime.getSettings());
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     final Configuration conf = this.conf;
 
@@ -102,8 +100,7 @@ public class CopyDesignAndWorkflowFilesToOutputModule extends AbstractModule {
     final Path outputPath = new Path(context.getOutputDirectory().getSource());
 
     final Path outputDesignPath = new Path(outputPath, designPath.getName());
-    final Path outputWorkflowPath =
-        new Path(outputPath, workflowPath.getName());
+    final Path outputWorkflowPath = new Path(outputPath, workflowPath.getName());
 
     // Copy design file
     try {
@@ -112,8 +109,7 @@ public class CopyDesignAndWorkflowFilesToOutputModule extends AbstractModule {
         final FileSystem outputDesignFs = outputDesignPath.getFileSystem(conf);
 
         final Design design = context.getWorkflow().getDesign();
-        new Eoulsan1DesignWriter(outputDesignFs.create(outputDesignPath))
-            .write(design);
+        new Eoulsan1DesignWriter(outputDesignFs.create(outputDesignPath)).write(design);
       }
     } catch (IOException e) {
       getLogger().severe("Unable to copy design file to output path.");
@@ -130,5 +126,4 @@ public class CopyDesignAndWorkflowFilesToOutputModule extends AbstractModule {
 
     return status.createTaskResult();
   }
-
 }

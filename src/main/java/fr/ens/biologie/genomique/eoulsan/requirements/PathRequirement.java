@@ -28,15 +28,15 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static fr.ens.biologie.genomique.kenetre.util.SystemUtils.searchExecutableInPATH;
 import static java.util.Objects.requireNonNull;
 
-import java.util.Collections;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Progress;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * This class define a executable requirement.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -60,17 +60,15 @@ public class PathRequirement extends AbstractRequirement {
     for (Parameter p : parameters) {
 
       switch (p.getName()) {
+        case EXECUTABLE_NAME_PARAMETER:
+          this.executableName = p.getValue();
+          break;
 
-      case EXECUTABLE_NAME_PARAMETER:
-        this.executableName = p.getValue();
-        break;
-
-      default:
-        super.configure(Collections.singleton(p));
-        break;
+        default:
+          super.configure(Collections.singleton(p));
+          break;
       }
     }
-
   }
 
   @Override
@@ -101,6 +99,7 @@ public class PathRequirement extends AbstractRequirement {
 
   /**
    * Create a new mandatory executable requirement.
+   *
    * @param executableName the executable name
    * @return a new PathRequirement object
    */
@@ -111,16 +110,16 @@ public class PathRequirement extends AbstractRequirement {
 
   /**
    * Create a new executable requirement.
+   *
    * @param executableName the executable name
    * @param optional true if the executable is a mandatory requirement
    * @return a new PathRequirement object
    */
-  public static Requirement newPathRequirement(final String executableName,
-      final boolean optional) {
+  public static Requirement newPathRequirement(
+      final String executableName, final boolean optional) {
 
     requireNonNull(executableName, "executableName argument cannot be null");
-    checkArgument(!executableName.trim().isEmpty(),
-        "executableName argument cannot be empty");
+    checkArgument(!executableName.trim().isEmpty(), "executableName argument cannot be empty");
 
     final PathRequirement result = new PathRequirement();
 
@@ -139,5 +138,4 @@ public class PathRequirement extends AbstractRequirement {
   public String toString() {
     return "Executable in PATH: " + this.executableName;
   }
-
 }

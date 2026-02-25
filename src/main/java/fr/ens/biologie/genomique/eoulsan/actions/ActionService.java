@@ -24,13 +24,13 @@
 
 package fr.ens.biologie.genomique.eoulsan.actions;
 
+import fr.ens.biologie.genomique.kenetre.util.ServiceNameLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.ens.biologie.genomique.kenetre.util.ServiceNameLoader;
-
 /**
  * This class define a service to retrieve an Action
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -44,6 +44,7 @@ public class ActionService extends ServiceNameLoader<Action> {
 
   /**
    * Retrieve the singleton static instance of an ActionService.
+   *
    * @return A ActionService instance
    */
   public static synchronized ActionService getInstance() {
@@ -77,6 +78,7 @@ public class ActionService extends ServiceNameLoader<Action> {
 
   /**
    * Get the list of actions available.
+   *
    * @return a list with all the available actions
    */
   public List<Action> getActions() {
@@ -94,12 +96,9 @@ public class ActionService extends ServiceNameLoader<Action> {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
+  /** Private constructor. */
   protected ActionService() {
 
     super(Action.class);
   }
-
 }

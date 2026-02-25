@@ -24,24 +24,21 @@
 
 package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
-import java.util.Objects;
-
-import org.w3c.dom.Element;
-
 import com.google.common.base.Splitter;
-
 import fr.ens.biologie.genomique.eoulsan.core.Naming;
+import java.util.Objects;
+import org.w3c.dom.Element;
 
 /**
  * This class define an abstract tool element.
+ *
  * @author Sandrine Perrin
  * @since 2.0
  */
 public abstract class AbstractToolElement implements ToolElement {
 
   /** SPLITTER. */
-  protected final static Splitter COMMA =
-      Splitter.on(',').trimResults().omitEmptyStrings();
+  protected static final Splitter COMMA = Splitter.on(',').trimResults().omitEmptyStrings();
 
   /** Data from attribute param tag. */
   private final String shortName;
@@ -67,6 +64,7 @@ public abstract class AbstractToolElement implements ToolElement {
 
   /**
    * Checks if is optional.
+   *
    * @return the boolean
    */
   public Boolean isOptional() {
@@ -75,6 +73,7 @@ public abstract class AbstractToolElement implements ToolElement {
 
   /**
    * Gets the label.
+   *
    * @return the label
    */
   public String getLabel() {
@@ -83,6 +82,7 @@ public abstract class AbstractToolElement implements ToolElement {
 
   /**
    * Gets the help.
+   *
    * @return the help
    */
   public String getHelp() {
@@ -91,6 +91,7 @@ public abstract class AbstractToolElement implements ToolElement {
 
   /**
    * Gets the short name.
+   *
    * @return the short name
    */
   @Override
@@ -110,6 +111,7 @@ public abstract class AbstractToolElement implements ToolElement {
 
   /**
    * Gets the type.
+   *
    * @return the type
    */
   public String getType() {
@@ -119,16 +121,24 @@ public abstract class AbstractToolElement implements ToolElement {
   @Override
   public String toString() {
     return "ParameterToolGalaxy [name="
-        + this.shortName + ", type=" + this.type + ", isOptional="
-        + this.isOptional + ", label=" + this.label + ", help=" + this.help
-        + ", parameterEoulsan=" + getValue() + "]";
+        + this.shortName
+        + ", type="
+        + this.type
+        + ", isOptional="
+        + this.isOptional
+        + ", label="
+        + this.label
+        + ", help="
+        + this.help
+        + ", parameterEoulsan="
+        + getValue()
+        + "]";
   }
 
   @Override
   public int hashCode() {
 
-    return Objects.hash(this.help, this.isOptional, this.label, this.shortName,
-        this.type);
+    return Objects.hash(this.help, this.isOptional, this.label, this.shortName, this.type);
   }
 
   @Override
@@ -171,6 +181,7 @@ public abstract class AbstractToolElement implements ToolElement {
   //
   /**
    * Instantiates a new abstract tool element.
+   *
    * @param param the parameter
    */
   public AbstractToolElement(final Element param) {
@@ -179,6 +190,7 @@ public abstract class AbstractToolElement implements ToolElement {
 
   /**
    * Instantiates a new abstract tool element.
+   *
    * @param param the parameter
    * @param nameSpace the name space
    */
@@ -191,7 +203,6 @@ public abstract class AbstractToolElement implements ToolElement {
       this.name = this.shortName;
     } else {
       this.name = nameSpace + SEP + this.shortName;
-
     }
 
     this.type = param.getAttribute("type");
@@ -202,5 +213,4 @@ public abstract class AbstractToolElement implements ToolElement {
     this.label = param.getAttribute("label");
     this.help = param.getAttribute("help");
   }
-
 }

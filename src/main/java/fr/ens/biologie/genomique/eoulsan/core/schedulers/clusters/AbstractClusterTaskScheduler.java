@@ -32,6 +32,15 @@ import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_JOB_ID;
 import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_RESULT_EXTENSION;
 import static java.util.Objects.requireNonNull;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Main;
+import fr.ens.biologie.genomique.eoulsan.actions.ClusterTaskAction;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.schedulers.AbstractTaskScheduler;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResultImpl;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskRunner;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,18 +55,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.Main;
-import fr.ens.biologie.genomique.eoulsan.actions.ClusterTaskAction;
-import fr.ens.biologie.genomique.eoulsan.core.Step;
-import fr.ens.biologie.genomique.eoulsan.core.schedulers.AbstractTaskScheduler;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResultImpl;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskRunner;
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
-
 /**
  * This class is a scheduler for task running on a cluster.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -67,12 +67,9 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
   private static final int STATUS_UPDATE_DELAY = 1000;
 
   private final Queue<TaskThread> queue = new LinkedBlockingQueue<>();
-  private final StatusUpdateWaitingQueue statusUpdateQueue =
-      new StatusUpdateWaitingQueue();
+  private final StatusUpdateWaitingQueue statusUpdateQueue = new StatusUpdateWaitingQueue();
 
-  /**
-   * This class define a waiting queue for status update queries.
-   */
+  /** This class define a waiting queue for status update queries. */
   private static class StatusUpdateWaitingQueue {
 
     private final BlockingQueue<TaskThread> queue = new LinkedBlockingDeque<>();
@@ -95,9 +92,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
     }
   }
 
-  /**
-   * This class allow to fetch standard output or standard error.
-   */
+  /** This class allow to fetch standard output or standard error. */
   public static final class ProcessThreadOutput extends Thread {
 
     final InputStream in;
@@ -115,6 +110,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
 
     /**
      * Constructor.
+     *
      * @param in Input stream
      * @param out Output Stream
      */
@@ -127,6 +123,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
 
   /**
    * Wrapper class around a call to executeTask methods.
+   *
    * @author Laurent Jourdren
    */
   private final class TaskThread extends Thread {
@@ -138,22 +135,21 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
 
     /**
      * Create the Eoulsan command to submit.
+     *
      * @return a list with the arguments of the command to submit
      * @throws IOException if an error occurs while creating the process
      */
     private List<String> createJobCommand() throws IOException {
 
       // Define the file for the task context
-      final Path taskContextFile =
-          this.taskDir.resolve(this.taskPrefix + TASK_CONTEXT_EXTENSION);
+      final Path taskContextFile = this.taskDir.resolve(this.taskPrefix + TASK_CONTEXT_EXTENSION);
 
       // Serialize the context object
       this.context.serialize(taskContextFile);
 
       final List<String> command = new ArrayList<>();
 
-      final Path eoulsanScriptFile =
-          Path.of(Main.getInstance().getEoulsanScriptPath());
+      final Path eoulsanScriptFile = Path.of(Main.getInstance().getEoulsanScriptPath());
       command.add(eoulsanScriptFile.toAbsolutePath().toString());
 
       // Force the usage of the current JRE by the submitted task
@@ -179,6 +175,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
 
     /**
      * Get the job name.
+     *
      * @return the job name
      */
     private String getJobName() {
@@ -188,6 +185,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
 
     /**
      * Load the result of the step
+     *
      * @return a TaskResult object
      * @throws EoulsanException if the done task is not found
      * @throws IOException if an error occurs while reading the result file
@@ -195,18 +193,18 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
     private TaskResultImpl loadResult() throws EoulsanException, IOException {
 
       // Define the file for the task done
-      final Path taskDoneFile =
-          this.taskDir.resolve(this.taskPrefix + TASK_DONE_EXTENSION);
+      final Path taskDoneFile = this.taskDir.resolve(this.taskPrefix + TASK_DONE_EXTENSION);
 
       if (!Files.exists(taskDoneFile)) {
-        throw new EoulsanException("No done file found for task #"
-            + this.context.getId() + " in step "
-            + getStep(this.context).getId());
+        throw new EoulsanException(
+            "No done file found for task #"
+                + this.context.getId()
+                + " in step "
+                + getStep(this.context).getId());
       }
 
       // Define the file for the task result
-      final Path taskResultFile =
-          this.taskDir.resolve(this.taskPrefix + TASK_RESULT_EXTENSION);
+      final Path taskResultFile = this.taskDir.resolve(this.taskPrefix + TASK_RESULT_EXTENSION);
       // Load output data objects
       this.context.deserializeOutputData(
           this.taskDir.resolve(this.taskPrefix + TASK_DATA_EXTENSION));
@@ -216,13 +214,13 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
 
     /**
      * Create a file with the identifier of the submitted job.
+     *
      * @throws IOException if an error occurs while submitting the file
      */
     private void createJobIdFile() throws IOException {
 
       // Define the file for the job id
-      final Path taskResultFile =
-          this.taskDir.resolve(this.taskPrefix + TASK_JOB_ID);
+      final Path taskResultFile = this.taskDir.resolve(this.taskPrefix + TASK_JOB_ID);
 
       Files.writeString(taskResultFile, this.jobId);
     }
@@ -239,12 +237,17 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
 
         final File taskFile = this.context.getTaskOutputDirectory().toFile();
         final int requiredMemory = getRequiredMemory();
-        final int requiredProcessors =
-            this.context.getCurrentStep().getRequiredProcessors();
+        final int requiredProcessors = this.context.getCurrentStep().getRequiredProcessors();
 
         // Submit Job
-        this.jobId = submitJob(getJobName(), createJobCommand(), taskFile,
-            this.context.getId(), requiredMemory, requiredProcessors);
+        this.jobId =
+            submitJob(
+                getJobName(),
+                createJobCommand(),
+                taskFile,
+                this.context.getId(),
+                requiredMemory,
+                requiredProcessors);
 
         // Create a file with the id of the submitted job
         createJobIdFile();
@@ -261,24 +264,27 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
           status = statusJob(this.jobId);
 
           switch (status.getStatusValue()) {
+            case COMPLETE:
+              completed = true;
+              break;
 
-          case COMPLETE:
-            completed = true;
-            break;
-
-          case WAITING:
-          case RUNNING:
-          case UNKNOWN:
-          default:
-            break;
+            case WAITING:
+            case RUNNING:
+            case UNKNOWN:
+            default:
+              break;
           }
 
         } while (!completed);
 
         if (status.getExitCode() != 0) {
-          throw new EoulsanException("Invalid task exit code: "
-              + status.getExitCode() + " for task #" + this.context.getId()
-              + " in step " + getStep(this.context).getId());
+          throw new EoulsanException(
+              "Invalid task exit code: "
+                  + status.getExitCode()
+                  + " for task #"
+                  + this.context.getId()
+                  + " in step "
+                  + getStep(this.context).getId());
         }
 
         // Load result
@@ -293,10 +299,14 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
 
         // Fall back if result is null
         if (result == null) {
-          result = TaskRunner.createStepResult(this.context,
-              new IllegalStateException("Result is null for task #"
-                  + this.context.getId() + " in step "
-                  + getStep(this.context).getId()));
+          result =
+              TaskRunner.createStepResult(
+                  this.context,
+                  new IllegalStateException(
+                      "Result is null for task #"
+                          + this.context.getId()
+                          + " in step "
+                          + getStep(this.context).getId()));
         }
 
         // Change task state
@@ -309,6 +319,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
 
     /**
      * Get the required memory for the step
+     *
      * @return the required memory for the step
      */
     private int getRequiredMemory() {
@@ -328,9 +339,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
       return Main.getInstance().getEoulsanMemory();
     }
 
-    /**
-     * Stop the thread.
-     */
+    /** Stop the thread. */
     public void stopThread() {
 
       if (this.jobId != null) {
@@ -338,8 +347,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
         try {
           stopJob(this.jobId);
         } catch (IOException e) {
-          getLogger().severe(
-              "Error while stopping job " + this.jobId + ": " + e.getMessage());
+          getLogger().severe("Error while stopping job " + this.jobId + ": " + e.getMessage());
         }
       }
     }
@@ -350,6 +358,7 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
 
     /**
      * Constructor.
+     *
      * @param context context to execute
      */
     TaskThread(final TaskContextImpl context) {
@@ -396,5 +405,4 @@ public abstract class AbstractClusterTaskScheduler extends AbstractTaskScheduler
 
     this.queue.clear();
   }
-
 }

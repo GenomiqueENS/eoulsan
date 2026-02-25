@@ -27,6 +27,10 @@ package fr.ens.biologie.genomique.eoulsan.core.schedulers;
 import static com.google.common.base.Preconditions.checkArgument;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResultImpl;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,18 +40,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
-import fr.ens.biologie.genomique.eoulsan.core.Step;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResultImpl;
-
 /**
  * This class define a muti thread scheduler.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class MultiThreadTaskScheduler extends AbstractTaskScheduler
-    implements Runnable {
+public class MultiThreadTaskScheduler extends AbstractTaskScheduler implements Runnable {
 
   private static final int SLEEP_TIME_IN_MS = 500;
   private static final int WAIT_SHUTDOWN_MINUTES = 60;
@@ -57,6 +56,7 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
 
   /**
    * Wrapper class around a call to executeTask methods.
+   *
    * @author Laurent Jourdren
    */
   private final class TaskThread implements Runnable {
@@ -98,26 +98,28 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
 
         this.e = e;
       }
-
     }
 
     public void fail(final boolean cancel) {
 
       final long endTime = System.currentTimeMillis();
 
-      final Throwable exception = this.e != null
-          ? this.e
-          : new EoulsanRuntimeException("Task #"
-              + context.getId() + "has failed without exception, cancel="
-              + cancel);
+      final Throwable exception =
+          this.e != null
+              ? this.e
+              : new EoulsanRuntimeException(
+                  "Task #" + context.getId() + "has failed without exception, cancel=" + cancel);
 
-      final TaskResultImpl result = new TaskResultImpl(this.context,
-          Instant.ofEpochMilli(this.submissionTime),
-          Instant.ofEpochMilli(endTime), endTime - this.submissionTime,
-          exception, exception.getMessage());
+      final TaskResultImpl result =
+          new TaskResultImpl(
+              this.context,
+              Instant.ofEpochMilli(this.submissionTime),
+              Instant.ofEpochMilli(endTime),
+              endTime - this.submissionTime,
+              exception,
+              exception.getMessage());
 
       afterExecuteTask(this.context, result);
-
     }
 
     //
@@ -126,6 +128,7 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
 
     /**
      * Constructor.
+     *
      * @param context context to execute
      */
     TaskThread(final TaskContextImpl context) {
@@ -145,8 +148,7 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
     final TaskThread st = new TaskThread(context);
 
     // Get the number of required processors
-    final int requiredProcessors =
-        context.getCurrentStep().getRequiredProcessors();
+    final int requiredProcessors = context.getCurrentStep().getRequiredProcessors();
 
     // Submit the context thread the thread executor
     synchronized (this.threads) {
@@ -231,9 +233,12 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
             threadsToRemove.add(ftt);
 
           } catch (InterruptedException | ExecutionException e) {
-            getLogger().severe("Unexcepted exception in "
-                + this.getClass().getSimpleName() + ".run(): "
-                + e.getMessage());
+            getLogger()
+                .severe(
+                    "Unexcepted exception in "
+                        + this.getClass().getSimpleName()
+                        + ".run(): "
+                        + e.getMessage());
           }
         }
       }
@@ -265,6 +270,7 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
 
   /**
    * Constructor.
+   *
    * @param threadNumber number of thread to use by the task scheduler
    */
   public MultiThreadTaskScheduler(final int threadNumber) {
@@ -274,5 +280,4 @@ public class MultiThreadTaskScheduler extends AbstractTaskScheduler
     // Create executor service
     this.executor = new PausableThreadPoolExecutor(threadNumber);
   }
-
 }

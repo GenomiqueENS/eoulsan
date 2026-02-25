@@ -24,6 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.util.locker;
 
+import fr.ens.biologie.genomique.kenetre.util.Utils;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -35,10 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.kenetre.util.Utils;
-
 /**
  * This class define a server for the scheduler.
+ *
  * @since 1.1
  * @author Laurent Jourdren
  */
@@ -64,7 +64,6 @@ public class TicketSchedulerServer implements TicketScheduler {
     }
 
     synchronized (this.tickets) {
-
       if (this.tickets.containsKey(ticket)) {
 
         final Ticket t = this.tickets.get(ticket);
@@ -89,7 +88,6 @@ public class TicketSchedulerServer implements TicketScheduler {
     }
 
     synchronized (this.tickets) {
-
       if (ticket.equals(this.currentActive)) {
 
         this.tickets.remove(this.currentActive);
@@ -107,16 +105,14 @@ public class TicketSchedulerServer implements TicketScheduler {
 
       // Check for waiting dead ticket
       for (Ticket t : this.tickets.values()) {
-        if (!t.isWorking()
-            && currentTime > t.getLastActiveTime() + DEAD_TIME) {
+        if (!t.isWorking() && currentTime > t.getLastActiveTime() + DEAD_TIME) {
           this.toRemove.add(t);
         }
       }
 
       // Check for active ticket dead
       if (this.currentActive != null
-          && currentTime > this.currentActive.getLastActiveTime()
-              + MAX_WORKING_TIME) {
+          && currentTime > this.currentActive.getLastActiveTime() + MAX_WORKING_TIME) {
         this.toRemove.add(this.currentActive);
         this.currentActive = null;
       }
@@ -157,7 +153,6 @@ public class TicketSchedulerServer implements TicketScheduler {
       this.currentActive = list.get(0);
       this.currentActive.setWorking(true);
     }
-
   }
 
   //
@@ -179,8 +174,8 @@ public class TicketSchedulerServer implements TicketScheduler {
   // Server methods
   //
 
-  public static synchronized void newServer(final Set<Ticket> tickets,
-      final String lockerName, final int port) {
+  public static synchronized void newServer(
+      final Set<Ticket> tickets, final String lockerName, final int port) {
 
     // If the server already exists do nothing
     if (serverInstance != null) {
@@ -207,5 +202,4 @@ public class TicketSchedulerServer implements TicketScheduler {
       Utils.nop();
     }
   }
-
 }

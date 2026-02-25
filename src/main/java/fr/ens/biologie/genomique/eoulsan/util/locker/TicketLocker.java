@@ -38,8 +38,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * This class define a global locker using RMI messaging. TODO tune waiting
- * times
+ * This class define a global locker using RMI messaging. TODO tune waiting times
+ *
  * @since 1.1
  * @author Laurent Jourdren
  */
@@ -54,6 +54,7 @@ public class TicketLocker implements Locker {
 
   /**
    * Define the locker thread that wait the end of the lock.
+   *
    * @author Laurent Jourdren
    */
   private final class LockerThread implements Runnable {
@@ -76,8 +77,7 @@ public class TicketLocker implements Locker {
 
             // Safety: if ticket scheduler return one or zero ticket, the locker
             // ticket is allowed to work
-            if (this.tickets == null
-                || this.tickets.isEmpty() || this.tickets.size() == 1) {
+            if (this.tickets == null || this.tickets.isEmpty() || this.tickets.size() == 1) {
 
               this.ticket.setWorking(true);
               return;
@@ -105,9 +105,7 @@ public class TicketLocker implements Locker {
       }
     }
 
-    /**
-     * Stop the thread when release the lock.
-     */
+    /** Stop the thread when release the lock. */
     public void end() {
 
       final TicketScheduler stub = getStub();
@@ -120,34 +118,31 @@ public class TicketLocker implements Locker {
           startRMIServer(this.tickets);
         }
       }
-
     }
 
     /**
      * Private constructor.
+     *
      * @param ticket the ticket to wait
      */
     private LockerThread(final Ticket ticket) {
 
       this.ticket = ticket;
     }
-
   }
 
   /**
    * Get the stub of TicketScheduler.
+   *
    * @return a TicketScheduler object
    */
   private TicketScheduler getStub() {
 
     try {
       Registry registry = LocateRegistry.getRegistry(this.port);
-      return (TicketScheduler) registry
-          .lookup(RMI_SERVICE_PREFIX + this.lockerName);
+      return (TicketScheduler) registry.lookup(RMI_SERVICE_PREFIX + this.lockerName);
 
-    }
-
-    catch (IOException | NotBoundException e) {
+    } catch (IOException | NotBoundException e) {
       return null;
     }
   }
@@ -170,7 +165,6 @@ public class TicketLocker implements Locker {
     while (t.isAlive()) {
       silentSleep(1000);
     }
-
   }
 
   @Override
@@ -185,29 +179,29 @@ public class TicketLocker implements Locker {
 
   /**
    * Start a new RMI server.
-   * @param tickets a set with tickets to populate the TicketScheduler at
-   *          startup
+   *
+   * @param tickets a set with tickets to populate the TicketScheduler at startup
    */
   private void startRMIServer(final Set<Ticket> tickets) {
 
-    new Thread(() -> {
-      try {
-        LocateRegistry.createRegistry(TicketLocker.this.port);
-        TicketSchedulerServer.newServer(tickets, TicketLocker.this.lockerName,
-            TicketLocker.this.port);
+    new Thread(
+            () -> {
+              try {
+                LocateRegistry.createRegistry(TicketLocker.this.port);
+                TicketSchedulerServer.newServer(
+                    tickets, TicketLocker.this.lockerName, TicketLocker.this.port);
 
-        // TODO the server must be halted if no more tickets to process since
-        // several minutes
-        while (true) {
-          Thread.sleep(10000);
-        }
+                // TODO the server must be halted if no more tickets to process since
+                // several minutes
+                while (true) {
+                  Thread.sleep(10000);
+                }
 
-      } catch (InterruptedException | RemoteException e) {
-        // Do nothing if there is an exception
-      }
-
-    }).start();
-
+              } catch (InterruptedException | RemoteException e) {
+                // Do nothing if there is an exception
+              }
+            })
+        .start();
   }
 
   //
@@ -216,6 +210,7 @@ public class TicketLocker implements Locker {
 
   /**
    * Public constructor.
+   *
    * @param lockerName The name of the locker
    * @param port port to use
    */
@@ -226,12 +221,12 @@ public class TicketLocker implements Locker {
 
   /**
    * Public constructor.
+   *
    * @param lockerName The name of the locker
    * @param port port to use
    * @param description locker description
    */
-  public TicketLocker(final String lockerName, final int port,
-      final String description) {
+  public TicketLocker(final String lockerName, final int port, final String description) {
 
     this.lockerName = lockerName;
     this.port = port;
@@ -244,17 +239,19 @@ public class TicketLocker implements Locker {
 
   /**
    * Main method.
+   *
    * @param args command line arguments
    * @throws RemoteException if an error occurs while inspecting tickets
    * @throws MalformedURLException if the URL of the server is malformed
    */
-  public static void main(final String[] args)
-      throws RemoteException, MalformedURLException {
+  public static void main(final String[] args) throws RemoteException, MalformedURLException {
 
     if (args.length < 2) {
 
-      System.err.println("List current lock tickets\nSyntax: java "
-          + TicketLocker.class.getName() + " locker_name server_port");
+      System.err.println(
+          "List current lock tickets\nSyntax: java "
+              + TicketLocker.class.getName()
+              + " locker_name server_port");
       return;
     }
 
@@ -262,8 +259,7 @@ public class TicketLocker implements Locker {
     // for (String name : Naming.list("//localhost:" + args[1] + "/"))
     // System.out.println("\t" + name);
 
-    TicketLocker locker =
-        new TicketLocker(args[0], Integer.parseInt(args[1]), null);
+    TicketLocker locker = new TicketLocker(args[0], Integer.parseInt(args[1]), null);
 
     List<Ticket> tickets = new ArrayList<>(locker.getStub().getTickets(null));
     Collections.sort(tickets);
@@ -271,6 +267,5 @@ public class TicketLocker implements Locker {
     for (Ticket t : tickets) {
       System.out.println(t);
     }
-
   }
 }

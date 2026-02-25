@@ -36,8 +36,8 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 
 /**
- * This class define an InputFormat for FASTQ files for the Hadoop MapReduce
- * framework.
+ * This class define an InputFormat for FASTQ files for the Hadoop MapReduce framework.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -45,8 +45,7 @@ public class FastqInputFormat extends FileInputFormat<Text, Text> {
 
   @Override
   public RecordReader<Text, Text> createRecordReader(
-      final InputSplit inputSplit,
-      final TaskAttemptContext taskAttemptContext) {
+      final InputSplit inputSplit, final TaskAttemptContext taskAttemptContext) {
 
     return new FastqRecordReader(taskAttemptContext);
   }
@@ -63,5 +62,4 @@ public class FastqInputFormat extends FileInputFormat<Text, Text> {
 
     return codec instanceof SplittableCompressionCodec;
   }
-
 }

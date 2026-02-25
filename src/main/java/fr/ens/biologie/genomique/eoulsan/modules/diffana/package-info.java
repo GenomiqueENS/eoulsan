@@ -23,8 +23,8 @@
  */
 
 /**
- * This package contain all the classes related to the differential analysis
- * step.
+ * This package contain all the classes related to the differential analysis step.
+ *
  * @since 1.0
  */
 package fr.ens.biologie.genomique.eoulsan.modules.diffana;

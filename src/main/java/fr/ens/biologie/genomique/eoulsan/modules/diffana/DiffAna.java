@@ -24,11 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
@@ -38,21 +33,23 @@ import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class create and launch a R script to compute differential analysis.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  * @author Vivien Deshaies
  */
 public class DiffAna extends Normalization {
 
-  private static final String DISPERSION_ESTIMATION =
-      "/DESeq1/dispersionEstimation.Rnw";
-  private static final String ANADIFF_WITH_REFERENCE =
-      "/DESeq1/anadiffWithReference.Rnw";
-  private static final String ANADIFF_WITHOUT_REFERENCE =
-      "/DESeq1/anadiffWithoutReference.Rnw";
+  private static final String DISPERSION_ESTIMATION = "/DESeq1/dispersionEstimation.Rnw";
+  private static final String ANADIFF_WITH_REFERENCE = "/DESeq1/anadiffWithReference.Rnw";
+  private static final String ANADIFF_WITHOUT_REFERENCE = "/DESeq1/anadiffWithoutReference.Rnw";
 
   // dispersion estimation parameters
   private DispersionMethod dispEstMethod;
@@ -62,17 +59,17 @@ public class DiffAna extends Normalization {
   //
   // enums
   //
-  /**
-   * Dispersion estimation method enum for DESeq differential analysis
-   */
+  /** Dispersion estimation method enum for DESeq differential analysis */
   public enum DispersionMethod {
-
-    POOLED("pooled"), PER_CONDITION("per-condition"), BLIND("blind");
+    POOLED("pooled"),
+    PER_CONDITION("per-condition"),
+    BLIND("blind");
 
     private final String name;
 
     /**
      * Get the dispersion estimation method
+     *
      * @return a string with the dispersion estimation method
      */
     public String getName() {
@@ -82,9 +79,9 @@ public class DiffAna extends Normalization {
 
     /**
      * Get the Dispersion estimation method form its name
+     *
      * @param name dispersion estimation method name
-     * @return a DispersionMethod or null if no DispersionMethod found for the
-     *         name
+     * @return a DispersionMethod or null if no DispersionMethod found for the name
      */
     public static DispersionMethod getDispEstMethodFromName(final String name) {
 
@@ -106,26 +103,26 @@ public class DiffAna extends Normalization {
 
     /**
      * Constructor
+     *
      * @param method dispersion estimation method
      */
     DispersionMethod(final String method) {
 
       this.name = method;
     }
-
   }
 
-  /**
-   * Dispersion estimation sharingMode enum for DESeq differential analysis
-   */
+  /** Dispersion estimation sharingMode enum for DESeq differential analysis */
   public enum DispersionSharingMode {
-
-    FIT_ONLY("fit-only"), MAXIMUM("maximum"), GENE_EST_ONLY("gene-est-only");
+    FIT_ONLY("fit-only"),
+    MAXIMUM("maximum"),
+    GENE_EST_ONLY("gene-est-only");
 
     private final String name;
 
     /**
      * Get the dispersion estimation sharingMode name
+     *
      * @return a string with the dispersion estimation sharingMode name
      */
     public String getName() {
@@ -135,12 +132,11 @@ public class DiffAna extends Normalization {
 
     /**
      * Get the Dispersion estimation sharing mode form its name
+     *
      * @param name dispersion estimation sharing mode name
-     * @return a DispersionSharingMode or null if no DispersionSharingMode found
-     *         for the name
+     * @return a DispersionSharingMode or null if no DispersionSharingMode found for the name
      */
-    public static DispersionSharingMode getDispEstSharingModeFromName(
-        final String name) {
+    public static DispersionSharingMode getDispEstSharingModeFromName(final String name) {
 
       if (name == null) {
         return null;
@@ -160,26 +156,25 @@ public class DiffAna extends Normalization {
 
     /**
      * Constructor
+     *
      * @param name dispersion estimation sharingMode name
      */
     DispersionSharingMode(final String name) {
 
       this.name = name;
     }
-
   }
 
-  /**
-   * Dispersion estimation fitType enum for DESeq differential analysis
-   */
+  /** Dispersion estimation fitType enum for DESeq differential analysis */
   public enum DispersionFitType {
-
-    PARAMETRIC("parametric"), LOCAL("local");
+    PARAMETRIC("parametric"),
+    LOCAL("local");
 
     private final String name;
 
     /**
      * Get the dispersion estimation fitType name
+     *
      * @return a string with the dispersion estimation fitType name
      */
     public String getName() {
@@ -189,12 +184,11 @@ public class DiffAna extends Normalization {
 
     /**
      * Get the Dispersion estimation fit type form its name
+     *
      * @param name dispersion estimation fit type name
-     * @return a DispersionFitType or null if no DispersionFitType found for the
-     *         name
+     * @return a DispersionFitType or null if no DispersionFitType found for the name
      */
-    public static DispersionFitType getDispEstFitTypeFromName(
-        final String name) {
+    public static DispersionFitType getDispEstFitTypeFromName(final String name) {
 
       if (name == null) {
         return null;
@@ -214,6 +208,7 @@ public class DiffAna extends Normalization {
 
     /**
      * Constructor
+     *
      * @param name dispersion estimation fitType name
      */
     DispersionFitType(final String name) {
@@ -227,8 +222,8 @@ public class DiffAna extends Normalization {
   //
 
   @Override
-  protected String generateScript(final Experiment experiment,
-      final TaskContext context) throws EoulsanException {
+  protected String generateScript(final Experiment experiment, final TaskContext context)
+      throws EoulsanException {
 
     final String comparison = experiment.getMetadata().getComparisons();
 
@@ -256,8 +251,8 @@ public class DiffAna extends Normalization {
       }
 
       if ("".equals(condition)) {
-        throw new EoulsanException("No value for condition in sample: "
-            + s.getName() + " (" + s.getId() + ")");
+        throw new EoulsanException(
+            "No value for condition in sample: " + s.getName() + " (" + s.getId() + ")");
       }
 
       final String repTechGroup = DesignUtils.getRepTechGroup(experiment, s);
@@ -285,12 +280,10 @@ public class DiffAna extends Normalization {
     checkRepTechGroupCoherence(rRepTechGroup, rCondNames);
 
     // Create Rnw script stringbuilder with preamble
-    String pdfTitle =
-        escapeUnderScore(experiment.getName()) + " differential analysis";
+    String pdfTitle = escapeUnderScore(experiment.getName()) + " differential analysis";
     String filePrefix = "diffana_" + escapeUnderScore(experiment.getName());
 
-    final StringBuilder sb =
-        generateRnwpreamble(experiment.getSamples(), pdfTitle, filePrefix);
+    final StringBuilder sb = generateRnwpreamble(experiment.getSamples(), pdfTitle, filePrefix);
 
     /*
      * Replace "na" values of repTechGroup by unique sample ids to avoid pooling
@@ -355,12 +348,11 @@ public class DiffAna extends Normalization {
       }
     }
 
+    dispersionEstimation = dispersionEstimation.replace("${METHOD}", this.dispEstMethod.getName());
     dispersionEstimation =
-        dispersionEstimation.replace("${METHOD}", this.dispEstMethod.getName());
-    dispersionEstimation = dispersionEstimation.replace("${SHARINGMODE}",
-        this.dispEstSharingMode.getName());
-    dispersionEstimation = dispersionEstimation.replace("${FITTYPE}",
-        this.dispEstFitType.getName());
+        dispersionEstimation.replace("${SHARINGMODE}", this.dispEstSharingMode.getName());
+    dispersionEstimation =
+        dispersionEstimation.replace("${FITTYPE}", this.dispEstFitType.getName());
 
     // Add dispersion estimation part to stringbuilder
     sb.append(dispersionEstimation);
@@ -402,8 +394,7 @@ public class DiffAna extends Normalization {
     } else {
       anadiffPart = readStaticScript(ANADIFF_WITHOUT_REFERENCE);
     }
-    anadiffPart =
-        anadiffPart.replace("${METHOD}", this.dispEstMethod.getName());
+    anadiffPart = anadiffPart.replace("${METHOD}", this.dispEstMethod.getName());
     sb.append(anadiffPart);
 
     // end document
@@ -418,6 +409,7 @@ public class DiffAna extends Normalization {
 
   /**
    * Determine if there is biological replicates in an experiment
+   *
    * @param conditionsMap map of the conditions
    * @param rCondNames r condition names
    * @param rRepTechGroup replicate tech group
@@ -425,7 +417,8 @@ public class DiffAna extends Normalization {
    */
   private boolean isBiologicalReplicates(
       final Map<String, List<Integer>> conditionsMap,
-      final List<String> rCondNames, final List<String> rRepTechGroup) {
+      final List<String> rCondNames,
+      final List<String> rRepTechGroup) {
 
     for (String condition : rCondNames) {
       List<Integer> condPos = conditionsMap.get(condition);
@@ -443,6 +436,7 @@ public class DiffAna extends Normalization {
 
   /**
    * Test if there is reference in an experiment
+   *
    * @param experiment the experiment
    * @return boolean isRef
    */
@@ -488,11 +482,12 @@ public class DiffAna extends Normalization {
 
   /**
    * Add the reference to R script if there is one
+   *
    * @param experiment the experiment
    * @param sb the StringBuilder to append
    */
-  private void writeReferenceField(final Experiment experiment,
-      final StringBuilder sb) throws EoulsanException {
+  private void writeReferenceField(final Experiment experiment, final StringBuilder sb)
+      throws EoulsanException {
 
     // Get experiment reference if exists
     final String refExp = experiment.getMetadata().getReference();
@@ -501,41 +496,45 @@ public class DiffAna extends Normalization {
 
     for (ExperimentSample es : experiment.getExperimentSamples()) {
 
-      final int ref =
-          DesignUtils.referenceValueToInt(DesignUtils.getReference(es), refExp);
+      final int ref = DesignUtils.referenceValueToInt(DesignUtils.getReference(es), refExp);
 
       switch (ref) {
+        case -1:
+          throw new EoulsanException(
+              "Reference value lower than 0 and not handled by the Diffana step (sample: "
+                  + es.getSample().getId()
+                  + ")");
 
-      case -1:
-        throw new EoulsanException(
-            "Reference value lower than 0 and not handled by the Diffana step (sample: "
-                + es.getSample().getId() + ")");
+        case 0:
+          break;
 
-      case 0:
-        break;
+        case 1:
+          String newRefValue = DesignUtils.getCondition(es);
 
-      case 1:
-        String newRefValue = DesignUtils.getCondition(es);
+          if (newRefValue != null) {
+            newRefValue = newRefValue.trim();
 
-        if (newRefValue != null) {
-          newRefValue = newRefValue.trim();
+            if (refValue != null && !refValue.equals(newRefValue)) {
+              throw new EoulsanException(
+                  "Found a reference value ("
+                      + newRefValue
+                      + ") that is not the current reference value ("
+                      + refValue
+                      + ") in the Diffana step (sample: "
+                      + es.getSample().getId()
+                      + ")");
+            }
 
-          if (refValue != null && !refValue.equals(newRefValue)) {
-            throw new EoulsanException("Found a reference value ("
-                + newRefValue + ") that is not the current reference value ("
-                + refValue + ") in the Diffana step (sample: "
-                + es.getSample().getId() + ")");
+            refValue = newRefValue;
           }
 
-          refValue = newRefValue;
-        }
+          break;
 
-        break;
-
-      default:
-        throw new EoulsanException(
-            "Reference value greater than 1 and not handled by the Diffana step (sample: "
-                + es.getSample().getId() + ")");
+        default:
+          throw new EoulsanException(
+              "Reference value greater than 1 and not handled by the Diffana step (sample: "
+                  + es.getSample().getId()
+                  + ")");
       }
     }
 
@@ -553,23 +552,26 @@ public class DiffAna extends Normalization {
 
   /**
    * Public constructor.
+   *
    * @param executor executor to use to execute the differential analysis
    * @param design The design object
    * @param dispEstMethod dispersion estimation method
    * @param dispEstSharingMode dispersion estimation sharing mode
    * @param dispEstFitType dispersion estimation fit type
-   * @throws EoulsanException if an error occurs if connection to RServe server
-   *           cannot be established
+   * @throws EoulsanException if an error occurs if connection to RServe server cannot be
+   *     established
    */
-  public DiffAna(final RExecutor executor, final Design design,
+  public DiffAna(
+      final RExecutor executor,
+      final Design design,
       final DispersionMethod dispEstMethod,
       final DispersionSharingMode dispEstSharingMode,
-      final DispersionFitType dispEstFitType) throws EoulsanException {
+      final DispersionFitType dispEstFitType)
+      throws EoulsanException {
 
     super(executor, design);
 
-    if (dispEstMethod == null
-        || dispEstFitType == null || dispEstSharingMode == null) {
+    if (dispEstMethod == null || dispEstFitType == null || dispEstSharingMode == null) {
       throw new NullPointerException(
           "dispersion estimation fit type or method or sharing mode is null");
     } else {
@@ -577,7 +579,5 @@ public class DiffAna extends Normalization {
       this.dispEstFitType = dispEstFitType;
       this.dispEstSharingMode = dispEstSharingMode;
     }
-
   }
-
 }

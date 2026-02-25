@@ -1,14 +1,14 @@
 package fr.ens.biologie.genomique.eoulsan.data.protocols;
 
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
-
 /**
  * This class define a deprecated protocol.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -55,22 +55,23 @@ public abstract class DeprecatedDataProtocol extends AbstractDataProtocol {
   private void throwException() throws IOException {
 
     if (newName != null) {
-      throw new IOException("The \""
-          + getName() + "\" protocol is now deprecated. " + "Please use the \""
-          + newName + "\" protocol instead");
+      throw new IOException(
+          "The \""
+              + getName()
+              + "\" protocol is now deprecated. "
+              + "Please use the \""
+              + newName
+              + "\" protocol instead");
     }
 
-    throw new IOException(
-        "The \"" + getName() + "\" protocol is now deprecated.");
+    throw new IOException("The \"" + getName() + "\" protocol is now deprecated.");
   }
 
   //
   // Constructor
   //
 
-  /**
-   * Constructor.
-   */
+  /** Constructor. */
   protected DeprecatedDataProtocol() {
 
     this.newName = null;
@@ -78,6 +79,7 @@ public abstract class DeprecatedDataProtocol extends AbstractDataProtocol {
 
   /**
    * Constructor.
+   *
    * @param newName new protocol name.
    */
   protected DeprecatedDataProtocol(final String newName) {
@@ -88,5 +90,4 @@ public abstract class DeprecatedDataProtocol extends AbstractDataProtocol {
 
     this.newName = newName;
   }
-
 }

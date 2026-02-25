@@ -27,12 +27,12 @@ package fr.ens.biologie.genomique.eoulsan.io;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.apache.hadoop.mapreduce.Counter;
 
 /**
- * This class implements a FilterInputStream that inform Hadoop of the progress
- * of task using counters.
+ * This class implements a FilterInputStream that inform Hadoop of the progress of task using
+ * counters.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -50,8 +50,7 @@ public final class ProgressCounterInputStream extends FilterInputStream {
   }
 
   @Override
-  public final int read(final byte[] b, final int off, final int len)
-      throws IOException {
+  public final int read(final byte[] b, final int off, final int len) throws IOException {
 
     return incrementCounter(super.read(b, off, len));
   }
@@ -89,8 +88,7 @@ public final class ProgressCounterInputStream extends FilterInputStream {
   // Constructor
   //
 
-  public ProgressCounterInputStream(final InputStream is,
-      final Counter counter) {
+  public ProgressCounterInputStream(final InputStream is, final Counter counter) {
 
     super(is);
 
@@ -99,7 +97,5 @@ public final class ProgressCounterInputStream extends FilterInputStream {
     }
 
     this.counter = counter;
-
   }
-
 }

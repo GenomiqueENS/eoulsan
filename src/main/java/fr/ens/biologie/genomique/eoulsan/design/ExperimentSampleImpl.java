@@ -26,13 +26,13 @@ package fr.ens.biologie.genomique.eoulsan.design;
 
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.MoreObjects;
 import java.io.Serializable;
 import java.util.Objects;
 
-import com.google.common.base.MoreObjects;
-
 /**
  * This class defines the default implementation of the experiment sample.
+ *
  * @author Xavier Bauquet
  * @since 2.0
  */
@@ -42,8 +42,7 @@ public class ExperimentSampleImpl implements Serializable, ExperimentSample {
   private static final long serialVersionUID = -3180171254543892681L;
 
   private final Sample sample;
-  private final ExperimentSampleMetadataImpl metadata =
-      new ExperimentSampleMetadataImpl();
+  private final ExperimentSampleMetadataImpl metadata = new ExperimentSampleMetadataImpl();
 
   //
   // Getters
@@ -68,7 +67,8 @@ public class ExperimentSampleImpl implements Serializable, ExperimentSample {
 
     return MoreObjects.toStringHelper(this)
         .add("experimentSampleName", this.sample)
-        .add("experimentSampleMetadata", this.metadata).toString();
+        .add("experimentSampleMetadata", this.metadata)
+        .toString();
   }
 
   @Override
@@ -90,8 +90,7 @@ public class ExperimentSampleImpl implements Serializable, ExperimentSample {
 
     final ExperimentSampleImpl that = (ExperimentSampleImpl) o;
 
-    return Objects.equals(this.sample, that.sample)
-        && Objects.equals(this.metadata, that.metadata);
+    return Objects.equals(this.sample, that.sample) && Objects.equals(this.metadata, that.metadata);
   }
 
   //
@@ -99,6 +98,7 @@ public class ExperimentSampleImpl implements Serializable, ExperimentSample {
   //
   /**
    * Constructor.
+   *
    * @param sample the experiment sample
    */
   ExperimentSampleImpl(final Sample sample) {
@@ -107,5 +107,4 @@ public class ExperimentSampleImpl implements Serializable, ExperimentSample {
 
     this.sample = sample;
   }
-
 }

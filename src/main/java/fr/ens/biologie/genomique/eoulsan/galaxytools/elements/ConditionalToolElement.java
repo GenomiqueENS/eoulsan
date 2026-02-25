@@ -29,32 +29,30 @@ import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserU
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.setElementValue;
 import static fr.ens.biologie.genomique.kenetre.util.XMLUtils.getElementsByTagName;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.w3c.dom.Element;
-
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
 
 /**
  * This class define a conditional tool element.
+ *
  * @author Sandrine Perrin
  * @since 2.0
  */
 public class ConditionalToolElement implements ToolElement {
 
   /** The Constant TYPE. */
-  public final static String TYPE = "boolean";
+  public static final String TYPE = "boolean";
 
   /** The name space. */
   private final String nameSpace;
@@ -96,12 +94,12 @@ public class ConditionalToolElement implements ToolElement {
 
   @Override
   public String getValidatedName() {
-    throw new EoulsanRuntimeException(
-        "Name tool conditional can not be change.");
+    throw new EoulsanRuntimeException("Name tool conditional can not be change.");
   }
 
   /**
    * Gets the tool parameter selected.
+   *
    * @return the tool parameter selected
    */
   public ToolElement getToolElementSelected() {
@@ -110,6 +108,7 @@ public class ConditionalToolElement implements ToolElement {
 
   /**
    * Gets the tool parameters result.
+   *
    * @return the tool parameters result
    */
   public Map<String, ToolElement> getToolElementsResult() {
@@ -123,6 +122,7 @@ public class ConditionalToolElement implements ToolElement {
 
   /**
    * Test if the value has been set (if not the default value)
+   *
    * @return true if the value has been set
    */
   public boolean isSet() {
@@ -139,16 +139,15 @@ public class ConditionalToolElement implements ToolElement {
   //
 
   @Override
-  public void setValue(final String value) {
-  }
+  public void setValue(final String value) {}
 
   /**
    * Set the values.
+   *
    * @param stepParameters step parameters
    * @throws EoulsanException if an error occurs while setting the values
    */
-  public void setValues(final Map<String, Parameter> stepParameters)
-      throws EoulsanException {
+  public void setValues(final Map<String, Parameter> stepParameters) throws EoulsanException {
 
     setElementValue(this.toolElementSelected, stepParameters);
 
@@ -175,6 +174,7 @@ public class ConditionalToolElement implements ToolElement {
 
   /**
    * Parses the actions related options.
+   *
    * @param toolInfo the ToolInfo object
    * @param element the element
    * @return a multimap
@@ -219,9 +219,14 @@ public class ConditionalToolElement implements ToolElement {
   @Override
   public String toString() {
     return "ToolConditionalElement [name="
-        + this.nameSpace + ", toolParameterSelect=" + this.toolElementSelected
-        + ", options=" + this.actionsRelatedOptions + ", parameterEoulsan="
-        + this.getValue() + "]";
+        + this.nameSpace
+        + ", toolParameterSelect="
+        + this.toolElementSelected
+        + ", options="
+        + this.actionsRelatedOptions
+        + ", parameterEoulsan="
+        + this.getValue()
+        + "]";
   }
 
   //
@@ -230,6 +235,7 @@ public class ConditionalToolElement implements ToolElement {
 
   /**
    * Instantiates a new tool conditional element.
+   *
    * @param toolInfo the ToolInfo object
    * @param element the element
    * @throws EoulsanException the eoulsan exception
@@ -242,16 +248,19 @@ public class ConditionalToolElement implements ToolElement {
     final List<Element> param = extractChildElementsByTagName(element, "param");
 
     if (param.isEmpty() || param.size() != 1) {
-      throw newEoulsanException(toolInfo, getName(),
+      throw newEoulsanException(
+          toolInfo,
+          getName(),
           "no valid parameter element found. "
               + "Only 1 element must be found in conditional element (found:  "
-              + param.size() + ")");
+              + param.size()
+              + ")");
     }
 
     // Check element select exist
     if (!param.get(0).getAttribute("type").equals("select")) {
-      throw newEoulsanException(toolInfo, getName(),
-          "no parameter with \"select\" type found in conditional element");
+      throw newEoulsanException(
+          toolInfo, getName(), "no parameter with \"select\" type found in conditional element");
     }
 
     // Init parameter select
@@ -265,9 +274,7 @@ public class ConditionalToolElement implements ToolElement {
     }
 
     // Extract all case available
-    this.actionsRelatedOptions =
-        this.parseActionsRelatedOptions(toolInfo, element);
+    this.actionsRelatedOptions = this.parseActionsRelatedOptions(toolInfo, element);
     this.toolElementResult = new HashMap<>();
   }
-
 }

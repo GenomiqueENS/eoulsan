@@ -30,10 +30,6 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESU
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Map;
-
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
@@ -48,9 +44,13 @@ import fr.ens.biologie.genomique.kenetre.bio.io.CountsWriter;
 import fr.ens.biologie.genomique.kenetre.bio.io.TSVCountsWriter;
 import fr.ens.biologie.genomique.kenetre.util.LocalReporter;
 import fr.ens.biologie.genomique.kenetre.util.Reporter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * This class is the module to compute expression in local mode
+ *
  * @since 1.0
  * @author Laurent Jourdren
  * @author Claire Wallon
@@ -59,18 +59,17 @@ import fr.ens.biologie.genomique.kenetre.util.Reporter;
 public class ExpressionLocalModule extends AbstractExpressionModule {
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     try {
 
-      final Data featuresAnnotationData = context
-          .getInputData(isGTFInputFormat() ? ANNOTATION_GTF : ANNOTATION_GFF);
+      final Data featuresAnnotationData =
+          context.getInputData(isGTFInputFormat() ? ANNOTATION_GTF : ANNOTATION_GFF);
       final Data alignmentData = context.getInputData(MAPPER_RESULTS_SAM);
       final Data genomeDescriptionData = context.getInputData(GENOME_DESC_TXT);
-      final Data expressionData = context.getOutputData(
-          isSAMOutputFormat() ? MAPPER_RESULTS_SAM : EXPRESSION_RESULTS_TSV,
-          alignmentData);
+      final Data expressionData =
+          context.getOutputData(
+              isSAMOutputFormat() ? MAPPER_RESULTS_SAM : EXPRESSION_RESULTS_TSV, alignmentData);
 
       final ExpressionCounter counter = getExpressionCounter();
 
@@ -90,13 +89,20 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
       final DataFile expressionFile = expressionData.getDataFile();
 
       // Initialize the counter
-      ExpressionCounterUtils.init(counter, genomeDescFile, annotationFile,
-          isGTFInputFormat());
+      ExpressionCounterUtils.init(counter, genomeDescFile, annotationFile, isGTFInputFormat());
 
-      final String sampleCounterHeader = "Expression computation with "
-          + counter.getName() + " (" + alignmentData.getName() + ", "
-          + alignmentFile.getName() + ", " + annotationFile.getName() + ", "
-          + counter.toString() + ")";
+      final String sampleCounterHeader =
+          "Expression computation with "
+              + counter.getName()
+              + " ("
+              + alignmentData.getName()
+              + ", "
+              + alignmentFile.getName()
+              + ", "
+              + annotationFile.getName()
+              + ", "
+              + counter.toString()
+              + ")";
 
       status.setDescription(sampleCounterHeader);
 
@@ -104,19 +110,22 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
 
       if (isSAMOutputFormat()) {
 
-        result = counter.count(alignmentFile.open(), expressionFile.create(),
-            context.getLocalTempDirectory(), reporter, COUNTER_GROUP);
+        result =
+            counter.count(
+                alignmentFile.open(),
+                expressionFile.create(),
+                context.getLocalTempDirectory(),
+                reporter,
+                COUNTER_GROUP);
       } else {
         // Launch counting
-        result = ExpressionCounterUtils.count(counter, alignmentFile, reporter,
-            COUNTER_GROUP);
+        result = ExpressionCounterUtils.count(counter, alignmentFile, reporter, COUNTER_GROUP);
 
         // Add features with zero count
         counter.addZeroCountFeatures(result);
 
         // Save result
-        try (CountsWriter writer =
-            new TSVCountsWriter(expressionFile.create())) {
+        try (CountsWriter writer = new TSVCountsWriter(expressionFile.create())) {
           writer.write(result);
         }
       }
@@ -126,17 +135,13 @@ public class ExpressionLocalModule extends AbstractExpressionModule {
       // Write log file
       return status.createTaskResult();
 
-    } catch (
-
-    FileNotFoundException e) {
+    } catch (FileNotFoundException e) {
       return status.createTaskResult(e, "File not found: " + e.getMessage());
     } catch (IOException e) {
-      return status.createTaskResult(e,
-          "Error while computing expression: " + e.getMessage());
+      return status.createTaskResult(e, "Error while computing expression: " + e.getMessage());
     } catch (KenetreException e) {
-      return status.createTaskResult(e,
-          "Error while reading the annotation file: " + e.getMessage());
+      return status.createTaskResult(
+          e, "Error while reading the annotation file: " + e.getMessage());
     }
   }
-
 }

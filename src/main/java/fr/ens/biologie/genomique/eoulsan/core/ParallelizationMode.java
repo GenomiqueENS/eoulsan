@@ -26,10 +26,12 @@ package fr.ens.biologie.genomique.eoulsan.core;
 
 /**
  * This enum define the parallelization modes of a step.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
 public enum ParallelizationMode {
-
-  NOT_NEEDED, STANDARD, OWN_PARALLELIZATION
+  NOT_NEEDED,
+  STANDARD,
+  OWN_PARALLELIZATION
 }

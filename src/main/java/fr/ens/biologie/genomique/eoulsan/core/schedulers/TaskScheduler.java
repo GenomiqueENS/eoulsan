@@ -24,15 +24,15 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.schedulers;
 
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepResult;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepStatus;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
+import java.util.Set;
 
 /**
  * This interface define a task scheduler.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -40,6 +40,7 @@ public interface TaskScheduler {
 
   /**
    * Submit contexts to execute.
+   *
    * @param step step related to the contexts
    * @param contexts contexts to execute
    */
@@ -47,6 +48,7 @@ public interface TaskScheduler {
 
   /**
    * Submit a context to execute.
+   *
    * @param step step related to the context
    * @param context context to execute
    */
@@ -54,6 +56,7 @@ public interface TaskScheduler {
 
   /**
    * Get the status related to a step.
+   *
    * @param step a workflow step
    * @return the step status object related to the step
    */
@@ -61,6 +64,7 @@ public interface TaskScheduler {
 
   /**
    * Get the result related to a step.
+   *
    * @param step a workflow step
    * @return the step result object related to the step
    */
@@ -68,6 +72,7 @@ public interface TaskScheduler {
 
   /**
    * Get the count of submitted task contexts of a step.
+   *
    * @param step a workflow step
    * @return the count of submitted task contexts
    */
@@ -75,6 +80,7 @@ public interface TaskScheduler {
 
   /**
    * Get the count of running task contexts of a step.
+   *
    * @param step a workflow step
    * @return the count of running task contexts
    */
@@ -82,6 +88,7 @@ public interface TaskScheduler {
 
   /**
    * Get the count of done task contexts of a step.
+   *
    * @param step a workflow step
    * @return the count of done task contexts
    */
@@ -89,36 +96,35 @@ public interface TaskScheduler {
 
   /**
    * Wait the end of the task contexts.
+   *
    * @param step a workflow step
    */
   void waitEndOfTasks(Step step);
 
   /**
    * Get the count of submitted task contexts for the workflow.
+   *
    * @return the count of submitted task contexts
    */
   int getTotalTaskSubmittedCount();
 
   /**
    * Get the count of running task contexts for the workflow.
+   *
    * @return the count of running task contexts
    */
   int getTotalTaskRunningCount();
 
   /**
    * Get the count of done task contexts for the workflow.
+   *
    * @return the count of done task contexts
    */
   int getTotalTaskDoneCount();
 
-  /**
-   * Start the scheduler.
-   */
+  /** Start the scheduler. */
   void start();
 
-  /**
-   * Stop the scheduler.
-   */
+  /** Stop the scheduler. */
   void stop();
-
 }

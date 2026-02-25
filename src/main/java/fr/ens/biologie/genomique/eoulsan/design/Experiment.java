@@ -28,6 +28,7 @@ import java.util.List;
 
 /**
  * This interface defines an experiment.
+ *
  * @author Xavier Bauquet
  * @since 2.0
  */
@@ -35,48 +36,56 @@ public interface Experiment {
 
   /**
    * Get the design related to the experiment.
+   *
    * @return the Design object related to the experiment
    */
   Design getDesign();
 
   /**
    * get the experiment id.
+   *
    * @return the experiment id
    */
   String getId();
 
   /**
    * Get the experiment name.
+   *
    * @return the experiment name
    */
   String getName();
 
   /**
    * Get the experiment number.
+   *
    * @return the experiment number
    */
   int getNumber();
 
   /**
    * Get the experiment metadata.
+   *
    * @return the experiment metadata
    */
   ExperimentMetadata getMetadata();
 
   /**
    * Get the samples of the experiment.
+   *
    * @return a list of ExperimentSample object
    */
   List<Sample> getSamples();
 
   /**
    * Get experiment samples list.
+   *
    * @return a list of ExperimentSample object
    */
   List<ExperimentSample> getExperimentSamples();
 
   /**
    * Get the experiment sample related to the sample.
+   *
    * @param sample the sample
    * @return an experiment sample object if exists or null
    */
@@ -84,12 +93,14 @@ public interface Experiment {
 
   /**
    * Set the name of the experiment.
+   *
    * @param newExperimentName the new experiment name
    */
   void setName(String newExperimentName);
 
   /**
    * Add a sample.
+   *
    * @param sample the sample to add
    * @return an experiment sample object
    */
@@ -97,15 +108,16 @@ public interface Experiment {
 
   /**
    * Remove the sample.
+   *
    * @param sample the sample to remove
    */
   void removeSample(Sample sample);
 
   /**
    * Test if the experiment contains a sample.
+   *
    * @param sample the sample to test
    * @return true if the sample is the experiment
    */
   boolean containsSample(Sample sample);
-
 }

@@ -26,7 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.bio.io.hadoop;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -41,6 +40,7 @@ import org.apache.hadoop.util.ReflectionUtils;
 
 /**
  * This class define a FASTQ output format.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -74,9 +74,8 @@ public class FastqOutputFormat extends FileOutputFormat<Text, Text> {
     } else {
 
       FSDataOutputStream fileOut = fs.create(file, false);
-      return new FastqRecordWriter(context,
-          new DataOutputStream(codec.createOutputStream(fileOut)));
+      return new FastqRecordWriter(
+          context, new DataOutputStream(codec.createOutputStream(fileOut)));
     }
   }
-
 }

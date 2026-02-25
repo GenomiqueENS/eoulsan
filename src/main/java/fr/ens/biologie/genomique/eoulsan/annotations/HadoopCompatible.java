@@ -28,12 +28,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * This annotation is used to mark a plug-in class as usable in hadoop mode and
- * local mode.
+ * This annotation is used to mark a plug-in class as usable in hadoop mode and local mode.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HadoopCompatible {
-
-}
+public @interface HadoopCompatible {}

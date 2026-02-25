@@ -27,7 +27,6 @@ package fr.ens.biologie.genomique.eoulsan.data.protocols;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.ExecutionMode;
@@ -35,6 +34,7 @@ import fr.ens.biologie.genomique.kenetre.util.ServiceNameLoader;
 
 /**
  * This class define a service to retrieve a DataProtocol.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -51,6 +51,7 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
 
   /**
    * Retrieve the singleton static instance of DataProtocolService.
+   *
    * @return A DataProtocol instance
    */
   public static synchronized DataProtocolService getInstance() {
@@ -74,6 +75,7 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
 
   /**
    * Get the default protocol.
+   *
    * @return the default DataProtocol
    */
   public FileDataProtocol getDefaultProtocol() {
@@ -100,11 +102,9 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
   @Override
   public ListMultimap<String, String> getServiceClasses() {
 
-    final ListMultimap<String, String> result =
-        ArrayListMultimap.create(super.getServiceClasses());
+    final ListMultimap<String, String> result = ArrayListMultimap.create(super.getServiceClasses());
 
-    result.put(this.defaultProtocolName,
-        this.defaultProtocol.getClass().getName());
+    result.put(this.defaultProtocolName, this.defaultProtocol.getClass().getName());
 
     return Multimaps.unmodifiableListMultimap(result);
   }
@@ -132,8 +132,8 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
   @Override
   protected boolean accept(final Class<?> clazz) {
 
-    return ExecutionMode.accept(clazz,
-        EoulsanRuntime.getRuntime().getMode().isHadoopProtocolMode());
+    return ExecutionMode.accept(
+        clazz, EoulsanRuntime.getRuntime().getMode().isHadoopProtocolMode());
   }
 
   @Override
@@ -146,12 +146,9 @@ public class DataProtocolService extends ServiceNameLoader<DataProtocol> {
   // Constructor
   //
 
-  /**
-   * Private protocol.
-   */
+  /** Private protocol. */
   private DataProtocolService() {
 
     super(DataProtocol.class);
   }
-
 }

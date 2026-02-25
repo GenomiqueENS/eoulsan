@@ -28,22 +28,7 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounterCounter.INVALID_SAM_ENTRIES_COUNTER;
 import static fr.ens.biologie.genomique.eoulsan.modules.expression.hadoop.ExpressionHadoopModule.SAM_RECORD_PAIRED_END_SERPARATOR;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Mapper;
-
 import com.google.common.base.Splitter;
-
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
@@ -58,9 +43,22 @@ import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFormatException;
 import htsjdk.samtools.SAMLineParser;
 import htsjdk.samtools.SAMRecord;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
 
 /**
  * Mapper for the expression estimation.
+ *
  * @since 1.2
  * @author Claire Wallon
  */
@@ -70,8 +68,7 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, LongWritable> {
   private String counterGroup;
 
   private final SAMLineParser parser = new SAMLineParser(new SAMFileHeader());
-  private final Splitter recordSplitterPattern =
-      Splitter.on(SAM_RECORD_PAIRED_END_SERPARATOR);
+  private final Splitter recordSplitterPattern = Splitter.on(SAM_RECORD_PAIRED_END_SERPARATOR);
 
   private final List<SAMRecord> samRecords = new ArrayList<>();
   private ReporterIncrementer reporter;
@@ -79,8 +76,7 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, LongWritable> {
   private final LongWritable outValue = new LongWritable(1L);
 
   @Override
-  public void setup(final Context context)
-      throws IOException, InterruptedException {
+  public void setup(final Context context) throws IOException, InterruptedException {
 
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
@@ -105,8 +101,8 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, LongWritable> {
     getLogger().info("End of setup()");
   }
 
-  static ExpressionCounter initCounterAndParser(final Configuration conf,
-      final SAMLineParser parser, final URI[] localCacheFiles)
+  static ExpressionCounter initCounterAndParser(
+      final Configuration conf, final SAMLineParser parser, final URI[] localCacheFiles)
       throws IOException {
 
     try {
@@ -116,56 +112,52 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, LongWritable> {
       }
 
       if (localCacheFiles.length > 1) {
-        throw new IOException(
-            "Retrieve more than one file in distributed cache");
+        throw new IOException("Retrieve more than one file in distributed cache");
       }
 
-      getLogger().info("Genome index compressed file (from distributed cache): "
-          + localCacheFiles[0]);
+      getLogger()
+          .info("Genome index compressed file (from distributed cache): " + localCacheFiles[0]);
 
       if (localCacheFiles == null || localCacheFiles.length == 0) {
         throw new IOException("Unable to retrieve annotation index");
       }
 
       if (localCacheFiles.length > 1) {
-        throw new IOException(
-            "Retrieve more than one file in distributed cache");
+        throw new IOException("Retrieve more than one file in distributed cache");
       }
 
       // Deserialize counter
-      ExpressionCounter counter = loadSerializedCounter(
-          PathUtils.createInputStream(new Path(localCacheFiles[0]), conf));
+      ExpressionCounter counter =
+          loadSerializedCounter(PathUtils.createInputStream(new Path(localCacheFiles[0]), conf));
 
       // Get the genome description filename
-      final String genomeDescFile =
-          conf.get(ExpressionHadoopModule.GENOME_DESC_PATH_KEY);
+      final String genomeDescFile = conf.get(ExpressionHadoopModule.GENOME_DESC_PATH_KEY);
 
       if (genomeDescFile == null) {
         throw new IOException("No genome desc file set");
       }
 
       // Load genome description object
-      final GenomeDescription genomeDescription = GenomeDescription
-          .load(PathUtils.createInputStream(new Path(genomeDescFile), conf));
+      final GenomeDescription genomeDescription =
+          GenomeDescription.load(PathUtils.createInputStream(new Path(genomeDescFile), conf));
 
       // Set the chromosomes sizes in the parser
-      parser.getFileHeader().setSequenceDictionary(
-          SAMUtils.newSAMSequenceDictionary(genomeDescription));
+      parser
+          .getFileHeader()
+          .setSequenceDictionary(SAMUtils.newSAMSequenceDictionary(genomeDescription));
 
       return counter;
 
     } catch (IOException e) {
-      getLogger().severe(
-          "Error while loading annotation data in Mapper: " + e.getMessage());
+      getLogger().severe("Error while loading annotation data in Mapper: " + e.getMessage());
       throw new IOException(e);
     }
   }
 
   /**
-   * 'key': offset of the beginning of the line from the beginning of the
-   * alignment file. 'value': the SAM record, if data are in paired-end mode,
-   * 'value' contains the two paired alignments separated by a '£' (TSAM
-   * format).
+   * 'key': offset of the beginning of the line from the beginning of the alignment file. 'value':
+   * the SAM record, if data are in paired-end mode, 'value' contains the two paired alignments
+   * separated by a '£' (TSAM format).
    */
   @Override
   public void map(final Text key, final Text value, final Context context)
@@ -191,8 +183,7 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, LongWritable> {
       // Check if there is only one or two entries in the line
       if (samRecords.isEmpty() || samRecords.size() > 2) {
         throw new EoulsanException(
-            "Invalid number of SAM record(s) found in the entry: "
-                + samRecords.size());
+            "Invalid number of SAM record(s) found in the entry: " + samRecords.size());
       }
 
       // Count
@@ -208,25 +199,20 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, LongWritable> {
 
     } catch (SAMFormatException | KenetreException | EoulsanException e) {
 
-      context.getCounter(this.counterGroup,
-          INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
+      context.getCounter(this.counterGroup, INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
 
-      getLogger().info("Invalid SAM output entry: "
-          + e.getMessage() + " line='" + line + "'");
+      getLogger().info("Invalid SAM output entry: " + e.getMessage() + " line='" + line + "'");
     }
-
   }
 
   @Override
-  public void cleanup(final Context context) throws IOException {
-  }
+  public void cleanup(final Context context) throws IOException {}
 
   //
   // Other methods
   //
 
-  private static ExpressionCounter loadSerializedCounter(final InputStream in)
-      throws IOException {
+  private static ExpressionCounter loadSerializedCounter(final InputStream in) throws IOException {
 
     if (in == null) {
       throw new NullPointerException("is argument cannot be null");
@@ -239,5 +225,4 @@ public class ExpressionMapper extends Mapper<Text, Text, Text, LongWritable> {
       throw new IOException("Unable to load data.");
     }
   }
-
 }

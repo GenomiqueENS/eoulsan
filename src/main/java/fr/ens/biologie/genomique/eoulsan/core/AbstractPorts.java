@@ -24,6 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.core;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,17 +36,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-
 /**
  * This class define a basic implementation of a Ports class.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
-public abstract class AbstractPorts<E extends Port>
-    implements Ports<E>, Serializable {
+public abstract class AbstractPorts<E extends Port> implements Ports<E>, Serializable {
 
   private static final long serialVersionUID = -5116830881426447140L;
 
@@ -125,6 +124,7 @@ public abstract class AbstractPorts<E extends Port>
 
   /**
    * Constructor.
+   *
    * @param ports ports of the object
    */
   protected AbstractPorts(final Set<E> ports) {
@@ -152,20 +152,18 @@ public abstract class AbstractPorts<E extends Port>
     }
 
     switch (map.size()) {
+      case 0:
+        this.ports = Collections.emptyMap();
+        break;
 
-    case 0:
-      this.ports = Collections.emptyMap();
-      break;
+      case 1:
+        final E value = map.values().iterator().next();
+        this.ports = Collections.singletonMap(value.getName(), value);
+        break;
 
-    case 1:
-      final E value = map.values().iterator().next();
-      this.ports = Collections.singletonMap(value.getName(), value);
-      break;
-
-    default:
-      this.ports = map;
+      default:
+        this.ports = map;
     }
-
   }
 
   @Override
@@ -203,5 +201,4 @@ public abstract class AbstractPorts<E extends Port>
 
     return Collections.unmodifiableList(result);
   }
-
 }

@@ -30,14 +30,6 @@ import static fr.ens.biologie.genomique.eoulsan.modules.expression.hadoop.Expres
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAMHeaderHadoopUtils.createSAMSequenceDictionaryFromSAMHeader;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAMHeaderHadoopUtils.loadSAMHeaders;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Reducer;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.kenetre.bio.SAMComparator;
@@ -45,15 +37,21 @@ import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFormatException;
 import htsjdk.samtools.SAMLineParser;
 import htsjdk.samtools.SAMRecord;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
 
 /**
- * This class define a reducer for the pretreatment of paired-end data before
- * the expression estimation step.
+ * This class define a reducer for the pretreatment of paired-end data before the expression
+ * estimation step.
+ *
  * @since 1.2
  * @author Claire Wallon
  */
-public class PreTreatmentExpressionReducer
-    extends Reducer<Text, Text, Text, Text> {
+public class PreTreatmentExpressionReducer extends Reducer<Text, Text, Text, Text> {
 
   private String counterGroup;
   private final Text outKey = new Text();
@@ -63,8 +61,7 @@ public class PreTreatmentExpressionReducer
   private final List<SAMRecord> records = new ArrayList<>();
 
   @Override
-  protected void setup(final Context context)
-      throws IOException, InterruptedException {
+  protected void setup(final Context context) throws IOException, InterruptedException {
 
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
@@ -73,8 +70,9 @@ public class PreTreatmentExpressionReducer
 
     // Set the chromosomes sizes in the parser
     final List<String> samHeader = loadSAMHeaders(context);
-    this.parser.getFileHeader().setSequenceDictionary(
-        createSAMSequenceDictionaryFromSAMHeader(samHeader));
+    this.parser
+        .getFileHeader()
+        .setSequenceDictionary(createSAMSequenceDictionaryFromSAMHeader(samHeader));
 
     // Counter group
     this.counterGroup = conf.get(Globals.PARAMETER_PREFIX + ".counter.group");
@@ -86,14 +84,13 @@ public class PreTreatmentExpressionReducer
   }
 
   /**
-   * 'key': the identifier of the aligned read without the integer indicating
-   * the member of the pair. 'values': the rest of the paired alignments, i.e
-   * the SAM line of the first paired alignment and the SAM line of the second
-   * paired alignment.
+   * 'key': the identifier of the aligned read without the integer indicating the member of the
+   * pair. 'values': the rest of the paired alignments, i.e the SAM line of the first paired
+   * alignment and the SAM line of the second paired alignment.
    */
   @Override
-  protected void reduce(final Text key, final Iterable<Text> values,
-      final Context context) throws IOException, InterruptedException {
+  protected void reduce(final Text key, final Iterable<Text> values, final Context context)
+      throws IOException, InterruptedException {
 
     String stringVal;
     final String strOutKey;
@@ -113,13 +110,13 @@ public class PreTreatmentExpressionReducer
         this.records.add(samRecord);
 
       } catch (SAMFormatException e) {
-        context.getCounter(this.counterGroup,
-            INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
-        getLogger().info("Invalid SAM output entry: "
-            + e.getMessage() + " line='" + stringRecord + "'");
+        context
+            .getCounter(this.counterGroup, INVALID_SAM_ENTRIES_COUNTER.counterName())
+            .increment(1);
+        getLogger()
+            .info("Invalid SAM output entry: " + e.getMessage() + " line='" + stringRecord + "'");
         return;
       }
-
     }
 
     // sort alignments of the current read
@@ -127,10 +124,9 @@ public class PreTreatmentExpressionReducer
 
     // Writing records
     int indexOfFirstTab = this.records.get(0).getSAMString().indexOf("\t");
-    strOutKey =
-        this.records.get(0).getSAMString().substring(0, indexOfFirstTab);
-    strOutValue.append(this.records.get(0).getSAMString()
-        .substring(indexOfFirstTab + 1).replaceAll("\n", ""));
+    strOutKey = this.records.get(0).getSAMString().substring(0, indexOfFirstTab);
+    strOutValue.append(
+        this.records.get(0).getSAMString().substring(indexOfFirstTab + 1).replaceAll("\n", ""));
 
     this.records.remove(0);
 

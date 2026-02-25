@@ -28,6 +28,7 @@ import fr.ens.biologie.genomique.kenetre.util.ServiceNameLoader;
 
 /**
  * This class define a service for requirements.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -41,6 +42,7 @@ public class RequirementService extends ServiceNameLoader<Requirement> {
 
   /**
    * Retrieve the singleton static instance of a RequirementService.
+   *
    * @return A RequirementService instance
    */
   public static synchronized RequirementService getInstance() {
@@ -72,12 +74,9 @@ public class RequirementService extends ServiceNameLoader<Requirement> {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
+  /** Private constructor. */
   private RequirementService() {
 
     super(Requirement.class);
   }
-
 }

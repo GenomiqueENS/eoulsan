@@ -122,7 +122,5 @@ public class DesignTest {
 
     // test getDesignNumber
     assertEquals("MyDesign", d.getName());
-
   }
-
 }

@@ -24,15 +24,15 @@
 
 package fr.ens.biologie.genomique.eoulsan.checkers;
 
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import java.util.Set;
 
 /**
  * This interface define a checker.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -40,24 +40,28 @@ public interface Checker {
 
   /**
    * Get the name of the checker.
+   *
    * @return the name of the checker
    */
   String getName();
 
   /**
    * Test if the Checker is a design checker.
+   *
    * @return true if this a design checker
    */
   boolean isDesignChecker();
 
   /**
    * Get format related to the checker.
+   *
    * @return a DataFormat object
    */
   DataFormat getFormat();
 
   /**
    * Set the parameters of the checker to configure the checker.
+   *
    * @param stepParameters parameters of the step
    * @throws EoulsanException if a parameter is invalid
    */
@@ -65,6 +69,7 @@ public interface Checker {
 
   /**
    * Launch the check.
+   *
    * @param data data to check
    * @param checkInfo object that contains data shared between the checkers
    * @throws EoulsanException if an error occurs while executing step
@@ -74,8 +79,8 @@ public interface Checker {
 
   /**
    * Get the list of Checker required to run before this checker.
+   *
    * @return a list of DataFormat that are checked by the required checkers
    */
   Set<DataFormat> getCheckersRequired();
-
 }

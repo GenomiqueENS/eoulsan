@@ -32,8 +32,7 @@ import java.util.logging.Logger;
 
 public class EoulsanRuntimeDebug {
 
-  public static void initDebugEoulsanRuntime()
-      throws IOException, EoulsanException {
+  public static void initDebugEoulsanRuntime() throws IOException, EoulsanException {
 
     Logger.getLogger(Globals.APP_NAME).getParent().setLevel(Level.OFF);
 
@@ -43,5 +42,4 @@ public class EoulsanRuntimeDebug {
 
     Logger.getLogger(Globals.APP_NAME).setLevel(Level.OFF);
   }
-
 }

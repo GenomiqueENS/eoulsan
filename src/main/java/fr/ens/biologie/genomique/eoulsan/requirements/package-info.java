@@ -24,6 +24,7 @@
 
 /**
  * This package contains requirement classes for Eoulsan.
+ *
  * @since 2.0
  */
 package fr.ens.biologie.genomique.eoulsan.requirements;

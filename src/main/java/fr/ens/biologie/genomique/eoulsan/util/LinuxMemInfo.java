@@ -28,6 +28,7 @@ import java.nio.file.Path;
 
 /**
  * Get information about memory on Linux systems
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -43,6 +44,7 @@ public class LinuxMemInfo extends LinuxInfo {
 
   /**
    * Get the total memory of the system.
+   *
    * @return the total memory of the system
    */
   public String getMemTotal() {
@@ -54,12 +56,9 @@ public class LinuxMemInfo extends LinuxInfo {
   // Constructor
   //
 
-  /**
-   * Public constructor.
-   */
+  /** Public constructor. */
   public LinuxMemInfo() {
 
     parse();
   }
-
 }

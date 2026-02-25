@@ -25,17 +25,16 @@
 package fr.ens.biologie.genomique.eoulsan.core;
 
 import com.google.common.base.MoreObjects;
-
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 
 /**
  * This class define an output port of a step.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class SimpleOutputPort extends AbstractPort
-    implements OutputPort {
+public class SimpleOutputPort extends AbstractPort implements OutputPort {
 
   private static final long serialVersionUID = 3565485272173523695L;
 
@@ -50,9 +49,12 @@ public class SimpleOutputPort extends AbstractPort
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this).add("name", getName())
-        .add("format", getFormat().getName()).add("list", isList())
-        .add("compression", getCompression()).toString();
+    return MoreObjects.toStringHelper(this)
+        .add("name", getName())
+        .add("format", getFormat().getName())
+        .add("list", isList())
+        .add("compression", getCompression())
+        .toString();
   }
 
   //
@@ -61,6 +63,7 @@ public class SimpleOutputPort extends AbstractPort
 
   /**
    * Constructor.
+   *
    * @param name name of the port
    * @param format format of the port
    */
@@ -71,37 +74,42 @@ public class SimpleOutputPort extends AbstractPort
 
   /**
    * Constructor.
+   *
    * @param name name of the port
    * @param list true if a list is excepted as port value
    * @param format format of the port
    */
-  SimpleOutputPort(final String name, final boolean list,
-      final DataFormat format) {
+  SimpleOutputPort(final String name, final boolean list, final DataFormat format) {
 
     this(name, list, format, null);
   }
 
   /**
    * Constructor.
+   *
    * @param name name of the port
    * @param format format of the port
    * @param compression compression of the output
    */
-  protected SimpleOutputPort(final String name, final DataFormat format,
-      final CompressionType compression) {
+  protected SimpleOutputPort(
+      final String name, final DataFormat format, final CompressionType compression) {
 
     this(name, false, format, compression);
   }
 
   /**
    * Constructor.
+   *
    * @param name name of the port
    * @param format format of the port
    * @param list true if a list is excepted as port value
    * @param compression compression of the output
    */
-  protected SimpleOutputPort(final String name, final boolean list,
-      final DataFormat format, final CompressionType compression) {
+  protected SimpleOutputPort(
+      final String name,
+      final boolean list,
+      final DataFormat format,
+      final CompressionType compression) {
 
     // Set the name and the format
     super(name, list, format);
@@ -116,12 +124,15 @@ public class SimpleOutputPort extends AbstractPort
 
   /**
    * Constructor.
+   *
    * @param outputPort output port to clone
    */
   SimpleOutputPort(final OutputPort outputPort) {
 
-    this(outputPort.getName(), outputPort.isList(), outputPort.getFormat(),
+    this(
+        outputPort.getName(),
+        outputPort.isList(),
+        outputPort.getFormat(),
         outputPort.getCompression());
   }
-
 }

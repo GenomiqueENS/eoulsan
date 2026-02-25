@@ -29,19 +29,7 @@ import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.getExperiment
 import static fr.ens.biologie.genomique.eoulsan.design.DesignUtils.referenceValueToInt;
 import static java.util.Objects.requireNonNull;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.base.Splitter;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.checkers.DESeq2DesignChecker;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -54,9 +42,20 @@ import fr.ens.biologie.genomique.eoulsan.design.ExperimentSampleMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class contains methods to run the differential analysis module DESeq2.
+ *
  * @author Xavier Bauquet
  * @since 2.0
  */
@@ -144,6 +143,7 @@ public abstract class AbstractEasyContrasts {
 
   /**
    * Define design filename.
+   *
    * @param prefix the prefix of the differential analysis
    * @return the design filename
    */
@@ -154,6 +154,7 @@ public abstract class AbstractEasyContrasts {
 
   /**
    * Define comparison filename.
+   *
    * @param prefix the prefix of the differential analysis
    * @return comparison filename
    */
@@ -163,6 +164,7 @@ public abstract class AbstractEasyContrasts {
 
   /**
    * Define contrast filename.
+   *
    * @param prefix the prefix of the differential analysis
    * @return the contrast filename
    */
@@ -176,15 +178,15 @@ public abstract class AbstractEasyContrasts {
     final List<String> sampleMDKeys = getAllSamplesMetadataKeys(design);
 
     // Get the experiment column names
-    final List<String> experimentMDKeys =
-        getExperimentSampleAllMetadataKeys(experiment);
+    final List<String> experimentMDKeys = getExperimentSampleAllMetadataKeys(experiment);
 
     // Get Experiment reference
     final String experimentReference = experiment.getMetadata().getReference();
 
-    final boolean referenceColumn = experimentReference != null
-        || sampleMDKeys.contains(SampleMetadata.REFERENCE_KEY)
-        || experimentMDKeys.contains(ExperimentSampleMetadata.REFERENCE_KEY);
+    final boolean referenceColumn =
+        experimentReference != null
+            || sampleMDKeys.contains(SampleMetadata.REFERENCE_KEY)
+            || experimentMDKeys.contains(ExperimentSampleMetadata.REFERENCE_KEY);
 
     return !referenceColumn;
   }
@@ -195,6 +197,7 @@ public abstract class AbstractEasyContrasts {
 
   /**
    * Put sample files.
+   *
    * @throws IOException if an error occurs while putting sample files
    */
   protected void putSampleFiles() throws IOException {
@@ -207,8 +210,7 @@ public abstract class AbstractEasyContrasts {
       }
 
       final String key = sample.getId();
-      final DataFile inputFile =
-          new DataFile(this.sampleFiles.get(key).getAbsolutePath());
+      final DataFile inputFile = new DataFile(this.sampleFiles.get(key).getAbsolutePath());
       final String outputFilename = "expression-" + key + ".tsv";
 
       this.executor.putInputFile(inputFile, outputFilename);
@@ -218,16 +220,17 @@ public abstract class AbstractEasyContrasts {
 
   /**
    * Write DESeq2 design file.
+   *
    * @param prefix prefix of the output file
    * @throws IOException if an error occurs while creating the file
    */
   protected void writeDESeq2Design(String prefix) throws IOException {
-    this.executor.writeFile(generateDeseq2Design(),
-        deseq2DesignFileName(prefix));
+    this.executor.writeFile(generateDeseq2Design(), deseq2DesignFileName(prefix));
   }
 
   /**
    * Write contrast file.
+   *
    * @param prefix prefix of the output file
    * @throws IOException if an error occurs while creating the file
    */
@@ -239,13 +242,12 @@ public abstract class AbstractEasyContrasts {
 
   /**
    * Write comparison file.
+   *
    * @param prefix prefix of the output file
    * @throws IOException if an error occurs while creating the file
    */
-  protected void writeComparisonFile(String prefix)
-      throws IOException, EoulsanException {
-    this.executor.writeFile(generateComparisonFileContent(),
-        comparisonFileName(prefix));
+  protected void writeComparisonFile(String prefix) throws IOException, EoulsanException {
+    this.executor.writeFile(generateComparisonFileContent(), comparisonFileName(prefix));
   }
 
   //
@@ -254,6 +256,7 @@ public abstract class AbstractEasyContrasts {
 
   /**
    * Generate DESeq2 design.
+   *
    * @return the DESeq2 in a string
    */
   private String generateDeseq2Design() {
@@ -273,19 +276,20 @@ public abstract class AbstractEasyContrasts {
     final List<String> sampleMDKeys = getAllSamplesMetadataKeys(design);
 
     // Get the experiment column names
-    final List<String> experimentMDKeys =
-        getExperimentSampleAllMetadataKeys(experiment);
+    final List<String> experimentMDKeys = getExperimentSampleAllMetadataKeys(experiment);
 
     // Field to remove in output DESeq2 design
-    final List<String> fieldsToRemove = Arrays.asList(SampleMetadata.DATE_KEY,
-        SampleMetadata.FASTQ_FORMAT_KEY, SampleMetadata.UUID_KEY);
+    final List<String> fieldsToRemove =
+        Arrays.asList(
+            SampleMetadata.DATE_KEY, SampleMetadata.FASTQ_FORMAT_KEY, SampleMetadata.UUID_KEY);
 
     // Get Experiment reference
     final String experimentReference = experiment.getMetadata().getReference();
 
-    final boolean referenceColumn = experimentReference != null
-        || sampleMDKeys.contains(SampleMetadata.REFERENCE_KEY)
-        || experimentMDKeys.contains(ExperimentSampleMetadata.REFERENCE_KEY);
+    final boolean referenceColumn =
+        experimentReference != null
+            || sampleMDKeys.contains(SampleMetadata.REFERENCE_KEY)
+            || experimentMDKeys.contains(ExperimentSampleMetadata.REFERENCE_KEY);
 
     // Print common column names
     for (String key : sampleMDKeys) {
@@ -387,8 +391,7 @@ public abstract class AbstractEasyContrasts {
       if (referenceColumn) {
 
         sb.append(TAB_SEPARATOR);
-        sb.append(referenceValueToInt(DesignUtils.getReference(es),
-            experimentReference));
+        sb.append(referenceValueToInt(DesignUtils.getReference(es), experimentReference));
       }
 
       sb.append(NEWLINE);
@@ -399,9 +402,10 @@ public abstract class AbstractEasyContrasts {
 
   /**
    * Generate comparison file content.
+   *
    * @return a String with the comparison file content
-   * @throws EoulsanException if the format of one of the comparison entries of
-   *           the design file is invalid
+   * @throws EoulsanException if the format of one of the comparison entries of the design file is
+   *     invalid
    */
   protected String generateComparisonFileContent() throws EoulsanException {
 
@@ -426,21 +430,20 @@ public abstract class AbstractEasyContrasts {
 
   /**
    * Read a file from the Jar.
+   *
    * @param filePathInJar, path to the file to copy from the Jar
    * @return a String with the content of the file
    * @throws IOException if reading fails
    */
-  protected static String readFromJar(final String filePathInJar)
-      throws IOException {
+  protected static String readFromJar(final String filePathInJar) throws IOException {
 
-    final InputStream is =
-        AbstractEasyContrasts.class.getResourceAsStream(filePathInJar);
+    final InputStream is = AbstractEasyContrasts.class.getResourceAsStream(filePathInJar);
 
     final StringBuilder sb = new StringBuilder();
     String line = null;
 
-    try (BufferedReader reader = new BufferedReader(
-        new InputStreamReader(is, Charset.defaultCharset()))) {
+    try (BufferedReader reader =
+        new BufferedReader(new InputStreamReader(is, Charset.defaultCharset()))) {
 
       while ((line = reader.readLine()) != null) {
 
@@ -458,6 +461,7 @@ public abstract class AbstractEasyContrasts {
 
   /**
    * Check the experiment design.
+   *
    * @throws EoulsanException if the experiment design is not valid
    */
   private void check() throws EoulsanException {
@@ -468,21 +472,19 @@ public abstract class AbstractEasyContrasts {
     if (this.buildContrast) {
       if (!this.experiment.getMetadata().containsComparisons()) {
         throw new EoulsanException(
-            "No comparison defined to build the constrasts in experiment: "
-                + experimentName());
+            "No comparison defined to build the constrasts in experiment: " + experimentName());
       }
     }
   }
 
   /**
    * Method to run DESeq2.
+   *
    * @param workflowOutputDir workflow output directory
    * @throws IOException if writeDeseq2Design fails
    * @throws EoulsanException if the comparisons value is not correct
    */
-
-  public void runDEseq2(final DataFile workflowOutputDir)
-      throws IOException, EoulsanException {
+  public void runDEseq2(final DataFile workflowOutputDir) throws IOException, EoulsanException {
 
     final String prefix = stepId() + "_" + experimentName();
 
@@ -523,6 +525,7 @@ public abstract class AbstractEasyContrasts {
 
   /**
    * Constructor.
+   *
    * @param executor RServe executor
    * @param stepId the step id
    * @param design the Eoulsan design
@@ -531,9 +534,13 @@ public abstract class AbstractEasyContrasts {
    * @param parameters DESeq2 parameters
    * @param saveRScripts save R scripts
    */
-  protected AbstractEasyContrasts(final RExecutor executor, final String stepId,
-      final Design design, final Experiment experiment,
-      final Map<String, File> sampleFiles, final DESeq2Parameters parameters,
+  protected AbstractEasyContrasts(
+      final RExecutor executor,
+      final String stepId,
+      final Design design,
+      final Experiment experiment,
+      final Map<String, File> sampleFiles,
+      final DESeq2Parameters parameters,
       boolean saveRScripts) {
 
     requireNonNull(stepId, "stepId argument cannot be null");

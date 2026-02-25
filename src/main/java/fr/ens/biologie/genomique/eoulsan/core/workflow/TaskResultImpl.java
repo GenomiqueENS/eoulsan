@@ -26,6 +26,10 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static java.util.Objects.requireNonNull;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.util.ClassLoaderObjectInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,20 +37,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.time.Instant;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
-import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.util.ClassLoaderObjectInputStream;
-
 /**
  * This class define a result for a task context.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -126,6 +126,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
 
   /**
    * Serialize the TaskResult object.
+   *
    * @param file output DataFile
    * @throws IOException if an error occurs while creating the file
    */
@@ -138,6 +139,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
 
   /**
    * Serialize the TaskResult object.
+   *
    * @param file output DataFile
    * @throws IOException if an error occurs while creating the file
    */
@@ -150,6 +152,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
 
   /**
    * Serialize the TaskResult object.
+   *
    * @param file output DataFile
    * @throws IOException if an error occurs while creating the file
    */
@@ -162,6 +165,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
 
   /**
    * Serialize the TaskResult object.
+   *
    * @param out output stream
    * @throws IOException if an error occurs while creating the file
    */
@@ -176,6 +180,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
 
   /**
    * Deserialize the TaskResult object.
+   *
    * @param file input DataFile
    * @return a deserialized TaskResultImpl object
    * @throws IOException if an error occurs while reading the file
@@ -189,6 +194,7 @@ public class TaskResultImpl implements TaskResult, Serializable {
 
   /**
    * Deserialize the TaskResult object.
+   *
    * @param file input DataFile
    * @return a deserialized TaskResultImpl object
    * @throws IOException if an error occurs while reading the file
@@ -202,12 +208,12 @@ public class TaskResultImpl implements TaskResult, Serializable {
 
   /**
    * Deserialize the TaskResult object.
+   *
    * @param file input DataFile
    * @return a deserialized TaskResultImpl object
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskResultImpl deserialize(final DataFile file)
-      throws IOException {
+  public static TaskResultImpl deserialize(final DataFile file) throws IOException {
 
     requireNonNull(file, "file argument cannot be null");
 
@@ -216,12 +222,12 @@ public class TaskResultImpl implements TaskResult, Serializable {
 
   /**
    * Deserialize the TaskResult object.
+   *
    * @param in input stream
    * @return a deserialized TaskResultImpl object
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskResultImpl deserialize(final InputStream in)
-      throws IOException {
+  public static TaskResultImpl deserialize(final InputStream in) throws IOException {
 
     requireNonNull(in, "in argument cannot be null");
 
@@ -239,19 +245,23 @@ public class TaskResultImpl implements TaskResult, Serializable {
   // Constructor
   //
 
-  TaskResultImpl(final TaskContextImpl context, final Instant startTime,
-      final Instant endTime, final long duration, final String contextMessage,
-      final String contextDescription, final String contextCommandLine,
-      final String contextDockerImage, final Map<String, Long> counters,
+  TaskResultImpl(
+      final TaskContextImpl context,
+      final Instant startTime,
+      final Instant endTime,
+      final long duration,
+      final String contextMessage,
+      final String contextDescription,
+      final String contextCommandLine,
+      final String contextDockerImage,
+      final Map<String, Long> counters,
       final boolean success) {
 
     requireNonNull(context, "context argument cannot be null");
     requireNonNull(startTime, "startTime argument cannot be null");
     requireNonNull(endTime, "endTime argument cannot be null");
-    requireNonNull(contextDescription,
-        "contextDescription argument cannot be null");
-    requireNonNull(contextCommandLine,
-        "contextCommandLine argument cannot be null");
+    requireNonNull(contextDescription, "contextDescription argument cannot be null");
+    requireNonNull(contextCommandLine, "contextCommandLine argument cannot be null");
     requireNonNull(counters, "counter argument cannot be null");
 
     this.context = context;
@@ -268,15 +278,20 @@ public class TaskResultImpl implements TaskResult, Serializable {
     this.errorMessage = null;
   }
 
-  public TaskResultImpl(final TaskContextImpl context, final Instant startTime,
-      final Instant endTime, final long duration, final Throwable exception,
+  public TaskResultImpl(
+      final TaskContextImpl context,
+      final Instant startTime,
+      final Instant endTime,
+      final long duration,
+      final Throwable exception,
       final String errorMessage) {
 
     requireNonNull(context, "context argument cannot be null");
 
     this.context = context;
     this.startTime = startTime == null ? null : Instant.ofEpochSecond(startTime.getEpochSecond());
-    this.endTime = endTime == null ? null : Instant.ofEpochSecond(endTime.getEpochSecond());;
+    this.endTime = endTime == null ? null : Instant.ofEpochSecond(endTime.getEpochSecond());
+    ;
     this.duration = duration;
     this.success = false;
     this.taskMessage = null;
@@ -286,5 +301,4 @@ public class TaskResultImpl implements TaskResult, Serializable {
     this.exception = exception;
     this.errorMessage = errorMessage;
   }
-
 }

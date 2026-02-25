@@ -30,6 +30,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 
 /**
  * This class define utility methods on Context.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -37,6 +38,7 @@ public final class ContextUtils {
 
   /**
    * Get the job directory.
+   *
    * @param context task context
    * @return Returns the job directory
    */
@@ -55,6 +57,7 @@ public final class ContextUtils {
 
   /**
    * Get the application jar file.
+   *
    * @param context task context
    * @return Returns the jar file
    */
@@ -73,6 +76,7 @@ public final class ContextUtils {
 
   /**
    * Get the local working directory.
+   *
    * @param context task context
    * @return Returns the local working directory
    */
@@ -83,8 +87,7 @@ public final class ContextUtils {
       return ((TaskContextImpl) context).getLocalWorkingPathname();
     } else if (context instanceof StepConfigurationContextImpl) {
 
-      return ((StepConfigurationContextImpl) context)
-          .getLocalWorkingDirectory();
+      return ((StepConfigurationContextImpl) context).getLocalWorkingDirectory();
     }
 
     return null;
@@ -92,6 +95,7 @@ public final class ContextUtils {
 
   /**
    * Get the Hadoop working directory.
+   *
    * @param context task context
    * @return Returns the Hadoop working directory
    */
@@ -102,8 +106,7 @@ public final class ContextUtils {
       return ((TaskContextImpl) context).getHadoopWorkingPathname();
     } else if (context instanceof StepConfigurationContextImpl) {
 
-      return ((StepConfigurationContextImpl) context)
-          .getLocalWorkingDirectory();
+      return ((StepConfigurationContextImpl) context).getLocalWorkingDirectory();
     }
 
     return null;
@@ -111,6 +114,7 @@ public final class ContextUtils {
 
   /**
    * Get the task output directory.
+   *
    * @param context task context
    * @return Returns the task output directory
    */
@@ -131,11 +135,8 @@ public final class ContextUtils {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
+  /** Private constructor. */
   private ContextUtils() {
     throw new IllegalStateException();
   }
-
 }

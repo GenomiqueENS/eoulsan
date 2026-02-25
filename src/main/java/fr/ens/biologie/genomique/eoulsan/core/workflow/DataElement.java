@@ -27,22 +27,21 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * This class define a data element.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -62,8 +61,7 @@ class DataElement extends AbstractData {
   public void setName(final String name) {
 
     if (!this.canRename) {
-      throw new EoulsanRuntimeException(
-          "Data cannot be renamed once it has been used");
+      throw new EoulsanRuntimeException("Data cannot be renamed once it has been used");
     }
 
     super.setName(name);
@@ -76,8 +74,7 @@ class DataElement extends AbstractData {
   void setPart(final int part) {
 
     if (!this.canRename) {
-      throw new EoulsanRuntimeException(
-          "Data cannot be renamed once it has been used");
+      throw new EoulsanRuntimeException("Data cannot be renamed once it has been used");
     }
 
     super.setPart(part);
@@ -120,8 +117,7 @@ class DataElement extends AbstractData {
   public String getDataFilename(final int fileIndex) {
 
     if (getFormat().getMaxFilesCount() < 2) {
-      throw new EoulsanRuntimeException(
-          "Only multi-files DataFormat are handled by this method.");
+      throw new EoulsanRuntimeException("Only multi-files DataFormat are handled by this method.");
     }
 
     return this.files.get(fileIndex).getName();
@@ -142,6 +138,7 @@ class DataElement extends AbstractData {
 
   /**
    * Set the first data file.
+   *
    * @param dataFile data file to set
    */
   void setDataFile(final DataFile dataFile) {
@@ -149,8 +146,7 @@ class DataElement extends AbstractData {
     requireNonNull(dataFile, "DataFile to set cannot be null");
 
     if (this.files.size() == 0) {
-      throw new IllegalStateException(
-          "Cannot set a DataFile if not already exists");
+      throw new IllegalStateException("Cannot set a DataFile if not already exists");
     }
 
     this.files.set(0, dataFile);
@@ -158,6 +154,7 @@ class DataElement extends AbstractData {
 
   /**
    * Set a DataFile.
+   *
    * @param fileIndex index of the data file
    * @param dataFile file to set
    */
@@ -167,8 +164,7 @@ class DataElement extends AbstractData {
     requireNonNull(dataFile, "DataFile to set cannot be null");
 
     if (fileIndex >= this.files.size()) {
-      throw new IllegalStateException(
-          "Cannot set a DataFile if not already exists");
+      throw new IllegalStateException("Cannot set a DataFile if not already exists");
     }
 
     this.files.set(fileIndex, dataFile);
@@ -176,6 +172,7 @@ class DataElement extends AbstractData {
 
   /**
    * Set the DataFiles.
+   *
    * @param dataFiles files to set
    */
   void setDataFiles(final List<DataFile> dataFiles) {
@@ -185,7 +182,8 @@ class DataElement extends AbstractData {
     for (DataFile file : dataFiles) {
 
       checkArgument(file != null, "dataFiles cannot contains null value");
-      checkArgument(Collections.frequency(dataFiles, file) == 1,
+      checkArgument(
+          Collections.frequency(dataFiles, file) == 1,
           "dataFiles cannot contains the same file: " + file);
     }
 
@@ -195,6 +193,7 @@ class DataElement extends AbstractData {
 
   /**
    * Get the DataFiles of the data.
+   *
    * @return a list with the DataFiles
    */
   List<DataFile> getDataFiles() {
@@ -212,20 +211,25 @@ class DataElement extends AbstractData {
     }
 
     if (fileIndex < 0) {
-      throw new EoulsanRuntimeException(
-          "File index parameter cannot be lower than 0");
+      throw new EoulsanRuntimeException("File index parameter cannot be lower than 0");
     }
 
     if (fileIndex > this.files.size()) {
-      throw new EoulsanRuntimeException("Cannot create file index "
-          + fileIndex + " as file index " + this.files.size()
-          + " is not created");
+      throw new EoulsanRuntimeException(
+          "Cannot create file index "
+              + fileIndex
+              + " as file index "
+              + this.files.size()
+              + " is not created");
     }
 
     if (fileIndex >= getFormat().getMaxFilesCount()) {
-      throw new EoulsanRuntimeException("The format "
-          + getFormat().getName() + " does not support more than "
-          + getFormat().getMaxFilesCount() + " multi-files");
+      throw new EoulsanRuntimeException(
+          "The format "
+              + getFormat().getName()
+              + " does not support more than "
+              + getFormat().getMaxFilesCount()
+              + " multi-files");
     }
 
     // Create DataFile is required
@@ -273,17 +277,20 @@ class DataElement extends AbstractData {
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this).add("name", getName())
-        .add("format", getFormat().getName()).add("metadata", getMetadata())
-        .add("list", isList()).add("content", this.files).toString();
+    return MoreObjects.toStringHelper(this)
+        .add("name", getName())
+        .add("format", getFormat().getName())
+        .add("metadata", getMetadata())
+        .add("list", isList())
+        .add("content", this.files)
+        .toString();
   }
 
   //
   // Constructor
   //
 
-  DataElement(final DataFormat format, final List<DataFile> files,
-      final Design design) {
+  DataElement(final DataFormat format, final List<DataFile> files, final Design design) {
 
     super(format);
 
@@ -295,8 +302,7 @@ class DataElement extends AbstractData {
 
     for (DataFile f : files) {
       if (f == null) {
-        throw new IllegalArgumentException(
-            "The files list argument cannot contains null elements");
+        throw new IllegalArgumentException("The files list argument cannot contains null elements");
       }
     }
 
@@ -305,8 +311,7 @@ class DataElement extends AbstractData {
     this.port = null;
   }
 
-  DataElement(final DataFormat format, final DataFile file,
-      final Design design) {
+  DataElement(final DataFormat format, final DataFile file, final Design design) {
     this(format, Collections.singletonList(file), design);
   }
 
@@ -330,6 +335,7 @@ class DataElement extends AbstractData {
 
   /**
    * Copy constructor.
+   *
    * @param data data to copy
    */
   DataElement(final DataElement data) {
@@ -341,5 +347,4 @@ class DataElement extends AbstractData {
     this.port = data.port;
     this.canRename = true;
   }
-
 }

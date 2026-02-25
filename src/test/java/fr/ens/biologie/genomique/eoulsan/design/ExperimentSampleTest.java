@@ -42,5 +42,4 @@ public class ExperimentSampleTest {
     // test ExperimentSampleMetadata
     assertNotNull(es.getMetadata());
   }
-
 }

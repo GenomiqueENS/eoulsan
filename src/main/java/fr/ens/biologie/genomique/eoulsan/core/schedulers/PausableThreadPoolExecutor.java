@@ -36,8 +36,9 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * This class define a Pausable thread pool executor. This class is based on the
- * javadoc documentation of the ThreadPoolExecutor class.
+ * This class define a Pausable thread pool executor. This class is based on the javadoc
+ * documentation of the ThreadPoolExecutor class.
+ *
  * @since 2.0
  */
 public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
@@ -48,11 +49,11 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 
   private final int maxThreads;
   private volatile int threadsAvailable;
-  private final Map<Future<?>, Integer> requirements =
-      new ConcurrentHashMap<>();
+  private final Map<Future<?>, Integer> requirements = new ConcurrentHashMap<>();
 
   /**
    * Submit a task.
+   *
    * @param <T> result class
    * @param task the task to submmit
    * @param result the result
@@ -64,8 +65,8 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
     // The number of thread of the task cannot excess the maximal number of
     // threads and if the number of required processors is not set, use 1 as
     // default value
-    int requiredThreads = requiredProcessors < 1
-        ? 1 : Math.min(requiredProcessors, this.maxThreads);
+    int requiredThreads =
+        requiredProcessors < 1 ? 1 : Math.min(requiredProcessors, this.maxThreads);
 
     Future<T> submitResult = super.submit(task, result);
     this.requirements.put(submitResult, requiredThreads);
@@ -105,7 +106,6 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
     synchronized (this) {
       this.threadsAvailable -= requiredThreads;
     }
-
   }
 
   @Override
@@ -122,9 +122,7 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
     super.afterExecute(task, t);
   }
 
-  /**
-   * Pause the executor.
-   */
+  /** Pause the executor. */
   public void pause() {
 
     this.pauseLock.lock();
@@ -136,9 +134,7 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
     }
   }
 
-  /**
-   * Resume the executor.
-   */
+  /** Resume the executor. */
   public void resume() {
 
     this.pauseLock.lock();
@@ -157,15 +153,14 @@ public class PausableThreadPoolExecutor extends ThreadPoolExecutor {
 
   /**
    * public constructor.
+   *
    * @param threadNumber number of threads
    */
   public PausableThreadPoolExecutor(final int threadNumber) {
 
-    super(threadNumber, threadNumber, 0L, TimeUnit.MILLISECONDS,
-        new LinkedBlockingQueue<>());
+    super(threadNumber, threadNumber, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
 
     this.maxThreads = threadNumber < 1 ? 1 : threadNumber;
     this.threadsAvailable = this.maxThreads;
   }
-
 }

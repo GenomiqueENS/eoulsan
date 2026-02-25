@@ -26,9 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.data.storages;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
-import java.util.Map;
-
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.kenetre.bio.GenomeDescription;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstance;
@@ -36,9 +33,12 @@ import fr.ens.biologie.genomique.kenetre.log.GenericLogger;
 import fr.ens.biologie.genomique.kenetre.storage.AbstractFileGenomeIndexStorage;
 import fr.ens.biologie.genomique.kenetre.storage.DataPath;
 import fr.ens.biologie.genomique.kenetre.storage.GenomeIndexStorage;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * This class define a storage for genome indexes using DataFile API.
+ *
  * @since 2.6
  * @author Laurent Jourdren
  */
@@ -58,37 +58,40 @@ public class DataFileGenomeIndexStorage extends AbstractFileGenomeIndexStorage {
 
   /**
    * Get the DataFile that corresponds to a mapper and a genome
+   *
    * @param mapperInstance mapper
    * @param genome genome description object for the genome
    * @param additionalDescription description of the additional parameters
-   * @return a file that contains the path to the index or null if the index has
-   *         not yet been computed
+   * @return a file that contains the path to the index or null if the index has not yet been
+   *     computed
    */
-  public DataFile getDataFile(MapperInstance mapperInstance,
-      GenomeDescription genome, Map<String, String> additionalDescription) {
+  public DataFile getDataFile(
+      MapperInstance mapperInstance,
+      GenomeDescription genome,
+      Map<String, String> additionalDescription) {
 
-    DataPath result =
-        getDataPath(mapperInstance, genome, additionalDescription);
+    DataPath result = getDataPath(mapperInstance, genome, additionalDescription);
 
     return ((DataFileDataPath) result).getDataFile();
   }
 
   /**
    * Put the index archive in the storage.
+   *
    * @param mapperInstance mapper
    * @param genome genome description object
    * @param additionalDescription description of the additional parameters
    * @param indexArchive the file that contains the index
    */
-  public void put(final MapperInstance mapperInstance,
+  public void put(
+      final MapperInstance mapperInstance,
       final GenomeDescription genome,
       final Map<String, String> additionalDescription,
       final DataFile indexArchive) {
 
     requireNonNull(indexArchive, "IndexArchive is null");
 
-    put(mapperInstance, genome, additionalDescription,
-        new DataFileDataPath(indexArchive));
+    put(mapperInstance, genome, additionalDescription, new DataFileDataPath(indexArchive));
   }
 
   //
@@ -97,13 +100,13 @@ public class DataFileGenomeIndexStorage extends AbstractFileGenomeIndexStorage {
 
   /**
    * Create a GenomeIndexStorage
+   *
    * @param source the path of the index storage
    * @param logger the logger
-   * @return a GenomeIndexStorage object if the path contains an index storage
-   *         or null if no index storage is found
+   * @return a GenomeIndexStorage object if the path contains an index storage or null if no index
+   *     storage is found
    */
-  public static GenomeIndexStorage getInstance(final String source,
-      GenericLogger logger) {
+  public static GenomeIndexStorage getInstance(final String source, GenericLogger logger) {
 
     requireNonNull(source);
 
@@ -120,14 +123,14 @@ public class DataFileGenomeIndexStorage extends AbstractFileGenomeIndexStorage {
 
   /**
    * Constructor.
+   *
    * @param dir directory of the storage.
    * @param logger logger to use
    * @throws IOException if an error occurs while initializing the object
    */
-  protected DataFileGenomeIndexStorage(final DataPath dir,
-      final GenericLogger logger) throws IOException {
+  protected DataFileGenomeIndexStorage(final DataPath dir, final GenericLogger logger)
+      throws IOException {
 
     super(dir, logger);
   }
-
 }

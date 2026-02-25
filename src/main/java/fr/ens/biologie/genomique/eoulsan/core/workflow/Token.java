@@ -24,15 +24,14 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
+import com.google.common.base.MoreObjects;
+import fr.ens.biologie.genomique.eoulsan.data.Data;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.google.common.base.MoreObjects;
-
-import fr.ens.biologie.genomique.eoulsan.data.Data;
-
 /**
  * This class define a token of the workflow.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -47,6 +46,7 @@ class Token {
 
   /**
    * Get the id of the token.
+   *
    * @return the id of the token
    */
   public int getId() {
@@ -55,6 +55,7 @@ class Token {
 
   /**
    * Get the output port at the origin of the token.
+   *
    * @return a WorkflowOutputPort object
    */
   public StepOutputPort getOrigin() {
@@ -64,6 +65,7 @@ class Token {
 
   /**
    * Test if the token is an end of step token.
+   *
    * @return true if the token is an end of step token
    */
   public boolean isEndOfStepToken() {
@@ -72,6 +74,7 @@ class Token {
 
   /**
    * Get the number of tokens sent by the port at the end of the step.
+   *
    * @return the number of tokens sent by the port at the end of the step
    */
   public int getTokenCount() {
@@ -80,6 +83,7 @@ class Token {
 
   /**
    * Get the data in the token.
+   *
    * @return the data object in the token
    */
   public Data getData() {
@@ -95,8 +99,11 @@ class Token {
   public String toString() {
 
     return MoreObjects.toStringHelper(this)
-        .add("id", this.id).add("fromPort", this.fromPort)
-        .add("tokensSent", this.tokensCount).add("data", this.data).toString();
+        .add("id", this.id)
+        .add("fromPort", this.fromPort)
+        .add("tokensSent", this.tokensCount)
+        .add("data", this.data)
+        .toString();
   }
 
   //
@@ -105,6 +112,7 @@ class Token {
 
   /**
    * Constructor for an end of step token.
+   *
    * @param fromPort origin of the token
    * @param tokenCount number of tokens sent by the port at the end of the step
    */
@@ -121,6 +129,7 @@ class Token {
 
   /**
    * Constructor for a standard token (with data).
+   *
    * @param fromPort origin of the token
    * @param data data embedded in the token
    */
@@ -135,5 +144,4 @@ class Token {
     this.tokensCount = -1;
     this.data = data;
   }
-
 }

@@ -26,10 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.checkers;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
@@ -38,9 +34,13 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.generators.GenomeDescriptionCreator;
 import fr.ens.biologie.genomique.kenetre.bio.BadBioEntryException;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * This class define a Checker on genome FASTA files.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -70,13 +70,10 @@ public class GenomeChecker implements Checker {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
-  }
+  public void configure(final Set<Parameter> stepParameters) throws EoulsanException {}
 
   @Override
-  public boolean check(final Data data, final CheckStore checkInfo)
-      throws EoulsanException {
+  public boolean check(final Data data, final CheckStore checkInfo) throws EoulsanException {
 
     if (data == null) {
       throw new NullPointerException("The data is null");
@@ -104,14 +101,17 @@ public class GenomeChecker implements Checker {
       new GenomeDescriptionCreator().createGenomeDescription(genomeFile);
 
     } catch (IOException e) {
-      throw new EoulsanException("Error while reading genome "
-          + genomeFile.getSource() + " for checking: " + e.getMessage(), e);
+      throw new EoulsanException(
+          "Error while reading genome "
+              + genomeFile.getSource()
+              + " for checking: "
+              + e.getMessage(),
+          e);
     } catch (BadBioEntryException e) {
-      throw new EoulsanException("Found bad read entry in genome "
-          + genomeFile.getSource() + ": " + e.getMessage(), e);
+      throw new EoulsanException(
+          "Found bad read entry in genome " + genomeFile.getSource() + ": " + e.getMessage(), e);
     }
 
     return true;
   }
-
 }

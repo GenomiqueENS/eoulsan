@@ -28,9 +28,6 @@ import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_S
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static java.util.Collections.unmodifiableSet;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -42,14 +39,17 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class define the module for normalization
+ *
  * @author deshaies
  * @since 1.2
  */
@@ -82,8 +82,7 @@ public class NormalizationModule extends AbstractModule {
   @Override
   public String getDescription() {
 
-    return "This class compute normalisation of expression data for "
-        + "differential analysis.";
+    return "This class compute normalisation of expression data for " + "differential analysis.";
   }
 
   @Override
@@ -100,23 +99,22 @@ public class NormalizationModule extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     // Parse R executor parameters
     final Set<Parameter> parameters = new HashSet<>(stepParameters);
-    this.executor = RModuleCommonConfiguration.parseRExecutorParameter(context,
-        parameters, this.requirements, DESEQ1_DOCKER_IMAGE);
+    this.executor =
+        RModuleCommonConfiguration.parseRExecutorParameter(
+            context, parameters, this.requirements, DESEQ1_DOCKER_IMAGE);
 
     if (!parameters.isEmpty()) {
       Modules.unknownParameter(context, parameters.iterator().next());
     }
-
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     try {
 
@@ -131,9 +129,8 @@ public class NormalizationModule extends AbstractModule {
 
     } catch (EoulsanException e) {
 
-      return status.createTaskResult(e,
-          "Error while normalizing expression data: " + e.getMessage());
+      return status.createTaskResult(
+          e, "Error while normalizing expression data: " + e.getMessage());
     }
-
   }
 }

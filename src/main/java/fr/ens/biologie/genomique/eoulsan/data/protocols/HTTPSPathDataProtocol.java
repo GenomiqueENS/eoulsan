@@ -28,6 +28,7 @@ import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
 
 /**
  * This class define the HTTP protocol in Hadoop mode.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -42,5 +43,4 @@ public class HTTPSPathDataProtocol extends PathDataProtocol {
 
     return PROTOCOL_NAME;
   }
-
 }

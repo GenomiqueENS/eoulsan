@@ -26,6 +26,32 @@ package fr.ens.biologie.genomique.eoulsan.modules;
 
 import static java.nio.file.FileVisitResult.CONTINUE;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
+import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
+import fr.ens.biologie.genomique.eoulsan.annotations.ReuseModuleInstance;
+import fr.ens.biologie.genomique.eoulsan.core.DataUtils;
+import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
+import fr.ens.biologie.genomique.eoulsan.core.FileNamingParsingRuntimeException;
+import fr.ens.biologie.genomique.eoulsan.core.Modules;
+import fr.ens.biologie.genomique.eoulsan.core.Naming;
+import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
+import fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.DataMetadataStorage;
+import fr.ens.biologie.genomique.eoulsan.data.Data;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
+import fr.ens.biologie.genomique.eoulsan.design.Sample;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -45,35 +71,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
-import fr.ens.biologie.genomique.eoulsan.annotations.NoLog;
-import fr.ens.biologie.genomique.eoulsan.annotations.ReuseModuleInstance;
-import fr.ens.biologie.genomique.eoulsan.core.DataUtils;
-import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
-import fr.ens.biologie.genomique.eoulsan.core.FileNamingParsingRuntimeException;
-import fr.ens.biologie.genomique.eoulsan.core.Modules;
-import fr.ens.biologie.genomique.eoulsan.core.Naming;
-import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
-import fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
-import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.DataMetadataStorage;
-import fr.ens.biologie.genomique.eoulsan.data.Data;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
-import fr.ens.biologie.genomique.eoulsan.design.Sample;
-import fr.ens.biologie.genomique.kenetre.io.CompressionType;
-
 /**
  * This class define a import step.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -89,9 +89,7 @@ public class ImportModule extends AbstractModule {
   private boolean copy;
   private DataFormat format;
 
-  /**
-   * This class allow to find files that matche to a pattern.
-   */
+  /** This class allow to find files that matche to a pattern. */
   private static class Finder extends SimpleFileVisitor<Path> {
 
     private final PathMatcher matcher;
@@ -99,6 +97,7 @@ public class ImportModule extends AbstractModule {
 
     /**
      * Test if a file matches to the pattern.
+     *
      * @param file the file to test
      */
     private void find(Path file) {
@@ -110,6 +109,7 @@ public class ImportModule extends AbstractModule {
 
     /**
      * Get the file found.
+     *
      * @return a set with the files found
      */
     Set<DataFile> getFiles() {
@@ -129,8 +129,7 @@ public class ImportModule extends AbstractModule {
     }
 
     @Override
-    public FileVisitResult preVisitDirectory(final Path dir,
-        final BasicFileAttributes attrs) {
+    public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes attrs) {
       find(dir);
       return CONTINUE;
     }
@@ -146,18 +145,19 @@ public class ImportModule extends AbstractModule {
 
     /**
      * Constructor.
+     *
      * @param workingDirectory the working directory
      * @param pattern the file matching pattern
      */
     Finder(final Path workingDirectory, final String pattern) {
 
-      String finalPattern = !pattern.startsWith("/")
-          ? workingDirectory.toAbsolutePath().toString() + '/' + pattern : pattern;
+      String finalPattern =
+          !pattern.startsWith("/")
+              ? workingDirectory.toAbsolutePath().toString() + '/' + pattern
+              : pattern;
 
-      this.matcher =
-          FileSystems.getDefault().getPathMatcher("glob:" + finalPattern);
+      this.matcher = FileSystems.getDefault().getPathMatcher("glob:" + finalPattern);
     }
-
   }
 
   @Override
@@ -179,8 +179,8 @@ public class ImportModule extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     DataFile baseDir = context.getOutputDirectory();
     String pattern = "";
@@ -189,29 +189,29 @@ public class ImportModule extends AbstractModule {
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
+        case "files":
+          pattern = p.getStringValue();
+          break;
 
-      case "files":
-        pattern = p.getStringValue();
-        break;
+        case "directory":
+          Modules.deprecatedParameter(context, p, true);
+          break;
 
-      case "directory":
-        Modules.deprecatedParameter(context, p, true);
-        break;
+        case "copy":
+          this.copy = p.getBooleanValue();
+          break;
 
-      case "copy":
-        this.copy = p.getBooleanValue();
-        break;
+        case "format":
+          this.format =
+              DataFormatRegistry.getInstance()
+                  .getDataFormatFromGalaxyFormatNameOrNameOrAlias(p.getValue());
+          if (this.format == null) {
+            Modules.badParameterValue(context, p, "Unknown format");
+          }
+          break;
 
-      case "format":
-        this.format = DataFormatRegistry.getInstance()
-            .getDataFormatFromGalaxyFormatNameOrNameOrAlias(p.getValue());
-        if (this.format == null) {
-          Modules.badParameterValue(context, p, "Unknown format");
-        }
-        break;
-
-      default:
-        Modules.unknownParameter(context, p);
+        default:
+          Modules.unknownParameter(context, p);
       }
     }
 
@@ -220,8 +220,7 @@ public class ImportModule extends AbstractModule {
 
       // Check if base directory exists
       if (!(baseDir.exists() && baseDir.getMetaData().isDir())) {
-        Modules.invalidConfiguration(context,
-            "The directory does not exists: " + baseDir);
+        Modules.invalidConfiguration(context, "The directory does not exists: " + baseDir);
       }
 
       // Get the list of the files to import
@@ -229,8 +228,7 @@ public class ImportModule extends AbstractModule {
 
       // Check if some files has been found
       if (this.files.isEmpty()) {
-        Modules.invalidConfiguration(context,
-            "No input file found in the " + getName() + " step");
+        Modules.invalidConfiguration(context, "No input file found in the " + getName() + " step");
       }
 
       // Get the format and the compression of the files
@@ -238,14 +236,13 @@ public class ImportModule extends AbstractModule {
           listDataFormatFromFileList(this.files, this.format);
 
       if (formats.isEmpty()) {
-        Modules.invalidConfiguration(context,
-            "No format found for the files matching to the pattern");
+        Modules.invalidConfiguration(
+            context, "No format found for the files matching to the pattern");
       }
 
       if (formats.size() > 1) {
-        Modules.invalidConfiguration(context,
-            "More than one file format found for the files matching "
-                + "to the pattern");
+        Modules.invalidConfiguration(
+            context, "More than one file format found for the files matching " + "to the pattern");
       }
 
       // Create the output ports
@@ -263,8 +260,7 @@ public class ImportModule extends AbstractModule {
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
@@ -291,8 +287,8 @@ public class ImportModule extends AbstractModule {
         // For each files of the data
         for (DataFile inputFile : inputFiles) {
 
-          final DataFormat format = this.format == null
-              ? fileFormat(registry, inputFile) : this.format;
+          final DataFormat format =
+              this.format == null ? fileFormat(registry, inputFile) : this.format;
           final FileNaming fileNaming = fileNaming(inputFile);
 
           // Define the data object
@@ -301,9 +297,10 @@ public class ImportModule extends AbstractModule {
             // If file use the Eoulsan naming
             if (fileNaming != null) {
 
-              data = context.getOutputData(format, format.getPrefix())
-                  .addDataToList(fileNaming.getDataName(),
-                      fileNaming.getPart());
+              data =
+                  context
+                      .getOutputData(format, format.getPrefix())
+                      .addDataToList(fileNaming.getDataName(), fileNaming.getPart());
 
               // Set metadata of imported files
               final boolean isMetadataSet =
@@ -320,11 +317,9 @@ public class ImportModule extends AbstractModule {
             else {
 
               // Define the data name
-              final String dataName =
-                  Naming.toValidName(inputFile.getBasename());
+              final String dataName = Naming.toValidName(inputFile.getBasename());
 
-              data = context.getOutputData(format, format.getPrefix())
-                  .addDataToList(dataName);
+              data = context.getOutputData(format, format.getPrefix()).addDataToList(dataName);
             }
           }
 
@@ -368,6 +363,7 @@ public class ImportModule extends AbstractModule {
 
   /**
    * Get the part of a path that exists.
+   *
    * @param path the path to check
    * @return a new Path with the part of the path that exists
    */
@@ -390,16 +386,16 @@ public class ImportModule extends AbstractModule {
 
   /**
    * Find files that match with the pattern.
+   *
    * @param workingDirectory the working directory
    * @param pattern the pattern
    * @return a set with the matching files
    * @throws IOException if a error occurs while finding files
    */
-  private static Set<DataFile> findFiles(final DataFile workingDirectory,
-      final String pattern) throws IOException {
+  private static Set<DataFile> findFiles(final DataFile workingDirectory, final String pattern)
+      throws IOException {
 
-    Objects.requireNonNull(workingDirectory,
-        "workingDirectory argument cannot be null");
+    Objects.requireNonNull(workingDirectory, "workingDirectory argument cannot be null");
     Objects.requireNonNull(pattern, "pattern argument cannot be null");
 
     Path dir = workingDirectory.toPath();
@@ -413,8 +409,7 @@ public class ImportModule extends AbstractModule {
 
     Finder finder = new Finder(dir, finalPattern);
 
-    Path baseDir = finalPattern.startsWith("/")
-        ? getMinExistingPath(finalPattern) : dir;
+    Path baseDir = finalPattern.startsWith("/") ? getMinExistingPath(finalPattern) : dir;
 
     Files.walkFileTree(baseDir, finder);
     return finder.getFiles();
@@ -422,14 +417,14 @@ public class ImportModule extends AbstractModule {
 
   /**
    * Get the format and compression of a list of files.
+   *
    * @param files the list of file
    * @param format format of the file. Can be null
    * @return a map with for each format the common compression of the files
    * @throws EoulsanException if format of a file cannot be determined
    */
   private static Map<DataFormat, CompressionType> listDataFormatFromFileList(
-      final Set<DataFile> files, final DataFormat format)
-      throws EoulsanException {
+      final Set<DataFile> files, final DataFormat format) throws EoulsanException {
 
     if (files == null) {
       return Collections.emptyMap();
@@ -440,8 +435,7 @@ public class ImportModule extends AbstractModule {
 
     for (DataFile file : files) {
 
-      final DataFormat fileFormat =
-          format == null ? fileFormat(registry, file) : format;
+      final DataFormat fileFormat = format == null ? fileFormat(registry, file) : format;
       final CompressionType compression = file.getCompressionType();
 
       final CompressionType previous = result.get(fileFormat);
@@ -449,7 +443,6 @@ public class ImportModule extends AbstractModule {
       if (previous == null || previous == CompressionType.NONE) {
         result.put(fileFormat, compression);
       }
-
     }
 
     return Collections.unmodifiableMap(result);
@@ -457,14 +450,14 @@ public class ImportModule extends AbstractModule {
 
   /**
    * Get the format of a file.
+   *
    * @param registry the format registry
    * @param file the file which name must be parsed
    * @return the DataFormat of the file
-   * @throws EoulsanException if no format or several format for the file has
-   *           been found
+   * @throws EoulsanException if no format or several format for the file has been found
    */
-  private static DataFormat fileFormat(final DataFormatRegistry registry,
-      final DataFile file) throws EoulsanException {
+  private static DataFormat fileFormat(final DataFormatRegistry registry, final DataFile file)
+      throws EoulsanException {
 
     try {
 
@@ -480,16 +473,14 @@ public class ImportModule extends AbstractModule {
 
       final String extension = file.getExtension();
 
-      final Set<DataFormat> formats =
-          registry.getDataFormatsFromExtension(extension);
+      final Set<DataFormat> formats = registry.getDataFormatsFromExtension(extension);
 
       if (formats.isEmpty()) {
         throw new EoulsanException("No format found for file: " + file);
       }
 
       if (formats.size() > 1) {
-        throw new EoulsanException(
-            "More than one format found for file: " + file);
+        throw new EoulsanException("More than one format found for file: " + file);
       }
 
       return formats.iterator().next();
@@ -498,6 +489,7 @@ public class ImportModule extends AbstractModule {
 
   /**
    * Get the FileNaming related to a file if can be created.
+   *
    * @param file file which name must be parsed
    * @return a FileNaming object or null, if the file name cannot be parsed
    */
@@ -514,6 +506,7 @@ public class ImportModule extends AbstractModule {
 
   /**
    * Group file by data.
+   *
    * @param files files to process
    */
   private static Set<List<DataFile>> groupFiles(final Set<DataFile> files) {
@@ -550,8 +543,9 @@ public class ImportModule extends AbstractModule {
   }
 
   /**
-   * Test if the base directory must be change if pattern is relative and if a
-   * parent directory is in the path.
+   * Test if the base directory must be change if pattern is relative and if a parent directory is
+   * in the path.
+   *
    * @param pattern the pattern
    * @return the part of the pattern that must be added to the base directory
    */
@@ -571,5 +565,4 @@ public class ImportModule extends AbstractModule {
 
     return String.join("/", elements.subList(0, index + 1));
   }
-
 }

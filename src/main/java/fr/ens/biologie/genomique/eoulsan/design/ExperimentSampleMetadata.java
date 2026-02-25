@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.design;
 
 /**
  * This inteface defines the experiment sample metadata.
+ *
  * @author Xavier Bauquet
  * @since 2.0
  */
@@ -38,68 +39,78 @@ public interface ExperimentSampleMetadata extends Metadata {
 
   /**
    * Get the RepTechGroup.
+   *
    * @return the RepTechGroup
    */
   String getRepTechGroup();
 
   /**
    * Get the reference.
+   *
    * @return the reference
    */
   String getReference();
 
   /**
    * Get the reference.
+   *
    * @return the reference
    */
   boolean isReference();
 
   /**
    * Get the condition.
+   *
    * @return the condition
    */
   String getCondition();
 
   /**
    * Set the ReptechGroup.
+   *
    * @param newReptechGroup the new ReptechGroup
    */
   void setRepTechGroup(String newReptechGroup);
 
   /**
    * Set the reference.
+   *
    * @param newReference the new reference
    */
   void setReference(boolean newReference);
 
   /**
    * Set the reference.
+   *
    * @param newReference the new reference
    */
   void setReference(String newReference);
 
   /**
    * Set the condition.
+   *
    * @param newCondition the new condition
    */
   void setCondition(String newCondition);
 
   /**
    * Test if the RepTechGroup field exists.
+   *
    * @return true if the RepTechGroup field exists
    */
   boolean containsRepTechGroup();
 
   /**
    * Test if the reference field exists.
+   *
    * @return true if the reference field exists
    */
   boolean containsReference();
 
   /**
    * Test if the condition field exists.
+   *
    * @return true if the condition field exists
    */
   boolean containsCondition();
-
 }

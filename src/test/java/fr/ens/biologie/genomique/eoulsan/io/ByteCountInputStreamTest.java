@@ -30,7 +30,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Random;
-
 import org.junit.Test;
 
 public class ByteCountInputStreamTest {
@@ -55,9 +54,7 @@ public class ByteCountInputStreamTest {
       final String s = sb.toString();
       testString1(s);
       testString2(s);
-
     }
-
   }
 
   private void testString1(final String s) throws IOException {
@@ -68,8 +65,7 @@ public class ByteCountInputStreamTest {
 
     final ByteCountInputStream bcis = new ByteCountInputStream(bais);
 
-    while (bcis.read() != -1) {
-    }
+    while (bcis.read() != -1) {}
 
     bcis.close();
 
@@ -82,14 +78,10 @@ public class ByteCountInputStreamTest {
 
     final ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 
-    final ByteCountInputStream bcis =
-        new ByteCountInputStream(bais, bytes.length);
+    final ByteCountInputStream bcis = new ByteCountInputStream(bais, bytes.length);
 
-    while (bcis.read() != -1) {
-    }
+    while (bcis.read() != -1) {}
 
     bcis.close();
-
   }
-
 }

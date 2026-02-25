@@ -29,21 +29,20 @@ import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
 import static java.util.Objects.requireNonNull;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 import com.google.common.base.MoreObjects;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.core.SimpleInputPort;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
- * This class define a workflow input port. It is like a standard InputPort but
- * it contains also the step of the port.
+ * This class define a workflow input port. It is like a standard InputPort but it contains also the
+ * step of the port.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -56,6 +55,7 @@ class StepInputPort extends SimpleInputPort {
 
   /**
    * Get the step related to the port.
+   *
    * @return a step object
    */
   public AbstractStep getStep() {
@@ -65,6 +65,7 @@ class StepInputPort extends SimpleInputPort {
 
   /**
    * Get the output port linked to this input port.
+   *
    * @return the linked output port if exists or null
    */
   public StepOutputPort getLink() {
@@ -73,6 +74,7 @@ class StepInputPort extends SimpleInputPort {
 
   /**
    * Test if the port is linked.
+   *
    * @return true if the port is linked
    */
   public boolean isLinked() {
@@ -82,6 +84,7 @@ class StepInputPort extends SimpleInputPort {
 
   /**
    * Set the link for the port.
+   *
    * @param outputPort the output of the link
    */
   public void setLink(final StepOutputPort outputPort) {
@@ -90,24 +93,44 @@ class StepInputPort extends SimpleInputPort {
     requireNonNull(outputPort, "outputPort argument cannot be null");
 
     // Check the ports are not on the same step
-    checkArgument(outputPort.getStep() != this.step,
+    checkArgument(
+        outputPort.getStep() != this.step,
         "cannot link a step ("
-            + this.step.getId() + ") to itself (input port: " + getName()
-            + ", output port: " + outputPort.getName());
+            + this.step.getId()
+            + ") to itself (input port: "
+            + getName()
+            + ", output port: "
+            + outputPort.getName());
 
     // Check if a link already exists
     if (this.link != null) {
-      throw new EoulsanRuntimeException("A link already exists for "
-          + getStep().getId() + "." + getName() + " ("
-          + this.link.getStep().getId() + "." + this.link.getName() + ")");
+      throw new EoulsanRuntimeException(
+          "A link already exists for "
+              + getStep().getId()
+              + "."
+              + getName()
+              + " ("
+              + this.link.getStep().getId()
+              + "."
+              + this.link.getName()
+              + ")");
     }
 
     // Check if format are compatible
     if (!getFormat().equals(outputPort.getFormat())) {
-      throw new EoulsanRuntimeException("Incompatible format: "
-          + getStep().getId() + "." + getName() + " -> " + getFormat().getName()
-          + " and " + outputPort.getStep().getId() + "." + outputPort.getName()
-          + " <- " + outputPort.getFormat().getName());
+      throw new EoulsanRuntimeException(
+          "Incompatible format: "
+              + getStep().getId()
+              + "."
+              + getName()
+              + " -> "
+              + getFormat().getName()
+              + " and "
+              + outputPort.getStep().getId()
+              + "."
+              + outputPort.getName()
+              + " <- "
+              + outputPort.getFormat().getName());
     }
 
     final AbstractStep step = outputPort.getStep();
@@ -116,9 +139,12 @@ class StepInputPort extends SimpleInputPort {
     if (step.getType() != StepType.DESIGN_STEP
         && step.getType() != StepType.GENERATOR_STEP
         && step.getType() != StepType.STANDARD_STEP) {
-      throw new EoulsanRuntimeException("The dependency ("
-          + step.getId() + ") do not provide port (" + outputPort.getName()
-          + ")");
+      throw new EoulsanRuntimeException(
+          "The dependency ("
+              + step.getId()
+              + ") do not provide port ("
+              + outputPort.getName()
+              + ")");
     }
 
     this.link = outputPort;
@@ -137,11 +163,14 @@ class StepInputPort extends SimpleInputPort {
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this).add("name", getName())
+    return MoreObjects.toStringHelper(this)
+        .add("name", getName())
         .add("format", getFormat().getName())
         .add("compressionsAccepted", getCompressionsAccepted())
         .add("requiredInWorkingDirectory", isRequiredInWorkingDirectory())
-        .add("step", getStep().getId()).add("link", getLink()).toString();
+        .add("step", getStep().getId())
+        .add("link", getLink())
+        .toString();
   }
 
   //
@@ -150,14 +179,18 @@ class StepInputPort extends SimpleInputPort {
 
   /**
    * Constructor.
+   *
    * @param step the step related to the port
    * @param name name of the port
    * @param format format of the port
    * @param compressionsAccepted compression accepted
    * @param requiredInWorkingDirectory if data is required in working directory
    */
-  public StepInputPort(final AbstractStep step, final String name,
-      final boolean list, final DataFormat format,
+  public StepInputPort(
+      final AbstractStep step,
+      final String name,
+      final boolean list,
+      final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted,
       final boolean requiredInWorkingDirectory) {
 

@@ -1,18 +1,17 @@
 package fr.ens.biologie.genomique.eoulsan.actions;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.base.Strings;
-
 import fr.ens.biologie.genomique.eoulsan.Infos;
 import fr.ens.biologie.genomique.eoulsan.Infos.Info;
 import fr.ens.biologie.genomique.eoulsan.Main;
 import fr.ens.biologie.genomique.eoulsan.Settings;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class define an action that show the Eoulsan configuration
+ *
  * @author Laurent Jourdren
  * @since 2.3
  */
@@ -29,6 +28,7 @@ public class InfoAction extends AbstractInfoAction {
 
   /**
    * Show the information on stdout
+   *
    * @param settings the Eoulsan settings
    */
   @Override
@@ -85,6 +85,7 @@ public class InfoAction extends AbstractInfoAction {
 
   /**
    * Convert a map of list of Info into a String.
+   *
    * @param sections the section to convert
    * @return a String with a the description of the configuration
    */
@@ -130,6 +131,7 @@ public class InfoAction extends AbstractInfoAction {
 
   /**
    * Get the maximal length of the key of the Info objects.
+   *
    * @param infos the info object
    * @return the maximal length of the key of the Info objects
    */
@@ -146,6 +148,7 @@ public class InfoAction extends AbstractInfoAction {
 
   /**
    * Get the maximal length of the key of the Info objects in a map.
+   *
    * @param sections info sections
    * @return the maximal length of the key of the Info objects
    */
@@ -159,5 +162,4 @@ public class InfoAction extends AbstractInfoAction {
 
     return result;
   }
-
 }

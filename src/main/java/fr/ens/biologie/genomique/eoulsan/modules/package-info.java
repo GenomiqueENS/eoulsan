@@ -24,6 +24,7 @@
 
 /**
  * This package define the steps for the Eoulsan workflow.
+ *
  * @since 1.0
  */
 package fr.ens.biologie.genomique.eoulsan.modules;
