@@ -40,7 +40,7 @@
       <p>This module allow to split reads into smaller reads.</p>
 
       <ul>
-         <li><b>Internal name</b>: multiqc</li>
+         <li><b>Internal name</b>: splitreads</li>
          <li><b>Available</b>: Both local and distributed mode</li>
 
          <br/>
