@@ -46,6 +46,9 @@ public class AnnotationDataProtocol extends DeprecatedDataProtocol {
   // Constructor
   //
 
+  /**
+   * Public constructor.
+   */
   public AnnotationDataProtocol() {
 
     super(GFFDataProtocol.PROTOCOL_NAME);

@@ -246,6 +246,10 @@ public class EoulsanLogger {
     getLogger().finest(message);
   }
 
+  /**
+   * Get the logger.
+   * @return a GenericLogger object
+   */
   public static GenericLogger getGenericLogger() {
 
     return new EoulsanRuntimeLogger();

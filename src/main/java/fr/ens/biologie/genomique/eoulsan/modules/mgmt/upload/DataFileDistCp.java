@@ -212,6 +212,11 @@ public class DataFileDistCp {
 
   }
 
+  /**
+   * Copy files.
+   * @param entries entries to copy
+   * @throws IOException if an error occurs while copying
+   */
   public void copy(final Map<DataFile, DataFile> entries) throws IOException {
 
     if (entries == null || entries.size() == 0) {

@@ -134,11 +134,19 @@ public class CommandWorkflowParser {
 
   private final Map<String, String> constants = initConstants();
 
+  /**
+   * Define a step output port.
+   */
   public static final class StepOutputPort {
 
     public final String stepId;
     public final String outputPortName;
 
+    /**
+     * Constructor.
+     * @param stepId step id
+     * @param outputPortName output port name
+     */
     public StepOutputPort(final String stepId, final String outputPortName) {
 
       this.stepId = stepId == null ? null : stepId.trim();

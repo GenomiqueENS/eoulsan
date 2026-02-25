@@ -87,6 +87,11 @@ public class DistributedLock {
   private String watchedNode;
   private LockWatcher watcher;
 
+  /**
+   * Constructor.
+   * @param zkClient ZooKeeper client object
+   * @param lockPath lock path
+   */
   public DistributedLock(ZooKeeper zkClient, String lockPath) {
     this(zkClient, lockPath, ZooDefs.Ids.OPEN_ACL_UNSAFE);
   }
@@ -125,6 +130,10 @@ public class DistributedLock {
     this.watcher = new LockWatcher();
   }
 
+  /**
+   * Lock.
+   * @throws IOException if an error occurs
+   */
   public synchronized void lock() throws IOException {
     if (holdsLock) {
       throw new IOException(
@@ -147,6 +156,13 @@ public class DistributedLock {
     }
   }
 
+  /**
+   * Try to lock.
+   * @param timeout the timeout
+   * @param unit timeout unit
+   * @return true if lock is successful
+   * @throws EoulsanException if an error occurs while trying to lock
+   */
   public synchronized boolean tryLock(long timeout, TimeUnit unit)
       throws EoulsanException {
     if (holdsLock) {
@@ -174,6 +190,10 @@ public class DistributedLock {
     return true;
   }
 
+  /**
+   * Unlock.
+   * @throws IOException if an error occurs while unlocking
+   */
   public synchronized void unlock() throws IOException {
     if (currentId == null) {
       throw new IOException(

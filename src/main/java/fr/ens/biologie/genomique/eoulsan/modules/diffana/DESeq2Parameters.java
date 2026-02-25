@@ -122,6 +122,10 @@ public class DESeq2Parameters {
 
     private final String name;
 
+    /**
+     * Get the parameter value for DESeq2 argument.
+     * @return a String with the DESeq2 argument
+     */
     public String toDESeq2Value() {
 
       return name;
@@ -491,6 +495,9 @@ public class DESeq2Parameters {
   // Other methods
   //
 
+  /**
+   * Check DESeq2 parameters.
+   */
   public void check() {
 
     requireNonNull(this.sizeFactorsType,

@@ -54,6 +54,10 @@ public class DataFormatConverter {
   final DataFile outFile;
   final OutputStream os;
 
+  /**
+   * Convert.
+   * @throws IOException if an error occurs while converting data
+   */
   public void convert() throws IOException {
 
     if (this.outFormat == null) {

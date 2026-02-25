@@ -219,6 +219,11 @@ public final class Common {
     Runtime.getRuntime().halt(exitCode);
   }
 
+  /**
+   * Send email.
+   * @param subject email subject
+   * @param message message of the email
+   */
   public static void sendMail(final String subject, final String message) {
 
     if (!EoulsanRuntime.isRuntime()) {

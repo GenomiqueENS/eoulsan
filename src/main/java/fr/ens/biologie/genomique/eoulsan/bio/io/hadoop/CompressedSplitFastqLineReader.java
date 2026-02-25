@@ -26,6 +26,11 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.compress.SplitCompressionInputStream;
 import org.apache.hadoop.mapreduce.lib.input.SplitLineReader;
 
+/**
+ * This class define a split line reader for compressed FASTQ files.
+ * @author Laurent Jourdren
+ * @since 2.0
+ */
 public class CompressedSplitFastqLineReader extends SplitLineReader {
 
   SplitCompressionInputStream scin;
@@ -34,6 +39,13 @@ public class CompressedSplitFastqLineReader extends SplitLineReader {
   private boolean finished = false;
   private boolean cont = false;
 
+  /**
+   * Constructor.
+   * @param in input stream
+   * @param conf Hadoop configuration
+   * @param recordDelimiterBytes bytes
+   * @throws IOException if an error occurs while reading data
+   */
   public CompressedSplitFastqLineReader(SplitCompressionInputStream in,
       Configuration conf, byte[] recordDelimiterBytes) throws IOException {
     super(in, conf, recordDelimiterBytes);

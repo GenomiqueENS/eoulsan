@@ -109,8 +109,18 @@ public interface Design {
    */
   boolean containsExperiment(String experimentId);
 
+  /**
+   * Test if the sample name exists.
+   * @param sampleName the sample name
+   * @return true if the sample exists
+   */
   boolean containsSampleName(String sampleName);
 
+  /**
+   * Test if the experiment exists.
+   * @param experimentName the experiment name
+   * @return true if the experiment exists
+   */
   boolean containsExperimentName(String experimentName);
 
   /**

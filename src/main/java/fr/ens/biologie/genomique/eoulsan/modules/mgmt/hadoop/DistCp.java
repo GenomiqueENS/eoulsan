@@ -246,6 +246,10 @@ public class DistCp implements Tool {
     return this.conf;
   }
 
+  /**
+   * Constructor.
+   * @param conf Hadoop configuration
+   */
   public DistCp(final Configuration conf) {
     setConf(conf);
   }
@@ -656,6 +660,16 @@ public class DistCp implements Tool {
     return result;
   }
 
+  /**
+   * Copy a file.
+   * @param conf Hadoop configuration
+   * @param srcPath source
+   * @param destPath destination
+   * @param logPath log path
+   * @param srcAsList source is a list
+   * @param ignoreReadFailures true to ignore read faillure
+   * @throws IOException if an error occurs while copying data
+   */
   @Deprecated
   public static void copy(final Configuration conf, final String srcPath,
       final String destPath, final Path logPath, final boolean srcAsList,
@@ -1051,6 +1065,10 @@ public class DistCp implements Tool {
 
   private static final Random RANDOM = new Random();
 
+  /**
+   * Get a random id.
+   * @return a String with a random id
+   */
   public static String getRandomId() {
     return Integer.toString(RANDOM.nextInt(Integer.MAX_VALUE), 36);
   }

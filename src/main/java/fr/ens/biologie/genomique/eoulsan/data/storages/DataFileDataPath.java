@@ -51,6 +51,10 @@ public class DataFileDataPath
 
   private final DataFile file;
 
+  /**
+   * Get the DataFile.
+   * @return the DataFile object
+   */
   public DataFile getDataFile() {
     return this.file;
   }

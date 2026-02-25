@@ -35,6 +35,11 @@ import fr.ens.biologie.genomique.eoulsan.design.Design;
  */
 public interface DesignWriter {
 
+  /**
+   * Write a design.
+   * @param design the design to write
+   * @throws IOException if an error occurs while writing the design
+   */
   void write(final Design design) throws IOException;
 
 }

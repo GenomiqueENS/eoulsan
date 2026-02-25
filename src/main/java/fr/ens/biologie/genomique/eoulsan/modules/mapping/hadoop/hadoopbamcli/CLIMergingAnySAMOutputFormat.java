@@ -34,10 +34,11 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.seqdoop.hadoop_bam.KeyIgnoringAnySAMOutputFormat;
 import org.seqdoop.hadoop_bam.SAMRecordWritable;
 
-
-// Like a KeyIgnoringAnySAMOutputFormat<K>, but sets the SAMFileHeader to
-// Utils.getSAMHeaderMerger().getMergedHeader() and allows the output directory
-// (the "work directory") to exist.
+/**
+ * Like a KeyIgnoringAnySAMOutputFormat<K>, but sets the SAMFileHeader to
+ * Utils.getSAMHeaderMerger().getMergedHeader() and allows the output directory
+ * (the "work directory") to exist.
+ */
 public class CLIMergingAnySAMOutputFormat<K>
 	extends FileOutputFormat<K, SAMRecordWritable>
 {

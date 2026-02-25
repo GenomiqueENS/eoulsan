@@ -163,6 +163,10 @@ public class ExecutorArguments {
     return this.jobId;
   }
 
+  /**
+   * Get the UUID of the job.
+   * @return the UUID of the job
+   */
   public final String getJobUUID() {
     return this.jobUUID;
   }
