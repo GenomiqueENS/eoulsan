@@ -1029,7 +1029,7 @@ public final class Settings implements Serializable {
   /**
    * Set the working directory.
    *
-   * @param tempDirectory The path to the working directory
+   * @param workingDirectory The path to the working directory
    */
   public void setWorkingDirectory(final String workingDirectory) {
 

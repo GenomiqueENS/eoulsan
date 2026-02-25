@@ -33,7 +33,7 @@ import org.seqdoop.hadoop_bam.KeyIgnoringAnySAMOutputFormat;
 import org.seqdoop.hadoop_bam.SAMRecordWritable;
 
 /**
- * Like a KeyIgnoringAnySAMOutputFormat<K>, but sets the SAMFileHeader to
+ * Like a KeyIgnoringAnySAMOutputFormat, but sets the SAMFileHeader to
  * Utils.getSAMHeaderMerger().getMergedHeader() and allows the output directory (the "work
  * directory") to exist.
  */
