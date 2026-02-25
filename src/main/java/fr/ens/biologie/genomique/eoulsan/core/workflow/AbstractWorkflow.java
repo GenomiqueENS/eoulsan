@@ -792,22 +792,10 @@ public abstract class AbstractWorkflow implements Workflow {
     requireNonNull(this.outputDir, "the output directory is null");
     requireNonNull(this.localWorkingDir, "the local working directory is null");
 
-    // Get Eoulsan settings
-    final Settings settings = EoulsanRuntime.getSettings();
-
     // Define the list of directories to create
     final List<DataFile> dirsToCheck =
         Lists.newArrayList(this.jobDir, this.outputDir, this.localWorkingDir,
-            this.hadoopWorkingDir, this.taskDir);
-
-    // If the temporary directory has not been defined by user
-    if (!settings.isUserDefinedTempDirectory()) {
-
-      // Set the temporary directory
-      requireNonNull(this.tmpDir, "The temporary directory is null");
-      settings.setTempDirectory(this.tmpDir.toFile().toString());
-      dirsToCheck.add(this.tmpDir);
-    }
+            this.hadoopWorkingDir, this.taskDir, this.tmpDir);
 
     try {
       for (DataFile dir : dirsToCheck) {

@@ -131,6 +131,9 @@ public class Executor {
     // Update settings with global parameters
     updateSettingsWithGlobalParameters(settings, this.command);
 
+    // Update the working and temporary directories if needed
+    updateTempAndWorkingDirectories(this.arguments, settings);
+
     // Add default Eoulsan external modules
     configureEoulsanTools(settings);
 
@@ -295,6 +298,24 @@ public class Executor {
   }
 
   /**
+   * Set the path of the temporary and working directories in the ExecutorArguments object.
+   * @param arguments ExecutorArguments object
+   * @param settings the settings
+   */
+  private static void updateTempAndWorkingDirectories(
+      final ExecutorArguments arguments, final Settings settings) {
+
+    if (settings.isSetting("main.working.dir")) {
+      arguments.setLocalWorkingPathname(settings.getWorkingDirectory());
+    }
+    settings.setWorkingDirectory(arguments.getLocalWorkingPathname());
+
+    if (settings.isUserDefinedTempDirectory()) {
+      arguments.setTemporaryPathname(settings.getTempDirectory());
+    }
+  }
+
+  /**
    * Configure default standard Galaxy modules and external formats.
    * @param settings the Eoulsan settings
    */
@@ -356,14 +377,6 @@ public class Executor {
     this.arguments = arguments;
     this.design = loadDesign(arguments);
     this.command = loadCommand(arguments, this.design);
-
-    // Change the working directory if needed
-    for (Parameter p : this.command.getGlobalParameters()) {
-      if ("main.working.dir".equalsIgnoreCase(p.getName())) {
-        arguments.setLocalWorkingPathname(p.getValue());
-      }
-    }
-
   }
 
 }

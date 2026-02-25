@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -275,6 +276,10 @@ public abstract class AbstractEasyContrasts {
     final List<String> experimentMDKeys =
         getExperimentSampleAllMetadataKeys(experiment);
 
+    // Field to remove in output DESeq2 design
+    final List<String> fieldsToRemove = Arrays.asList(SampleMetadata.DATE_KEY,
+        SampleMetadata.FASTQ_FORMAT_KEY, SampleMetadata.UUID_KEY);
+
     // Get Experiment reference
     final String experimentReference = experiment.getMetadata().getReference();
 
@@ -284,6 +289,11 @@ public abstract class AbstractEasyContrasts {
 
     // Print common column names
     for (String key : sampleMDKeys) {
+
+      if (fieldsToRemove.contains(key)) {
+        continue;
+      }
+
       if (!experimentMDKeys.contains(key)) {
 
         // The reference column will be the last column
@@ -335,6 +345,11 @@ public abstract class AbstractEasyContrasts {
       final SampleMetadata smd = sample.getMetadata();
 
       for (String key : sampleMDKeys) {
+
+        if (fieldsToRemove.contains(key)) {
+          continue;
+        }
+
         if (!experimentMDKeys.contains(key)) {
 
           // The reference column will be the last column

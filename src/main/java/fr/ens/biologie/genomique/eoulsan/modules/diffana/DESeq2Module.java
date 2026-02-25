@@ -26,14 +26,17 @@ package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
+import static fr.ens.biologie.genomique.eoulsan.modules.diffana.RModuleCommonConfiguration.DOCKER_IMAGE_PARAMETER;
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -78,6 +81,10 @@ public class DESeq2Module extends AbstractModule {
       new String[] {"genomicpariscentre/bioconductor:release_sequencing_3.1",
           "genomicpariscentre/easycontrasts:2.0"};
 
+  private static final List<String> INCOMPATIBLE_EASY_CONTRASTS_2_DOCKER_IMAGES =
+      Arrays.asList("genomicpariscentre/bioconductor:release_sequencing_3.1",
+          "bioconductor/release_sequencing:3.1");
+
   // DEseq2 options names
   private static final String NORMALIZATION_FIGURES = "norm.fig";
   private static final String DIFFANA_FIGURES = "diffana.fig";
@@ -90,7 +97,7 @@ public class DESeq2Module extends AbstractModule {
   private static final String LOGO_URL = "logo.url";
   private static final String AUTHOR_NAME = "author.name";
   private static final String AUTHOR_MAIL = "author.email";
-
+  private static final String SAVE_R_SCRIPTS = "save.r.scripts";
   private static final String VERSION = "easy.contrasts.version";
 
   // Default value for DEseq options
@@ -98,6 +105,7 @@ public class DESeq2Module extends AbstractModule {
 
   private final Set<Requirement> requirements = new HashSet<>();
   private RExecutor executor;
+  private boolean saveRScripts;
 
   //
   // Module methods
@@ -135,6 +143,12 @@ public class DESeq2Module extends AbstractModule {
     return new DESeq2DesignChecker();
   }
 
+  /**
+   * Get the default Docker image to use.
+   * @param parameters configuration step parameters
+   * @return the default Docker image name
+   * @throws EoulsanException if the version of EasyContrasts is unknown
+   */
   private String defaultDockerImage(Set<Parameter> parameters)
       throws EoulsanException {
 
@@ -157,25 +171,35 @@ public class DESeq2Module extends AbstractModule {
         .getEasyContrastsVersion() - 1];
   }
 
+  /**
+   * Test if the executor use a Docker image.
+   * @return true if the executor use a Docker image
+   */
+  private boolean isDockerMode() {
+
+    return DockerRExecutor.REXECUTOR_NAME.equals(this.executor.getName());
+  }
+
   @Override
   public void configure(final StepConfigurationContext context,
       final Set<Parameter> stepParameters) throws EoulsanException {
 
     final Set<Parameter> parameters = new HashSet<>(stepParameters);
     final int version = this.deseq2Parameters.getEasyContrastsVersion();
-
-    context.getLogger().info("Easy contrast version: "
-        + this.deseq2Parameters.getEasyContrastsVersion());
-
-    context.getLogger().info("Docker image: " + defaultDockerImage(parameters));
-
-    context.getLogger().info("Easy contrast version: " + version);
+    String dockerImage = defaultDockerImage(parameters);
 
     // Parse R executor parameters
     this.executor = RModuleCommonConfiguration.parseRExecutorParameter(context,
-        parameters, this.requirements, defaultDockerImage(parameters));
+        parameters, this.requirements, dockerImage);
 
-    context.getLogger().info("Docker image: " + defaultDockerImage(parameters));
+    context.getLogger().info("Easy contrast version: " + version);
+    if (isDockerMode()) {
+
+      DockerRExecutor e = (DockerRExecutor) this.executor;
+      dockerImage = e.getDockerImage();
+      context.getLogger().info("Docker image: " + dockerImage);
+    }
+
 
     for (Parameter p : parameters) {
 
@@ -233,6 +257,10 @@ public class DESeq2Module extends AbstractModule {
         this.deseq2Parameters.setAuthorEmail(p.getStringValue());
         break;
 
+      case SAVE_R_SCRIPTS:
+        this.saveRScripts = p.getBooleanValue();
+        break;
+
       default:
         throw new EoulsanException(
             "Unkown parameter for step " + getName() + " : " + p.getName());
@@ -242,6 +270,18 @@ public class DESeq2Module extends AbstractModule {
     // Check parameters
     this.deseq2Parameters.freeze();
     this.deseq2Parameters.check();
+
+    // Check Docker image compatibility
+    if (isDockerMode()
+        && this.deseq2Parameters.getEasyContrastsVersion() == 2
+        && INCOMPATIBLE_EASY_CONTRASTS_2_DOCKER_IMAGES.contains(dockerImage)) {
+      throw new EoulsanException("The invalid value ("
+          + dockerImage + ") for \"" + DOCKER_IMAGE_PARAMETER
+          + "\" parameter in the \"" + context.getCurrentStep().getId()
+          + "\" step: Docker image incompatible with \n"
+          + "easy-contrasts-DESeq2 version 2");
+    }
+
   }
 
   /**
@@ -271,7 +311,7 @@ public class DESeq2Module extends AbstractModule {
   public TaskResult execute(final TaskContext context,
       final TaskStatus status) {
 
-    if (DockerRExecutor.REXECUTOR_NAME.equals(this.executor.getName())) {
+    if (isDockerMode()) {
       status.setDockerImage(((DockerRExecutor) executor).getDockerImage());
     }
 
@@ -288,6 +328,8 @@ public class DESeq2Module extends AbstractModule {
     }
 
     String stepId = context.getCurrentStep().getId();
+    boolean saveScripts =
+        this.saveRScripts || context.getSettings().isSaveRscripts();
 
     try {
 
@@ -307,12 +349,12 @@ public class DESeq2Module extends AbstractModule {
 
         case 1:
           ec = new EasyContrasts1(this.executor, stepId, design, e, sampleFiles,
-              this.deseq2Parameters, context.getSettings().isSaveRscripts());
+              this.deseq2Parameters, saveScripts);
           break;
 
         case 2:
           ec = new EasyContrasts2(this.executor, stepId, design, e, sampleFiles,
-              this.deseq2Parameters, context.getSettings().isSaveRscripts());
+              this.deseq2Parameters, saveScripts);
           break;
 
         default:
