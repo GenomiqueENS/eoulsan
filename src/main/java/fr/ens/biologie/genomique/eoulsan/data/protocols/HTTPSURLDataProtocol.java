@@ -28,6 +28,7 @@ import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 
 /**
  * This class define the http protocol in local mode.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -42,5 +43,4 @@ public class HTTPSURLDataProtocol extends URLDataProtocol {
 
     return PROTOCOL_NAME;
   }
-
 }

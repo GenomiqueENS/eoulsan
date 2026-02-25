@@ -26,6 +26,9 @@ package fr.ens.biologie.genomique.eoulsan.util;
 
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,13 +36,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ServiceConfigurationError;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-
 /**
  * This class define an abstract resource loader.
+ *
  * @param <S> Type of the data to load
  * @author Laurent Jourdren
  * @since 2.0
@@ -54,27 +53,27 @@ public abstract class AbstractResourceLoader<S> implements ResourceLoader<S> {
 
   /**
    * Get the input stream related to a resource.
+   *
    * @param resourcePath resource path
    * @return a resource object
    * @throws IOException if an error occurs while creating the input stream
    */
-  protected abstract InputStream getResourceAsStream(String resourcePath)
-      throws IOException;
+  protected abstract InputStream getResourceAsStream(String resourcePath) throws IOException;
 
   /**
    * Load a resource.
+   *
    * @param in input stream
    * @param source source of the resource
    * @return a resource object
    * @throws IOException if an error occurs while loading the resource
-   * @throws EoulsanException if an error occurs while creating the resource
-   *           object
+   * @throws EoulsanException if an error occurs while creating the resource object
    */
-  protected abstract S load(InputStream in, String source)
-      throws IOException, EoulsanException;
+  protected abstract S load(InputStream in, String source) throws IOException, EoulsanException;
 
   /**
    * Get the resource name.
+   *
    * @param resource the resource
    * @return the name of the resource
    */
@@ -86,11 +85,11 @@ public abstract class AbstractResourceLoader<S> implements ResourceLoader<S> {
 
   /**
    * Add a resource.
+   *
    * @param resourceName resource name
    * @param resourcePath resource path
    */
-  protected void addResource(final String resourceName,
-      final String resourcePath) {
+  protected void addResource(final String resourceName, final String resourcePath) {
 
     requireNonNull(resourceName, "resourceName argument cannot be null");
     requireNonNull(resourcePath, "resourcePath argument cannot be null");
@@ -137,5 +136,4 @@ public abstract class AbstractResourceLoader<S> implements ResourceLoader<S> {
 
     return Collections.unmodifiableList(result);
   }
-
 }

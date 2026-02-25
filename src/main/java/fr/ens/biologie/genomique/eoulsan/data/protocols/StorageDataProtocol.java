@@ -24,6 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.data.protocols;
 
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
+import fr.ens.biologie.genomique.eoulsan.data.storages.DataFileStorage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,13 +34,10 @@ import java.io.OutputStream;
 import java.util.Collections;
 import java.util.List;
 
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
-import fr.ens.biologie.genomique.eoulsan.data.storages.DataFileStorage;
-
 /**
- * This abstract class define a storage protocol. It is useful to easily access
- * common resources like genomes or annotations.
+ * This abstract class define a storage protocol. It is useful to easily access common resources
+ * like genomes or annotations.
+ *
  * @since 1.1
  * @author Laurent Jourdren
  */
@@ -45,12 +45,14 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
 
   /**
    * Get the path where searching the files.
+   *
    * @return a string with the path where search the files
    */
   protected abstract String getBasePath();
 
   /**
    * Get the file extensions of the files to search.
+   *
    * @return a string with file extension of the files to search
    */
   protected String getExtension() {
@@ -61,6 +63,7 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
 
   /**
    * Get the list of the file extensions of the files to search.
+   *
    * @return a list with file extensions of the files to search
    */
   protected List<String> getExtensions() {
@@ -77,8 +80,7 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
   @Override
   public OutputStream putData(final DataFile dest) throws IOException {
 
-    throw new IOException(
-        "PutData() method is no supported by " + getName() + " protocol");
+    throw new IOException("PutData() method is no supported by " + getName() + " protocol");
   }
 
   @Override
@@ -123,10 +125,10 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
 
   /**
    * Get the underlying Data.
+   *
    * @param src source to use
    * @return a the underlying DataFile
-   * @throws IOException if an error occurs while getting the underlying
-   *           DataFile
+   * @throws IOException if an error occurs while getting the underlying DataFile
    */
   public DataFile getUnderLyingData(final DataFile src) throws IOException {
 
@@ -146,5 +148,4 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
 
     return result;
   }
-
 }

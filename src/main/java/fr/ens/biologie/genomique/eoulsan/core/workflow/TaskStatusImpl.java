@@ -28,18 +28,18 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
+import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
+import fr.ens.biologie.genomique.kenetre.util.Reporter;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
-import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Reporter;
-
 /**
  * This class define a task status.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -152,8 +152,7 @@ public class TaskStatusImpl implements TaskStatus {
     // Add all counters
     for (String counterName : reporter.getCounterNames(counterGroup)) {
       synchronized (this.counters) {
-        this.counters.put(counterName,
-            reporter.getCounterValue(counterGroup, counterName));
+        this.counters.put(counterName, reporter.getCounterValue(counterGroup, counterName));
       }
     }
   }
@@ -188,8 +187,7 @@ public class TaskStatusImpl implements TaskStatus {
 
       // If a status for the step exist, inform the step status
       if (this.status != null) {
-        this.status.setTaskProgress(this.context.getId(),
-            this.context.getContextName(), progress);
+        this.status.setTaskProgress(this.context.getId(), this.context.getContextName(), progress);
       }
     }
   }
@@ -200,6 +198,7 @@ public class TaskStatusImpl implements TaskStatus {
 
   /**
    * Stop the step.
+   *
    * @return the duration of the step in milliseconds
    */
   private long endOfStep() {
@@ -241,25 +240,29 @@ public class TaskStatusImpl implements TaskStatus {
     this.done = true;
 
     // Create the context result
-    return new TaskResultImpl(this.context, this.startDate, this.endDate,
-        duration, this.message,
+    return new TaskResultImpl(
+        this.context,
+        this.startDate,
+        this.endDate,
+        duration,
+        this.message,
         this.taskDescription == null ? "" : this.taskDescription,
         this.taskCommandLine == null ? "" : this.taskCommandLine,
-        this.taskDockerImage == null ? "" : this.taskDockerImage, this.counters,
+        this.taskDockerImage == null ? "" : this.taskDockerImage,
+        this.counters,
         success);
   }
 
   @Override
-  public TaskResult createTaskResult(final Throwable exception,
-      final String exceptionMessage) {
+  public TaskResult createTaskResult(final Throwable exception, final String exceptionMessage) {
 
     // Get the duration of the context execution
     final long duration = endOfStep();
     this.done = true;
 
     // Create the context result
-    return new TaskResultImpl(this.context, this.startDate, this.endDate,
-        duration, exception, exceptionMessage);
+    return new TaskResultImpl(
+        this.context, this.startDate, this.endDate, duration, exception, exceptionMessage);
   }
 
   @Override
@@ -274,6 +277,7 @@ public class TaskStatusImpl implements TaskStatus {
 
   /**
    * Check progress value.
+   *
    * @param progress the progress value to test
    */
   private static void checkProgress(final double progress) {
@@ -286,12 +290,12 @@ public class TaskStatusImpl implements TaskStatus {
 
   /**
    * Check progress value.
+   *
    * @param min minimal value
    * @param max maximal value
    * @param value value to test
    */
-  private static void checkProgress(final int min, final int max,
-      final int value) {
+  private static void checkProgress(final int min, final int max, final int value) {
 
     checkArgument(min <= max, "Max is lower than min");
     checkArgument(min <= value, "Value is lower than min");
@@ -302,13 +306,11 @@ public class TaskStatusImpl implements TaskStatus {
   // Other methods
   //
 
-  /**
-   * Start the timer.
-   */
+  /** Start the timer. */
   void durationStart() {
 
     // Get the start date
-    this.startDate =  Instant.now();
+    this.startDate = Instant.now();
 
     // Start stopWatch
     this.stopwatch.start();
@@ -320,6 +322,7 @@ public class TaskStatusImpl implements TaskStatus {
 
   /**
    * Constructor.
+   *
    * @param taskContext the task context object
    * @param status the status object
    */
@@ -330,5 +333,4 @@ public class TaskStatusImpl implements TaskStatus {
     this.context = taskContext;
     this.status = status;
   }
-
 }

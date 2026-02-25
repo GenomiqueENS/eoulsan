@@ -1,16 +1,14 @@
 /**
  * Copyright 2012 Twitter, Inc.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.hadoopbamcli;
@@ -19,7 +17,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.InputSplit;
@@ -39,8 +36,8 @@ import org.apache.hadoop.mapreduce.TaskInputOutputContext;
  */
 
 /**
- * Utility methods to allow applications to deal with inconsistencies between
- * MapReduce Context Objects API between hadoop-0.20 and later versions.
+ * Utility methods to allow applications to deal with inconsistencies between MapReduce Context
+ * Objects API between hadoop-0.20 and later versions.
  */
 public class ContextUtil {
 
@@ -79,54 +76,40 @@ public class ContextUtil {
     Class<?> genericCounterCls;
     try {
       if (v21) {
-        jobContextCls =
-            Class.forName(PACKAGE+".task.JobContextImpl");
-        taskContextCls =
-            Class.forName(PACKAGE+".task.TaskAttemptContextImpl");
-        taskIOContextCls =
-            Class.forName(PACKAGE+".task.TaskInputOutputContextImpl");
+        jobContextCls = Class.forName(PACKAGE + ".task.JobContextImpl");
+        taskContextCls = Class.forName(PACKAGE + ".task.TaskAttemptContextImpl");
+        taskIOContextCls = Class.forName(PACKAGE + ".task.TaskInputOutputContextImpl");
         mapContextCls = Class.forName(PACKAGE + ".task.MapContextImpl");
         mapCls = Class.forName(PACKAGE + ".lib.map.WrappedMapper");
-        innerMapContextCls =
-            Class.forName(PACKAGE+".lib.map.WrappedMapper$Context");
-        genericCounterCls = Class.forName(PACKAGE+".counters.GenericCounter");
+        innerMapContextCls = Class.forName(PACKAGE + ".lib.map.WrappedMapper$Context");
+        genericCounterCls = Class.forName(PACKAGE + ".counters.GenericCounter");
       } else {
-        jobContextCls =
-            Class.forName(PACKAGE+".JobContext");
-        taskContextCls =
-            Class.forName(PACKAGE+".TaskAttemptContext");
-        taskIOContextCls =
-            Class.forName(PACKAGE+".TaskInputOutputContext");
+        jobContextCls = Class.forName(PACKAGE + ".JobContext");
+        taskContextCls = Class.forName(PACKAGE + ".TaskAttemptContext");
+        taskIOContextCls = Class.forName(PACKAGE + ".TaskInputOutputContext");
         mapContextCls = Class.forName(PACKAGE + ".MapContext");
         mapCls = Class.forName(PACKAGE + ".Mapper");
-        innerMapContextCls =
-            Class.forName(PACKAGE+".Mapper$Context");
-        genericCounterCls =
-            Class.forName("org.apache.hadoop.mapred.Counters$Counter");
+        innerMapContextCls = Class.forName(PACKAGE + ".Mapper$Context");
+        genericCounterCls = Class.forName("org.apache.hadoop.mapred.Counters$Counter");
       }
     } catch (ClassNotFoundException e) {
       throw new IllegalArgumentException("Can't find class", e);
     }
     try {
-      JOB_CONTEXT_CONSTRUCTOR =
-          jobContextCls.getConstructor(Configuration.class, JobID.class);
+      JOB_CONTEXT_CONSTRUCTOR = jobContextCls.getConstructor(Configuration.class, JobID.class);
       JOB_CONTEXT_CONSTRUCTOR.setAccessible(true);
       TASK_CONTEXT_CONSTRUCTOR =
-          taskContextCls.getConstructor(Configuration.class,
-              TaskAttemptID.class);
+          taskContextCls.getConstructor(Configuration.class, TaskAttemptID.class);
       TASK_CONTEXT_CONSTRUCTOR.setAccessible(true);
       GENERIC_COUNTER_CONSTRUCTOR =
-          genericCounterCls.getDeclaredConstructor(String.class,
-              String.class,
-              Long.TYPE);
+          genericCounterCls.getDeclaredConstructor(String.class, String.class, Long.TYPE);
       GENERIC_COUNTER_CONSTRUCTOR.setAccessible(true);
 
       if (useV21) {
-        MAP_CONTEXT_CONSTRUCTOR =
-            innerMapContextCls.getConstructor(mapCls,
-                MapContext.class);
+        MAP_CONTEXT_CONSTRUCTOR = innerMapContextCls.getConstructor(mapCls, MapContext.class);
         MAP_CONTEXT_IMPL_CONSTRUCTOR =
-            mapContextCls.getDeclaredConstructor(Configuration.class,
+            mapContextCls.getDeclaredConstructor(
+                Configuration.class,
                 TaskAttemptID.class,
                 RecordReader.class,
                 RecordWriter.class,
@@ -134,21 +117,23 @@ public class ContextUtil {
                 StatusReporter.class,
                 InputSplit.class);
         MAP_CONTEXT_IMPL_CONSTRUCTOR.setAccessible(true);
-        WRAPPED_CONTEXT_FIELD =
-            innerMapContextCls.getDeclaredField("mapContext");
+        WRAPPED_CONTEXT_FIELD = innerMapContextCls.getDeclaredField("mapContext");
         WRAPPED_CONTEXT_FIELD.setAccessible(true);
         Method get_counter_method;
         try {
-          get_counter_method = Class.forName(PACKAGE + ".TaskAttemptContext").getMethod("getCounter", String.class,
-                  String.class);
+          get_counter_method =
+              Class.forName(PACKAGE + ".TaskAttemptContext")
+                  .getMethod("getCounter", String.class, String.class);
         } catch (Exception e) {
-          get_counter_method = Class.forName(PACKAGE + ".TaskInputOutputContext").getMethod("getCounter",
-                  String.class, String.class);
+          get_counter_method =
+              Class.forName(PACKAGE + ".TaskInputOutputContext")
+                  .getMethod("getCounter", String.class, String.class);
         }
-        GET_COUNTER_METHOD=get_counter_method;
+        GET_COUNTER_METHOD = get_counter_method;
       } else {
         MAP_CONTEXT_CONSTRUCTOR =
-            innerMapContextCls.getConstructor(mapCls,
+            innerMapContextCls.getConstructor(
+                mapCls,
                 Configuration.class,
                 TaskAttemptID.class,
                 RecordReader.class,
@@ -158,7 +143,7 @@ public class ContextUtil {
                 InputSplit.class);
         MAP_CONTEXT_IMPL_CONSTRUCTOR = null;
         WRAPPED_CONTEXT_FIELD = null;
-        GET_COUNTER_METHOD=taskIOContextCls.getMethod("getCounter", String.class, String.class);
+        GET_COUNTER_METHOD = taskIOContextCls.getMethod("getCounter", String.class, String.class);
       }
       MAP_CONTEXT_CONSTRUCTOR.setAccessible(true);
       READER_FIELD = mapContextCls.getDeclaredField("reader");
@@ -167,10 +152,10 @@ public class ContextUtil {
       WRITER_FIELD.setAccessible(true);
       OUTER_MAP_FIELD = innerMapContextCls.getDeclaredField("this$0");
       OUTER_MAP_FIELD.setAccessible(true);
-      GET_CONFIGURATION_METHOD = Class.forName(PACKAGE+".JobContext")
-          .getMethod("getConfiguration");
-      INCREMENT_COUNTER_METHOD = Class.forName(PACKAGE+".Counter")
-              .getMethod("increment", Long.TYPE);
+      GET_CONFIGURATION_METHOD =
+          Class.forName(PACKAGE + ".JobContext").getMethod("getConfiguration");
+      INCREMENT_COUNTER_METHOD =
+          Class.forName(PACKAGE + ".Counter").getMethod("increment", Long.TYPE);
     } catch (SecurityException e) {
       throw new IllegalArgumentException("Can't run constructor ", e);
     } catch (NoSuchMethodException e) {
@@ -183,16 +168,16 @@ public class ContextUtil {
   }
 
   /**
-   * Creates JobContext from a JobConf and jobId using the correct constructor
-   * for based on Hadoop version. <code>jobId</code> could be null.
+   * Creates JobContext from a JobConf and jobId using the correct constructor for based on Hadoop
+   * version. <code>jobId</code> could be null.
+   *
    * @param conf Hadoop configuration
    * @param jobId job ID
    * @return a JobContext object
    */
   public static JobContext newJobContext(Configuration conf, JobID jobId) {
     try {
-      return (JobContext)
-          JOB_CONTEXT_CONSTRUCTOR.newInstance(conf, jobId);
+      return (JobContext) JOB_CONTEXT_CONSTRUCTOR.newInstance(conf, jobId);
     } catch (InstantiationException e) {
       throw new IllegalArgumentException("Can't instantiate JobContext", e);
     } catch (IllegalAccessException e) {
@@ -203,8 +188,9 @@ public class ContextUtil {
   }
 
   /**
-   * Creates TaskAttempContext from a JobConf and jobId using the correct
-   * constructor for based on Hadoop version.
+   * Creates TaskAttempContext from a JobConf and jobId using the correct constructor for based on
+   * Hadoop version.
+   *
    * @param conf Hadoop configuration
    * @param taskAttemptId task attempt ID
    * @return a TaskAttemptContext object
@@ -212,8 +198,7 @@ public class ContextUtil {
   public static TaskAttemptContext newTaskAttemptContext(
       Configuration conf, TaskAttemptID taskAttemptId) {
     try {
-      return (TaskAttemptContext)
-          TASK_CONTEXT_CONSTRUCTOR.newInstance(conf, taskAttemptId);
+      return (TaskAttemptContext) TASK_CONTEXT_CONSTRUCTOR.newInstance(conf, taskAttemptId);
     } catch (InstantiationException e) {
       throw new IllegalArgumentException("Can't instantiate TaskAttemptContext", e);
     } catch (IllegalAccessException e) {
@@ -225,16 +210,16 @@ public class ContextUtil {
 
   /**
    * Create a new generic counter.
+   *
    * @param name name of the counter
    * @param displayName display name
    * @param value the counter value
    * @return with Hadoop 2 : <code>new GenericCounter(args)</code>,<br>
-   *         with Hadoop 1 : <code>new Counter(args)</code>
+   *     with Hadoop 1 : <code>new Counter(args)</code>
    */
   public static Counter newGenericCounter(String name, String displayName, long value) {
     try {
-      return (Counter)
-          GENERIC_COUNTER_CONSTRUCTOR.newInstance(name, displayName, value);
+      return (Counter) GENERIC_COUNTER_CONSTRUCTOR.newInstance(name, displayName, value);
     } catch (InstantiationException e) {
       throw new IllegalArgumentException("Can't instantiate Counter", e);
     } catch (IllegalAccessException e) {
@@ -245,8 +230,8 @@ public class ContextUtil {
   }
 
   /**
-   * Invoke getConfiguration() method on JobContext. Works with both Hadoop 1
-   * and 2.
+   * Invoke getConfiguration() method on JobContext. Works with both Hadoop 1 and 2.
+   *
    * @param context job context
    * @return a Configuration object
    */
@@ -262,19 +247,18 @@ public class ContextUtil {
 
   /**
    * Get counter.
+   *
    * @param context task context
    * @param groupName group name
    * @param counterName counter name
    * @return a Counter object
    */
-  public static Counter getCounter(TaskInputOutputContext<?,?,?,?> context,
-                                   String groupName, String counterName) {
+  public static Counter getCounter(
+      TaskInputOutputContext<?, ?, ?, ?> context, String groupName, String counterName) {
     return (Counter) invoke(GET_COUNTER_METHOD, context, groupName, counterName);
   }
 
-  /**
-   * Invokes a method and rethrows any exception as runtime exceptions.
-   */
+  /** Invokes a method and rethrows any exception as runtime exceptions. */
   private static Object invoke(Method method, Object obj, Object... args) {
     try {
       return method.invoke(obj, args);
@@ -287,6 +271,7 @@ public class ContextUtil {
 
   /**
    * Increment counter.
+   *
    * @param counter counter to increment
    * @param increment increment of the counter
    */

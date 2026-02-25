@@ -31,6 +31,7 @@ import fr.ens.biologie.genomique.kenetre.util.ServiceNameLoader;
 
 /**
  * This class allow to get a Step object from a class in the classpath.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -60,13 +61,9 @@ public class ModuleService extends ServiceNameLoader<Module> {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
-
+  /** Private constructor. */
   ModuleService() {
 
     super(Module.class);
   }
-
 }

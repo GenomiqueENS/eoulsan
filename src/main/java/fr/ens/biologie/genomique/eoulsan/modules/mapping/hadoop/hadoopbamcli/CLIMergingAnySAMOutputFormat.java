@@ -23,53 +23,47 @@
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.hadoopbamcli;
 
 import java.io.IOException;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.RecordWriter;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-
 import org.seqdoop.hadoop_bam.KeyIgnoringAnySAMOutputFormat;
 import org.seqdoop.hadoop_bam.SAMRecordWritable;
 
 /**
  * Like a KeyIgnoringAnySAMOutputFormat<K>, but sets the SAMFileHeader to
- * Utils.getSAMHeaderMerger().getMergedHeader() and allows the output directory
- * (the "work directory") to exist.
+ * Utils.getSAMHeaderMerger().getMergedHeader() and allows the output directory (the "work
+ * directory") to exist.
  */
-public class CLIMergingAnySAMOutputFormat<K>
-	extends FileOutputFormat<K, SAMRecordWritable>
-{
-	private KeyIgnoringAnySAMOutputFormat<K> baseOF;
+public class CLIMergingAnySAMOutputFormat<K> extends FileOutputFormat<K, SAMRecordWritable> {
+  private KeyIgnoringAnySAMOutputFormat<K> baseOF;
 
-	private void initBaseOF(Configuration conf) {
-		if (baseOF == null)
-			baseOF = new KeyIgnoringAnySAMOutputFormat<K>(conf);
-	}
+  private void initBaseOF(Configuration conf) {
+    if (baseOF == null) baseOF = new KeyIgnoringAnySAMOutputFormat<K>(conf);
+  }
 
-	@Override public RecordWriter<K,SAMRecordWritable> getRecordWriter(
-			TaskAttemptContext context)
-		throws IOException
-	{
-		initBaseOF(ContextUtil.getConfiguration(context));
+  @Override
+  public RecordWriter<K, SAMRecordWritable> getRecordWriter(TaskAttemptContext context)
+      throws IOException {
+    initBaseOF(ContextUtil.getConfiguration(context));
 
-		if (baseOF.getSAMHeader() == null)
-			baseOF.setSAMHeader(Utils.getSAMHeaderMerger(
-				ContextUtil.getConfiguration(context)).getMergedHeader());
+    if (baseOF.getSAMHeader() == null)
+      baseOF.setSAMHeader(
+          Utils.getSAMHeaderMerger(ContextUtil.getConfiguration(context)).getMergedHeader());
 
-		return baseOF.getRecordWriter(context, getDefaultWorkFile(context, ""));
-	}
+    return baseOF.getRecordWriter(context, getDefaultWorkFile(context, ""));
+  }
 
-	@Override public Path getDefaultWorkFile(TaskAttemptContext ctx, String ext)
-		throws IOException
-	{
-		initBaseOF(ContextUtil.getConfiguration(ctx));
-		return Utils.getMergeableWorkFile(
-			baseOF.getDefaultWorkFile(ctx, ext).getParent(), "", "", ctx, ext);
-	}
+  @Override
+  public Path getDefaultWorkFile(TaskAttemptContext ctx, String ext) throws IOException {
+    initBaseOF(ContextUtil.getConfiguration(ctx));
+    return Utils.getMergeableWorkFile(
+        baseOF.getDefaultWorkFile(ctx, ext).getParent(), "", "", ctx, ext);
+  }
 
-	// Allow the output directory to exist.
-	@Override public void checkOutputSpecs(JobContext job) {}
+  // Allow the output directory to exist.
+  @Override
+  public void checkOutputSpecs(JobContext job) {}
 }

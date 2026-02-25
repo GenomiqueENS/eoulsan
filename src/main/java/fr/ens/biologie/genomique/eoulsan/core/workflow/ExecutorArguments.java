@@ -28,6 +28,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toCompactTime;
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.MoreObjects;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,13 +39,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 
-import com.google.common.base.MoreObjects;
-
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-
 /**
  * This class contains arguments for the Executor.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -69,6 +68,7 @@ public class ExecutorArguments {
 
   /**
    * Get the local working path.
+   *
    * @return Returns the local working path
    */
   public final String getLocalWorkingPathname() {
@@ -77,6 +77,7 @@ public class ExecutorArguments {
 
   /**
    * Get the Hadoop working path.
+   *
    * @return Returns the local working path
    */
   public final String getHadoopWorkingPathname() {
@@ -85,6 +86,7 @@ public class ExecutorArguments {
 
   /**
    * Get the job path.
+   *
    * @return Returns the job Path
    */
   public final String getJobPathname() {
@@ -93,6 +95,7 @@ public class ExecutorArguments {
 
   /**
    * Get the task path.
+   *
    * @return Returns the task Path
    */
   public final String getTaskPathname() {
@@ -101,6 +104,7 @@ public class ExecutorArguments {
 
   /**
    * Get the output path.
+   *
    * @return Returns the output Path
    */
   public final String getOutputPathname() {
@@ -109,6 +113,7 @@ public class ExecutorArguments {
 
   /**
    * Get the design file path.
+   *
    * @return the design file path
    */
   public final String getDesignPathname() {
@@ -117,6 +122,7 @@ public class ExecutorArguments {
 
   /**
    * Get the workflow file path.
+   *
    * @return the workflow file path
    */
   public final String getWorkflowPathname() {
@@ -125,6 +131,7 @@ public class ExecutorArguments {
 
   /**
    * Get the temporary directory path.
+   *
    * @return the temporary directory file path
    */
   public final String getTemporaryPathname() {
@@ -133,6 +140,7 @@ public class ExecutorArguments {
 
   /**
    * Get the data directory path.
+   *
    * @return the temporary directory file path
    */
   public final String getDataPathname() {
@@ -141,6 +149,7 @@ public class ExecutorArguments {
 
   /**
    * Get the job description.
+   *
    * @return the job description
    */
   public final String getJobDescription() {
@@ -149,6 +158,7 @@ public class ExecutorArguments {
 
   /**
    * Get the job environment.
+   *
    * @return the job environment
    */
   public final String getJobEnvironment() {
@@ -157,6 +167,7 @@ public class ExecutorArguments {
 
   /**
    * Get the job id.
+   *
    * @return the job id
    */
   public final String getJobId() {
@@ -165,6 +176,7 @@ public class ExecutorArguments {
 
   /**
    * Get the UUID of the job.
+   *
    * @return the UUID of the job
    */
   public final String getJobUUID() {
@@ -173,8 +185,8 @@ public class ExecutorArguments {
 
   /**
    * Get the creation time of the job.
-   * @return the creation time of the context in milliseconds since epoch
-   *         (1.1.1970)
+   *
+   * @return the creation time of the context in milliseconds since epoch (1.1.1970)
    */
   public final long getCreationTime() {
     return this.creationTime;
@@ -186,6 +198,7 @@ public class ExecutorArguments {
 
   /**
    * Set the local working path.
+   *
    * @param localWorkingPath The local working path to set
    */
   public final void setLocalWorkingPathname(final String localWorkingPath) {
@@ -199,6 +212,7 @@ public class ExecutorArguments {
 
   /**
    * Set the local working path.
+   *
    * @param hadoopWorkingPath The local working path to set
    */
   public final void setHadoopWorkingPathname(final String hadoopWorkingPath) {
@@ -212,6 +226,7 @@ public class ExecutorArguments {
 
   /**
    * Set the job path
+   *
    * @param jobPath The log path to set
    */
   public final void setJobPathname(final String jobPath) {
@@ -225,6 +240,7 @@ public class ExecutorArguments {
 
   /**
    * Set the task path
+   *
    * @param taskPath The task path to set
    */
   public final void setTaskPathname(final String taskPath) {
@@ -238,6 +254,7 @@ public class ExecutorArguments {
 
   /**
    * Set the output path
+   *
    * @param outputPath The output path to set
    */
   public final void setOutputPathname(final String outputPath) {
@@ -251,6 +268,7 @@ public class ExecutorArguments {
 
   /**
    * Set the design file path.
+   *
    * @param designPathname The design path to set
    */
   public final void setDesignPathname(final String designPathname) {
@@ -264,6 +282,7 @@ public class ExecutorArguments {
 
   /**
    * Set the workflow file path.
+   *
    * @param workflowPathname The workflow file path to set
    */
   public final void setWorkflowPathname(final String workflowPathname) {
@@ -277,6 +296,7 @@ public class ExecutorArguments {
 
   /**
    * Set the temporary directory path.
+   *
    * @param temporaryPathname The temporary directory path to set
    */
   public final void setTemporaryPathname(final String temporaryPathname) {
@@ -290,6 +310,7 @@ public class ExecutorArguments {
 
   /**
    * Set the data directory path.
+   *
    * @param dataPathname The data directory path to set
    */
   public final void setDataPathname(final String dataPathname) {
@@ -303,6 +324,7 @@ public class ExecutorArguments {
 
   /**
    * Set job description.
+   *
    * @param jobDescription job description
    */
   public final void setJobDescription(final String jobDescription) {
@@ -316,6 +338,7 @@ public class ExecutorArguments {
 
   /**
    * Set job environment.
+   *
    * @param jobEnvironment job environment
    */
   public final void setJobEnvironment(final String jobEnvironment) {
@@ -333,6 +356,7 @@ public class ExecutorArguments {
 
   /**
    * Open the Workflow file.
+   *
    * @return an InputStream with the content of the workflow file
    * @throws IOException if an error occurs while opening the workflow file
    */
@@ -343,6 +367,7 @@ public class ExecutorArguments {
 
   /**
    * Open the design file.
+   *
    * @return an InputStream with the content of the design file
    * @throws IOException if an error occurs while opening the design file
    */
@@ -353,6 +378,7 @@ public class ExecutorArguments {
 
   /**
    * Create the log path.
+   *
    * @param logFilename log file name
    * @return a String with an URI for the log
    */
@@ -374,8 +400,10 @@ public class ExecutorArguments {
         .add("jobDescription", getJobDescription())
         .add("jobEnvironment", getJobEnvironment())
         .add("outputPathname", getOutputPathname())
-        .add("logPathname", getJobPathname()).add("jobId", getJobId())
-        .add("jobUUID", getJobUUID()).add("creationTime", getCreationTime())
+        .add("logPathname", getJobPathname())
+        .add("jobId", getJobId())
+        .add("jobUUID", getJobUUID())
+        .add("creationTime", getCreationTime())
         .toString();
   }
 
@@ -383,9 +411,7 @@ public class ExecutorArguments {
   // Constructor
   //
 
-  /**
-   * Public constructor.
-   */
+  /** Public constructor. */
   public ExecutorArguments() {
 
     this(System.currentTimeMillis());
@@ -393,17 +419,18 @@ public class ExecutorArguments {
 
   /**
    * Public constructor.
+   *
    * @param millisSinceEpoch creation time of the job
    */
   public ExecutorArguments(final long millisSinceEpoch) {
 
     this.creationTime = millisSinceEpoch;
-    this.jobId =
-        Globals.APP_NAME_LOWER_CASE + "-" + toCompactTime(millisSinceEpoch);
+    this.jobId = Globals.APP_NAME_LOWER_CASE + "-" + toCompactTime(millisSinceEpoch);
   }
 
   /**
    * Public constructor.
+   *
    * @param workflowFile workflow file
    * @param designFile design file
    */
@@ -414,6 +441,7 @@ public class ExecutorArguments {
 
   /**
    * Public constructor.
+   *
    * @param workflowFile workflow file
    * @param designFile design file
    */
@@ -431,8 +459,7 @@ public class ExecutorArguments {
     final Path jobDir = outputDir.resolve(getJobId());
     final Path workingDir = jobDir.resolve("working");
     final Path taskDir = jobDir.resolve("tasks");
-    final Path dataDir =
-        outputDir.resolve(Globals.APP_NAME_LOWER_CASE + "-data");
+    final Path dataDir = outputDir.resolve(Globals.APP_NAME_LOWER_CASE + "-data");
     final Path tmpDir = jobDir.resolve("tmp");
 
     // Set the local working path
@@ -459,5 +486,4 @@ public class ExecutorArguments {
     // Set the temporary directory
     setTemporaryPathname(tmpDir.toAbsolutePath().toString());
   }
-
 }

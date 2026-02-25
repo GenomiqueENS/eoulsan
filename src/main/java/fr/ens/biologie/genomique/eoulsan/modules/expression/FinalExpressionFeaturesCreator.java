@@ -24,6 +24,10 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.expression;
 
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.kenetre.bio.expressioncounter.ExpressionCounter;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -39,29 +43,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.kenetre.bio.expressioncounter.ExpressionCounter;
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
-import fr.ens.biologie.genomique.kenetre.util.StringUtils;
-
 /**
- * This class generates the final expression file after counting the alignments
- * for each feature with HTSeq-count.
+ * This class generates the final expression file after counting the alignments for each feature
+ * with HTSeq-count.
+ *
  * @since 1.2
  * @author Claire Wallon
  */
 public class FinalExpressionFeaturesCreator {
 
   /* Default Charset. */
-  private static final Charset CHARSET =
-      Charset.forName(Globals.DEFAULT_FILE_ENCODING);
+  private static final Charset CHARSET = Charset.forName(Globals.DEFAULT_FILE_ENCODING);
 
   private ExpressionCounter counter;
-  private final Map<String, ExpressionFeature> expressionResults =
-      new HashMap<>();
+  private final Map<String, ExpressionFeature> expressionResults = new HashMap<>();
 
-  private static final class ExpressionFeature
-      implements Comparable<ExpressionFeature> {
+  private static final class ExpressionFeature implements Comparable<ExpressionFeature> {
 
     private final String id;
     private int alignmentCount = 0;
@@ -85,7 +82,6 @@ public class FinalExpressionFeaturesCreator {
       }
 
       return (o.alignmentCount - this.alignmentCount);
-
     }
 
     @Override
@@ -101,8 +97,7 @@ public class FinalExpressionFeaturesCreator {
 
       final ExpressionFeature et = (ExpressionFeature) o;
 
-      if (Objects.equals(this.id, et.id)
-          && this.alignmentCount == et.alignmentCount) {
+      if (Objects.equals(this.id, et.id) && this.alignmentCount == et.alignmentCount) {
         return true;
       }
 
@@ -127,6 +122,7 @@ public class FinalExpressionFeaturesCreator {
 
     /**
      * Constructor for ExpressionTranscript.
+     *
      * @param id identifier to set
      */
     public ExpressionFeature(final String id) {
@@ -137,12 +133,9 @@ public class FinalExpressionFeaturesCreator {
 
       this.id = id;
     }
-
   }
 
-  /**
-   * Clear.
-   */
+  /** Clear. */
   public void initializeExpressionResults() {
 
     this.expressionResults.clear();
@@ -155,6 +148,7 @@ public class FinalExpressionFeaturesCreator {
 
   /**
    * Load pre result file.
+   *
    * @param preResultFile pre-result file
    * @throws IOException if an error occurs while reading data
    */
@@ -165,13 +159,13 @@ public class FinalExpressionFeaturesCreator {
 
   /**
    * Load pre-result file.
+   *
    * @param is input stream of pre-results
    * @throws IOException if an error occurs while reading data
    */
   public void loadPreResults(final InputStream is) throws IOException {
 
-    final BufferedReader br =
-        new BufferedReader(new InputStreamReader(is, CHARSET));
+    final BufferedReader br = new BufferedReader(new InputStreamReader(is, CHARSET));
 
     final String[] tab = new String[2];
     String line = null;
@@ -193,6 +187,7 @@ public class FinalExpressionFeaturesCreator {
 
   /**
    * Save the final results.
+   *
    * @param resultFile output result file
    * @throws IOException if an error occurs while writing data
    */
@@ -203,13 +198,13 @@ public class FinalExpressionFeaturesCreator {
 
   /**
    * Save the final results.
+   *
    * @param os output stream
    * @throws IOException if an error occurs while writing data
    */
   public void saveFinalResults(final OutputStream os) throws IOException {
 
-    final List<ExpressionFeature> list =
-        new ArrayList<>(this.expressionResults.values());
+    final List<ExpressionFeature> list = new ArrayList<>(this.expressionResults.values());
 
     Collections.sort(list);
 
@@ -221,7 +216,6 @@ public class FinalExpressionFeaturesCreator {
     }
 
     osw.close();
-
   }
 
   //
@@ -230,6 +224,7 @@ public class FinalExpressionFeaturesCreator {
 
   /**
    * Public constructor.
+   *
    * @param counter the counter
    */
   public FinalExpressionFeaturesCreator(final ExpressionCounter counter) {
@@ -240,5 +235,4 @@ public class FinalExpressionFeaturesCreator {
 
     this.counter = counter;
   }
-
 }

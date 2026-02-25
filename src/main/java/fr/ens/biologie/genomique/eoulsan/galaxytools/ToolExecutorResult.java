@@ -26,12 +26,12 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
-import java.util.List;
-
 import com.google.common.base.Joiner;
+import java.util.List;
 
 /**
  * The class define a result on execution tool.
+ *
  * @author Sandrine Perrin
  * @since 2.0
  */
@@ -50,6 +50,7 @@ public class ToolExecutorResult {
 
   /**
    * Gets the exception.
+   *
    * @return the exception
    */
   public Throwable getException() {
@@ -58,6 +59,7 @@ public class ToolExecutorResult {
 
   /**
    * Test if an exception has been thrown.
+   *
    * @return false, if successful
    */
   public boolean isException() {
@@ -66,6 +68,7 @@ public class ToolExecutorResult {
 
   /**
    * Gets the exit value.
+   *
    * @return the exit value
    */
   public int getExitValue() {
@@ -74,6 +77,7 @@ public class ToolExecutorResult {
 
   /**
    * Gets the command line as a list of string arguments.
+   *
    * @return the command line as a list of string arguments
    */
   public List<String> getCommandLine() {
@@ -82,6 +86,7 @@ public class ToolExecutorResult {
 
   /**
    * Gets the command line as a String.
+   *
    * @return the command line as a String
    */
   public String getCommandLineAsString() {
@@ -91,8 +96,12 @@ public class ToolExecutorResult {
   @Override
   public String toString() {
     return "GalaxyToolResult [commandLineTool="
-        + commandLineTool + ", exitValue=" + exitValue + ", exception="
-        + exception + "]";
+        + commandLineTool
+        + ", exitValue="
+        + exitValue
+        + ", exception="
+        + exception
+        + "]";
   }
 
   //
@@ -101,11 +110,11 @@ public class ToolExecutorResult {
 
   /**
    * Public constructor, command line can not be null or empty
+   *
    * @param commandLineTool the command line tool
    * @param exitValue exit code
    */
-  public ToolExecutorResult(final List<String> commandLineTool,
-      final int exitValue) {
+  public ToolExecutorResult(final List<String> commandLineTool, final int exitValue) {
 
     requireNonNull(commandLineTool, "Command line can not be null");
     checkArgument(!commandLineTool.isEmpty(), "Command line can not be empty");
@@ -117,11 +126,11 @@ public class ToolExecutorResult {
 
   /**
    * Public constructor, command line can not be null or empty
+   *
    * @param commandLineTool the command line tool
    * @param e exception
    */
-  public ToolExecutorResult(final List<String> commandLineTool,
-      final Throwable e) {
+  public ToolExecutorResult(final List<String> commandLineTool, final Throwable e) {
 
     requireNonNull(commandLineTool, "Command line can not be null.");
     checkArgument(!commandLineTool.isEmpty(), "Command line can not be empty");

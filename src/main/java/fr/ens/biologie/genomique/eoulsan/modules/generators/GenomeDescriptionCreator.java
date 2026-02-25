@@ -24,62 +24,56 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.generators;
 
-import java.io.IOException;
-
 import fr.ens.biologie.genomique.eoulsan.checkers.CheckStore;
 import fr.ens.biologie.genomique.eoulsan.checkers.GenomeChecker;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.storages.DataFileGenomeDescStorage;
 import fr.ens.biologie.genomique.kenetre.bio.BadBioEntryException;
 import fr.ens.biologie.genomique.kenetre.bio.GenomeDescription;
+import java.io.IOException;
 
 /**
  * This class define a genome description creator.
+ *
  * @since 1.2
  * @author Laurent Jourdren
  */
 public class GenomeDescriptionCreator {
 
-  private static final String CHECK_STORE_KEY =
-      GenomeChecker.GENOME_DESCRIPTION;
+  private static final String CHECK_STORE_KEY = GenomeChecker.GENOME_DESCRIPTION;
 
   private final CheckStore checkStore;
   private final DataFileGenomeDescStorage storage;
 
   /**
-   * Create genome description object from the storage if already exists or
-   * compute it from the genome.
+   * Create genome description object from the storage if already exists or compute it from the
+   * genome.
+   *
    * @param annotationDataFile annotation file
    * @return the genome description object
-   * @throws BadBioEntryException if an error occurs while computing the genome
-   *           description
-   * @throws IOException if an error occurs while computing the genome
-   *           description
+   * @throws BadBioEntryException if an error occurs while computing the genome description
+   * @throws IOException if an error occurs while computing the genome description
    */
-  public GenomeDescription createGenomeDescriptionFromAnnotation(
-      final DataFile annotationDataFile)
+  public GenomeDescription createGenomeDescriptionFromAnnotation(final DataFile annotationDataFile)
       throws BadBioEntryException, IOException {
 
     return createGenomeDescription(annotationDataFile);
   }
 
   /**
-   * Create genome description object from the storage if already exists or
-   * compute it from the genome.
+   * Create genome description object from the storage if already exists or compute it from the
+   * genome.
+   *
    * @param genomeDataFile genome file
    * @return the genome description object
-   * @throws BadBioEntryException if an error occurs while computing the genome
-   *           description
-   * @throws IOException if an error occurs while computing the genome
-   *           description
+   * @throws BadBioEntryException if an error occurs while computing the genome description
+   * @throws IOException if an error occurs while computing the genome description
    */
-  public GenomeDescription createGenomeDescription(
-      final DataFile genomeDataFile)
+  public GenomeDescription createGenomeDescription(final DataFile genomeDataFile)
       throws BadBioEntryException, IOException {
 
     // Check if the genome description has been already put in the CheckStore
-    GenomeDescription desc =
-        (GenomeDescription) this.checkStore.get(CHECK_STORE_KEY);
+    GenomeDescription desc = (GenomeDescription) this.checkStore.get(CHECK_STORE_KEY);
     if (desc != null) {
       return desc;
     }
@@ -91,8 +85,9 @@ public class GenomeDescriptionCreator {
     if (desc == null) {
 
       // Compute the genome description
-      desc = GenomeDescription.createGenomeDescFromFasta(genomeDataFile.open(),
-          genomeDataFile.getName());
+      desc =
+          GenomeDescription.createGenomeDescFromFasta(
+              genomeDataFile.open(), genomeDataFile.getName());
 
       // Store it if storage exists
       if (this.storage != null) {
@@ -110,13 +105,10 @@ public class GenomeDescriptionCreator {
   // Constructor
   //
 
-  /**
-   * Public constructor.
-   */
+  /** Public constructor. */
   public GenomeDescriptionCreator() {
 
     this.storage = GenomeDescriptionGeneratorModule.checkForGenomeDescStore();
     this.checkStore = CheckStore.getCheckStore();
   }
-
 }

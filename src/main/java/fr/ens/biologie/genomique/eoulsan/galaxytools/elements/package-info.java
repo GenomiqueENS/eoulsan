@@ -23,8 +23,8 @@
  */
 
 /**
- * This package contain classes related to parameter extractions from XML Galaxy
- * tool xml files.
+ * This package contain classes related to parameter extractions from XML Galaxy tool xml files.
+ *
  * @since 2.0
  */
 package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;

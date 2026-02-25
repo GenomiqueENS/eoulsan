@@ -5,16 +5,9 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_MATR
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.biologie.genomique.eoulsan.modules.singlecell.RSingleCellExperimentCreatorModule.mergeExpressionResults;
 
-import java.io.IOException;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
-import fr.ens.biologie.genomique.kenetre.bio.ExpressionMatrix;
-import fr.ens.biologie.genomique.kenetre.bio.io.ExpressionMatrixWriter;
-import fr.ens.biologie.genomique.kenetre.bio.io.SparseExpressionMatrixWriter;
-import fr.ens.biologie.genomique.kenetre.bio.io.TSVExpressionMatrixWriter;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
@@ -24,13 +17,19 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
+import fr.ens.biologie.genomique.kenetre.bio.ExpressionMatrix;
+import fr.ens.biologie.genomique.kenetre.bio.io.ExpressionMatrixWriter;
+import fr.ens.biologie.genomique.kenetre.bio.io.SparseExpressionMatrixWriter;
+import fr.ens.biologie.genomique.kenetre.bio.io.TSVExpressionMatrixWriter;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.IOException;
+import java.util.Set;
 
 /**
- * This class define a class that allow to merge expression file into a matrix
- * file.
+ * This class define a class that allow to merge expression file into a matrix file.
+ *
  * @author Laurent Jourdren
  * @since 2.4
  */
@@ -66,28 +65,25 @@ public class ExpressionToMatrixModule extends AbstractModule {
   }
 
   @Override
-  public void configure(StepConfigurationContext context,
-      Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(StepConfigurationContext context, Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
+        case "dense.output.format":
+          this.denseFormat = p.getBooleanValue();
+          break;
 
-      case "dense.output.format":
-        this.denseFormat = p.getBooleanValue();
-        break;
-
-      default:
-        Modules.unknownParameter(context, p);
-        break;
+        default:
+          Modules.unknownParameter(context, p);
+          break;
       }
     }
-
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     try {
 
@@ -98,9 +94,10 @@ public class ExpressionToMatrixModule extends AbstractModule {
       final ExpressionMatrix matrix = mergeExpressionResults(inputData);
 
       // Write matrix
-      try (ExpressionMatrixWriter writer = this.denseFormat
-          ? new SparseExpressionMatrixWriter(outputData.getDataFile().create())
-          : new TSVExpressionMatrixWriter(outputData.getDataFile().create())) {
+      try (ExpressionMatrixWriter writer =
+          this.denseFormat
+              ? new SparseExpressionMatrixWriter(outputData.getDataFile().create())
+              : new TSVExpressionMatrixWriter(outputData.getDataFile().create())) {
         writer.write(matrix);
       }
 
@@ -110,5 +107,4 @@ public class ExpressionToMatrixModule extends AbstractModule {
 
     return status.createTaskResult();
   }
-
 }

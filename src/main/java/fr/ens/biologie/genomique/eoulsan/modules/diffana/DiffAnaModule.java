@@ -30,9 +30,6 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESU
 import static fr.ens.biologie.genomique.eoulsan.modules.diffana.NormalizationModule.DESEQ1_DOCKER_IMAGE;
 import static java.util.Collections.unmodifiableSet;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -44,7 +41,6 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.modules.diffana.DiffAna.DispersionFitType;
@@ -52,9 +48,13 @@ import fr.ens.biologie.genomique.eoulsan.modules.diffana.DiffAna.DispersionMetho
 import fr.ens.biologie.genomique.eoulsan.modules.diffana.DiffAna.DispersionSharingMode;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class define the module of differential analysis in local mode.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  * @author Vivien Deshaies
@@ -62,20 +62,16 @@ import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 @LocalOnly
 public class DiffAnaModule extends AbstractModule {
 
-  private static final String DISP_EST_METHOD_PARAMETER_NAME =
-      "disp.est.method";
-  private static final String DISP_EST_FIT_TYPE_PARAMETER_NAME =
-      "disp.est.fit.type";
-  private static final String DISP_EST_SHARING_MODE_PARAMETER_NAME =
-      "disp.est.sharing.mode";
+  private static final String DISP_EST_METHOD_PARAMETER_NAME = "disp.est.method";
+  private static final String DISP_EST_FIT_TYPE_PARAMETER_NAME = "disp.est.fit.type";
+  private static final String DISP_EST_SHARING_MODE_PARAMETER_NAME = "disp.est.sharing.mode";
 
   private static final String MODULE_NAME = "diffana";
 
   // parameters and there default values
   private DispersionMethod dispEstMethod = DispersionMethod.POOLED;
   private DispersionFitType dispEstFitType = DispersionFitType.LOCAL;
-  private DispersionSharingMode dispEstSharingMode =
-      DispersionSharingMode.MAXIMUM;
+  private DispersionSharingMode dispEstSharingMode = DispersionSharingMode.MAXIMUM;
 
   private final Set<Requirement> requirements = new HashSet<>();
   private RExecutor executor;
@@ -116,16 +112,20 @@ public class DiffAnaModule extends AbstractModule {
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     try {
 
       final Design design = context.getWorkflow().getDesign();
 
       // Launch differential analysis
-      final DiffAna diffana = new DiffAna(this.executor, design,
-          this.dispEstMethod, this.dispEstSharingMode, this.dispEstFitType);
+      final DiffAna diffana =
+          new DiffAna(
+              this.executor,
+              design,
+              this.dispEstMethod,
+              this.dispEstSharingMode,
+              this.dispEstFitType);
       diffana.run(context, context.getInputData(EXPRESSION_RESULTS_TSV));
 
       // Write log file
@@ -133,71 +133,67 @@ public class DiffAnaModule extends AbstractModule {
 
     } catch (EoulsanException e) {
 
-      return status.createTaskResult(e,
-          "Error while analysis data: " + e.getMessage());
+      return status.createTaskResult(e, "Error while analysis data: " + e.getMessage());
     }
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     // Parse R executor parameters
     final Set<Parameter> parameters = new HashSet<>(stepParameters);
-    this.executor = RModuleCommonConfiguration.parseRExecutorParameter(context,
-        parameters, this.requirements, DESEQ1_DOCKER_IMAGE);
+    this.executor =
+        RModuleCommonConfiguration.parseRExecutorParameter(
+            context, parameters, this.requirements, DESEQ1_DOCKER_IMAGE);
 
     for (Parameter p : parameters) {
 
       switch (p.getName()) {
+        case DISP_EST_METHOD_PARAMETER_NAME:
+          this.dispEstMethod = DispersionMethod.getDispEstMethodFromName(p.getStringValue());
 
-      case DISP_EST_METHOD_PARAMETER_NAME:
+          if (this.dispEstMethod == null) {
+            Modules.badParameterValue(context, p, "Unknown dispersion estimation method");
+          }
+          break;
 
-        this.dispEstMethod =
-            DispersionMethod.getDispEstMethodFromName(p.getStringValue());
+        case DISP_EST_FIT_TYPE_PARAMETER_NAME:
+          this.dispEstFitType = DispersionFitType.getDispEstFitTypeFromName(p.getStringValue());
 
-        if (this.dispEstMethod == null) {
-          Modules.badParameterValue(context, p,
-              "Unknown dispersion estimation method");
-        }
-        break;
+          if (this.dispEstFitType == null) {
+            Modules.badParameterValue(context, p, "Unknown dispersion estimation fitType");
+          }
+          break;
 
-      case DISP_EST_FIT_TYPE_PARAMETER_NAME:
+        case DISP_EST_SHARING_MODE_PARAMETER_NAME:
+          this.dispEstSharingMode =
+              DispersionSharingMode.getDispEstSharingModeFromName(p.getStringValue());
 
-        this.dispEstFitType =
-            DispersionFitType.getDispEstFitTypeFromName(p.getStringValue());
+          if (this.dispEstSharingMode == null) {
+            Modules.badParameterValue(context, p, "Unknown dispersion estimation sharing mode");
+          }
+          break;
 
-        if (this.dispEstFitType == null) {
-          Modules.badParameterValue(context, p,
-              "Unknown dispersion estimation fitType");
-        }
-        break;
-
-      case DISP_EST_SHARING_MODE_PARAMETER_NAME:
-
-        this.dispEstSharingMode = DispersionSharingMode
-            .getDispEstSharingModeFromName(p.getStringValue());
-
-        if (this.dispEstSharingMode == null) {
-          Modules.badParameterValue(context, p,
-              "Unknown dispersion estimation sharing mode");
-        }
-        break;
-
-      default:
-        Modules.unknownParameter(context, p);
+        default:
+          Modules.unknownParameter(context, p);
       }
     }
 
     // Log Step parameters
-    getLogger().info("In "
-        + getName() + ", dispersion estimation method="
-        + this.dispEstMethod.getName());
-    getLogger().info("In "
-        + getName() + ", dispersion estimation sharing mode="
-        + this.dispEstSharingMode.getName());
-    getLogger().info("In "
-        + getName() + ", dispersion estimation fit type="
-        + this.dispEstFitType.getName());
+    getLogger()
+        .info("In " + getName() + ", dispersion estimation method=" + this.dispEstMethod.getName());
+    getLogger()
+        .info(
+            "In "
+                + getName()
+                + ", dispersion estimation sharing mode="
+                + this.dispEstSharingMode.getName());
+    getLogger()
+        .info(
+            "In "
+                + getName()
+                + ", dispersion estimation fit type="
+                + this.dispEstFitType.getName());
   }
 }

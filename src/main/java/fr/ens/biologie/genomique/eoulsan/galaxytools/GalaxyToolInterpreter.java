@@ -29,6 +29,21 @@ import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserU
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractOutputs;
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+import com.google.common.collect.Sets;
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.core.Naming;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
+import fr.ens.biologie.genomique.eoulsan.data.Data;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.eoulsan.design.Sample;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.DataToolElement;
+import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElement;
+import fr.ens.biologie.genomique.kenetre.util.XMLUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,33 +58,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Sets;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.core.Naming;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
-import fr.ens.biologie.genomique.eoulsan.data.Data;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.design.Sample;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.DataToolElement;
-import fr.ens.biologie.genomique.eoulsan.galaxytools.elements.ToolElement;
-import fr.ens.biologie.genomique.kenetre.util.XMLUtils;
-
 /**
  * This class create an interpreter to tool xml file from Galaxy.
+ *
  * @author Sandrine Perrin
  * @since 2.0
  */
@@ -79,7 +76,7 @@ public class GalaxyToolInterpreter {
   private final InputStream toolXMLis;
 
   /** The Constant TAG_FORBIDDEN. */
-  private final static Set<String> TAG_FORBIDDEN = Sets.newHashSet("repeat");
+  private static final Set<String> TAG_FORBIDDEN = Sets.newHashSet("repeat");
 
   private static final String TMP_DIR_VARIABLE_NAME = "TMPDIR";
   private static final String THREADS_VARIABLE_NAME = "THREADS";
@@ -107,9 +104,7 @@ public class GalaxyToolInterpreter {
   // Inner classes
   //
 
-  /**
-   * This inner class define the link between an Element an Eoulsan step port.
-   */
+  /** This inner class define the link between an Element an Eoulsan step port. */
   private static final class ElementPort {
 
     private final DataToolElement element;
@@ -120,6 +115,7 @@ public class GalaxyToolInterpreter {
 
     /**
      * Get the DataFile linked to the Element.
+     *
      * @param context Step context
      * @return a DataFile object
      */
@@ -127,39 +123,41 @@ public class GalaxyToolInterpreter {
 
       final Data data = context.getInputData(this.portName);
 
-      return this.fileIndex == -1
-          ? data.getDataFile() : data.getDataFile(this.fileIndex);
+      return this.fileIndex == -1 ? data.getDataFile() : data.getDataFile(this.fileIndex);
     }
 
     /**
      * Get the DataFile linked to the Element.
+     *
      * @param context Step context
      * @return a DataFile object
      */
-    public DataFile getOutputDataFile(final TaskContext context,
-        final Data inData) {
+    public DataFile getOutputDataFile(final TaskContext context, final Data inData) {
 
       final Data data = context.getOutputData(this.portName, inData);
 
-      return this.fileIndex == -1
-          ? data.getDataFile() : data.getDataFile(this.fileIndex);
+      return this.fileIndex == -1 ? data.getDataFile() : data.getDataFile(this.fileIndex);
     }
 
     @Override
     public String toString() {
       return "ElementPort{element="
-          + element.getName() + ", portName=" + portName + ", fileIndex="
-          + fileIndex + "}";
+          + element.getName()
+          + ", portName="
+          + portName
+          + ", fileIndex="
+          + fileIndex
+          + "}";
     }
 
     /**
      * Constructor.
+     *
      * @param element Tool element
      * @param portName Eoulsan port name
      * @param fileIndex file index
      */
-    public ElementPort(final DataToolElement element, final String portName,
-        final int fileIndex) {
+    public ElementPort(final DataToolElement element, final String portName, final int fileIndex) {
 
       this.element = element;
       this.portName = portName;
@@ -167,15 +165,14 @@ public class GalaxyToolInterpreter {
     }
   }
 
-  /**
-   * This inner class define a collection of ElementPorts.
-   */
+  /** This inner class define a collection of ElementPorts. */
   private static final class ElementPorts {
 
     private final Map<String, ElementPort> ports = new HashMap<>();
 
     /**
      * Get an ElementPort from its name.
+     *
      * @param elementName the name of the element port
      * @return an ElementPort or null if the element name does not exists
      */
@@ -185,8 +182,9 @@ public class GalaxyToolInterpreter {
     }
 
     /**
-     * Get the ToolElement objects that will be used to create the Eoulsan step
-     * ports. Only one of the port of multi-files DataFormat are kept.
+     * Get the ToolElement objects that will be used to create the Eoulsan step ports. Only one of
+     * the port of multi-files DataFormat are kept.
+     *
      * @return a set of ToolElement
      */
     public Set<DataToolElement> getStepElements() {
@@ -205,11 +203,11 @@ public class GalaxyToolInterpreter {
 
     /**
      * Sort ToolElements.
+     *
      * @param elements element to sort
      * @return a sorted list of ToolElement
      */
-    private static List<ToolElement> sortedElements(
-        final Collection<ToolElement> elements) {
+    private static List<ToolElement> sortedElements(final Collection<ToolElement> elements) {
 
       final List<ToolElement> elementsSorted = new ArrayList<>(elements);
       elementsSorted.sort(Comparator.comparing(ToolElement::getName));
@@ -224,6 +222,7 @@ public class GalaxyToolInterpreter {
 
     /**
      * Constructor.
+     *
      * @param elements the element
      */
     public ElementPorts(final Map<String, ToolElement> elements) {
@@ -243,8 +242,7 @@ public class GalaxyToolInterpreter {
         final DataFormat format = dataElement.getDataFormat();
 
         if (format.getMaxFilesCount() == 1) {
-          this.ports.put(e.getName(),
-              new ElementPort(dataElement, e.getValidatedName(), -1));
+          this.ports.put(e.getName(), new ElementPort(dataElement, e.getValidatedName(), -1));
         } else {
 
           // If the DataFormat of the element is multi-file, only keep one
@@ -261,8 +259,8 @@ public class GalaxyToolInterpreter {
             formatPortNames.put(format, portName);
           }
 
-          this.ports.put(e.getName(), new ElementPort(dataElement, portName,
-              formatCount.count(format)));
+          this.ports.put(
+              e.getName(), new ElementPort(dataElement, portName, formatCount.count(format)));
           formatCount.add(format);
         }
       }
@@ -271,14 +269,13 @@ public class GalaxyToolInterpreter {
 
   /**
    * Parse tool file to extract useful data to run tool.
+   *
    * @param parameters the set step parameters
    * @throws EoulsanException if an data missing
    */
-  public void configure(final Set<Parameter> parameters)
-      throws EoulsanException {
+  public void configure(final Set<Parameter> parameters) throws EoulsanException {
 
-    checkState(!isConfigured,
-        "GalaxyToolStep, this instance has been already configured");
+    checkState(!isConfigured, "GalaxyToolStep, this instance has been already configured");
 
     Map<String, Parameter> stepParameters = new HashMap<>();
 
@@ -300,14 +297,13 @@ public class GalaxyToolInterpreter {
   }
 
   /**
-   * Convert command tag from tool file in string, variable are replace by
-   * value.
+   * Convert command tag from tool file in string, variable are replace by value.
+   *
    * @param context the context
    * @return the string
    * @throws EoulsanException the Eoulsan exception
    */
-  public ToolExecutorResult execute(final TaskContext context)
-      throws EoulsanException {
+  public ToolExecutorResult execute(final TaskContext context) throws EoulsanException {
 
     checkState(!isExecuted, "this instance has been already executed");
 
@@ -318,13 +314,13 @@ public class GalaxyToolInterpreter {
     final Map<String, String> variables = new HashMap<>(variablesCount);
 
     // Set a TMPDIR variable that contain the path to the temporary directory
-    variables.put(TMP_DIR_VARIABLE_NAME,
-        context.getLocalTempDirectory().getAbsolutePath());
+    variables.put(TMP_DIR_VARIABLE_NAME, context.getLocalTempDirectory().getAbsolutePath());
 
     // Set a THREADS variable that contain the required thread number
     final int threadNumber =
         context.getCurrentStep().getRequiredProcessors() > 0
-            ? context.getCurrentStep().getRequiredProcessors() : 1;
+            ? context.getCurrentStep().getRequiredProcessors()
+            : 1;
     variables.put(THREADS_VARIABLE_NAME, "" + threadNumber);
 
     // Input Data
@@ -360,15 +356,13 @@ public class GalaxyToolInterpreter {
 
       if (e instanceof DataToolElement) {
 
-        final ElementPort outPort =
-            this.outputPorts.getPortElements(e.getName());
+        final ElementPort outPort = this.outputPorts.getPortElements(e.getName());
 
         // Extract value from context from DataFormat
-        final DataFile outFile = outPort.getOutputDataFile(context,
-            selectSourceData(inputDataSet, context));
+        final DataFile outFile =
+            outPort.getOutputDataFile(context, selectSourceData(inputDataSet, context));
         variables.put(e.getName(), outFile.toFile().getAbsolutePath());
-        variables.put(removeNamespace(e.getName()),
-            outFile.toFile().getAbsolutePath());
+        variables.put(removeNamespace(e.getName()), outFile.toFile().getAbsolutePath());
       } else {
         // Variables setting with parameters file
         variables.put(e.getName(), e.getValue());
@@ -379,8 +373,9 @@ public class GalaxyToolInterpreter {
       throw new EoulsanException("No variable set for Cheetah script.");
     }
 
-    context.getLogger().info("Tool variables: "
-        + Joiner.on("\t").withKeyValueSeparator("=").join(variables));
+    context
+        .getLogger()
+        .info("Tool variables: " + Joiner.on("\t").withKeyValueSeparator("=").join(variables));
 
     // Create the Cheetah interpreter
     final CheetahInterpreter cheetahInterpreter =
@@ -412,6 +407,7 @@ public class GalaxyToolInterpreter {
 
   /**
    * Create DOM instance from tool xml file.
+   *
    * @return DOM instance
    * @throws EoulsanException if an error occurs during creation instance
    */
@@ -419,20 +415,19 @@ public class GalaxyToolInterpreter {
 
     try (InputStream in = this.toolXMLis) {
       // Read the XML file
-      final DocumentBuilder dBuilder =
-          DocumentBuilderFactory.newInstance().newDocumentBuilder();
+      final DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
       final Document doc = dBuilder.parse(in);
       doc.getDocumentElement().normalize();
       return doc;
 
-    } catch (final IOException | SAXException
-        | ParserConfigurationException e) {
+    } catch (final IOException | SAXException | ParserConfigurationException e) {
       throw new EoulsanException(e);
     }
   }
 
   /**
    * Check DOM validity.
+   *
    * @throws EoulsanException the Eoulsan exception
    */
   private void checkDomValidity() throws EoulsanException {
@@ -449,13 +444,12 @@ public class GalaxyToolInterpreter {
 
   /**
    * Select the input data to use as data source.
+   *
    * @param inputDataSet a set with all the input data
    * @param context the task context
-   * @return the data source to use for the output data or null if there is no
-   *         input data
+   * @return the data source to use for the output data or null if there is no input data
    */
-  private Data selectSourceData(final Set<Data> inputDataSet,
-      final TaskContext context) {
+  private Data selectSourceData(final Set<Data> inputDataSet, final TaskContext context) {
 
     Data inData = null;
 
@@ -483,12 +477,12 @@ public class GalaxyToolInterpreter {
 
   /**
    * Test if a data name is a sample name.
+   *
    * @param data the data to test
    * @param context the step context
    * @return true the data name is a sample name
    */
-  private boolean isDataNameInDesign(final Data data,
-      final TaskContext context) {
+  private boolean isDataNameInDesign(final Data data, final TaskContext context) {
 
     final String dataName = data.getName();
 
@@ -508,6 +502,7 @@ public class GalaxyToolInterpreter {
 
   /**
    * Gets the inputs.
+   *
    * @return the inputs
    */
   public Map<String, ToolElement> getInputs() {
@@ -516,6 +511,7 @@ public class GalaxyToolInterpreter {
 
   /**
    * Gets the outputs.
+   *
    * @return the outputs
    */
   public Map<String, ToolElement> getOutputs() {
@@ -523,8 +519,8 @@ public class GalaxyToolInterpreter {
   }
 
   /**
-   * Gets the in data format expected associated with variable found in command
-   * line.
+   * Gets the in data format expected associated with variable found in command line.
+   *
    * @return the in data format expected
    */
   public Set<DataToolElement> getInputDataElements() {
@@ -532,8 +528,8 @@ public class GalaxyToolInterpreter {
   }
 
   /**
-   * Gets the out data format expected associated with variable found in command
-   * line.
+   * Gets the out data format expected associated with variable found in command line.
+   *
    * @return the out data format expected
    */
   public Set<DataToolElement> getOutputDataElements() {
@@ -542,6 +538,7 @@ public class GalaxyToolInterpreter {
 
   /**
    * Gets the tool information.
+   *
    * @return the tool information
    */
   public ToolInfo getToolInfo() {
@@ -554,11 +551,14 @@ public class GalaxyToolInterpreter {
         + Joiner.on("\n").withKeyValueSeparator("=").join(this.inputs)
         + ", \noutputs="
         + Joiner.on("\n").withKeyValueSeparator("=").join(this.outputs)
-        + ", \ntool=" + this.toolInfo + "]";
+        + ", \ntool="
+        + this.toolInfo
+        + "]";
   }
 
   /**
    * Remove the namespace from the name of a variable.
+   *
    * @param variableName variable name
    * @return the variable name without the namespace
    */
@@ -583,30 +583,31 @@ public class GalaxyToolInterpreter {
 
   /**
    * Public constructor.
+   *
    * @param file the Galaxy tool file
    * @throws EoulsanException the Eoulsan exception
    * @throws IOException if the file cannot be load
    */
-  public GalaxyToolInterpreter(final File file)
-      throws EoulsanException, IOException {
+  public GalaxyToolInterpreter(final File file) throws EoulsanException, IOException {
 
     this(Files.newInputStream(file.toPath()), file.getName());
   }
 
   /**
    * Public constructor.
+   *
    * @param file the Galaxy tool file
    * @throws EoulsanException the Eoulsan exception
    * @throws IOException if the file cannot be load
    */
-  public GalaxyToolInterpreter(final Path file)
-      throws EoulsanException, IOException {
+  public GalaxyToolInterpreter(final Path file) throws EoulsanException, IOException {
 
     this(Files.newInputStream(file), file.getFileName().toString());
   }
 
   /**
    * Public constructor.
+   *
    * @param in the input stream
    * @param toolSource tool source
    * @throws EoulsanException the Eoulsan exception
@@ -623,5 +624,4 @@ public class GalaxyToolInterpreter {
 
     checkDomValidity();
   }
-
 }

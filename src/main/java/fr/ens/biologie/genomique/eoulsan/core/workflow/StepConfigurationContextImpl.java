@@ -26,10 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.File;
-import java.util.Set;
-import java.util.logging.Logger;
-
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Settings;
@@ -42,10 +38,13 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.kenetre.log.GenericLogger;
+import java.io.File;
+import java.util.Set;
+import java.util.logging.Logger;
 
 /**
- * This class define a concrete implementation of the configuration context of a
- * step.
+ * This class define a concrete implementation of the configuration context of a step.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -63,8 +62,7 @@ public class StepConfigurationContextImpl implements StepConfigurationContext {
     @Override
     public Workflow getWorkflow() {
 
-      throw new IllegalStateException(
-          "This method cannot be used from a configuration context");
+      throw new IllegalStateException("This method cannot be used from a configuration context");
     }
 
     @Override
@@ -124,15 +122,13 @@ public class StepConfigurationContextImpl implements StepConfigurationContext {
     @Override
     public InputPorts getInputPorts() {
 
-      throw new IllegalStateException(
-          "This method cannot be used from a configuration context");
+      throw new IllegalStateException("This method cannot be used from a configuration context");
     }
 
     @Override
     public OutputPorts getOutputPorts() {
 
-      throw new IllegalStateException(
-          "This method cannot be used from a configuration context");
+      throw new IllegalStateException("This method cannot be used from a configuration context");
     }
 
     @Override
@@ -153,6 +149,7 @@ public class StepConfigurationContextImpl implements StepConfigurationContext {
 
     /**
      * Constructor.
+     *
      * @param step step
      */
     private WorkflowStepWrapper(final AbstractStep step) {
@@ -167,6 +164,7 @@ public class StepConfigurationContextImpl implements StepConfigurationContext {
 
   /**
    * Get the local working directory.
+   *
    * @return Returns the local working Path
    */
   public DataFile getLocalWorkingDirectory() {
@@ -176,6 +174,7 @@ public class StepConfigurationContextImpl implements StepConfigurationContext {
 
   /**
    * Get the Hadoop working directory.
+   *
    * @return Returns the Hadoop working directory
    */
   public DataFile getHadoopWorkingDirectory() {
@@ -185,6 +184,7 @@ public class StepConfigurationContextImpl implements StepConfigurationContext {
 
   /**
    * Get the job directory.
+   *
    * @return Returns the job directory
    */
   @Override
@@ -195,6 +195,7 @@ public class StepConfigurationContextImpl implements StepConfigurationContext {
 
   /**
    * Get the task output directory.
+   *
    * @return Returns the task output directory
    */
   public DataFile getTaskOutputDirectory() {
@@ -235,6 +236,7 @@ public class StepConfigurationContextImpl implements StepConfigurationContext {
 
   /**
    * Get the application jar file.
+   *
    * @return Returns the jar file
    */
   public DataFile getJarPathname() {
@@ -316,6 +318,7 @@ public class StepConfigurationContextImpl implements StepConfigurationContext {
 
   /**
    * Constructor.
+   *
    * @param step step related to the context
    */
   StepConfigurationContextImpl(final AbstractStep step) {
@@ -325,5 +328,4 @@ public class StepConfigurationContextImpl implements StepConfigurationContext {
     this.workflowContext = step.getAbstractWorkflow().getWorkflowContext();
     this.step = step;
   }
-
 }

@@ -2,14 +2,14 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters;
 
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.MoreObjects;
 import java.util.Arrays;
 import java.util.List;
 
-import com.google.common.base.MoreObjects;
-
 /**
- * This class define the default executor interpreter. This interpreter use
- * <code>/bin/sh -c</code> to create the command line.
+ * This class define the default executor interpreter. This interpreter use <code>/bin/sh -c</code>
+ * to create the command line.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -40,5 +40,4 @@ public class DefaultExecutorInterpreter extends AbstractExecutorInterpreter {
 
     return MoreObjects.toStringHelper(this).add("name", getName()).toString();
   }
-
 }

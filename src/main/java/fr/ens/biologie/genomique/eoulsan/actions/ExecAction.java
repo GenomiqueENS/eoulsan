@@ -27,12 +27,18 @@ package fr.ens.biologie.genomique.eoulsan.actions;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
+import fr.ens.biologie.genomique.eoulsan.Common;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.Main;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.Executor;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.ExecutorArguments;
+import fr.ens.biologie.genomique.eoulsan.util.LinuxCpuInfo;
+import fr.ens.biologie.genomique.eoulsan.util.LinuxMemInfo;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -41,16 +47,9 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 
-import fr.ens.biologie.genomique.eoulsan.Common;
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.Main;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.Executor;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.ExecutorArguments;
-import fr.ens.biologie.genomique.eoulsan.util.LinuxCpuInfo;
-import fr.ens.biologie.genomique.eoulsan.util.LinuxMemInfo;
-
 /**
  * This class define the Local exec Action.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -86,8 +85,7 @@ public class ExecAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[0]), true);
+      final CommandLine line = parser.parse(options, arguments.toArray(new String[0]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -101,8 +99,7 @@ public class ExecAction extends AbstractAction {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e,
-          "Error while parsing command line arguments: " + e.getMessage());
+      Common.errorExit(e, "Error while parsing command line arguments: " + e.getMessage());
     }
 
     if (arguments.size() != argsOptions + 2) {
@@ -122,6 +119,7 @@ public class ExecAction extends AbstractAction {
 
   /**
    * Create options for command line
+   *
    * @return an Options object
    */
   @SuppressWarnings("static-access")
@@ -134,26 +132,33 @@ public class ExecAction extends AbstractAction {
     options.addOption("h", "help", false, "display this help");
 
     // Description option
-    options.addOption(Option.builder("d").argName("description").hasArg()
-        .desc("job description").longOpt("desc").get());
+    options.addOption(
+        Option.builder("d")
+            .argName("description")
+            .hasArg()
+            .desc("job description")
+            .longOpt("desc")
+            .get());
 
     return options;
   }
 
   /**
    * Show command line help.
+   *
    * @param options Options of the software
    */
   private static void help(final Options options) {
 
     // Show help message
-    final HelpFormatter formatter =
-        HelpFormatter.builder().setShowSince(false).get();
+    final HelpFormatter formatter = HelpFormatter.builder().setShowSince(false).get();
     try {
       formatter.printHelp(
-          Globals.APP_NAME_LOWER_CASE
-              + ".sh " + ACTION_NAME + " [options] workflow.xml design.txt",
-          "", options, "", false);
+          Globals.APP_NAME_LOWER_CASE + ".sh " + ACTION_NAME + " [options] workflow.xml design.txt",
+          "",
+          options,
+          "",
+          false);
     } catch (IOException e) {
       Common.errorExit(e, "Error while creating help message.");
     }
@@ -167,12 +172,13 @@ public class ExecAction extends AbstractAction {
 
   /**
    * Run Eoulsan
+   *
    * @param workflowFile workflow file
    * @param designFile design file
    * @param jobDescription job description
    */
-  private static void run(final Path workflowFile, final Path designFile,
-      final String jobDescription) {
+  private static void run(
+      final Path workflowFile, final Path designFile, final String jobDescription) {
 
     requireNonNull(workflowFile, "paramFile is null");
     requireNonNull(designFile, "designFile is null");
@@ -203,20 +209,24 @@ public class ExecAction extends AbstractAction {
       // Create execution context
 
       // Set job environment
-      final String env = "Local Mode on "
-          + new LinuxCpuInfo().getModelName() + ", "
-          + Runtime.getRuntime().availableProcessors() + " CPU(s)/thread(s), "
-          + new LinuxMemInfo().getMemTotal();
+      final String env =
+          "Local Mode on "
+              + new LinuxCpuInfo().getModelName()
+              + ", "
+              + Runtime.getRuntime().availableProcessors()
+              + " CPU(s)/thread(s), "
+              + new LinuxMemInfo().getMemTotal();
 
       // Create ExecutionArgument object
-      final ExecutorArguments arguments =
-          new ExecutorArguments(workflowFile, designFile);
+      final ExecutorArguments arguments = new ExecutorArguments(workflowFile, designFile);
       arguments.setJobDescription(desc);
       arguments.setJobEnvironment(env);
 
       // Create the log Files
-      Main.getInstance().createLogFiles(arguments.logPath(Globals.LOG_FILENAME),
-          arguments.logPath(Globals.OTHER_LOG_FILENAME));
+      Main.getInstance()
+          .createLogFiles(
+              arguments.logPath(Globals.LOG_FILENAME),
+              arguments.logPath(Globals.OTHER_LOG_FILENAME));
 
       // Create executor
       final Executor e = new Executor(arguments);
@@ -227,9 +237,8 @@ public class ExecAction extends AbstractAction {
     } catch (FileNotFoundException e) {
       Common.errorExit(e, "File not found: " + e.getMessage());
     } catch (Throwable e) {
-      Common.errorExit(e, "Error while executing "
-          + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
+      Common.errorExit(
+          e, "Error while executing " + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
     }
-
   }
 }

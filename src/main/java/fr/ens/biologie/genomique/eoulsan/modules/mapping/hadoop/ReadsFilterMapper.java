@@ -32,40 +32,37 @@ import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.HadoopMap
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsFilterHadoopModule.OUTPUT_FILE1_KEY;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsFilterHadoopModule.OUTPUT_FILE2_KEY;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
+import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopReporterIncrementer;
+import fr.ens.biologie.genomique.kenetre.KenetreException;
 import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 import fr.ens.biologie.genomique.kenetre.bio.ReadSequence;
-import fr.ens.biologie.genomique.kenetre.KenetreException;
 import fr.ens.biologie.genomique.kenetre.bio.readfilter.MultiReadFilter;
 import fr.ens.biologie.genomique.kenetre.bio.readfilter.MultiReadFilterBuilder;
-import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopReporterIncrementer;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 
 /**
  * This class defines a read filter mapper.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
 public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
 
   // Parameters keys
-  static final String FASTQ_FORMAT_KEY =
-      Globals.PARAMETER_PREFIX + ".filter.reads.fastq.format";
+  static final String FASTQ_FORMAT_KEY = Globals.PARAMETER_PREFIX + ".filter.reads.fastq.format";
 
   static final String READ_FILTER_PARAMETER_KEY_PREFIX =
       Globals.PARAMETER_PREFIX + ".filter.reads.parameter.";
@@ -89,8 +86,7 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
   //
 
   @Override
-  protected void setup(final Context context)
-      throws IOException, InterruptedException {
+  protected void setup(final Context context) throws IOException, InterruptedException {
 
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
@@ -105,8 +101,8 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
 
     // Set the FastqFormat
     final FastqFormat fastqFormat =
-        FastqFormat.getFormatFromName(conf.get(FASTQ_FORMAT_KEY,
-            "" + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
+        FastqFormat.getFormatFromName(
+            conf.get(FASTQ_FORMAT_KEY, "" + EoulsanRuntime.getSettings().getDefaultFastqFormat()));
     this.read1.setFastqFormat(fastqFormat);
     this.read2.setFastqFormat(fastqFormat);
 
@@ -123,14 +119,12 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
       final MultiReadFilterBuilder mrfb = new MultiReadFilterBuilder();
 
       // Add the parameters from the job configuration to the builder
-      mrfb.addParameters(
-          jobConfToParameters(conf, READ_FILTER_PARAMETER_KEY_PREFIX));
+      mrfb.addParameters(jobConfToParameters(conf, READ_FILTER_PARAMETER_KEY_PREFIX));
 
-      this.filter = mrfb.getReadFilter(new HadoopReporterIncrementer(context),
-          this.counterGroup);
+      this.filter = mrfb.getReadFilter(new HadoopReporterIncrementer(context), this.counterGroup);
 
-      getLogger().info("Reads filters to apply: "
-          + Joiner.on(", ").join(this.filter.getFilterNames()));
+      getLogger()
+          .info("Reads filters to apply: " + Joiner.on(", ").join(this.filter.getFilterNames()));
 
     } catch (KenetreException e) {
       throw new IOException(e);
@@ -144,8 +138,7 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
     getLogger().info("End of setup()");
   }
 
-  private static String createOutputPath(final Configuration conf,
-      final String key) {
+  private static String createOutputPath(final Configuration conf, final String key) {
 
     if (conf == null || key == null) {
       return null;
@@ -161,15 +154,14 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
   //
 
   /**
-   * 'key': offset of the beginning of the line from the beginning of the TFQ
-   * file. 'value': the TFQ line.
+   * 'key': offset of the beginning of the line from the beginning of the TFQ file. 'value': the TFQ
+   * line.
    */
   @Override
   protected void map(final Text key, final Text value, final Context context)
       throws IOException, InterruptedException {
 
-    context.getCounter(this.counterGroup, INPUT_RAW_READS_COUNTER.counterName())
-        .increment(1);
+    context.getCounter(this.counterGroup, INPUT_RAW_READS_COUNTER.counterName()).increment(1);
 
     final String line = value.toString();
 
@@ -192,11 +184,13 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
         this.outValue.set(this.read1.toTFQ());
 
         context.write(key, this.outValue);
-        context.getCounter(this.counterGroup,
-            OUTPUT_FILTERED_READS_COUNTER.counterName()).increment(1);
+        context
+            .getCounter(this.counterGroup, OUTPUT_FILTERED_READS_COUNTER.counterName())
+            .increment(1);
       } else {
-        context.getCounter(this.counterGroup,
-            READS_REJECTED_BY_FILTERS_COUNTER.counterName()).increment(1);
+        context
+            .getCounter(this.counterGroup, READS_REJECTED_BY_FILTERS_COUNTER.counterName())
+            .increment(1);
       }
 
     } else if (fieldsSize == 6) {
@@ -231,24 +225,23 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
           this.out.write(key, this.outValue, this.outputFilename2);
         }
 
-        context.getCounter(this.counterGroup,
-            OUTPUT_FILTERED_READS_COUNTER.counterName()).increment(1);
+        context
+            .getCounter(this.counterGroup, OUTPUT_FILTERED_READS_COUNTER.counterName())
+            .increment(1);
       } else {
-        context.getCounter(this.counterGroup,
-            READS_REJECTED_BY_FILTERS_COUNTER.counterName()).increment(1);
+        context
+            .getCounter(this.counterGroup, READS_REJECTED_BY_FILTERS_COUNTER.counterName())
+            .increment(1);
       }
     }
-
   }
 
   @Override
-  protected void cleanup(final Context context)
-      throws IOException, InterruptedException {
+  protected void cleanup(final Context context) throws IOException, InterruptedException {
 
     // Close the multiple output writer
     if (this.out != null) {
       this.out.close();
     }
   }
-
 }

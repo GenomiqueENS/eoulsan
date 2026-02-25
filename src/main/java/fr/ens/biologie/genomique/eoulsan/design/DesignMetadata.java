@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.design;
 
 /**
  * This interface defines the design metadata.
+ *
  * @author Xavier Bauquet
  * @since 2.0
  */
@@ -39,74 +40,85 @@ public interface DesignMetadata extends Metadata {
 
   /**
    * Get the genome file.
+   *
    * @return the genome file
    */
   String getGenomeFile();
 
   /**
    * Get the GFF file.
+   *
    * @return the GFF file
    */
   String getGffFile();
 
   /**
    * Get the GTF file.
+   *
    * @return the GTF file
    */
   String getGtfFile();
 
   /**
    * Get the additional annotation file.
+   *
    * @return the additional annotation file
    */
   String getAdditionalAnnotationFile();
 
   /**
    * Set the genome file.
+   *
    * @param newGenomeFile the new genome file
    */
   void setGenomeFile(String newGenomeFile);
 
   /**
    * Set the gff file.
+   *
    * @param newGffFile the new GFF file
    */
   void setGffFile(String newGffFile);
 
   /**
    * Set the gff file.
+   *
    * @param newGtfFile the new GTF file
    */
   void setGtfFile(String newGtfFile);
 
   /**
    * Set the additional annotation file.
+   *
    * @param newAdditionalAnotationFile the new additional annotation file
    */
   void setAdditionalAnnotationFile(String newAdditionalAnotationFile);
 
   /**
    * Test if the genomeFile field exists.
+   *
    * @return true if the genomeFile field exists
    */
   boolean containsGenomeFile();
 
   /**
    * Test if the gffFile field exists.
+   *
    * @return the gffFile field exists
    */
   boolean containsGffFile();
 
   /**
    * Test if the gtfFile field exists.
+   *
    * @return the gtfFile field exists
    */
   boolean containsGtfFile();
 
   /**
    * Test if the additional annotation file field exists.
+   *
    * @return the additional annotation file field exists
    */
   boolean containsAdditionalAnnotationFile();
-
 }

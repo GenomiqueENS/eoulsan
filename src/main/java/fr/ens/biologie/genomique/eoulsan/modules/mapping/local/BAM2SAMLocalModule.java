@@ -1,10 +1,5 @@
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.local;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
@@ -22,9 +17,14 @@ import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SamInputResource;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * This class define a module for converting BAM files into SAM.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -32,8 +32,7 @@ import htsjdk.samtools.SamReaderFactory;
 public class BAM2SAMLocalModule extends AbstractBAM2SAMModule {
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     try {
 
@@ -44,8 +43,7 @@ public class BAM2SAMLocalModule extends AbstractBAM2SAMModule {
       final Data inData = context.getInputData(DataFormats.MAPPER_RESULTS_BAM);
 
       // Get output BAM data
-      final Data outSAMData =
-          context.getOutputData(DataFormats.MAPPER_RESULTS_SAM, inData);
+      final Data outSAMData = context.getOutputData(DataFormats.MAPPER_RESULTS_SAM, inData);
 
       final DataFile samFile = outSAMData.getDataFile();
       final DataFile bamFile = inData.getDataFile();
@@ -54,8 +52,8 @@ public class BAM2SAMLocalModule extends AbstractBAM2SAMModule {
 
       // Set the description of the context
 
-      status.setDescription("Convert alignments ("
-          + inData.getName() + ", " + outSAMData.getName() + ")");
+      status.setDescription(
+          "Convert alignments (" + inData.getName() + ", " + outSAMData.getName() + ")");
 
       // Add counters for this sample to log file
       status.setCounters(reporter, COUNTER_GROUP);
@@ -70,6 +68,7 @@ public class BAM2SAMLocalModule extends AbstractBAM2SAMModule {
 
   /**
    * Convert BAM file to sorted SAM with Picard
+   *
    * @param bamDataFile input SAM file
    * @param samDataFile output SAM file
    * @param reporter reporter
@@ -78,24 +77,28 @@ public class BAM2SAMLocalModule extends AbstractBAM2SAMModule {
    */
 
   // private static final void convert(final File in, final File out)
-  private static void convert(final DataFile bamDataFile,
-      final DataFile samDataFile, final Reporter reporter, final File tmpDir)
+  private static void convert(
+      final DataFile bamDataFile,
+      final DataFile samDataFile,
+      final Reporter reporter,
+      final File tmpDir)
       throws IOException {
 
     InputStream in = bamDataFile.open();
     OutputStream out = samDataFile.create();
 
     // Open bam file
-    final SamReader bamReader =
-        SamReaderFactory.makeDefault().open(SamInputResource.of(in));
+    final SamReader bamReader = SamReaderFactory.makeDefault().open(SamInputResource.of(in));
 
     // Force sort
     bamReader.getFileHeader().setSortOrder(SortOrder.unsorted);
 
     // Open sam file
-    final SAMFileWriter samWriter = new SAMFileWriterFactory()
-        .setCreateIndex(false).setTempDirectory(tmpDir)
-        .makeSAMWriter(bamReader.getFileHeader(), false, out);
+    final SAMFileWriter samWriter =
+        new SAMFileWriterFactory()
+            .setCreateIndex(false)
+            .setTempDirectory(tmpDir)
+            .makeSAMWriter(bamReader.getFileHeader(), false, out);
 
     for (final SAMRecord samRecord : bamReader) {
       samWriter.addAlignment(samRecord);
@@ -103,7 +106,5 @@ public class BAM2SAMLocalModule extends AbstractBAM2SAMModule {
     }
     samWriter.close();
     bamReader.close();
-
   }
-
 }

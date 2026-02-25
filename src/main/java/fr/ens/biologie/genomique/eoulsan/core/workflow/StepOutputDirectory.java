@@ -12,6 +12,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 
 /**
  * This class allow to determine the output directory of a step.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -22,14 +23,14 @@ class StepOutputDirectory {
   private final OutputTreeType outputTree;
   private final boolean hadoopMode;
 
-  /**
-   * This enum define the output tree type of a step.
-   */
+  /** This enum define the output tree type of a step. */
   public enum OutputTreeType {
-    FLAT, STEP;
+    FLAT,
+    STEP;
 
     /**
      * Get a OutputTreeType object from a type name.
+     *
      * @param type the type
      * @return a OutputTreeType object
      */
@@ -50,34 +51,33 @@ class StepOutputDirectory {
 
     /**
      * Get a OutputTreeType object from the Eoulsan settings.
+     *
      * @return a OutputTreeType object
      */
     public static OutputTreeType getOutputTreeType() {
 
-      return getOutputTreeType(
-          EoulsanRuntime.getSettings().getOutputTreeType());
+      return getOutputTreeType(EoulsanRuntime.getSettings().getOutputTreeType());
     }
-
   }
 
   /**
-   * Get the output directory of the step if the outputs of the step are outputs
-   * of workflow.
+   * Get the output directory of the step if the outputs of the step are outputs of workflow.
+   *
    * @param workflow the workflow
    * @param step the step
    * @return the output directory of the step
    */
-  public DataFile defaultDirectory(final AbstractWorkflow workflow,
-      final AbstractStep step, final Module module,
+  public DataFile defaultDirectory(
+      final AbstractWorkflow workflow,
+      final AbstractStep step,
+      final Module module,
       final boolean copyResultsToOutput) {
 
     requireNonNull(workflow, "workflow argument cannot be null");
     requireNonNull(step, "step argument cannot be null");
     requireNonNull(module, "module argument cannot be null");
 
-    if (this.hadoopMode
-        && ExecutionMode.getExecutionMode(module.getClass())
-            .isHadoopCompatible()) {
+    if (this.hadoopMode && ExecutionMode.getExecutionMode(module.getClass()).isHadoopCompatible()) {
       return workflow.getHadoopWorkingDirectory();
     }
 
@@ -90,21 +90,20 @@ class StepOutputDirectory {
 
   /**
    * Get the working directory of a step.
+   *
    * @param workflow the workflow
    * @param step the step
    * @param module the module
    * @return the working directory of a step
    */
-  public DataFile workingDirectory(final AbstractWorkflow workflow,
-      final AbstractStep step, final Module module) {
+  public DataFile workingDirectory(
+      final AbstractWorkflow workflow, final AbstractStep step, final Module module) {
 
     requireNonNull(workflow, "workflow argument cannot be null");
     requireNonNull(step, "step argument cannot be null");
     requireNonNull(module, "module argument cannot be null");
 
-    if (this.hadoopMode
-        && ExecutionMode.getExecutionMode(module.getClass())
-            .isHadoopCompatible()) {
+    if (this.hadoopMode && ExecutionMode.getExecutionMode(module.getClass()).isHadoopCompatible()) {
       return workflow.getHadoopWorkingDirectory();
     }
 
@@ -113,13 +112,14 @@ class StepOutputDirectory {
 
   /**
    * Get the workflow output directory of a step.
+   *
    * @param workflow the workflow
    * @param step the step
    * @param module the module
    * @return the working directory of a step
    */
-  public DataFile workflowDirectory(final AbstractWorkflow workflow,
-      final AbstractStep step, final Module module) {
+  public DataFile workflowDirectory(
+      final AbstractWorkflow workflow, final AbstractStep step, final Module module) {
 
     requireNonNull(workflow, "workflow argument cannot be null");
     requireNonNull(step, "step argument cannot be null");
@@ -130,14 +130,13 @@ class StepOutputDirectory {
     }
 
     switch (this.outputTree) {
-    case STEP:
+      case STEP:
+        final String subDirname = step.getId() + STEP_OUTPUT_DIRECTORY_SUFFIX;
+        return new DataFile(workflow.getOutputDirectory(), subDirname);
 
-      final String subDirname = step.getId() + STEP_OUTPUT_DIRECTORY_SUFFIX;
-      return new DataFile(workflow.getOutputDirectory(), subDirname);
-
-    case FLAT:
-    default:
-      return workflow.getOutputDirectory();
+      case FLAT:
+      default:
+        return workflow.getOutputDirectory();
     }
   }
 
@@ -147,6 +146,7 @@ class StepOutputDirectory {
 
   /**
    * Get the singleton of the class
+   *
    * @return the singleton of the class
    */
   public static synchronized StepOutputDirectory getInstance() {
@@ -162,13 +162,10 @@ class StepOutputDirectory {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
+  /** Private constructor. */
   private StepOutputDirectory() {
 
     this.hadoopMode = EoulsanRuntime.getRuntime().getMode().isHadoopMode();
     this.outputTree = OutputTreeType.getOutputTreeType();
   }
-
 }

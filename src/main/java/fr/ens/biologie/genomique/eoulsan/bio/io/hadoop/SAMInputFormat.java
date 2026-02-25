@@ -1,7 +1,6 @@
 package fr.ens.biologie.genomique.eoulsan.bio.io.hadoop;
 
 import java.io.IOException;
-
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.compress.CompressionCodec;
@@ -14,16 +13,16 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 
 /**
- * This class define an InputFormat for SAM files for the Hadoop MapReduce
- * framework.
+ * This class define an InputFormat for SAM files for the Hadoop MapReduce framework.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
 public class SAMInputFormat extends FileInputFormat<Text, Text> {
 
   @Override
-  public RecordReader<Text, Text> createRecordReader(InputSplit inputSplit,
-      TaskAttemptContext context) throws IOException, InterruptedException {
+  public RecordReader<Text, Text> createRecordReader(
+      InputSplit inputSplit, TaskAttemptContext context) throws IOException, InterruptedException {
 
     return new SAMRecordReader(context);
   }
@@ -40,5 +39,4 @@ public class SAMInputFormat extends FileInputFormat<Text, Text> {
 
     return codec instanceof SplittableCompressionCodec;
   }
-
 }

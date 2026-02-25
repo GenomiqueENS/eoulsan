@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan;
 
 /**
  * This class store the only Eoulsan runtime instance.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -35,6 +36,7 @@ public final class EoulsanRuntime {
 
   /**
    * Get the Eoulsan runtime instance.
+   *
    * @return the EoulsanRuntime instance
    */
   public static AbstractEoulsanRuntime getRuntime() {
@@ -50,6 +52,7 @@ public final class EoulsanRuntime {
 
   /**
    * Get instance settings.
+   *
    * @return the Settings object from the instance
    */
   public static Settings getSettings() {
@@ -63,6 +66,7 @@ public final class EoulsanRuntime {
 
   /**
    * Test if an instance of the runtime is set.
+   *
    * @return true if an instance of the EoulsanRuntime is set
    */
   public static boolean isRuntime() {
@@ -73,8 +77,9 @@ public final class EoulsanRuntime {
   }
 
   /**
-   * Set the EoulsanRuntime instance. This method can be only call once at the
-   * startup of the application.
+   * Set the EoulsanRuntime instance. This method can be only call once at the startup of the
+   * application.
+   *
    * @param runtime the Eoulsan runtime object
    */
   static void setInstance(final AbstractEoulsanRuntime runtime) {
@@ -83,14 +88,13 @@ public final class EoulsanRuntime {
   }
 
   /**
-   * Set the EoulsanRuntime instance. This method can be only call once at the
-   * startup of the application.
+   * Set the EoulsanRuntime instance. This method can be only call once at the startup of the
+   * application.
+   *
    * @param runtime the Eoulsan runtime object
-   * @param noException no exception will be thrown if an instance already
-   *          exists
+   * @param noException no exception will be thrown if an instance already exists
    */
-  static void setInstance(final AbstractEoulsanRuntime runtime,
-      final boolean noException) {
+  static void setInstance(final AbstractEoulsanRuntime runtime, final boolean noException) {
 
     synchronized (EoulsanRuntime.class) {
       if (instance != null) {
@@ -111,12 +115,9 @@ public final class EoulsanRuntime {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
+  /** Private constructor. */
   private EoulsanRuntime() {
 
     throw new IllegalStateException();
   }
-
 }

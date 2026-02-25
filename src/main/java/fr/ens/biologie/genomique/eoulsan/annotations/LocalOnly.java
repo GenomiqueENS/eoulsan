@@ -29,10 +29,9 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * This annotation is used to mark a plug-in class as usable in local mode only.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface LocalOnly {
-
-}
+public @interface LocalOnly {}

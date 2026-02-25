@@ -31,11 +31,6 @@ import static fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsMap
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsMapperModule.MAPPER_VERSION_PARAMETER_NAME;
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -65,9 +60,14 @@ import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstance;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstanceBuilder;
 import fr.ens.biologie.genomique.kenetre.storage.GenomeIndexStorage;
 import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class define a module that generate a genome mapper index.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -97,59 +97,57 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
 
   @Override
   public InputPorts getInputPorts() {
-    return new InputPortsBuilder().addPort("genome", GENOME_FASTA)
-        .addPort("genomedescription", GENOME_DESC_TXT).create();
+    return new InputPortsBuilder()
+        .addPort("genome", GENOME_FASTA)
+        .addPort("genomedescription", GENOME_DESC_TXT)
+        .create();
   }
 
   @Override
   public OutputPorts getOutputPorts() {
-    return OutputPortsBuilder
-        .singleOutputPort(new MapperIndexDataFormat(this.mapper));
+    return OutputPortsBuilder.singleOutputPort(new MapperIndexDataFormat(this.mapper));
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     if (stepParameters == null) {
-      throw new EoulsanException(
-          "No parameters set in " + getName() + " generator");
+      throw new EoulsanException("No parameters set in " + getName() + " generator");
     }
 
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
 
-      // TODO replace with AbstractReadsMapperStep.MAPPER_NAME_PARAMETER_NAME ?
-      case "mappername":
-        final String mapperName = p.getStringValue();
+        // TODO replace with AbstractReadsMapperStep.MAPPER_NAME_PARAMETER_NAME ?
+        case "mappername":
+          final String mapperName = p.getStringValue();
 
-        this.mapper = new MapperBuilder(mapperName)
-            .withLogger(getGenericLogger()).build();
+          this.mapper = new MapperBuilder(mapperName).withLogger(getGenericLogger()).build();
 
-        if (this.mapper == null) {
-          Modules.badParameterValue(MODULE_NAME, p, "Unknown mapper");
-        }
+          if (this.mapper == null) {
+            Modules.badParameterValue(MODULE_NAME, p, "Unknown mapper");
+          }
 
-        break;
+          break;
 
-      default:
-        Modules.unknownParameter(MODULE_NAME, p);
+        default:
+          Modules.unknownParameter(MODULE_NAME, p);
       }
     }
-
   }
 
   /**
    * Set the version and the flavor of a mapper.
+   *
    * @param mapper mapper to configure
    * @param context the context of the task
-   * @throws EoulsanException if more than one mapping step require this
-   *           generator
+   * @throws EoulsanException if more than one mapping step require this generator
    * @throws IOException if an error occurs while creating the mapper instance
    */
-  static MapperInstance searchMapperVersionAndFlavor(final Mapper mapper,
-      final TaskContext context) throws EoulsanException, IOException {
+  static MapperInstance searchMapperVersionAndFlavor(final Mapper mapper, final TaskContext context)
+      throws EoulsanException, IOException {
 
     int count = 0;
     String version = null;
@@ -158,23 +156,21 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
     for (Step step : context.getWorkflow().getSteps()) {
 
       if (AbstractReadsMapperModule.MODULE_NAME.equals(step.getModuleName())
-          || AbstractFilterAndMapReadsModule.MODULE_NAME
-              .equals(step.getModuleName())) {
+          || AbstractFilterAndMapReadsModule.MODULE_NAME.equals(step.getModuleName())) {
 
         for (Parameter p : step.getParameters()) {
 
           switch (p.getName()) {
+            case MAPPER_VERSION_PARAMETER_NAME:
+              version = p.getStringValue();
+              break;
 
-          case MAPPER_VERSION_PARAMETER_NAME:
-            version = p.getStringValue();
-            break;
+            case MAPPER_FLAVOR_PARAMETER_NAME:
+              flavor = p.getStringValue();
+              break;
 
-          case MAPPER_FLAVOR_PARAMETER_NAME:
-            flavor = p.getStringValue();
-            break;
-
-          default:
-            break;
+            default:
+              break;
           }
         }
         count++;
@@ -182,30 +178,34 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
     }
 
     if (count > 1) {
-      throw new EoulsanException(
-          "Found more than one mapping step in the workflow");
+      throw new EoulsanException("Found more than one mapping step in the workflow");
     }
 
     // Set mapper temporary and executable temporary directories
     Mapper newMapper =
         new MapperBuilder(mapper)
             .withTempDirectory(context.getLocalTempDirectory())
-            .withExecutablesTempDirectory(
-                context.getSettings().getExecutablesTempDirectoryFile())
+            .withExecutablesTempDirectory(context.getSettings().getExecutablesTempDirectoryFile())
             .build();
 
-    return new MapperInstanceBuilder(newMapper).withMapperVersion(version)
-        .withMapperFlavor(flavor).withUseBundledBinaries(true).build();
+    return new MapperInstanceBuilder(newMapper)
+        .withMapperVersion(version)
+        .withMapperFlavor(flavor)
+        .withUseBundledBinaries(true)
+        .build();
   }
 
   /**
    * Execute the indexer.
+   *
    * @param mapper Mapper to use for the index generator
    * @param context Eoulsan context
    * @param additionalArguments additional indexer arguments
    * @param additionalDescription additional indexer arguments description
    */
-  static void execute(final Mapper mapper, final TaskContext context,
+  static void execute(
+      final Mapper mapper,
+      final TaskContext context,
       final String additionalArguments,
       final Map<String, String> additionalDescription)
       throws IOException, EoulsanException {
@@ -227,8 +227,7 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
     // Get input and output data
     final Data genomeData = context.getInputData(GENOME_FASTA);
     final Data genomeDescData = context.getInputData(GENOME_DESC_TXT);
-    final Data outData =
-        context.getOutputData(new MapperIndexDataFormat(mapper), genomeData);
+    final Data outData = context.getOutputData(new MapperIndexDataFormat(mapper), genomeData);
 
     // Get the genome DataFile
     final DataFile genomeDataFile = genomeData.getDataFile();
@@ -241,12 +240,10 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
     final DataFile mapperIndexDataFile = outData.getDataFile();
 
     // Set the version and flavor
-    final MapperInstance mapperInstance =
-        searchMapperVersionAndFlavor(mapper, context);
+    final MapperInstance mapperInstance = searchMapperVersionAndFlavor(mapper, context);
 
     // Get the genome index storage
-    String genomeMapperIndexStoragePath =
-        context.getSettings().getGenomeMapperIndexStoragePath();
+    String genomeMapperIndexStoragePath = context.getSettings().getGenomeMapperIndexStoragePath();
     GenomeIndexStorage genomeIndexStorage =
         genomeMapperIndexStoragePath != null
             ? DataFileGenomeIndexStorage.getInstance(
@@ -255,17 +252,21 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
 
     // Create indexer
     final DataFileGenomeMapperIndexer indexer =
-        new DataFileGenomeMapperIndexer(mapperInstance, args, descriptions,
-            threadCount(context), genomeIndexStorage,
-            context.getLocalTempDirectory(), EoulsanLogger.getGenericLogger());
+        new DataFileGenomeMapperIndexer(
+            mapperInstance,
+            args,
+            descriptions,
+            threadCount(context),
+            genomeIndexStorage,
+            context.getLocalTempDirectory(),
+            EoulsanLogger.getGenericLogger());
 
     // Create index
     indexer.createIndex(genomeDataFile, desc, mapperIndexDataFile);
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     try {
 
@@ -284,6 +285,7 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
 
   /**
    * Get the number of threads to use for creating the index.
+   *
    * @param context task context
    * @return the number of threads to use for creating the index
    */

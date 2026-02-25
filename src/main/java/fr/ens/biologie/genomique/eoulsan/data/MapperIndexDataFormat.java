@@ -27,13 +27,7 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
 import com.google.common.base.MoreObjects;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
@@ -43,14 +37,18 @@ import fr.ens.biologie.genomique.eoulsan.modules.generators.GenomeMapperIndexGen
 import fr.ens.biologie.genomique.eoulsan.splitermergers.Merger;
 import fr.ens.biologie.genomique.eoulsan.splitermergers.Splitter;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.Mapper;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * This class define a DataFormat from an XML file.
+ *
  * @since 2.6
  * @author Laurent Jourdren
  */
-public class MapperIndexDataFormat extends AbstractDataFormat
-    implements Serializable {
+public class MapperIndexDataFormat extends AbstractDataFormat implements Serializable {
 
   private static final long serialVersionUID = -943794645213547885L;
 
@@ -150,8 +148,7 @@ public class MapperIndexDataFormat extends AbstractDataFormat
 
     final Module generator = new GenomeMapperIndexGeneratorModule();
 
-    Parameter mapperNameParameter =
-        new Parameter("mapperName", this.mapperName);
+    Parameter mapperNameParameter = new Parameter("mapperName", this.mapperName);
 
     try {
       generator.configure(null, Collections.singleton(mapperNameParameter));
@@ -226,8 +223,7 @@ public class MapperIndexDataFormat extends AbstractDataFormat
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this).add("name", this.formatName)
-        .toString();
+    return MoreObjects.toStringHelper(this).add("name", this.formatName).toString();
   }
 
   //
@@ -236,6 +232,7 @@ public class MapperIndexDataFormat extends AbstractDataFormat
 
   /**
    * Public constructor.
+   *
    * @param mapper the mapper
    */
   public MapperIndexDataFormat(Mapper mapper) {
@@ -245,6 +242,7 @@ public class MapperIndexDataFormat extends AbstractDataFormat
 
   /**
    * Public constructor.
+   *
    * @param mapperName name of the mapper
    */
   public MapperIndexDataFormat(String mapperName) {
@@ -257,5 +255,4 @@ public class MapperIndexDataFormat extends AbstractDataFormat
     this.formatName = mapperNameLowerCase + "_index_zip";
     this.prefix = mapperNameLowerCase + "index";
   }
-
 }

@@ -24,17 +24,16 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
-import java.util.Set;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.InputPort;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
+import java.util.Set;
 
 /**
  * This interface define a data product.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -42,25 +41,26 @@ interface DataProduct {
 
   /**
    * Get the name of the DataProduct.
+   *
    * @return the name of the data product
    */
   String getName();
 
   /**
    * Configure the DataProduct.
+   *
    * @param conf configuration string
-   * @throws EoulsanException if an error occurs while configuring the data
-   *           product
+   * @throws EoulsanException if an error occurs while configuring the data product
    */
   void configure(String conf) throws EoulsanException;
 
   /**
    * Make the product.
+   *
    * @param inputPorts input ports
    * @param inputTokens input token
    * @return a set of map with the relation between the port and the data
    */
-  Set<ImmutableMap<InputPort, Data>> makeProduct(StepInputPorts inputPorts,
-      Multimap<InputPort, Data> inputTokens);
-
+  Set<ImmutableMap<InputPort, Data>> makeProduct(
+      StepInputPorts inputPorts, Multimap<InputPort, Data> inputTokens);
 }

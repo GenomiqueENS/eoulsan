@@ -37,32 +37,31 @@ import static fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsMap
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsMapperModule.MAPPER_NAME_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsMapperModule.MAPPER_VERSION_PARAMETER_NAME;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.kenetre.bio.alignmentfilter.MultiReadAlignmentFilterBuilder;
-import fr.ens.biologie.genomique.kenetre.KenetreException;
-import fr.ens.biologie.genomique.kenetre.bio.readfilter.MultiReadFilterBuilder;
-import fr.ens.biologie.genomique.kenetre.bio.readmapper.Mapper;
-import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperBuilder;
-import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstanceBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.MapperIndexDataFormat;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
+import fr.ens.biologie.genomique.kenetre.KenetreException;
+import fr.ens.biologie.genomique.kenetre.bio.alignmentfilter.MultiReadAlignmentFilterBuilder;
+import fr.ens.biologie.genomique.kenetre.bio.readfilter.MultiReadFilterBuilder;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.Mapper;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperBuilder;
+import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstanceBuilder;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * This class define an abstract module for read filtering, mapping and
- * alignments filtering.
+ * This class define an abstract module for read filtering, mapping and alignments filtering.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -70,6 +69,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
   /** Module name. */
   public static final String MODULE_NAME = "filterandmap";
+
   private static final String COUNTER_GROUP = "filter_map_reads";
 
   /** Reads port name. */
@@ -79,12 +79,10 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
   protected static final String MAPPER_INDEX_PORT_NAME = "mapperindex";
 
   /** Genome description index port name. */
-  protected static final String GENOME_DESCRIPTION_PORT_NAME =
-      "genomedescription";
+  protected static final String GENOME_DESCRIPTION_PORT_NAME = "genomedescription";
 
   /** Hadoop time out. */
-  protected static final int HADOOP_TIMEOUT =
-      AbstractReadsMapperModule.HADOOP_TIMEOUT;
+  protected static final int HADOOP_TIMEOUT = AbstractReadsMapperModule.HADOOP_TIMEOUT;
 
   private boolean pairedEnd;
 
@@ -98,8 +96,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
   private int reducerTaskCount = -1;
   private int hadoopThreads = -1;
 
-  private int hadoopMapperRequiredMemory =
-      AbstractReadsMapperModule.DEFAULT_MAPPER_REQUIRED_MEMORY;
+  private int hadoopMapperRequiredMemory = AbstractReadsMapperModule.DEFAULT_MAPPER_REQUIRED_MEMORY;
 
   //
   // Getters
@@ -107,6 +104,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
   /**
    * Get the counter group to use for this module.
+   *
    * @return the counter group of this module
    */
   protected String getCounterGroup() {
@@ -115,6 +113,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
   /**
    * Test if the step works in pair end mode.
+   *
    * @return true if the pair end mode is enable
    */
   protected boolean isPairedEnd() {
@@ -123,6 +122,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
   /**
    * Get the name of the mapper to use.
+   *
    * @return Returns the mapperName
    */
   protected String getMapperName() {
@@ -131,6 +131,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
   /**
    * Get the version of the mapper to use.
+   *
    * @return the version of the mapper to use
    */
   protected String getMapperVersion() {
@@ -139,6 +140,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
   /**
    * Get the flavor of the mapper to use.
+   *
    * @return the flavor of the mapper to use
    */
   protected String getMapperFlavor() {
@@ -147,6 +149,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
   /**
    * Get the name of the mapper to use.
+   *
    * @return Returns the mapperName
    */
   protected String getMapperArguments() {
@@ -155,6 +158,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
   /**
    * Get the name of the mapper to use.
+   *
    * @return Returns the mapperName
    */
   protected int getMapperHadoopThreads() {
@@ -162,9 +166,10 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
   }
 
   /**
-   * Get the amount in MB of memory required to execute the mapper. This value
-   * is required by Hadoop scheduler and if the mapper require more memory than
-   * declared the mapper process will be killed.
+   * Get the amount in MB of memory required to execute the mapper. This value is required by Hadoop
+   * scheduler and if the mapper require more memory than declared the mapper process will be
+   * killed.
+   *
    * @return the amount of memory required by the mapper in MB
    */
   protected int getMapperHadoopMemoryRequired() {
@@ -173,6 +178,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
   /**
    * Get the mapper.
+   *
    * @return the mapper object
    */
   protected Mapper getMapper() {
@@ -182,6 +188,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
   /**
    * Get the reducer task count.
+   *
    * @return the reducer task count
    */
   protected int getReducerTaskCount() {
@@ -191,6 +198,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
   /**
    * Get the parameters of the read filters.
+   *
    * @return a map with all the parameters of the filters
    */
   protected Map<String, String> getReadFilterParameters() {
@@ -200,6 +208,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
   /**
    * Get the parameters of the read alignments filters.
+   *
    * @return a map with all the parameters of the filters
    */
   protected Map<String, String> getAlignmentsFilterParameters() {
@@ -228,8 +237,7 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
     builder.addPort(READS_PORT_NAME, READS_FASTQ);
-    builder.addPort(MAPPER_INDEX_PORT_NAME,
-        new MapperIndexDataFormat(this.mapper));
+    builder.addPort(MAPPER_INDEX_PORT_NAME, new MapperIndexDataFormat(this.mapper));
 
     return builder.create();
   }
@@ -246,12 +254,11 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     String mapperName = null;
-    final MultiReadFilterBuilder readFilterBuilder =
-        new MultiReadFilterBuilder(getGenericLogger());
+    final MultiReadFilterBuilder readFilterBuilder = new MultiReadFilterBuilder(getGenericLogger());
     final MultiReadAlignmentFilterBuilder alignmentsFilterBuilder =
         new MultiReadAlignmentFilterBuilder(getGenericLogger());
 
@@ -264,42 +271,40 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
         AbstractSAMFilterModule.checkDeprecatedParameter(context, p);
 
         switch (p.getName()) {
+          case MAPPER_NAME_PARAMETER_NAME:
+            mapperName = p.getStringValue();
+            break;
 
-        case MAPPER_NAME_PARAMETER_NAME:
-          mapperName = p.getStringValue();
-          break;
+          case MAPPER_VERSION_PARAMETER_NAME:
+            mapperVersion = p.getStringValue();
+            break;
 
-        case MAPPER_VERSION_PARAMETER_NAME:
-          mapperVersion = p.getStringValue();
-          break;
+          case MAPPER_FLAVOR_PARAMETER_NAME:
+            mapperFlavor = p.getStringValue();
+            break;
 
-        case MAPPER_FLAVOR_PARAMETER_NAME:
-          mapperFlavor = p.getStringValue();
-          break;
+          case MAPPER_ARGUMENTS_PARAMETER_NAME:
+            this.mapperArguments = p.getStringValue();
+            break;
 
-        case MAPPER_ARGUMENTS_PARAMETER_NAME:
-          this.mapperArguments = p.getStringValue();
-          break;
+          case HADOOP_THREADS_PARAMETER_NAME:
+            this.hadoopThreads = p.getIntValueGreaterOrEqualsTo(1);
+            break;
 
-        case HADOOP_THREADS_PARAMETER_NAME:
-          this.hadoopThreads = p.getIntValueGreaterOrEqualsTo(1);
-          break;
+          case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
+            this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
+            break;
 
-        case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
-          this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
-          break;
+          default:
 
-        default:
+            // Add read filters parameters
+            if (!(readFilterBuilder.addParameter(p.getName(), p.getStringValue(), true)
+                ||
+                // Add read alignments filters parameters
+                alignmentsFilterBuilder.addParameter(p.getName(), p.getStringValue(), true))) {
 
-          // Add read filters parameters
-          if (!(readFilterBuilder.addParameter(p.getName(), p.getStringValue(),
-              true) ||
-          // Add read alignments filters parameters
-              alignmentsFilterBuilder.addParameter(p.getName(),
-                  p.getStringValue(), true))) {
-
-            Modules.unknownParameter(context, p);
-          }
+              Modules.unknownParameter(context, p);
+            }
         }
       }
 
@@ -320,22 +325,23 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
     try {
 
       // Create a Mapper object
-      this.mapper = new MapperBuilder(mapperName).withLogger(getGenericLogger())
-          .withApplicationName(Globals.APP_NAME)
-          .withApplicationVersion(Globals.APP_VERSION_STRING)
-          .withTempDirectory(getSettings().getTempDirectoryFile())
-          .withExecutablesTempDirectory(
-              EoulsanRuntime.getSettings().getExecutablesTempDirectoryFile())
-          .build();
+      this.mapper =
+          new MapperBuilder(mapperName)
+              .withLogger(getGenericLogger())
+              .withApplicationName(Globals.APP_NAME)
+              .withApplicationVersion(Globals.APP_VERSION_STRING)
+              .withTempDirectory(getSettings().getTempDirectoryFile())
+              .withExecutablesTempDirectory(
+                  EoulsanRuntime.getSettings().getExecutablesTempDirectoryFile())
+              .build();
 
       if (this.mapper == null) {
         Modules.invalidConfiguration(context, "Unknown mapper: " + mapperName);
       }
 
       if (this.mapper.isIndexGeneratorOnly()) {
-        Modules.invalidConfiguration(context,
-            "The selected mapper can only be used for index generation: "
-                + mapperName);
+        Modules.invalidConfiguration(
+            context, "The selected mapper can only be used for index generation: " + mapperName);
       }
 
       // Check if the binary for the mapper is available
@@ -343,14 +349,14 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
       // Create a new instance of the mapper for required version and flavor
       new MapperInstanceBuilder(this.mapper)
           .withMapperVersion(this.mapperVersion)
-          .withMapperFlavor(this.mapperFlavor).withUseBundledBinaries(true)
+          .withMapperFlavor(this.mapperFlavor)
+          .withUseBundledBinaries(true)
           .build();
 
       // Check if the mapper is not only a generator
       if (mapper.isIndexGeneratorOnly()) {
-        Modules.invalidConfiguration(context,
-            "The selected mapper can only be used for index generation: "
-                + mapperName);
+        Modules.invalidConfiguration(
+            context, "The selected mapper can only be used for index generation: " + mapperName);
       }
 
     } catch (IOException e) {
@@ -363,11 +369,15 @@ public abstract class AbstractFilterAndMapReadsModule extends AbstractModule {
     }
 
     // Log Step parameters
-    getLogger().info("In "
-        + getName() + ", mapper=" + this.mapper.getName() + " (version: "
-        + this.mapperVersion + ")");
     getLogger()
-        .info("In " + getName() + ", mapperarguments=" + this.mapperArguments);
+        .info(
+            "In "
+                + getName()
+                + ", mapper="
+                + this.mapper.getName()
+                + " (version: "
+                + this.mapperVersion
+                + ")");
+    getLogger().info("In " + getName() + ", mapperarguments=" + this.mapperArguments);
   }
-
 }

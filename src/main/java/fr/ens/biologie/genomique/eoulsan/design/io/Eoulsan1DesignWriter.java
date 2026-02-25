@@ -31,15 +31,6 @@ import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan1DesignReader.S
 import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignReader.TAB_SEPARATOR;
 import static java.util.Objects.requireNonNull;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
@@ -50,9 +41,18 @@ import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSampleMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 
 /**
  * This class implements a writer for limma design files.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -71,16 +71,15 @@ public class Eoulsan1DesignWriter implements DesignWriter {
       throw new NullPointerException("Design is null");
     }
 
-    final BufferedWriter bw = new BufferedWriter(
-        new OutputStreamWriter(this.out, Globals.DEFAULT_CHARSET));
+    final BufferedWriter bw =
+        new BufferedWriter(new OutputStreamWriter(this.out, Globals.DEFAULT_CHARSET));
 
     // Insert the names of the fields for the columns
     bw.append(SAMPLE_NUMBER_FIELD);
     bw.append(SEPARATOR);
     bw.append(SAMPLE_NAME_FIELD);
 
-    final List<String> sampleMDKeys =
-        DesignUtils.getAllSamplesMetadataKeys(design);
+    final List<String> sampleMDKeys = DesignUtils.getAllSamplesMetadataKeys(design);
 
     for (String key : sampleMDKeys) {
 
@@ -110,10 +109,10 @@ public class Eoulsan1DesignWriter implements DesignWriter {
       bw.append("AdditionalAnnotation");
     }
 
-    final Experiment exp = design.getExperiments().isEmpty()
-        ? null : design.getExperiments().get(0);
-    final List<String> esmdk = exp == null
-        ? null : DesignUtils.getExperimentSampleAllMetadataKeys(exp);
+    final Experiment exp =
+        design.getExperiments().isEmpty() ? null : design.getExperiments().get(0);
+    final List<String> esmdk =
+        exp == null ? null : DesignUtils.getExperimentSampleAllMetadataKeys(exp);
 
     if (exp != null) {
       bw.append(SEPARATOR);
@@ -131,7 +130,6 @@ public class Eoulsan1DesignWriter implements DesignWriter {
         bw.append(SEPARATOR);
         bw.append("Reference");
       }
-
     }
 
     // The UUID if exists, must be the last field
@@ -211,7 +209,6 @@ public class Eoulsan1DesignWriter implements DesignWriter {
             bw.append(es.getMetadata().getReference());
           }
         }
-
       }
 
       // The UUID if exists, must be the last field
@@ -228,6 +225,7 @@ public class Eoulsan1DesignWriter implements DesignWriter {
 
   /**
    * Test if the scan labels settings must be written.
+   *
    * @return Returns true if thq scan labels settings must be written
    */
   boolean isWriteScanLabelsSettings() {
@@ -236,8 +234,8 @@ public class Eoulsan1DesignWriter implements DesignWriter {
 
   /**
    * Set if the scan labels settings must be written.
-   * @param writeScanLabelsSettings true if he scan labels settings must be
-   *          written
+   *
+   * @param writeScanLabelsSettings true if he scan labels settings must be written
    */
   void setWriteScanLabelsSettings(final boolean writeScanLabelsSettings) {
     this.writeScanLabelsSettings = writeScanLabelsSettings;
@@ -249,9 +247,9 @@ public class Eoulsan1DesignWriter implements DesignWriter {
 
   /**
    * Public constructor.
+   *
    * @param file file to read
-   * @throws IOException if an error occurs while reading the file or if the
-   *           file is null.
+   * @throws IOException if an error occurs while reading the file or if the file is null.
    */
   public Eoulsan1DesignWriter(final Path file) throws IOException {
 
@@ -262,9 +260,9 @@ public class Eoulsan1DesignWriter implements DesignWriter {
 
   /**
    * Public constructor.
+   *
    * @param file file to read
-   * @throws IOException if an error occurs while reading the file or if the
-   *           file is null.
+   * @throws IOException if an error occurs while reading the file or if the file is null.
    */
   public Eoulsan1DesignWriter(final File file) throws IOException {
 
@@ -275,9 +273,9 @@ public class Eoulsan1DesignWriter implements DesignWriter {
 
   /**
    * Public constructor.
+   *
    * @param file file to read
-   * @throws IOException if an error occurs while reading the file or if the
-   *           file is null.
+   * @throws IOException if an error occurs while reading the file or if the file is null.
    */
   public Eoulsan1DesignWriter(final DataFile file) throws IOException {
 
@@ -288,6 +286,7 @@ public class Eoulsan1DesignWriter implements DesignWriter {
 
   /**
    * Public constructor.
+   *
    * @param out Output stream to read
    * @throws IOException if the stream is null
    */
@@ -300,15 +299,14 @@ public class Eoulsan1DesignWriter implements DesignWriter {
 
   /**
    * Public constructor.
+   *
    * @param filename File to write
    * @throws IOException if the file doesn't exist
    */
-  public Eoulsan1DesignWriter(final String filename)
-      throws IOException {
+  public Eoulsan1DesignWriter(final String filename) throws IOException {
 
     requireNonNull(filename, "filename argument cannot be null");
 
     this.out = Files.newOutputStream(Path.of(filename));
   }
-
 }

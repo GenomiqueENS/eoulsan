@@ -24,6 +24,7 @@
 
 /**
  * This package contain classes related data management in Hadoop mode.
+ *
  * @since 1.0
  */
 package fr.ens.biologie.genomique.eoulsan.modules.mgmt.hadoop;

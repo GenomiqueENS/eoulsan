@@ -26,6 +26,15 @@ package fr.ens.biologie.genomique.eoulsan.modules.mgmt.upload;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
+import com.google.common.collect.Lists;
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormatConverter;
+import fr.ens.biologie.genomique.eoulsan.util.hadoop.PathUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -33,7 +42,6 @@ import java.nio.charset.Charset;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -47,27 +55,16 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-import com.google.common.collect.Lists;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormatConverter;
-import fr.ens.biologie.genomique.kenetre.util.StringUtils;
-import fr.ens.biologie.genomique.eoulsan.util.hadoop.PathUtils;
-
 /**
  * This class allow to copy and transform data in a distributed manner.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
 public class DataFileDistCp {
 
   /* Default Charset. */
-  private static final Charset CHARSET =
-      Charset.forName(Globals.DEFAULT_FILE_ENCODING);
+  private static final Charset CHARSET = Charset.forName(Globals.DEFAULT_FILE_ENCODING);
 
   private final Configuration conf;
   private final Path jobPath;
@@ -75,17 +72,17 @@ public class DataFileDistCp {
   private static final long MAX_COPY_DURATION = 120 * 60 * 1000;
 
   /**
-   * This inner class define the mapper class for DataSourceDistCp map-reduce
-   * job.
+   * This inner class define the mapper class for DataSourceDistCp map-reduce job.
+   *
    * @author Laurent Jourdren
    */
-  public static final class DistCpMapper
-      extends Mapper<LongWritable, Text, Text, Text> {
+  public static final class DistCpMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     private static final String COUNTER_GROUP_NAME = "DataSourceDistCp";
 
     /**
      * Internal class to store an exception if occurs while coping.
+     *
      * @author Laurent Jourdren
      */
     private static final class MyIOExceptionWrapper {
@@ -93,18 +90,16 @@ public class DataFileDistCp {
     }
 
     @Override
-    protected void setup(final Context context)
-        throws IOException, InterruptedException {
+    protected void setup(final Context context) throws IOException, InterruptedException {
 
       if (!EoulsanRuntime.isRuntime()) {
         HadoopEoulsanRuntime.newEoulsanRuntime(context.getConfiguration());
       }
-
     }
 
     @Override
-    protected void map(final LongWritable key, final Text value,
-        final Context context) throws IOException, InterruptedException {
+    protected void map(final LongWritable key, final Text value, final Context context)
+        throws IOException, InterruptedException {
 
       final String val = value.toString();
 
@@ -127,8 +122,8 @@ public class DataFileDistCp {
       final FileStatus fStatusSrc = srcFs.getFileStatus(srcPath);
       final long srcSize = fStatusSrc == null ? 0 : fStatusSrc.getLen();
 
-      getLogger().info("Start copy "
-          + srcPathname + " to " + destPath + " (" + srcSize + " bytes)\n");
+      getLogger()
+          .info("Start copy " + srcPathname + " to " + destPath + " (" + srcSize + " bytes)\n");
 
       final long startTime = System.currentTimeMillis();
 
@@ -142,51 +137,57 @@ public class DataFileDistCp {
       final long duration = System.currentTimeMillis() - startTime;
       final FileStatus fStatusDest = destFs.getFileStatus(destPath);
       final long destSize = fStatusDest == null ? 0 : fStatusDest.getLen();
-      final double speed =
-          destSize == 0 ? 0 : (double) destSize / (double) duration * 1000;
+      final double speed = destSize == 0 ? 0 : (double) destSize / (double) duration * 1000;
 
-      getLogger().info("End copy "
-          + srcPathname + " to " + destPath + " in "
-          + StringUtils.toTimeHumanReadable(duration) + " (" + destSize
-          + " bytes, " + ((int) speed) + " bytes/s)\n");
+      getLogger()
+          .info(
+              "End copy "
+                  + srcPathname
+                  + " to "
+                  + destPath
+                  + " in "
+                  + StringUtils.toTimeHumanReadable(duration)
+                  + " ("
+                  + destSize
+                  + " bytes, "
+                  + ((int) speed)
+                  + " bytes/s)\n");
 
-      context.getCounter(COUNTER_GROUP_NAME, "Input file size")
-          .increment(srcSize);
-      context.getCounter(COUNTER_GROUP_NAME, "Output file size")
-          .increment(destSize);
+      context.getCounter(COUNTER_GROUP_NAME, "Input file size").increment(srcSize);
+      context.getCounter(COUNTER_GROUP_NAME, "Output file size").increment(destSize);
     }
 
     /**
-     * Copy the file using a Thread and inform Hadoop of the live of the copy
-     * with a counter.
+     * Copy the file using a Thread and inform Hadoop of the live of the copy with a counter.
+     *
      * @param src source
      * @param dest destination
      * @param context context object
-     * @throws InterruptedException if another thread has interrupted the
-     *           current thread
+     * @throws InterruptedException if another thread has interrupted the current thread
      * @throws IOException if an error occurs while copying data
      */
-    private static void copyFile(final DataFile src, final DataFile dest,
-        final Context context) throws InterruptedException, IOException {
+    private static void copyFile(final DataFile src, final DataFile dest, final Context context)
+        throws InterruptedException, IOException {
 
       // Define a wrapper object to store exception if needed
       final MyIOExceptionWrapper exp = new MyIOExceptionWrapper();
 
       // Create the thread for copy
-      final Thread t = new Thread(() -> {
-        try {
-          new DataFormatConverter(src, dest).convert();
-        } catch (IOException e) {
-          exp.ioexception = e;
-        }
-      });
+      final Thread t =
+          new Thread(
+              () -> {
+                try {
+                  new DataFormatConverter(src, dest).convert();
+                } catch (IOException e) {
+                  exp.ioexception = e;
+                }
+              });
 
       // Start thread
       t.start();
 
       // Create counter
-      final Counter counter =
-          context.getCounter(COUNTER_GROUP_NAME, "5_seconds");
+      final Counter counter = context.getCounter(COUNTER_GROUP_NAME, "5_seconds");
 
       final long startTime = System.currentTimeMillis();
 
@@ -198,10 +199,9 @@ public class DataFileDistCp {
         final long duration = System.currentTimeMillis() - startTime;
 
         if (duration > MAX_COPY_DURATION) {
-          throw new IOException("Copy timeout, copy exceed "
-              + (MAX_COPY_DURATION / 1000) + " seconds.");
+          throw new IOException(
+              "Copy timeout, copy exceed " + (MAX_COPY_DURATION / 1000) + " seconds.");
         }
-
       }
 
       // Throw Exception if needed
@@ -209,11 +209,11 @@ public class DataFileDistCp {
         throw exp.ioexception;
       }
     }
-
   }
 
   /**
    * Copy files.
+   *
    * @param entries entries to copy
    * @throws IOException if an error occurs while copying
    */
@@ -224,10 +224,8 @@ public class DataFileDistCp {
     }
 
     final Configuration conf = this.conf;
-    final Path tmpInputDir =
-        PathUtils.createTempPath(this.jobPath, "distcp-in-", "", conf);
-    final Path tmpOutputDir =
-        PathUtils.createTempPath(this.jobPath, "distcp-out-", "", conf);
+    final Path tmpInputDir = PathUtils.createTempPath(this.jobPath, "distcp-in-", "", conf);
+    final Path tmpOutputDir = PathUtils.createTempPath(this.jobPath, "distcp-out-", "", conf);
 
     //
     // Create entries for distcp
@@ -252,13 +250,11 @@ public class DataFileDistCp {
 
       final DataFile outFile = entries.get(inFile);
 
-      final Path f =
-          new Path(tmpInputDir, "distcp-" + nf.format(count) + ".cp");
+      final Path f = new Path(tmpInputDir, "distcp-" + nf.format(count) + ".cp");
 
       getLogger().info("Task copy " + inFile + " in " + f.toString());
 
-      BufferedWriter bw =
-          new BufferedWriter(new OutputStreamWriter(fs.create(f), CHARSET));
+      BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fs.create(f), CHARSET));
 
       bw.write(inFile.getSource() + "\t" + outFile.getSource() + "\n");
       bw.close();
@@ -269,8 +265,7 @@ public class DataFileDistCp {
     try {
       job.waitForCompletion(false);
     } catch (InterruptedException | ClassNotFoundException e) {
-      throw new EoulsanRuntimeException("Error while distcp: " + e.getMessage(),
-          e);
+      throw new EoulsanRuntimeException("Error while distcp: " + e.getMessage(), e);
     }
 
     // Remove tmp directory
@@ -280,39 +275,39 @@ public class DataFileDistCp {
     if (!job.isSuccessful()) {
       throw new IOException("Unable to copy files using DataFileDistCp.");
     }
-
   }
 
   /**
    * Sort a list of DataFile by dissident order.
+   *
    * @param inFiles list of DataFile to sort
    */
   private void sortInFilesByDescSize(final List<DataFile> inFiles) {
 
-    inFiles.sort((f1, f2) -> {
+    inFiles.sort(
+        (f1, f2) -> {
+          long size1;
 
-      long size1;
+          try {
+            size1 = f1.getMetaData().getContentLength();
+          } catch (IOException e) {
+            size1 = -1;
+          }
 
-      try {
-        size1 = f1.getMetaData().getContentLength();
-      } catch (IOException e) {
-        size1 = -1;
-      }
+          long size2;
+          try {
+            size2 = f2.getMetaData().getContentLength();
+          } catch (IOException e) {
+            size2 = -1;
+          }
 
-      long size2;
-      try {
-        size2 = f2.getMetaData().getContentLength();
-      } catch (IOException e) {
-        size2 = -1;
-      }
-
-      return Long.compare(size1, size2) * -1;
-    });
-
+          return Long.compare(size1, size2) * -1;
+        });
   }
 
-  private static Job createJobConf(final Configuration parentConf,
-      final Path cpEntriesPath, final Path outputPath) throws IOException {
+  private static Job createJobConf(
+      final Configuration parentConf, final Path cpEntriesPath, final Path outputPath)
+      throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -358,6 +353,7 @@ public class DataFileDistCp {
 
   /**
    * Public constructor.
+   *
    * @param conf Configuration object
    * @param jobPath the path where create job temporary file
    */
@@ -373,7 +369,5 @@ public class DataFileDistCp {
 
     this.conf = conf;
     this.jobPath = jobPath;
-
   }
-
 }

@@ -23,8 +23,9 @@
  */
 
 /**
- * This package contain all the classes related to the mapping (reads filtering,
- * mapping and alignments filtering) step.
+ * This package contain all the classes related to the mapping (reads filtering, mapping and
+ * alignments filtering) step.
+ *
  * @since 1.0
  */
 package fr.ens.biologie.genomique.eoulsan.modules.mapping;

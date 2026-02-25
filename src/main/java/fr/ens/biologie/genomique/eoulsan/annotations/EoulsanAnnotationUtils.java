@@ -26,12 +26,12 @@ package fr.ens.biologie.genomique.eoulsan.annotations;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Annotation;
-
 import fr.ens.biologie.genomique.eoulsan.core.Module;
+import java.lang.annotation.Annotation;
 
 /**
  * This class contains annotation utilities.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -39,6 +39,7 @@ public class EoulsanAnnotationUtils {
 
   /**
    * Test if a module contain the @Generator annotation.
+   *
    * @param module the module to test
    * @return true if the module contains the annotation
    */
@@ -49,6 +50,7 @@ public class EoulsanAnnotationUtils {
 
   /**
    * Test if a module contain the @ReuseStepInstance annotation.
+   *
    * @param module the module to test
    * @return true if the module contains the annotation
    */
@@ -59,6 +61,7 @@ public class EoulsanAnnotationUtils {
 
   /**
    * Test if a step contain the @Terminal annotation.
+   *
    * @param module the module to test
    * @return true if the module contains the annotation
    */
@@ -69,6 +72,7 @@ public class EoulsanAnnotationUtils {
 
   /**
    * Test if a module contain the @NoLog annotation.
+   *
    * @param module the module to test
    * @return true if the module contains the annotation
    */
@@ -79,6 +83,7 @@ public class EoulsanAnnotationUtils {
 
   /**
    * Test if a module contain the @RequiresPreviousStep annotation.
+   *
    * @param module the module to test
    * @return true if the module contains the annotation
    */
@@ -89,6 +94,7 @@ public class EoulsanAnnotationUtils {
 
   /**
    * Test if a module contain the @RequiresPreviousStep annotation.
+   *
    * @param module the module to test
    * @return true if the module contains the annotation
    */
@@ -99,6 +105,7 @@ public class EoulsanAnnotationUtils {
 
   /**
    * Test if a module contain the @NoOutputDirectory annotation.
+   *
    * @param module the module to test
    * @return true if the module contains the annotation
    */
@@ -109,12 +116,12 @@ public class EoulsanAnnotationUtils {
 
   /**
    * Test if a module contains an annotation.
+   *
    * @param module the module
    * @param clazz the annotation to test
    * @return true if the module contains the annotation
    */
-  private static boolean isAnnotation(final Module module,
-      Class<? extends Annotation> clazz) {
+  private static boolean isAnnotation(final Module module, Class<? extends Annotation> clazz) {
 
     requireNonNull(module, "module argument cannot be null");
     requireNonNull(clazz, "clazz argument cannot be null");
@@ -126,12 +133,9 @@ public class EoulsanAnnotationUtils {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
+  /** Private constructor. */
   private EoulsanAnnotationUtils() {
 
     throw new IllegalStateException();
   }
-
 }

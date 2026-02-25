@@ -26,25 +26,22 @@ package fr.ens.biologie.genomique.eoulsan.data;
 
 /**
  * This class contains the definition of some DataFormats.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
 public class DataFormats {
 
-  private static final DataFormatRegistry registry =
-      DataFormatRegistry.getInstance();
+  private static final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
   /** Reads fastq data format. */
-  public static final DataFormat READS_FASTQ =
-      registry.getDataFormatFromName("reads_fastq");
+  public static final DataFormat READS_FASTQ = registry.getDataFormatFromName("reads_fastq");
 
   /** Reads tfq data format. */
-  public static final DataFormat READS_TFQ =
-      registry.getDataFormatFromName("reads_tfq");
+  public static final DataFormat READS_TFQ = registry.getDataFormatFromName("reads_tfq");
 
   /** BWA index data format. */
-  public static final DataFormat BWA_INDEX_ZIP =
-      registry.getDataFormatFromName("bwa_index_zip");
+  public static final DataFormat BWA_INDEX_ZIP = registry.getDataFormatFromName("bwa_index_zip");
 
   /** Bowtie index data format. */
   public static final DataFormat BOWTIE_INDEX_ZIP =
@@ -59,8 +56,7 @@ public class DataFormats {
       registry.getDataFormatFromName("gsnap_index_zip");
 
   /** STAR index data format. */
-  public static final DataFormat STAR_INDEX_ZIP =
-      registry.getDataFormatFromName("star_index_zip");
+  public static final DataFormat STAR_INDEX_ZIP = registry.getDataFormatFromName("star_index_zip");
 
   /** Minimap2 index data format. */
   public static final DataFormat MINIMAP2_INDEX_ZIP =
@@ -87,28 +83,24 @@ public class DataFormats {
       registry.getDataFormatFromName("expression_results_tsv");
 
   /** GFF data format. */
-  public static final DataFormat ANNOTATION_GFF =
-      registry.getDataFormatFromName("annotation_gff");
+  public static final DataFormat ANNOTATION_GFF = registry.getDataFormatFromName("annotation_gff");
 
   /** GTF data format. */
-  public static final DataFormat ANNOTATION_GTF =
-      registry.getDataFormatFromName("annotation_gtf");
+  public static final DataFormat ANNOTATION_GTF = registry.getDataFormatFromName("annotation_gtf");
 
   /** Diffana results data format. */
   public static final DataFormat DIFFANA_RESULTS_TSV =
       registry.getDataFormatFromName("diffana_results_tsv");
 
   /** Genome data format. */
-  public static final DataFormat GENOME_FASTA =
-      registry.getDataFormatFromName("genome_fasta");
+  public static final DataFormat GENOME_FASTA = registry.getDataFormatFromName("genome_fasta");
 
   /** Genome data format. */
   public static final DataFormat GENOME_DESC_TXT =
       registry.getDataFormatFromName("genome_desc_txt");
 
   /** Unmap reads results data format. */
-  public static final DataFormat UNMAP_READS_FASTA =
-      registry.getDataFormatFromName("unmap_fasta");
+  public static final DataFormat UNMAP_READS_FASTA = registry.getDataFormatFromName("unmap_fasta");
 
   /** TSV Annotated expression results data format. */
   public static final DataFormat ANNOTATED_EXPRESSION_RESULTS_TSV =
@@ -135,16 +127,13 @@ public class DataFormats {
       registry.getDataFormatFromName("fastqc_report_zip");
 
   /** Dummy format. */
-  public static final DataFormat DUMMY_TXT =
-      registry.getDataFormatFromName("dummy_txt");
+  public static final DataFormat DUMMY_TXT = registry.getDataFormatFromName("dummy_txt");
 
   /** BigBed format. */
-  public static final DataFormat BIGBED =
-      registry.getDataFormatFromName("bigbed");
+  public static final DataFormat BIGBED = registry.getDataFormatFromName("bigbed");
 
   /** BigWig format. */
-  public static final DataFormat BIGWIG =
-      registry.getDataFormatFromName("bigwig_bw");
+  public static final DataFormat BIGWIG = registry.getDataFormatFromName("bigwig_bw");
 
   /** Cutadapt adapters format. */
   public static final DataFormat CUTADAPT_ADAPTER_FASTA =
@@ -169,5 +158,4 @@ public class DataFormats {
   /** BED format. */
   public static final DataFormat MAPPER_RESULT_BED =
       registry.getDataFormatFromName("mapper_results_bed");
-
 }

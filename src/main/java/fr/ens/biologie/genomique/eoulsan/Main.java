@@ -29,6 +29,8 @@ import static fr.ens.biologie.genomique.eoulsan.Globals.MINIMAL_JAVA_VERSION_REQ
 import static fr.ens.biologie.genomique.kenetre.util.SystemUtils.getJavaVersion;
 import static java.util.Collections.unmodifiableList;
 
+import fr.ens.biologie.genomique.eoulsan.actions.Action;
+import fr.ens.biologie.genomique.eoulsan.actions.ActionService;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -40,7 +42,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -50,12 +51,10 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.python.google.common.base.Strings;
 
-import fr.ens.biologie.genomique.eoulsan.actions.Action;
-import fr.ens.biologie.genomique.eoulsan.actions.ActionService;
-
 /**
- * This class is the main class. Check the environment, if Hadoop library is in
- * the classpath launch Hadoop main class else run local main class.
+ * This class is the main class. Check the environment, if Hadoop library is in the classpath launch
+ * Hadoop main class else run local main class.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -87,6 +86,7 @@ public abstract class Main {
 
   /**
    * Get the instance of the Main class.
+   *
    * @return a Main object
    */
   public static Main getInstance() {
@@ -96,6 +96,7 @@ public abstract class Main {
 
   /**
    * Get java executable path.
+   *
    * @return the path to the java executable
    */
   public String getJavaExecutablePath() {
@@ -105,6 +106,7 @@ public abstract class Main {
 
   /**
    * Get JVM arguments.
+   *
    * @return the JVM arguments as an array
    */
   public List<String> getJVMArgs() {
@@ -113,8 +115,9 @@ public abstract class Main {
   }
 
   /**
-   * Get Eoulsan classpath. The result of the method is based on the content of
-   * the -Deoulsan.hadoop.libs JVM argument.
+   * Get Eoulsan classpath. The result of the method is based on the content of the
+   * -Deoulsan.hadoop.libs JVM argument.
+   *
    * @return the JVM class as a String
    */
   public String getClassPath() {
@@ -124,6 +127,7 @@ public abstract class Main {
 
   /**
    * Get Eoulsan script path.
+   *
    * @return the Eoulsan script path
    */
   public String getEoulsanScriptPath() {
@@ -133,6 +137,7 @@ public abstract class Main {
 
   /**
    * Get Eoulsan memory requirement.
+   *
    * @return the Eoulsan memory requirement
    */
   public int getEoulsanMemory() {
@@ -152,6 +157,7 @@ public abstract class Main {
 
   /**
    * Get Eoulsan directory.
+   *
    * @return the Eoulsan directory
    */
   public File getEoulsanDirectory() {
@@ -167,6 +173,7 @@ public abstract class Main {
 
   /**
    * Get command line arguments.
+   *
    * @return Returns the arguments
    */
   public List<String> getArgs() {
@@ -176,6 +183,7 @@ public abstract class Main {
 
   /**
    * Get the action.
+   *
    * @return Returns the action
    */
   public Action getAction() {
@@ -185,6 +193,7 @@ public abstract class Main {
 
   /**
    * Get the action arguments.
+   *
    * @return Returns the actionArgs
    */
   public List<String> getActionArgs() {
@@ -194,6 +203,7 @@ public abstract class Main {
 
   /**
    * Get the log level arguments.
+   *
    * @return Returns the logLevel
    */
   public String getLogLevelArgument() {
@@ -203,6 +213,7 @@ public abstract class Main {
 
   /**
    * Get the log file argument.
+   *
    * @return Returns the log
    */
   public String getLogFileArgument() {
@@ -212,6 +223,7 @@ public abstract class Main {
 
   /**
    * Get the configuration file argument.
+   *
    * @return Returns the configuration file
    */
   public String getConfigurationFileArgument() {
@@ -221,6 +233,7 @@ public abstract class Main {
 
   /**
    * Get the command line settings arguments.
+   *
    * @return a list with the settings defined in the command line
    */
   public List<String> getCommandLineSettings() {
@@ -234,8 +247,8 @@ public abstract class Main {
 
   /**
    * Get the path to the launch script.
-   * @return the path to the launch script or null if no launch script has been
-   *         used
+   *
+   * @return the path to the launch script or null if no launch script has been used
    */
   public String getLaunchScriptPath() {
 
@@ -244,6 +257,7 @@ public abstract class Main {
 
   /**
    * Get the launch mode of the application.
+   *
    * @return the launch mode of the application
    */
   public String getLaunchMode() {
@@ -257,17 +271,16 @@ public abstract class Main {
 
   /**
    * Show command line help.
+   *
    * @param options Options of the software
    */
   protected void help(final Options options) {
 
     // Show help message
-    final HelpFormatter formatter =
-        HelpFormatter.builder().setShowSince(false).get();
+    final HelpFormatter formatter = HelpFormatter.builder().setShowSince(false).get();
     try {
       formatter.printHelp(
-          getHelpEoulsanCommand() + " [options] action arguments", "", options,
-          "", false);
+          getHelpEoulsanCommand() + " [options] action arguments", "", options, "", false);
     } catch (IOException e) {
       Common.errorExit(e, "Error while creating help message.");
     }
@@ -277,9 +290,10 @@ public abstract class Main {
 
       if (!action.isHadoopJarMode() && !action.isHidden()) {
 
-        System.out.println(Strings.padEnd(" - " + action.getName(), 23, ' ')
-            + action.getDescription() + (!action.isCurrentArchCompatible()
-                ? " (not available for your platform)." : ""));
+        System.out.println(
+            Strings.padEnd(" - " + action.getName(), 23, ' ')
+                + action.getDescription()
+                + (!action.isCurrentArchCompatible() ? " (not available for your platform)." : ""));
       }
     }
 
@@ -288,6 +302,7 @@ public abstract class Main {
 
   /**
    * Create options for command line
+   *
    * @return an Options object
    */
   @SuppressWarnings("static-access")
@@ -297,30 +312,31 @@ public abstract class Main {
     final Options options = new Options();
 
     options.addOption("version", false, "show version of the software");
-    options.addOption("about", false,
-        "display information about this software");
+    options.addOption("about", false, "display information about this software");
     options.addOption("h", "help", false, "display this help");
-    options.addOption("license", false,
-        "display information about the license of this software");
+    options.addOption("license", false, "display information about the license of this software");
 
-    options.addOption(Option.builder("conf").argName("file").hasArg()
-        .desc("configuration file to use").get());
+    options.addOption(
+        Option.builder("conf").argName("file").hasArg().desc("configuration file to use").get());
 
-    options.addOption(Option.builder("s").argName("property=value").hasArg()
-        .desc("set a configuration setting. This "
-            + "option can be used several times").get());
+    options.addOption(
+        Option.builder("s")
+            .argName("property=value")
+            .hasArg()
+            .desc("set a configuration setting. This " + "option can be used several times")
+            .get());
 
-    options.addOption(Option.builder("log").argName("file").hasArg()
-        .desc("external log file").get());
+    options.addOption(
+        Option.builder("log").argName("file").hasArg().desc("external log file").get());
 
-    options.addOption(Option.builder("loglevel").argName("level").hasArg()
-        .desc("log level").get());
+    options.addOption(Option.builder("loglevel").argName("level").hasArg().desc("log level").get());
 
     return options;
   }
 
   /**
    * Parse the options of the command line
+   *
    * @return the number of options argument in the command line
    */
   private int parseCommandLine() {
@@ -402,15 +418,14 @@ public abstract class Main {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e,
-          "Error while parsing command line arguments: " + e.getMessage());
+      Common.errorExit(e, "Error while parsing command line arguments: " + e.getMessage());
     }
 
     // No arguments found
     if (this.args == null || this.args.size() == argsOptions) {
 
-      Common.showErrorMessageAndExit("This program needs one argument."
-          + " Use the -h option to get more information.\n");
+      Common.showErrorMessageAndExit(
+          "This program needs one argument." + " Use the -h option to get more information.\n");
     }
 
     return argsOptions;
@@ -422,6 +437,7 @@ public abstract class Main {
 
   /**
    * Get in a string with all arch
+   *
    * @return a string with
    */
   private static String availableArchsToString() {
@@ -454,9 +470,7 @@ public abstract class Main {
     Infos.log(Level.INFO, Infos.commandLineInfo(this));
   }
 
-  /**
-   * Log system information.
-   */
+  /** Log system information. */
   protected void sysInfoLog() {
 
     Infos.log(Level.INFO, Infos.systemInfos());
@@ -464,13 +478,12 @@ public abstract class Main {
 
   /**
    * Load the configuration file if exists.
+   *
    * @return a new Settings object
    * @throws IOException if an error occurs while reading the configuration file
-   * @throws EoulsanException if an error occurs while reading the configuration
-   *           file
+   * @throws EoulsanException if an error occurs while reading the configuration file
    */
-  private Settings loadConfigurationFile()
-      throws IOException, EoulsanException {
+  private Settings loadConfigurationFile() throws IOException, EoulsanException {
 
     // Load the setting file if has been defined in command line
     if (this.conf != null) {
@@ -492,6 +505,7 @@ public abstract class Main {
 
   /**
    * Set the command line settings entry.
+   *
    * @param settings the settings object
    */
   private void setManualSettings(final Settings settings) {
@@ -508,9 +522,7 @@ public abstract class Main {
     }
   }
 
-  /**
-   * Initialize the application logger.
-   */
+  /** Initialize the application logger. */
   private void initApplicationLogger() {
 
     // Disable parent Handler
@@ -531,9 +543,10 @@ public abstract class Main {
       try {
         this.handler.setLevel(Level.parse(this.logLevel.toUpperCase(Globals.DEFAULT_LOCALE)));
       } catch (IllegalArgumentException e) {
-        Common.showErrorMessageAndExit("Unknown log level ("
-            + this.logLevel
-            + "). Accepted values are [SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST].");
+        Common.showErrorMessageAndExit(
+            "Unknown log level ("
+                + this.logLevel
+                + "). Accepted values are [SEVERE, WARNING, INFO, CONFIG, FINE, FINER, FINEST].");
       }
     } else {
       this.handler.setLevel(Globals.LOG_LEVEL);
@@ -542,22 +555,20 @@ public abstract class Main {
     // Set the log file in arguments
     if (this.logFile != null) {
       try {
-        this.handler.addHandler(
-            getLogHandler(Path.of(this.logFile).toAbsolutePath().toUri()));
+        this.handler.addHandler(getLogHandler(Path.of(this.logFile).toAbsolutePath().toUri()));
       } catch (IOException e) {
         Common.errorExit(e, "Error while creating log file: " + e.getMessage());
       }
     }
-
   }
 
   /**
    * Create a new log file and flush log.
+   *
    * @param logFilename log file name
    * @throws EoulsanException if an error occurs while creating log file
    */
-  public void createLogFileAndFlushLog(final URI logFilename)
-      throws EoulsanException {
+  public void createLogFileAndFlushLog(final URI logFilename) throws EoulsanException {
 
     try {
       Handler h = getLogHandler(logFilename);
@@ -571,33 +582,31 @@ public abstract class Main {
   }
 
   /**
-   * Create the additional log file for dependencies that use their own logging
-   * system.
+   * Create the additional log file for dependencies that use their own logging system.
+   *
    * @param logFilename the log file name
    */
   public void createOtherLog(final URI logFilename) {
 
-    OtherLogConfigurator.configureLog4J(null,
-        Path.of(logFilename).toFile().getAbsolutePath());
+    OtherLogConfigurator.configureLog4J(null, Path.of(logFilename).toFile().getAbsolutePath());
   }
 
   /**
-   * Create the log file for Eoulsan and additional log file for dependencies
-   * that use their own logging system.
+   * Create the log file for Eoulsan and additional log file for dependencies that use their own
+   * logging system.
+   *
    * @param EoulsanlogFilename Eoulsan log file name
    * @param otherlogFilename other log file name
    * @throws EoulsanException if an error occurs while creating log file
    */
-  public void createLogFiles(final URI EoulsanlogFilename,
-      final URI otherlogFilename) throws EoulsanException {
+  public void createLogFiles(final URI EoulsanlogFilename, final URI otherlogFilename)
+      throws EoulsanException {
 
     createLogFileAndFlushLog(EoulsanlogFilename);
     createOtherLog(otherlogFilename);
   }
 
-  /**
-   * Flush log.
-   */
+  /** Flush log. */
   public void flushLog() {
 
     this.handler.flush();
@@ -605,26 +614,31 @@ public abstract class Main {
 
   /**
    * Parse the action name and arguments from command line.
+   *
    * @param optionsCount number of options in the command line
    */
   private void parseAction(final int optionsCount) {
 
     // Set action name and arguments
-    final String actionName = this.args.get(optionsCount).trim().toLowerCase(Globals.DEFAULT_LOCALE);
+    final String actionName =
+        this.args.get(optionsCount).trim().toLowerCase(Globals.DEFAULT_LOCALE);
     this.actionArgs = this.args.subList(optionsCount + 1, this.args.size());
 
     // Test if is in hadoop mode
-    final boolean hadoopMode =
-        EoulsanRuntime.getRuntime().getMode().isHadoopMode();
+    final boolean hadoopMode = EoulsanRuntime.getRuntime().getMode().isHadoopMode();
 
     // Search action
     this.action = ActionService.getInstance().newService(actionName);
 
     // Action not found ?
     if (this.action == null || hadoopMode != this.action.isHadoopJarMode()) {
-      Common.showErrorMessageAndExit("Unknown action: "
-          + actionName + ".\n" + "type: " + Globals.APP_NAME_LOWER_CASE
-          + " -help for more help.\n");
+      Common.showErrorMessageAndExit(
+          "Unknown action: "
+              + actionName
+              + ".\n"
+              + "type: "
+              + Globals.APP_NAME_LOWER_CASE
+              + " -help for more help.\n");
     }
   }
 
@@ -632,26 +646,24 @@ public abstract class Main {
   // Abstract methods
   //
 
-  /**
-   * Initialize the Eoulsan runtime.
-   */
-  protected abstract void initializeRuntime(Settings settings)
-      throws EoulsanException;
+  /** Initialize the Eoulsan runtime. */
+  protected abstract void initializeRuntime(Settings settings) throws EoulsanException;
 
   /**
    * Get the command used to launch Eoulsan.
+   *
    * @return a String with the command used to launch Eoulsan
    */
   protected abstract String getHelpEoulsanCommand();
 
   /**
    * Get the Handler to create the log file.
+   *
    * @param logFile the path to the log file
    * @return a new Handler object
    * @throws IOException if an exception occurs while creating the handler
    */
-  protected abstract Handler getLogHandler(final URI logFile)
-      throws IOException;
+  protected abstract Handler getLogHandler(final URI logFile) throws IOException;
 
   //
   // Constructor
@@ -659,6 +671,7 @@ public abstract class Main {
 
   /**
    * Constructor.
+   *
    * @param args command line argument.
    */
   Main(final String modeName, final String[] args) {
@@ -708,6 +721,7 @@ public abstract class Main {
 
   /**
    * Main method of the program.
+   *
    * @param args command line arguments
    */
   public static void main(final String[] args) {
@@ -721,10 +735,15 @@ public abstract class Main {
 
     // Check Java version
     if (getJavaVersion() < MINIMAL_JAVA_VERSION_REQUIRED) {
-      Common.showErrorMessageAndExit(Globals.WELCOME_MSG
-          + "\nError: " + Globals.APP_NAME + " requires Java "
-          + MINIMAL_JAVA_VERSION_REQUIRED + " (found Java " + getJavaVersion()
-          + ").");
+      Common.showErrorMessageAndExit(
+          Globals.WELCOME_MSG
+              + "\nError: "
+              + Globals.APP_NAME
+              + " requires Java "
+              + MINIMAL_JAVA_VERSION_REQUIRED
+              + " (found Java "
+              + getJavaVersion()
+              + ").");
     }
 
     // Select the application execution mode
@@ -743,13 +762,16 @@ public abstract class Main {
     final Settings settings = EoulsanRuntime.getSettings();
 
     // Test if action can be executed with current platform
-    if (!settings.isBypassPlatformChecking()
-        && !action.isCurrentArchCompatible()) {
-      Common.showErrorMessageAndExit(Globals.WELCOME_MSG
-          + "\nError: The " + action.getName() + " of " + Globals.APP_NAME
-          + " is not available for your platform. Required platforms: "
-          + availableArchsToString() + ".");
-
+    if (!settings.isBypassPlatformChecking() && !action.isCurrentArchCompatible()) {
+      Common.showErrorMessageAndExit(
+          Globals.WELCOME_MSG
+              + "\nError: The "
+              + action.getName()
+              + " of "
+              + Globals.APP_NAME
+              + " is not available for your platform. Required platforms: "
+              + availableArchsToString()
+              + ".");
     }
 
     try {
@@ -768,5 +790,4 @@ public abstract class Main {
     // Flush logs
     main.flushLog();
   }
-
 }

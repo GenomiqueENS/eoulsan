@@ -31,6 +31,14 @@ import static fr.ens.biologie.genomique.eoulsan.design.DesignMetadata.GTF_FILE_K
 import static java.util.Collections.unmodifiableMap;
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.Splitter;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.core.Naming;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.design.DesignFactory;
+import fr.ens.biologie.genomique.eoulsan.design.Sample;
+import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -43,24 +51,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Splitter;
-
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.core.Naming;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.design.Design;
-import fr.ens.biologie.genomique.eoulsan.design.DesignFactory;
-import fr.ens.biologie.genomique.eoulsan.design.Sample;
-import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
-
 /**
  * This class define a design reader for limma design files.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
 public class Eoulsan1DesignReader implements DesignReader {
 
-  private final static String TAB_SEPARATOR = "\t";
+  private static final String TAB_SEPARATOR = "\t";
 
   // For backward compatibility
   static final String SAMPLE_NUMBER_FIELD = "SampleNumber";
@@ -106,18 +105,16 @@ public class Eoulsan1DesignReader implements DesignReader {
     final List<String> fieldnames = new ArrayList<>();
     final Design design = DesignFactory.createEmptyDesign();
 
-    try (final BufferedReader br = new BufferedReader(
-        new InputStreamReader(this.is, Globals.DEFAULT_CHARSET))) {
+    try (final BufferedReader br =
+        new BufferedReader(new InputStreamReader(this.is, Globals.DEFAULT_CHARSET))) {
 
       String line = null;
 
       boolean firstLine = true;
       // String ref = null;
 
-      final Map<String, String> designMetadataFields =
-          defineDesignMetadataFields();
-      final Map<String, String> sampleMetadataFields =
-          defineSampleMetadataFields();
+      final Map<String, String> designMetadataFields = defineDesignMetadataFields();
+      final Map<String, String> sampleMetadataFields = defineSampleMetadataFields();
 
       int idFieldIndex = -1;
       int nameFieldIndex = -1;
@@ -139,8 +136,7 @@ public class Eoulsan1DesignReader implements DesignReader {
             String field = fields.get(i).trim();
 
             if ("".equals(field)) {
-              throw new IOException(
-                  "Found an empty field name in design file header.");
+              throw new IOException("Found an empty field name in design file header.");
             }
 
             // Compatibility with old design files
@@ -150,51 +146,58 @@ public class Eoulsan1DesignReader implements DesignReader {
             }
 
             if (fieldnames.contains(field)) {
-              throw new IOException("There is two or more field \""
-                  + field + "\" in design file header.");
+              throw new IOException(
+                  "There is two or more field \"" + field + "\" in design file header.");
             }
 
             fieldnames.add(field);
 
             switch (field) {
+              case SAMPLE_NUMBER_FIELD:
+                idFieldIndex = i;
+                break;
 
-            case SAMPLE_NUMBER_FIELD:
-              idFieldIndex = i;
-              break;
+              case SAMPLE_NAME_FIELD:
+                nameFieldIndex = i;
+                break;
 
-            case SAMPLE_NAME_FIELD:
-              nameFieldIndex = i;
-              break;
+              case EXPERIMENT_FIELD:
+                experimentFieldIndex = i;
+                break;
 
-            case EXPERIMENT_FIELD:
-              experimentFieldIndex = i;
-              break;
-
-            default:
-              break;
+              default:
+                break;
             }
-
           }
 
           if (idFieldIndex != 0) {
-            throw new IOException("Invalid file format: "
-                + "The \"" + SAMPLE_NUMBER_FIELD
-                + "\" field is not the first field.");
+            throw new IOException(
+                "Invalid file format: "
+                    + "The \""
+                    + SAMPLE_NUMBER_FIELD
+                    + "\" field is not the first field.");
           }
 
           if (nameFieldIndex != 1) {
-            throw new IOException("Invalid file format: "
-                + "The \"" + SAMPLE_NAME_FIELD
-                + "\" field is not the second field.");
+            throw new IOException(
+                "Invalid file format: "
+                    + "The \""
+                    + SAMPLE_NAME_FIELD
+                    + "\" field is not the second field.");
           }
 
           firstLine = false;
         } else {
 
           if (fields.size() != fieldnames.size()) {
-            throw new IOException("Invalid file format: "
-                + "Found " + fields.size() + " fields whereas "
-                + fieldnames.size() + " are required in line: " + line);
+            throw new IOException(
+                "Invalid file format: "
+                    + "Found "
+                    + fields.size()
+                    + " fields whereas "
+                    + fieldnames.size()
+                    + " are required in line: "
+                    + line);
           }
 
           Sample sample = null;
@@ -259,6 +262,7 @@ public class Eoulsan1DesignReader implements DesignReader {
 
   /**
    * Public constructor.
+   *
    * @param file file to read
    * @throws IOException if file cannot be opened
    */
@@ -271,6 +275,7 @@ public class Eoulsan1DesignReader implements DesignReader {
 
   /**
    * Public constructor.
+   *
    * @param file file to read
    * @throws IOException if file cannot be opened
    */
@@ -283,6 +288,7 @@ public class Eoulsan1DesignReader implements DesignReader {
 
   /**
    * Public constructor.
+   *
    * @param is Input stream to read
    * @throws IOException if an error occurs while opening the file
    */
@@ -295,6 +301,7 @@ public class Eoulsan1DesignReader implements DesignReader {
 
   /**
    * Public constructor.
+   *
    * @param file file to read
    * @throws IOException if an error occurs while opening the file
    */
@@ -307,11 +314,11 @@ public class Eoulsan1DesignReader implements DesignReader {
 
   /**
    * Public constructor.
+   *
    * @param filename File to read
    * @throws IOException if file cannot be opened
    */
-  public Eoulsan1DesignReader(final String filename)
-      throws IOException {
+  public Eoulsan1DesignReader(final String filename) throws IOException {
 
     requireNonNull(filename, "the filename argument cannot be null");
 

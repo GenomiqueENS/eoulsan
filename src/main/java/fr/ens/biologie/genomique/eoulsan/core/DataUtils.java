@@ -24,16 +24,16 @@
 
 package fr.ens.biologie.genomique.eoulsan.core;
 
-import java.util.Collection;
-import java.util.List;
-
 import fr.ens.biologie.genomique.eoulsan.core.workflow.WorkflowDataUtils;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * This class define an utility on data object.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -41,6 +41,7 @@ public final class DataUtils {
 
   /**
    * Get the list of the DataFile objects in a Data object.
+   *
    * @param data data object
    * @return a list of DataFile objects
    */
@@ -51,6 +52,7 @@ public final class DataUtils {
 
   /**
    * Change the DataFile in a Data object
+   *
    * @param data Data object to modify
    * @param dataFile new DataFile
    */
@@ -61,30 +63,29 @@ public final class DataUtils {
 
   /**
    * Change the DataFiles in a Data object
+   *
    * @param data Data object to modify
    * @param dataFiles DataFiles to set
    */
-  public static void setDataFiles(final Data data,
-      final List<DataFile> dataFiles) {
+  public static void setDataFiles(final Data data, final List<DataFile> dataFiles) {
 
     WorkflowDataUtils.setDataFiles(data, dataFiles);
   }
 
   /**
-   * Set the metadata of a data object from the information of another data
-   * object.
+   * Set the metadata of a data object from the information of another data object.
+   *
    * @param data the data object
    * @param dataSourceOfMetadata data source of metadata
    */
-  public static void setDataMetadata(final Data data,
-      final Collection<Data> dataSourceOfMetadata) {
+  public static void setDataMetadata(final Data data, final Collection<Data> dataSourceOfMetadata) {
 
     WorkflowDataUtils.setDataMetadata(data, dataSourceOfMetadata);
   }
 
   /**
-   * Set the metadata of a data object from the information of a Sample object
-   * from a Design.
+   * Set the metadata of a data object from the information of a Sample object from a Design.
+   *
    * @param data the data object
    * @param sample the sample
    */
@@ -97,6 +98,5 @@ public final class DataUtils {
   // Private constructor
   //
 
-  private DataUtils() {
-  }
+  private DataUtils() {}
 }

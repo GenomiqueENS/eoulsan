@@ -27,7 +27,6 @@ package fr.ens.biologie.genomique.eoulsan.util.locker;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -38,8 +37,8 @@ import org.apache.zookeeper.ZooKeeper;
 
 /**
  * This class implements a locker using Zookeeper. See @see <a href=
- * "http://altamiracorp.com/blog/employee-posts/distributed-lock-using-zookeeper">
- * blog post</a>.
+ * "http://altamiracorp.com/blog/employee-posts/distributed-lock-using-zookeeper"> blog post</a>.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -65,28 +64,31 @@ public class ZooKeeperLocker implements Locker, Watcher {
 
       if (this.zk.exists(this.lockBasePath, false) == null) {
 
-        this.zk.create(this.lockBasePath, null, Ids.OPEN_ACL_UNSAFE,
-            CreateMode.PERSISTENT);
+        this.zk.create(this.lockBasePath, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
       }
 
       // lockPath will be different than (lockBasePath + "/" + lockName) because
       // of the sequence number ZooKeeper appends
 
-      this.lockPath = this.zk.create(this.lockBasePath + "/" + this.lockName,
-          null, Ids.OPEN_ACL_UNSAFE, this.sequentialLockName
-              ? CreateMode.EPHEMERAL_SEQUENTIAL : CreateMode.EPHEMERAL);
+      this.lockPath =
+          this.zk.create(
+              this.lockBasePath + "/" + this.lockName,
+              null,
+              Ids.OPEN_ACL_UNSAFE,
+              this.sequentialLockName ? CreateMode.EPHEMERAL_SEQUENTIAL : CreateMode.EPHEMERAL);
       final Object lock = new Object();
 
       synchronized (lock) {
-
         while (true) {
 
-          List<String> nodes = this.zk.getChildren(this.lockBasePath, event -> {
-
-            synchronized (lock) {
-              lock.notifyAll();
-            }
-          });
+          List<String> nodes =
+              this.zk.getChildren(
+                  this.lockBasePath,
+                  event -> {
+                    synchronized (lock) {
+                      lock.notifyAll();
+                    }
+                  });
 
           Collections.sort(nodes);
 
@@ -113,7 +115,6 @@ public class ZooKeeperLocker implements Locker, Watcher {
     } catch (KeeperException | InterruptedException e) {
       throw new IOException(e);
     }
-
   }
 
   //
@@ -134,32 +135,40 @@ public class ZooKeeperLocker implements Locker, Watcher {
 
   /**
    * Public constructor.
+   *
    * @param connectString Zookeeper connection string
    * @param sessionTimeout session time out
    * @param lockBasePath lock base path
    * @param lockName lock name
-   * @throws IOException if an error occurs while creating the ZooKeeper
-   *           connection
+   * @throws IOException if an error occurs while creating the ZooKeeper connection
    */
-  public ZooKeeperLocker(final String connectString, final int sessionTimeout,
-      final String lockBasePath, final String lockName) throws IOException {
+  public ZooKeeperLocker(
+      final String connectString,
+      final int sessionTimeout,
+      final String lockBasePath,
+      final String lockName)
+      throws IOException {
 
     this(connectString, sessionTimeout, lockBasePath, lockName, true);
   }
 
   /**
    * Public constructor.
+   *
    * @param connectString Zookeeper connection string
    * @param sessionTimeout session time out
    * @param lockBasePath lock base path
    * @param lockName lock name
    * @param sequentialLockName sequential lock
-   * @throws IOException if an error occurs while creating the ZooKeeper
-   *           connection
+   * @throws IOException if an error occurs while creating the ZooKeeper connection
    */
-  public ZooKeeperLocker(final String connectString, final int sessionTimeout,
-      final String lockBasePath, final String lockName,
-      final boolean sequentialLockName) throws IOException {
+  public ZooKeeperLocker(
+      final String connectString,
+      final int sessionTimeout,
+      final String lockBasePath,
+      final String lockName,
+      final boolean sequentialLockName)
+      throws IOException {
 
     this.lockBasePath = lockBasePath;
     this.lockName = lockName;
@@ -183,7 +192,5 @@ public class ZooKeeperLocker implements Locker, Watcher {
 
       count++;
     }
-
   }
-
 }

@@ -25,6 +25,7 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
 /**
  * This class define an empty tool element.
+ *
  * @author Sandrine Perrin
  * @since 2.0
  */
@@ -54,22 +55,20 @@ public class EmptyToolElement implements ToolElement {
   }
 
   @Override
-  public void setValue(final String value) {
-  }
+  public void setValue(final String value) {}
 
   //
   // Constructors
   //
 
-  /**
-   * Public constructor.
-   */
+  /** Public constructor. */
   public EmptyToolElement() {
     this("noName");
   }
 
   /**
    * Public constructor.
+   *
    * @param toolElementName name of the tool element
    */
   public EmptyToolElement(final String toolElementName) {
@@ -78,15 +77,14 @@ public class EmptyToolElement implements ToolElement {
 
   /**
    * Public constructor.
+   *
    * @param toolElementName name of the tool element
    * @param nameSpace name space
    */
-  public EmptyToolElement(final String toolElementName,
-      final String nameSpace) {
+  public EmptyToolElement(final String toolElementName, final String nameSpace) {
     this.shortName = toolElementName;
 
     // Add name space for full name, if exists
     this.name = (nameSpace == null ? "" : nameSpace + ".") + toolElementName;
   }
-
 }

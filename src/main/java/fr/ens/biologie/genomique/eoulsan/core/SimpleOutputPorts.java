@@ -28,16 +28,15 @@ import java.util.Set;
 
 /**
  * This class define a class that contains several output ports.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class SimpleOutputPorts extends AbstractPorts<OutputPort>
-    implements OutputPorts {
+public class SimpleOutputPorts extends AbstractPorts<OutputPort> implements OutputPorts {
 
   private static final long serialVersionUID = -1607044916452828888L;
 
   SimpleOutputPorts(final Set<OutputPort> ports) {
     super(ports);
   }
-
 }

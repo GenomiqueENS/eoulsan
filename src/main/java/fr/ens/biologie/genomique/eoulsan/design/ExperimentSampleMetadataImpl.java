@@ -27,8 +27,8 @@ package fr.ens.biologie.genomique.eoulsan.design;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 
 /**
- * This class defines the default implementation of the experiment sample
- * metadata.
+ * This class defines the default implementation of the experiment sample metadata.
+ *
  * @author Xavier Bauquet
  * @since 2.0
  */
@@ -63,8 +63,7 @@ public class ExperimentSampleMetadataImpl extends AbstractMetadata
 
     value = value.trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
-    return "t".equals(value)
-        || "true".equals(value) || "y".equals(value) || "yes".equals(value);
+    return "t".equals(value) || "true".equals(value) || "y".equals(value) || "yes".equals(value);
   }
 
   @Override
@@ -119,10 +118,6 @@ public class ExperimentSampleMetadataImpl extends AbstractMetadata
   // Constructor
   //
 
-  /**
-   * Constructor.
-   */
-  ExperimentSampleMetadataImpl() {
-  }
-
+  /** Constructor. */
+  ExperimentSampleMetadataImpl() {}
 }

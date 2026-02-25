@@ -4,17 +4,7 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.modules.expression.ExpressionCounterCounter.INVALID_SAM_ENTRIES_COUNTER;
 import static fr.ens.biologie.genomique.eoulsan.modules.expression.hadoop.ExpressionHadoopModule.SAM_RECORD_PAIRED_END_SERPARATOR;
 
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Mapper;
-
 import com.google.common.base.Splitter;
-
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
@@ -26,9 +16,17 @@ import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFormatException;
 import htsjdk.samtools.SAMLineParser;
 import htsjdk.samtools.SAMRecord;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
 
 /**
  * Mapper for the expression estimation with a SAM output.
+ *
  * @since 2.3
  * @author Laurent Jourdren
  */
@@ -38,8 +36,7 @@ public class ExpressionSAMOutputMapper extends Mapper<Text, Text, Text, Text> {
   private String counterGroup;
 
   private final SAMLineParser parser = new SAMLineParser(new SAMFileHeader());
-  private final Splitter recordSplitterPattern =
-      Splitter.on(SAM_RECORD_PAIRED_END_SERPARATOR);
+  private final Splitter recordSplitterPattern = Splitter.on(SAM_RECORD_PAIRED_END_SERPARATOR);
 
   private final List<SAMRecord> samRecords = new ArrayList<>();
   private ReporterIncrementer reporter;
@@ -47,8 +44,7 @@ public class ExpressionSAMOutputMapper extends Mapper<Text, Text, Text, Text> {
   private final Text outValue = new Text();
 
   @Override
-  public void setup(final Context context)
-      throws IOException, InterruptedException {
+  public void setup(final Context context) throws IOException, InterruptedException {
 
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
@@ -68,17 +64,15 @@ public class ExpressionSAMOutputMapper extends Mapper<Text, Text, Text, Text> {
     final URI[] localCacheFiles = context.getCacheFiles();
 
     // Initialize counter and parser
-    this.counter = ExpressionMapper.initCounterAndParser(conf, this.parser,
-        localCacheFiles);
+    this.counter = ExpressionMapper.initCounterAndParser(conf, this.parser, localCacheFiles);
 
     getLogger().info("End of setup()");
   }
 
   /**
-   * 'key': offset of the beginning of the line from the beginning of the
-   * alignment file. 'value': the SAM record, if data are in paired-end mode,
-   * 'value' contains the two paired alignments separated by a '£' (TSAM
-   * format).
+   * 'key': offset of the beginning of the line from the beginning of the alignment file. 'value':
+   * the SAM record, if data are in paired-end mode, 'value' contains the two paired alignments
+   * separated by a '£' (TSAM format).
    */
   @Override
   public void map(final Text key, final Text value, final Context context)
@@ -107,8 +101,7 @@ public class ExpressionSAMOutputMapper extends Mapper<Text, Text, Text, Text> {
       // Check if there is only one or two entries in the line
       if (samRecords.isEmpty() || samRecords.size() > 2) {
         throw new EoulsanException(
-            "Invalid number of SAM record(s) found in the entry: "
-                + samRecords.size());
+            "Invalid number of SAM record(s) found in the entry: " + samRecords.size());
       }
 
       // Count
@@ -134,17 +127,12 @@ public class ExpressionSAMOutputMapper extends Mapper<Text, Text, Text, Text> {
 
     } catch (SAMFormatException | KenetreException | EoulsanException e) {
 
-      context.getCounter(this.counterGroup,
-          INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
+      context.getCounter(this.counterGroup, INVALID_SAM_ENTRIES_COUNTER.counterName()).increment(1);
 
-      getLogger().info("Invalid SAM output entry: "
-          + e.getMessage() + " line='" + line + "'");
+      getLogger().info("Invalid SAM output entry: " + e.getMessage() + " line='" + line + "'");
     }
-
   }
 
   @Override
-  public void cleanup(final Context context) throws IOException {
-  }
-
+  public void cleanup(final Context context) throws IOException {}
 }

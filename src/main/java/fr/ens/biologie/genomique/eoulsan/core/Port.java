@@ -24,12 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.core;
 
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import java.util.Set;
 
 /**
  * This interface define a port of a step.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -37,26 +37,29 @@ public interface Port {
 
   /**
    * Get the name of the port.
+   *
    * @return the name of the port
    */
   String getName();
 
   /**
    * Get the data format of the port.
+   *
    * @return a DataFormat object
    */
   DataFormat getFormat();
 
   /**
    * Test if the port requires a list as value.
+   *
    * @return true if the the port requires a list as value
    */
   boolean isList();
 
   /**
    * Get the steps linked to this port.
+   *
    * @return a step with the list of linked steps
    */
   Set<Step> getLinkedSteps();
-
 }

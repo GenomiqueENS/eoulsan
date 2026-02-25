@@ -4,6 +4,7 @@ import java.util.Objects;
 
 /**
  * This class define a UI workflow event.
+ *
  * @author Laurent Jourdren
  * @since 2.3
  */
@@ -14,6 +15,7 @@ public class UIWorkflowEvent extends UIEvent {
 
   /**
    * Test if the event is a success.
+   *
    * @return true if the event is a success
    */
   public boolean isSuccess() {
@@ -22,6 +24,7 @@ public class UIWorkflowEvent extends UIEvent {
 
   /**
    * Get the message of the event.
+   *
    * @return the message of the event
    */
   public String getMessage() {
@@ -34,6 +37,7 @@ public class UIWorkflowEvent extends UIEvent {
 
   /**
    * Constructor.
+   *
    * @param success true if the workflow is a success
    * @param message the message of the event
    */
@@ -44,5 +48,4 @@ public class UIWorkflowEvent extends UIEvent {
     this.success = success;
     this.message = message;
   }
-
 }

@@ -24,10 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.splitermergers;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
@@ -38,9 +34,13 @@ import fr.ens.biologie.genomique.kenetre.bio.BadBioEntryException;
 import fr.ens.biologie.genomique.kenetre.bio.ReadSequence;
 import fr.ens.biologie.genomique.kenetre.bio.io.FastqReader;
 import fr.ens.biologie.genomique.kenetre.bio.io.FastqWriter;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * This class define a merger class for FASTQ files.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -57,14 +57,14 @@ public class FastqMerger implements Merger {
 
     // The merge does not need any parameter
     for (Parameter p : conf) {
-      throw new EoulsanException("Unknown parameter for "
-          + getFormat().getName() + " merger: " + p.getName());
+      throw new EoulsanException(
+          "Unknown parameter for " + getFormat().getName() + " merger: " + p.getName());
     }
   }
 
   @Override
-  public void merge(final Iterator<DataFile> inDataFileIterator,
-      final DataFile outFile) throws IOException {
+  public void merge(final Iterator<DataFile> inDataFileIterator, final DataFile outFile)
+      throws IOException {
 
     final FastqWriter writer = new FastqWriter(outFile.create());
 
@@ -73,8 +73,7 @@ public class FastqMerger implements Merger {
       // Get input file
       final DataFile inFile = inDataFileIterator.next();
 
-      EoulsanLogger.getLogger()
-          .info("Merge " + inFile.getName() + " to " + outFile.getName());
+      EoulsanLogger.getLogger().info("Merge " + inFile.getName() + " to " + outFile.getName());
 
       final FastqReader reader = new FastqReader(inFile.open());
 
@@ -92,5 +91,4 @@ public class FastqMerger implements Merger {
 
     writer.close();
   }
-
 }

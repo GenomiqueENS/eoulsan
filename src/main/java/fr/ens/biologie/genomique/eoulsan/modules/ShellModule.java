@@ -26,9 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.modules;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
-import java.io.IOException;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -41,10 +38,13 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.IOException;
+import java.util.Set;
 
 /**
- * This class define a module that execute a shell command. It use the user
- * shell to execute the command. The launched command is : $SHELL -c "command"
+ * This class define a module that execute a shell command. It use the user shell to execute the
+ * command. The launched command is : $SHELL -c "command"
+ *
  * @author Laurent Jourdren
  */
 @LocalOnly
@@ -75,19 +75,18 @@ public class ShellModule extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
+        case "command":
+          this.command = p.getValue();
+          break;
 
-      case "command":
-        this.command = p.getValue();
-        break;
-
-      default:
-        Modules.unknownParameter(context, p);
+        default:
+          Modules.unknownParameter(context, p);
       }
     }
 
@@ -97,8 +96,7 @@ public class ShellModule extends AbstractModule {
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     try {
 
@@ -111,8 +109,7 @@ public class ShellModule extends AbstractModule {
       getLogger().info("Execute: " + this.command);
       getLogger().info("Shell interpreter: " + shellInterpreter);
 
-      final ProcessBuilder pb =
-          new ProcessBuilder(shellInterpreter, "-c", this.command);
+      final ProcessBuilder pb = new ProcessBuilder(shellInterpreter, "-c", this.command);
 
       // Set command line in status
       status.setCommandLine(String.join(" ", pb.command()));
@@ -128,9 +125,8 @@ public class ShellModule extends AbstractModule {
       return status.createTaskResult();
 
     } catch (IOException | InterruptedException e) {
-      return status.createTaskResult(e, "Error while running command ("
-          + this.command + "): " + e.getMessage());
+      return status.createTaskResult(
+          e, "Error while running command (" + this.command + "): " + e.getMessage());
     }
-
   }
 }

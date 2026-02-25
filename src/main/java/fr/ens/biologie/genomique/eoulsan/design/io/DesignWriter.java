@@ -24,12 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.design.io;
 
-import java.io.IOException;
-
 import fr.ens.biologie.genomique.eoulsan.design.Design;
+import java.io.IOException;
 
 /**
  * This interface define a writer for designs.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -37,9 +37,9 @@ public interface DesignWriter {
 
   /**
    * Write a design.
+   *
    * @param design the design to write
    * @throws IOException if an error occurs while writing the design
    */
   void write(final Design design) throws IOException;
-
 }

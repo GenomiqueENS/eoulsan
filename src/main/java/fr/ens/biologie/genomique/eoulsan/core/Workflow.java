@@ -24,14 +24,14 @@
 
 package fr.ens.biologie.genomique.eoulsan.core;
 
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.design.Design;
 import java.io.Serializable;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.design.Design;
-
 /**
  * This interface define a Workflow.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -39,38 +39,43 @@ public interface Workflow extends Serializable {
 
   /**
    * Get the design used by the workflow.
+   *
    * @return a Design Object
    */
   Design getDesign();
 
   /**
    * Get the steps of the workflow.
+   *
    * @return a Set with the steps of the workflow.
    */
   Set<Step> getSteps();
 
   /**
    * Get the first steps of the workflow.
+   *
    * @return the root step of the workflow
    */
   Step getRootStep();
 
   /**
    * Get the design step of the workflow.
+   *
    * @return the design step of the workflow
    */
   Step getDesignStep();
 
   /**
    * Get the first step of the workflow (after generator steps).
+   *
    * @return the first step of the workflow
    */
   Step getFirstStep();
 
   /**
    * Delete a file on the exit of the workflow.
+   *
    * @param file file to remove
    */
   void deleteOnExit(final DataFile file);
-
 }

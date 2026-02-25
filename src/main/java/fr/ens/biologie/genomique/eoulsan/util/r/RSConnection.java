@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.util.r;
 
 import static java.util.Objects.requireNonNull;
 
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.FileNotFoundException;
@@ -41,7 +42,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
 import org.rosuda.REngine.REngineException;
@@ -49,10 +49,9 @@ import org.rosuda.REngine.Rserve.RConnection;
 import org.rosuda.REngine.Rserve.RFileInputStream;
 import org.rosuda.REngine.Rserve.RserveException;
 
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
-
 /**
  * This class define an enhanced connection to RServe.
+ *
  * @author Laurent Jourdren
  * @author Marion Gaussen
  * @since 1.2
@@ -70,6 +69,7 @@ public class RSConnection {
 
   /**
    * Get the R connection.
+   *
    * @return Returns the RConnection
    * @throws REngineException if an error occurs while connecting to the server
    */
@@ -84,6 +84,7 @@ public class RSConnection {
 
   /**
    * Get the name of the Rserve server.
+   *
    * @return the name of the Rserve server
    */
   public String getServerName() {
@@ -96,6 +97,7 @@ public class RSConnection {
 
   /**
    * Write a file to the RServer.
+   *
    * @param outputFilename the filename
    * @param value The content of the file
    * @throws REngineException if an error occurs while writing the file
@@ -109,8 +111,7 @@ public class RSConnection {
 
     try {
 
-      final Writer writer =
-          FileUtils.createBufferedWriter(getFileOutputStream(outputFilename));
+      final Writer writer = FileUtils.createBufferedWriter(getFileOutputStream(outputFilename));
       if (value != null) {
         writer.write(value);
         writer.close();
@@ -118,17 +119,16 @@ public class RSConnection {
     } catch (IOException e) {
       throw new REngineException(getRConnection(), "Error: " + e.getMessage());
     }
-
   }
 
   /**
    * Create an inputStream on a file on RServer.
+   *
    * @param filename Name of the file on RServer to load
    * @return an inputStream
    * @throws REngineException if an exception occurs while reading file
    */
-  public InputStream getFileInputStream(final String filename)
-      throws REngineException {
+  public InputStream getFileInputStream(final String filename) throws REngineException {
 
     final RConnection c = getRConnection();
 
@@ -138,17 +138,16 @@ public class RSConnection {
 
       throw new REngineException(c, "Error: " + e.getMessage());
     }
-
   }
 
   /**
    * Create an outputStream on a file on RServer.
+   *
    * @param filename Name of the file on RServer to write
    * @return an outputStream
    * @throws REngineException if an exception occurs while reading file
    */
-  public OutputStream getFileOutputStream(final String filename)
-      throws REngineException {
+  public OutputStream getFileOutputStream(final String filename) throws REngineException {
 
     final RConnection c = getRConnection();
 
@@ -158,17 +157,16 @@ public class RSConnection {
 
       throw new REngineException(c, "Error: " + e.getMessage());
     }
-
   }
 
   /**
    * Put a file from the RServer.
+   *
    * @param inputFile input file of the file to put
    * @param rServeFilename filename of the file to put
    * @throws REngineException if an error occurs while downloading the file
    */
-  public void putFile(final Path inputFile, final String rServeFilename)
-      throws REngineException {
+  public void putFile(final Path inputFile, final String rServeFilename) throws REngineException {
 
     requireNonNull(inputFile, "inputFile argument cannot be null");
     requireNonNull(rServeFilename, "rServeFilename argument cannot be null");
@@ -176,19 +174,18 @@ public class RSConnection {
     try {
       putFile(Files.newInputStream(inputFile), rServeFilename);
     } catch (IOException e) {
-      throw new REngineException(getRConnection(),
-          "file not found: " + e.getMessage());
+      throw new REngineException(getRConnection(), "file not found: " + e.getMessage());
     }
   }
 
   /**
    * Put a file from the RServer.
+   *
    * @param is input stream of the file to put
    * @param rServeFilename filename of the file to put
    * @throws REngineException if an error occurs while downloading the file
    */
-  public void putFile(final InputStream is, final String rServeFilename)
-      throws REngineException {
+  public void putFile(final InputStream is, final String rServeFilename) throws REngineException {
 
     requireNonNull(is, "inputFile argument cannot be null");
     requireNonNull(rServeFilename, "rServeFilename argument cannot be null");
@@ -208,23 +205,20 @@ public class RSConnection {
       os.close();
 
     } catch (REngineException e) {
-      throw new REngineException(getRConnection(),
-          "Unable to put file: " + e.getMessage());
+      throw new REngineException(getRConnection(), "Unable to put file: " + e.getMessage());
     } catch (IOException e) {
-      throw new REngineException(getRConnection(),
-          "Unable to create report: " + e.getMessage());
+      throw new REngineException(getRConnection(), "Unable to create report: " + e.getMessage());
     }
-
   }
 
   /**
    * Get a file from the RServer.
+   *
    * @param rServeFilename filename of the file to retrieve
    * @param outputFile output file of the file to retrieve
    * @throws REngineException if an error occurs while downloading the file
    */
-  public void getFile(final String rServeFilename, final Path outputFile)
-      throws REngineException {
+  public void getFile(final String rServeFilename, final Path outputFile) throws REngineException {
 
     try (InputStream is = Files.newInputStream(Path.of(rServeFilename));
         OutputStream os = Files.newOutputStream(outputFile)) {
@@ -245,15 +239,15 @@ public class RSConnection {
 
   /**
    * Get a list of files from the RServer.
+   *
    * @param rServeFilenames list of filenames of the files to retrieve
    * @param zipFile zip output file for the files to retrieve
    * @throws REngineException if an error occurs while downloading the file
    */
-  public void getFilesIntoZip(final List<String> rServeFilenames,
-      final Path zipFile) throws REngineException {
+  public void getFilesIntoZip(final List<String> rServeFilenames, final Path zipFile)
+      throws REngineException {
 
-    try (ZipOutputStream out =
-        new ZipOutputStream(Files.newOutputStream(zipFile))) {
+    try (ZipOutputStream out = new ZipOutputStream(Files.newOutputStream(zipFile))) {
 
       final byte[] buf = new byte[BUFFER_SIZE];
 
@@ -288,6 +282,7 @@ public class RSConnection {
 
   /**
    * Remove a file on the RServer.
+   *
    * @param filename File to remove
    * @throws REngineException if connection cannot be established
    */
@@ -310,6 +305,7 @@ public class RSConnection {
 
   /**
    * Remove all the files of the working directory.
+   *
    * @throws REngineException if an error occurs while removing the file
    * @throws REXPMismatchException if an error occurs while removing the file
    */
@@ -322,11 +318,11 @@ public class RSConnection {
 
   /**
    * Override the commandArg() R function.
+   *
    * @param arguments the arguments
    * @throws REngineException if an error occurs while executing R code
    */
-  public void setCommandArgs(final List<String> arguments)
-      throws REngineException {
+  public void setCommandArgs(final List<String> arguments) throws REngineException {
 
     if (arguments == null) {
       throw new NullPointerException("arguments argument cannot be null");
@@ -364,6 +360,7 @@ public class RSConnection {
 
   /**
    * Execute a R code.
+   *
    * @param source code to execute
    * @throws REngineException if an error while executing the code
    */
@@ -378,6 +375,7 @@ public class RSConnection {
 
   /**
    * Execute a R code.
+   *
    * @param code code to execute
    * @throws REngineException if an error while executing the code
    */
@@ -401,6 +399,7 @@ public class RSConnection {
 
   /**
    * Execute a R Sweave code.
+   *
    * @param source code to execute
    * @throws REngineException if an error while executing the code
    */
@@ -411,6 +410,7 @@ public class RSConnection {
 
   /**
    * Execute a R Sweave code.
+   *
    * @param source code to execute
    * @param latexOutput output latex filename
    * @throws REngineException if an error while executing the code
@@ -445,6 +445,7 @@ public class RSConnection {
 
   /**
    * Load an image.
+   *
    * @param filename filename of the image on the server
    * @return an Image object
    * @throws REngineException if an error while loading the image
@@ -484,9 +485,8 @@ public class RSConnection {
       if (imgLength < 10) { // this shouldn't be the case actually,
         // because we did some error checking, but
         // for those paranoid ...
-        throw new REngineException(c,
-            "Cannot load image, check R output, probably R didn't produce anything.");
-
+        throw new REngineException(
+            c, "Cannot load image, check R output, probably R didn't produce anything.");
       }
 
       // now let's join all the chunks into one, big array ...
@@ -512,11 +512,11 @@ public class RSConnection {
     } catch (RserveException e) {
       throw new REngineException(c, "Error while removing image from server");
     }
-
   }
 
   /**
    * Get a file as a byte array.
+   *
    * @param filename filename of the file on the server
    * @return a byte array
    * @throws REngineException if an error while loading the file
@@ -552,9 +552,8 @@ public class RSConnection {
         }
       }
       if (imgLength < 10) {
-        throw new REngineException(c,
-            "Cannot load files, check R output, probably R didn't produce anything.");
-
+        throw new REngineException(
+            c, "Cannot load files, check R output, probably R didn't produce anything.");
       }
 
       byte[] imgCode = new byte[imgLength];
@@ -575,17 +574,16 @@ public class RSConnection {
     } catch (IOException e) {
       throw new REngineException(c, "Error while loading files");
     }
-
   }
 
   /**
    * Open a file to read on Rserve server.
+   *
    * @param filename the filename
    * @return an input stream
    * @throws REngineException if an error occurs while creating the input stream
    */
-  public RFileInputStream openFile(final String filename)
-      throws REngineException {
+  public RFileInputStream openFile(final String filename) throws REngineException {
 
     final RConnection c = getRConnection();
 
@@ -601,12 +599,12 @@ public class RSConnection {
 
   /**
    * Get all the file on the Rserve server.
+   *
    * @param outPath the output path
    * @throws REngineException if an error occurs while retrieving the files
    * @throws REXPMismatchException if an error occurs while retrieving the files
    */
-  public void getAllFiles(final Path outPath)
-      throws REngineException, REXPMismatchException {
+  public void getAllFiles(final Path outPath) throws REngineException, REXPMismatchException {
 
     if (outPath == null) {
       throw new NullPointerException("outPath argument cannot be null");
@@ -619,12 +617,12 @@ public class RSConnection {
 
   /**
    * List files on Rserve server.
+   *
    * @return files a String list of files names
    * @throws REngineException if an error occurs with the server
    * @throws REXPMismatchException if an error occurs with the server
    */
-  public List<String> listFiles()
-      throws REngineException, REXPMismatchException {
+  public List<String> listFiles() throws REngineException, REXPMismatchException {
 
     final RConnection c = getRConnection();
 
@@ -639,6 +637,7 @@ public class RSConnection {
 
   /**
    * Connect to the Rserve server.
+   *
    * @throws REngineException if an error occurs while connecting to the server
    */
   private void connect() throws REngineException {
@@ -646,15 +645,12 @@ public class RSConnection {
     try {
       this.rconnection = new RConnection(this.serverName);
     } catch (RserveException e) {
-      throw new REngineException(this.rconnection,
-          "Unable to connect to the server: " + e.getMessage());
+      throw new REngineException(
+          this.rconnection, "Unable to connect to the server: " + e.getMessage());
     }
-
   }
 
-  /**
-   * Destroy the connection to the Rserve server.
-   */
+  /** Destroy the connection to the Rserve server. */
   public void disConnect() {
 
     if (this.rconnection != null) {
@@ -667,20 +663,18 @@ public class RSConnection {
   // Constructor
   //
 
-  /**
-   * Default constructor. Connect to the localhost.
-   */
+  /** Default constructor. Connect to the localhost. */
   public RSConnection() {
     this(null);
   }
 
   /**
    * Public constructor.
+   *
    * @param serverName RServe server to use
    */
   public RSConnection(final String serverName) {
 
     this.serverName = serverName == null ? "127.0.0.1" : serverName.trim();
   }
-
 }

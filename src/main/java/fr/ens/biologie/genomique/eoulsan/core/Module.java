@@ -24,15 +24,15 @@
 
 package fr.ens.biologie.genomique.eoulsan.core;
 
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.util.Set;
 
 /**
  * This interface define a Module.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -40,66 +40,73 @@ public interface Module {
 
   /**
    * Get the name of the module.
+   *
    * @return the name of the module
    */
   String getName();
 
   /**
    * Get the description of the module
+   *
    * @return the description of the module
    */
   String getDescription();
 
   /**
    * Get version of the Module.
+   *
    * @return a Version object with the version of the Module
    */
   Version getVersion();
 
   /**
    * Get the required Version of the application to run the Module.
+   *
    * @return a Version object with the required version of the Module
    */
   Version getRequiredEoulsanVersion();
 
   /**
    * Get the input data format.
-   * @return a set with DataFormat or null if the module does not any need input
-   *         format
+   *
+   * @return a set with DataFormat or null if the module does not any need input format
    */
   InputPorts getInputPorts();
 
   /**
    * Get the output data format.
-   * @return an set with DataFormat or null if the module does not produce any
-   *         output data
+   *
+   * @return an set with DataFormat or null if the module does not produce any output data
    */
   OutputPorts getOutputPorts();
 
   /**
    * Get the requirements of the module.
+   *
    * @return a set with the requirements of the module
    */
   Set<Requirement> getRequirements();
 
   /**
    * Get the checker for the module
+   *
    * @return the checker for the module
    */
   Checker getChecker();
 
   /**
    * Set the parameters of the step to configure the module.
-   * @param context configuration context. The context can be null for generator
-   *          steps
+   *
+   * @param context configuration context. The context can be null for generator steps
    * @param stepParameters parameters of the step
    * @throws EoulsanException if a parameter is invalid
    */
-  void configure(StepConfigurationContext context,
-      Set<Parameter> stepParameters) throws EoulsanException;
+  void configure(StepConfigurationContext context, Set<Parameter> stepParameters)
+      throws EoulsanException;
 
   /**
    * Execute a task step.
+   *
    * @param context Execution context
    * @param status of the task
    * @return a TaskResult object
@@ -108,6 +115,7 @@ public interface Module {
 
   /**
    * Get the parallelization mode of the module.
+   *
    * @return a ParallelizationMode enum
    */
   ParallelizationMode getParallelizationMode();

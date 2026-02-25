@@ -34,9 +34,9 @@ import fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters.ClusterTaskSch
 import fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters.ClusterTaskSchedulerService;
 
 /**
- * This class define a factory for TaskScheduler that can create only one
- * instance. This class avoid the serialization of the task scheduler classes
- * when serialize TaskContext object.
+ * This class define a factory for TaskScheduler that can create only one instance. This class avoid
+ * the serialization of the task scheduler classes when serialize TaskContext object.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -50,12 +50,12 @@ public class TaskSchedulerFactory {
 
   /**
    * Initialize the scheduler.
+   *
    * @throws EoulsanException if an error occurs while configuring the scheduler
    */
   public static void initialize() throws EoulsanException {
 
-    checkState(scheduler == null,
-        "The TaskSchedulerFactory has been already initialized");
+    checkState(scheduler == null, "The TaskSchedulerFactory has been already initialized");
 
     final Settings settings = EoulsanRuntime.getSettings();
 
@@ -67,44 +67,40 @@ public class TaskSchedulerFactory {
       final String clusterSchedulerName = settings.getClusterSchedulerName();
 
       // Check if the cluster scheduler setting has been set
-      if (clusterSchedulerName == null
-          || clusterSchedulerName.trim().isEmpty()) {
+      if (clusterSchedulerName == null || clusterSchedulerName.trim().isEmpty()) {
         throw new EoulsanException(
             "No cluster scheduler defined. Use the \"main.cluster.scheduler.name\" setting to define it");
       }
 
       // Get cluster scheduler
-      final ClusterTaskScheduler clusterScheduler = ClusterTaskSchedulerService
-          .getInstance().newService(clusterSchedulerName);
+      final ClusterTaskScheduler clusterScheduler =
+          ClusterTaskSchedulerService.getInstance().newService(clusterSchedulerName);
 
       // Check if the cluster scheduler exists
       if (clusterScheduler == null) {
-        throw new EoulsanException(
-            "Unknown cluster scheduler name: " + clusterSchedulerName);
+        throw new EoulsanException("Unknown cluster scheduler name: " + clusterSchedulerName);
       }
 
       // Configure cluster scheduler
       clusterScheduler.configure(settings);
 
       // Set Cluster mode
-      scheduler =
-          new ClusterCombinedTaskScheduler(threadNumber, clusterScheduler);
+      scheduler = new ClusterCombinedTaskScheduler(threadNumber, clusterScheduler);
     } else {
 
       // Standard mode
       scheduler = new CombinedTaskScheduler(threadNumber);
     }
-
   }
 
   /**
    * Get the scheduler
+   *
    * @return the TaskScheduler object
    */
   public static TaskScheduler getScheduler() {
 
-    checkState(scheduler != null,
-        "The TaskSchedulerFactory has not been initialized");
+    checkState(scheduler != null, "The TaskSchedulerFactory has not been initialized");
 
     return scheduler;
   }
@@ -113,10 +109,6 @@ public class TaskSchedulerFactory {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
-  private TaskSchedulerFactory() {
-  }
-
+  /** Private constructor. */
+  private TaskSchedulerFactory() {}
 }

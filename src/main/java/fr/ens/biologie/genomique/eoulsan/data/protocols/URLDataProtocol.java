@@ -24,6 +24,8 @@
 
 package fr.ens.biologie.genomique.eoulsan.data.protocols;
 
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,18 +34,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
-
 /**
  * This class define an abstract class for DataProtocols based on the URL class.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
 public abstract class URLDataProtocol extends AbstractDataProtocol {
 
-  private URLConnection createConnection(final DataFile src)
-      throws IOException {
+  private URLConnection createConnection(final DataFile src) throws IOException {
 
     if (src == null) {
       throw new NullPointerException("The source is null.");
@@ -54,7 +53,6 @@ public abstract class URLDataProtocol extends AbstractDataProtocol {
     } catch (MalformedURLException e) {
       throw new IOException("Invalid URL: " + src);
     }
-
   }
 
   @Override
@@ -110,5 +108,4 @@ public abstract class URLDataProtocol extends AbstractDataProtocol {
 
     return true;
   }
-
 }

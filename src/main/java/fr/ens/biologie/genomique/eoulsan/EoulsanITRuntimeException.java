@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan;
 
 /**
  * This class define a runtime exception for integration tests.
+ *
  * @author Sandrine Perrin
  * @since 2.0
  */
@@ -33,9 +34,7 @@ public class EoulsanITRuntimeException extends EoulsanRuntimeException {
 
   private static final long serialVersionUID = -1897738767737351557L;
 
-  /**
-   * Create a new EoulsanITRuntimeException.
-   */
+  /** Create a new EoulsanITRuntimeException. */
   public EoulsanITRuntimeException() {
 
     super();
@@ -43,6 +42,7 @@ public class EoulsanITRuntimeException extends EoulsanRuntimeException {
 
   /**
    * Create a new EoulsanITRuntimeException with a message.
+   *
    * @param message Exception message
    */
   public EoulsanITRuntimeException(final String message) {
@@ -52,6 +52,7 @@ public class EoulsanITRuntimeException extends EoulsanRuntimeException {
 
   /**
    * Create a new EoulsanITRuntimeException with a message and a cause.
+   *
    * @param message the message
    * @param cause the cause
    */
@@ -62,11 +63,11 @@ public class EoulsanITRuntimeException extends EoulsanRuntimeException {
 
   /**
    * Create a new EoulsanITRuntimeException with a cause.
+   *
    * @param cause the cause
    */
   public EoulsanITRuntimeException(Throwable cause) {
 
     super(cause);
   }
-
 }

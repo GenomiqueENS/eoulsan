@@ -33,25 +33,7 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESU
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_DESC_TXT;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectOutputStream;
-import java.net.InetAddress;
-import java.nio.file.Files;
-import java.util.Set;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-
 import com.google.common.base.Splitter;
-
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -84,10 +66,25 @@ import htsjdk.samtools.SAMRecordIterator;
 import htsjdk.samtools.SamInputResource;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectOutputStream;
+import java.net.InetAddress;
+import java.nio.file.Files;
+import java.util.Set;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 /**
- * This class is the main class for the expression program of the reads in
- * hadoop mode.
+ * This class is the main class for the expression program of the reads in hadoop mode.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -113,24 +110,23 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     super.configure(context, stepParameters);
     this.conf = CommonHadoop.createConfiguration(EoulsanRuntime.getSettings());
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     final Data alignmentsData = context.getInputData(MAPPER_RESULTS_SAM);
-    final Data featureAnnotationData = context
-        .getInputData(isGTFInputFormat() ? ANNOTATION_GTF : ANNOTATION_GFF);
+    final Data featureAnnotationData =
+        context.getInputData(isGTFInputFormat() ? ANNOTATION_GTF : ANNOTATION_GFF);
     final Data genomeDescriptionData = context.getInputData(GENOME_DESC_TXT);
-    final Data outData = context.getOutputData(
-        isSAMOutputFormat() ? MAPPER_RESULTS_SAM : EXPRESSION_RESULTS_TSV,
-        alignmentsData);
+    final Data outData =
+        context.getOutputData(
+            isSAMOutputFormat() ? MAPPER_RESULTS_SAM : EXPRESSION_RESULTS_TSV, alignmentsData);
 
     // Create configuration object
     final Configuration conf = createConfiguration();
@@ -141,8 +137,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       getLogger().info("Counter: " + getExpressionCounter());
 
       // Initialize the counter
-      initializeCounter(getExpressionCounter(), genomeDescriptionData,
-          featureAnnotationData);
+      initializeCounter(getExpressionCounter(), genomeDescriptionData, featureAnnotationData);
 
       // Get the paired end mode
       boolean pairedEnd = isPairedData(alignmentsData.getDataFile().open());
@@ -150,47 +145,58 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       // Paired-end pre-processing
       if (pairedEnd) {
         MapReduceUtils.submitAndWaitForJob(
-            createPairedEndJob(conf, alignmentsData,
-                genomeDescriptionData),
-            alignmentsData.getName(), CommonHadoop.CHECK_COMPLETION_TIME,
-            status, COUNTER_GROUP);
+            createPairedEndJob(conf, alignmentsData, genomeDescriptionData),
+            alignmentsData.getName(),
+            CommonHadoop.CHECK_COMPLETION_TIME,
+            status,
+            COUNTER_GROUP);
       }
 
       // Create the expression job
-      final Job job = createExpressionJob(conf, context, alignmentsData,
-          genomeDescriptionData, featureAnnotationData, outData,
-          getExpressionCounter(), pairedEnd);
+      final Job job =
+          createExpressionJob(
+              conf,
+              context,
+              alignmentsData,
+              genomeDescriptionData,
+              featureAnnotationData,
+              outData,
+              getExpressionCounter(),
+              pairedEnd);
 
       // Compute map-reduce part of the expression computation
-      MapReduceUtils.submitAndWaitForJob(job, alignmentsData.getName(),
-          CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
+      MapReduceUtils.submitAndWaitForJob(
+          job, alignmentsData.getName(), CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
 
       final long mapReduceEndTime = System.currentTimeMillis();
-      getLogger().info("Finish the first part of the expression computation in "
-          + ((mapReduceEndTime - startTime) / 1000) + " seconds.");
+      getLogger()
+          .info(
+              "Finish the first part of the expression computation in "
+                  + ((mapReduceEndTime - startTime) / 1000)
+                  + " seconds.");
 
       // Only for TSV output
       if (!isSAMOutputFormat()) {
 
         // Create the final expression files
-        createFinalExpressionFeaturesFile(getExpressionCounter(), outData, job,
-            this.conf);
+        createFinalExpressionFeaturesFile(getExpressionCounter(), outData, job, this.conf);
 
-        getLogger().info("Finish the create of the final expression files in "
-            + ((System.currentTimeMillis() - mapReduceEndTime) / 1000)
-            + " seconds.");
+        getLogger()
+            .info(
+                "Finish the create of the final expression files in "
+                    + ((System.currentTimeMillis() - mapReduceEndTime) / 1000)
+                    + " seconds.");
       }
 
       return status.createTaskResult();
 
     } catch (IOException e) {
 
-      return status.createTaskResult(e,
-          "Error while running job: " + e.getMessage());
+      return status.createTaskResult(e, "Error while running job: " + e.getMessage());
     } catch (KenetreException | EoulsanException e) {
 
-      return status.createTaskResult(e,
-          "Error while reading the annotation file: " + e.getMessage());
+      return status.createTaskResult(
+          e, "Error while reading the annotation file: " + e.getMessage());
     }
   }
 
@@ -200,6 +206,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
   /**
    * Create JobConf object for an expression job.
+   *
    * @param parentConf parent configuration
    * @param context the Eoulsan task context
    * @param alignmentsData alignment data
@@ -208,11 +215,16 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
    * @throws IOException if an error occurs while creating job
    * @throws EoulsanException if an error occurs while initialize the counter
    */
-  private static Job createExpressionJob(final Configuration parentConf,
-      final TaskContext context, final Data alignmentsData,
-      final Data genomeDescriptionData, final Data featureAnnotationData,
-      final Data outData, final ExpressionCounter counter,
-      final boolean tsamFormat) throws IOException, EoulsanException {
+  private static Job createExpressionJob(
+      final Configuration parentConf,
+      final TaskContext context,
+      final Data alignmentsData,
+      final Data genomeDescriptionData,
+      final Data featureAnnotationData,
+      final Data outData,
+      final ExpressionCounter counter,
+      final boolean tsamFormat)
+      throws IOException, EoulsanException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -227,8 +239,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
     if (tsamFormat) {
       dataFileSource =
-          StringUtils.filenameWithoutExtension(inputDataFile.getSource())
-              + TSAM_EXTENSION;
+          StringUtils.filenameWithoutExtension(inputDataFile.getSource()) + TSAM_EXTENSION;
     } else {
       dataFileSource = inputDataFile.getSource();
     }
@@ -259,12 +270,13 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
     // Define counter serialization file
     final DataFile featureAnnotationFile = featureAnnotationData.getDataFile();
     final Path counterSerializationFilePath =
-        new Path(new DataFile(featureAnnotationFile.getParent(),
-            featureAnnotationFile.getBasename() + SERIALIZATION_EXTENSION)
+        new Path(
+            new DataFile(
+                    featureAnnotationFile.getParent(),
+                    featureAnnotationFile.getBasename() + SERIALIZATION_EXTENSION)
                 .getSource());
 
-    getLogger()
-        .info("counterSerializationFilePath: " + counterSerializationFilePath);
+    getLogger().info("counterSerializationFilePath: " + counterSerializationFilePath);
 
     // Create serialized feature index
     if (!PathUtils.isFile(counterSerializationFilePath, jobConf)) {
@@ -280,10 +292,16 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
     }
 
     // Create the job and its name
-    final Job job = Job.getInstance(jobConf,
-        "Expression computation with htseq-count ("
-            + alignmentsData.getName() + ", " + inputPath.getName() + ", "
-            + annotationDataFile.getSource() + ")");
+    final Job job =
+        Job.getInstance(
+            jobConf,
+            "Expression computation with htseq-count ("
+                + alignmentsData.getName()
+                + ", "
+                + inputPath.getName()
+                + ", "
+                + annotationDataFile.getSource()
+                + ")");
 
     // Set the path to the features index
     job.addCacheFile(counterSerializationFilePath.toUri());
@@ -338,8 +356,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       job.setOutputValueClass(LongWritable.class);
 
       // Get temporary file
-      final DataFile tmpFile =
-          new DataFile(outFile.getParent(), outFile.getBasename() + ".tmp");
+      final DataFile tmpFile = new DataFile(outFile.getParent(), outFile.getBasename() + ".tmp");
       getLogger().fine("tmpFile: " + tmpFile.getSource());
 
       // Set output path
@@ -351,13 +368,14 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
   /**
    * Create JobConf object for a paired-end job.
+   *
    * @param parentConf parent configuration
    * @param alignmentsData alignment data
    * @param genomeDescriptionData genome description data
    * @throws IOException if an error occurs while creating job
    */
-  private static Job createPairedEndJob(final Configuration parentConf,
-      final Data alignmentsData, final Data genomeDescriptionData)
+  private static Job createPairedEndJob(
+      final Configuration parentConf, final Data alignmentsData, final Data genomeDescriptionData)
       throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
@@ -375,10 +393,14 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
     jobConf.set(GENOME_DESC_PATH_KEY, genomeDescriptionData.getDataFilename());
 
     // Create the job and its name
-    final Job job = Job.getInstance(jobConf,
-        "Pretreatment for the expression estimation step ("
-            + alignmentsData.getName() + ", " + inputDataFile.getSource()
-            + ")");
+    final Job job =
+        Job.getInstance(
+            jobConf,
+            "Pretreatment for the expression estimation step ("
+                + alignmentsData.getName()
+                + ", "
+                + inputDataFile.getSource()
+                + ")");
 
     // Set the jar
     job.setJarByClass(ExpressionHadoopModule.class);
@@ -399,13 +421,10 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
     job.setOutputValueClass(Text.class);
 
     // Output name
-    String outputName =
-        StringUtils.filenameWithoutExtension(inputPath.getName())
-            + TSAM_EXTENSION;
+    String outputName = StringUtils.filenameWithoutExtension(inputPath.getName()) + TSAM_EXTENSION;
 
     // Set output path
-    FileOutputFormat.setOutputPath(job,
-        new Path(inputPath.getParent(), outputName));
+    FileOutputFormat.setOutputPath(job, new Path(inputPath.getParent(), outputName));
 
     return job;
   }
@@ -416,35 +435,41 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
   /**
    * Initialize the counter.
+   *
    * @param counter the counter to initialize
    * @param genomeDescData the genome description data
    * @param annotationData the annotation data
    * @throws KenetreException if an error occurs while initialize the counter
    * @throws IOException if an error occurs while reading the input data
    */
-  private static void initializeCounter(final ExpressionCounter counter,
-      final Data genomeDescData, final Data annotationData)
+  private static void initializeCounter(
+      final ExpressionCounter counter, final Data genomeDescData, final Data annotationData)
       throws KenetreException, IOException {
 
     // Initialize the counter
-    ExpressionCounterUtils.init(counter, genomeDescData.getDataFile(),
+    ExpressionCounterUtils.init(
+        counter,
+        genomeDescData.getDataFile(),
         annotationData.getDataFile(),
         annotationData.getFormat() == DataFormats.ANNOTATION_GTF);
   }
 
   /**
    * Serialize a counter object.
+   *
    * @param context Eoulsan context
    * @param counter to serialize
    * @param counterSerializationFilePath feature index output path
    * @param conf Hadoop configuration object
-   * @throws IOException if an error occurs while creating the counter
-   *           serialization file
+   * @throws IOException if an error occurs while creating the counter serialization file
    * @throws EoulsanException if an error occurs while initialize the counter
    */
-  private static void serializeCounter(final TaskContext context,
-      final ExpressionCounter counter, final Path counterSerializationFilePath,
-      final Configuration conf) throws IOException, EoulsanException {
+  private static void serializeCounter(
+      final TaskContext context,
+      final ExpressionCounter counter,
+      final Path counterSerializationFilePath,
+      final Configuration conf)
+      throws IOException, EoulsanException {
 
     // Do nothing if the file already exists
     if (PathUtils.isFile(counterSerializationFilePath, conf)) {
@@ -453,42 +478,43 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
     // Define the filename of the counter serialization file
     final File counterSerializationFile =
-        context.getRuntime().createFileInTempDir(
-            counterSerializationFilePath.getName() + SERIALIZATION_EXTENSION);
+        context
+            .getRuntime()
+            .createFileInTempDir(counterSerializationFilePath.getName() + SERIALIZATION_EXTENSION);
 
     // Serialize the counter
     serializeCounter(counter, counterSerializationFile);
 
-    PathUtils.copyLocalFileToPath(counterSerializationFile,
-        counterSerializationFilePath, conf);
+    PathUtils.copyLocalFileToPath(counterSerializationFile, counterSerializationFilePath, conf);
 
     if (!counterSerializationFile.delete()) {
-      getLogger().warning("Can not delete the counter serialization file: "
-          + counterSerializationFile.getAbsolutePath());
+      getLogger()
+          .warning(
+              "Can not delete the counter serialization file: "
+                  + counterSerializationFile.getAbsolutePath());
     }
   }
 
   /**
    * Serialize a counter object.
+   *
    * @param counter to serialize
    * @param counterSerializationFile feature index output file
-   * @throws IOException if an error occurs while creating the the counter
-   *           serialization file
+   * @throws IOException if an error occurs while creating the the counter serialization file
    */
-  private static void serializeCounter(final ExpressionCounter counter,
-      final File counterSerializationFile) throws IOException {
+  private static void serializeCounter(
+      final ExpressionCounter counter, final File counterSerializationFile) throws IOException {
 
     if (counter == null) {
       throw new NullPointerException("counter argument cannot be null");
     }
 
     if (counterSerializationFile == null) {
-      throw new NullPointerException(
-          "featuresIndexFile argument cannot be null");
+      throw new NullPointerException("featuresIndexFile argument cannot be null");
     }
 
-    try (ObjectOutputStream oos = new ObjectOutputStream(
-        Files.newOutputStream(counterSerializationFile.toPath()))) {
+    try (ObjectOutputStream oos =
+        new ObjectOutputStream(Files.newOutputStream(counterSerializationFile.toPath()))) {
 
       oos.writeObject(counter);
     }
@@ -500,20 +526,18 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
   /**
    * Create the final expression file.
+   *
    * @param counter the counter to use
    * @param outData output data
    * @param job Hadoop expression job
    * @param conf Hadoop configuration
-   * @throws IOException if an error occurs while creating the final expression
-   *           file
+   * @throws IOException if an error occurs while creating the final expression file
    */
   private static void createFinalExpressionFeaturesFile(
-      final ExpressionCounter counter,
-      final Data outData, final Job job, final Configuration conf)
+      final ExpressionCounter counter, final Data outData, final Job job, final Configuration conf)
       throws IOException {
 
-    FinalExpressionFeaturesCreator fefc =
-        new FinalExpressionFeaturesCreator(counter);
+    FinalExpressionFeaturesCreator fefc = new FinalExpressionFeaturesCreator(counter);
 
     // Set the result path
     final Path resultPath = new Path(outData.getDataFile().getSource());
@@ -522,21 +546,23 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
     fefc.initializeExpressionResults();
 
     // Load map-reduce results
-    fefc.loadPreResults(new DataFile(job.getConfiguration()
-        .get("mapreduce.output.fileoutputformat.outputdir")).open());
+    fefc.loadPreResults(
+        new DataFile(job.getConfiguration().get("mapreduce.output.fileoutputformat.outputdir"))
+            .open());
 
     fefc.saveFinalResults(fs.create(resultPath));
   }
 
   /**
    * Create a Zookeeper lock.
+   *
    * @param conf Hadoop configuration
    * @param context Eoulsan task context
    * @return a Lock object
    * @throws IOException if an error occurs while creating the lock
    */
-  private static Locker createZookeeperLock(final Configuration conf,
-      final TaskContext context) throws IOException {
+  private static Locker createZookeeperLock(final Configuration conf, final TaskContext context)
+      throws IOException {
 
     final Settings settings = context.getSettings();
 
@@ -544,22 +570,25 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
 
     if (connectString == null) {
 
-      connectString = Splitter.on(':')
-          .splitToList(conf.get("yarn.resourcemanager.hostname")).get(0)
-          + ":" + settings.getZooKeeperDefaultPort();
-
+      connectString =
+          Splitter.on(':').splitToList(conf.get("yarn.resourcemanager.hostname")).get(0)
+              + ":"
+              + settings.getZooKeeperDefaultPort();
     }
 
-    return new ZooKeeperLocker(connectString,
+    return new ZooKeeperLocker(
+        connectString,
         settings.getZooKeeperSessionTimeout(),
         "/eoulsan-locks-" + InetAddress.getLocalHost().getHostName(),
         "expression-lock-job-"
-            + context.getJobUUID() + "-step-"
+            + context.getJobUUID()
+            + "-step-"
             + context.getCurrentStep().getNumber());
   }
 
   /**
    * Check if a SAM file contains paired-end data.
+   *
    * @param samIs the SAM file input stream
    * @return true if the SAM file contains paired-end data
    */
@@ -570,8 +599,7 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
     }
 
     try {
-      final SamReader input =
-          SamReaderFactory.makeDefault().open(SamInputResource.of(samIs));
+      final SamReader input = SamReaderFactory.makeDefault().open(SamInputResource.of(samIs));
 
       SAMRecordIterator samIterator = input.iterator();
 
@@ -593,5 +621,4 @@ public class ExpressionHadoopModule extends AbstractExpressionModule {
       return false;
     }
   }
-
 }

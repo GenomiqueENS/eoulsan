@@ -30,6 +30,12 @@ import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.FAILED;
 import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toTimeHumanReadable;
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.collect.Lists;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,7 +58,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -61,16 +66,9 @@ import javax.json.JsonValue;
 import javax.json.stream.JsonGenerator;
 import javax.json.stream.JsonGeneratorFactory;
 
-import com.google.common.collect.Lists;
-
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
-import fr.ens.biologie.genomique.kenetre.util.StringUtils;
-import fr.ens.biologie.genomique.kenetre.util.Version;
-
 /**
  * This class define a step result.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -91,8 +89,7 @@ public class StepResult {
   private static final String START_TIME_TAG = "Start time";
   private static final String END_TIME_TAG = "End time";
   private static final String DURATION_TAG = "Duration";
-  private static final String DURATION_IN_MILLISECONDS_TAG =
-      "Duration in milliseconds";
+  private static final String DURATION_IN_MILLISECONDS_TAG = "Duration in milliseconds";
   private static final String STEP_VERSION_TAG = "Step version";
   private static final String STEP_CLASS_TAG = "Step class";
   private static final String STEP_NAME_TAG = "Step name";
@@ -133,8 +130,8 @@ public class StepResult {
 
   private boolean immutable;
 
-  private DateTimeFormatter dateFormat = DateTimeFormatter
-      .ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.getDefault());
+  private DateTimeFormatter dateFormat =
+      DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG).withLocale(Locale.getDefault());
 
   //
   // Getters
@@ -142,6 +139,7 @@ public class StepResult {
 
   /**
    * Get step message.
+   *
    * @return the step message in a String
    */
   public String getStepMessage() {
@@ -151,6 +149,7 @@ public class StepResult {
 
   /**
    * Get the step counters.
+   *
    * @return the step counters in a map
    */
   public Map<String, Long> getStepCounters() {
@@ -160,6 +159,7 @@ public class StepResult {
 
   /**
    * Get a context message.
+   *
    * @param contextId context id
    * @return the message for the context
    */
@@ -170,6 +170,7 @@ public class StepResult {
 
   /**
    * Get the contextName counters.
+   *
    * @param contextId context id
    * @return the contextName counters as a map
    */
@@ -182,6 +183,7 @@ public class StepResult {
 
   /**
    * Test if the object immutable.
+   *
    * @return true if the object is immutable
    */
   public boolean isImmutable() {
@@ -191,6 +193,7 @@ public class StepResult {
 
   /**
    * Test if the step result is a success.
+   *
    * @return true if the step result is a success
    */
   public boolean isSuccess() {
@@ -200,8 +203,8 @@ public class StepResult {
 
   /**
    * Get the exception.
-   * @return an Exception object or null if the step has not returned an
-   *         Exception
+   *
+   * @return an Exception object or null if the step has not returned an Exception
    */
   public Throwable getException() {
 
@@ -210,6 +213,7 @@ public class StepResult {
 
   /**
    * Get the error message.
+   *
    * @return the error message
    */
   public String getErrorMessage() {
@@ -219,6 +223,7 @@ public class StepResult {
 
   /**
    * Get the duration of the step.
+   *
    * @return the duration of the step in milliseconds
    */
   public long getDuration() {
@@ -226,28 +231,26 @@ public class StepResult {
     return this.duration;
   }
 
-  /**
-   * Set the object immutable.
-   */
+  /** Set the object immutable. */
   public void setImmutable() {
 
     // Check immutable state
     checkImmutableState();
 
     // Check if at least one context result has been added to the step result
-    checkState(!this.taskNames.isEmpty(),
-        "No context result has been added for step " + this.stepId);
+    checkState(
+        !this.taskNames.isEmpty(), "No context result has been added for step " + this.stepId);
 
     this.immutable = true;
   }
 
   /**
    * Add a task result to the step result.
+   *
    * @param context the context to execute
    * @param result the result to add
    */
-  public void addResult(final TaskContextImpl context,
-      final TaskResultImpl result) {
+  public void addResult(final TaskContextImpl context, final TaskResultImpl result) {
 
     requireNonNull(context, "result cannot be null");
     requireNonNull(result, "result cannot be null");
@@ -257,10 +260,9 @@ public class StepResult {
 
     // Check if result has been already added
     final int contextId = context.getId();
-    checkState(!this.taskNames.containsKey(contextId),
-        "Context #"
-            + contextId + " has already been added to result of step "
-            + this.stepId);
+    checkState(
+        !this.taskNames.containsKey(contextId),
+        "Context #" + contextId + " has already been added to result of step " + this.stepId);
 
     // Set start and end times
     if (this.taskNames.isEmpty()) {
@@ -278,7 +280,7 @@ public class StepResult {
     }
 
     // Compute duration
-    this.duration =  Duration.between(startTime, endTime).toMillis();
+    this.duration = Duration.between(startTime, endTime).toMillis();
 
     final String taskName = context.getContextName();
     this.taskNames.put(contextId, taskName);
@@ -301,20 +303,18 @@ public class StepResult {
         }
 
         // Set the state of the step as fail
-        WorkflowEventBus.getInstance().postStepStateChange(context.getStep(),
-            FAILED);
+        WorkflowEventBus.getInstance().postStepStateChange(context.getStep(), FAILED);
       }
-
     }
   }
 
   /**
    * Add counters task to the group counters.
+   *
    * @param counterGroup the name of the counter group
    * @param counters the counters of the task
    */
-  private void addCounters(final String counterGroup,
-      Map<String, Long> counters) {
+  private void addCounters(final String counterGroup, Map<String, Long> counters) {
 
     final Map<String, Long> map;
 
@@ -346,8 +346,7 @@ public class StepResult {
 
   private void checkImmutableState() {
 
-    checkState(!this.immutable,
-        "Step result has been already created for step " + this.stepId);
+    checkState(!this.immutable, "Step result has been already created for step " + this.stepId);
   }
 
   //
@@ -356,6 +355,7 @@ public class StepResult {
 
   /**
    * Convert the object to JSON
+   *
    * @return a string with the object content at the JSON format
    */
   public String toJSON() {
@@ -376,8 +376,7 @@ public class StepResult {
     jg.write(STEP_ID_TAG, this.stepId);
     jg.write(STEP_NAME_TAG, this.stepName);
     jg.write(STEP_CLASS_TAG, this.stepClass);
-    jg.write(STEP_VERSION_TAG,
-        this.stepVersion == null ? null : this.stepVersion.toString());
+    jg.write(STEP_VERSION_TAG, this.stepVersion == null ? null : this.stepVersion.toString());
     jg.write(START_TIME_TAG, this.dateFormat.format(this.startTime.atZone(ZoneId.systemDefault())));
     jg.write(END_TIME_TAG, this.dateFormat.format(this.endTime.atZone(ZoneId.systemDefault())));
     jg.write(DURATION_TAG, toTimeHumanReadable(this.duration));
@@ -386,8 +385,8 @@ public class StepResult {
     jg.write(STEP_MESSAGE_TAG, nullToEmpty(this.stepMessage));
 
     if (!this.success) {
-      jg.write(EXCEPTION_TAG, this.exception == null
-          ? "" : this.exception.getClass().getSimpleName());
+      jg.write(
+          EXCEPTION_TAG, this.exception == null ? "" : this.exception.getClass().getSimpleName());
       jg.write(EXCEPTION_MESSAGE_TAG);
     }
 
@@ -419,26 +418,21 @@ public class StepResult {
     for (int contextId : this.taskNames.keySet()) {
 
       // Do not log non processed samples
-      if (!this.taskCounters.containsKey(contextId)
-          && !this.taskMessages.containsKey(contextId)) {
+      if (!this.taskCounters.containsKey(contextId) && !this.taskMessages.containsKey(contextId)) {
         continue;
       }
 
       jg.writeStartObject();
       jg.write(TASK_ID_TAG, contextId);
       jg.write(TASK_NAME_TAG, this.taskNames.get(contextId));
-      jg.write(TASK_DESCRIPTION_TAG,
-          nullToEmpty(this.taskDescriptions.get(contextId)));
+      jg.write(TASK_DESCRIPTION_TAG, nullToEmpty(this.taskDescriptions.get(contextId)));
       jg.write(TASK_MESSAGE_TAG, nullToEmpty(this.taskMessages.get(contextId)));
-      jg.write(TASK_DOCKER_IMAGE_TAG,
-          nullToEmpty(this.taskDockerImages.get(contextId)));
-      jg.write(TASK_COMMAND_LINE_TAG,
-          nullToEmpty(this.taskCommandLines.get(contextId)));
+      jg.write(TASK_DOCKER_IMAGE_TAG, nullToEmpty(this.taskDockerImages.get(contextId)));
+      jg.write(TASK_COMMAND_LINE_TAG, nullToEmpty(this.taskCommandLines.get(contextId)));
 
       // contextName counters
       jg.writeStartObject(TASK_COUNTERS_TAG);
-      for (Map.Entry<String, Long> e : this.taskCounters.get(contextId)
-          .entrySet()) {
+      for (Map.Entry<String, Long> e : this.taskCounters.get(contextId).entrySet()) {
         jg.write(e.getKey(), e.getValue());
       }
       jg.writeEnd(); // Tasks counters
@@ -454,6 +448,7 @@ public class StepResult {
 
   /**
    * Get a representation of the result in the old Eoulsan format.
+   *
    * @return a String with the result
    */
   public String toEoulsanLogV1() {
@@ -502,8 +497,7 @@ public class StepResult {
       sb.append('\n');
 
       if (this.taskCounters.containsKey(contextId)) {
-        for (Map.Entry<String, Long> counter : this.taskCounters.get(contextId)
-            .entrySet()) {
+        for (Map.Entry<String, Long> counter : this.taskCounters.get(contextId).entrySet()) {
           sb.append('\t');
           sb.append(counter.getKey());
           sb.append('=');
@@ -522,6 +516,7 @@ public class StepResult {
 
   /**
    * Read a step result file.
+   *
    * @param file the file to read
    * @throws IOException if an error occurs while reading the file
    */
@@ -534,6 +529,7 @@ public class StepResult {
 
   /**
    * Read a step result file.
+   *
    * @param in the input stream to read
    */
   public void read(final InputStream in) {
@@ -541,7 +537,8 @@ public class StepResult {
     requireNonNull(in);
     checkImmutableState();
 
-    final JsonReader reader = Json.createReader(new InputStreamReader(in, Charset.defaultCharset()));
+    final JsonReader reader =
+        Json.createReader(new InputStreamReader(in, Charset.defaultCharset()));
     final JsonObject obj = reader.readObject();
 
     this.jobId = obj.getString(JOB_ID_TAG);
@@ -589,31 +586,27 @@ public class StepResult {
       final int taskId = entryObj.getInt(TASK_ID_TAG);
 
       this.taskNames.put(taskId, entryObj.getString(TASK_NAME_TAG));
-      this.taskDescriptions.put(taskId,
-          entryObj.getString(TASK_DESCRIPTION_TAG));
+      this.taskDescriptions.put(taskId, entryObj.getString(TASK_DESCRIPTION_TAG));
       this.taskMessages.put(taskId, entryObj.getString(TASK_MESSAGE_TAG));
 
       final Map<String, Long> map = new HashMap<>();
       this.taskCounters.put(taskId, map);
 
-      final JsonObject taskCountersObj =
-          entryObj.getJsonObject(TASK_COUNTERS_TAG);
+      final JsonObject taskCountersObj = entryObj.getJsonObject(TASK_COUNTERS_TAG);
       for (String counterName : taskCountersObj.keySet()) {
-        map.put(counterName,
-            taskCountersObj.getJsonNumber(counterName).longValue());
+        map.put(counterName, taskCountersObj.getJsonNumber(counterName).longValue());
       }
     }
-
   }
 
   /**
    * Write the result.
+   *
    * @param file output file
    * @param oldFormat write the result in old Eoulsan format instead of JSON
    * @throws IOException if an error occurs while writing result
    */
-  public void write(final DataFile file, final boolean oldFormat)
-      throws IOException {
+  public void write(final DataFile file, final boolean oldFormat) throws IOException {
 
     requireNonNull(file, "file is null");
 
@@ -622,12 +615,12 @@ public class StepResult {
 
   /**
    * Write the result.
+   *
    * @param out output stream
    * @param oldFormat write the result in old Eoulsan format instead of JSON
    * @throws IOException if an error occurs while writing result
    */
-  public void write(final OutputStream out, final boolean oldFormat)
-      throws IOException {
+  public void write(final OutputStream out, final boolean oldFormat) throws IOException {
 
     requireNonNull(out, "output stream is null");
     checkState(this.immutable, "Cannot write non immutable object");
@@ -648,6 +641,7 @@ public class StepResult {
 
   /**
    * Parse date.
+   *
    * @param s the string to parse
    * @return a Date object or null if the date cannot be parsed
    */
@@ -664,22 +658,19 @@ public class StepResult {
   // Constructor
   //
 
-  /**
-   * Constructor.
-   */
-  StepResult() {
-  }
+  /** Constructor. */
+  StepResult() {}
 
   /**
    * Constructor.
+   *
    * @param step the step
    */
   public StepResult(final AbstractStep step) {
 
     requireNonNull(step, "step is null");
 
-    final WorkflowContext workflowContext =
-        step.getAbstractWorkflow().getWorkflowContext();
+    final WorkflowContext workflowContext = step.getAbstractWorkflow().getWorkflowContext();
 
     this.jobId = workflowContext.getJobId();
     this.jobUUID = workflowContext.getJobUUID();
@@ -688,11 +679,8 @@ public class StepResult {
 
     this.stepId = step.getId();
     this.stepName = step.getModuleName();
-    this.stepClass =
-        step.getModule() == null ? null : step.getModule().getClass().getName();
-    this.stepVersion =
-        step.getModule() == null ? null : step.getModule().getVersion();
+    this.stepClass = step.getModule() == null ? null : step.getModule().getClass().getName();
+    this.stepVersion = step.getModule() == null ? null : step.getModule().getVersion();
     this.parameters = step.getParameters();
   }
-
 }

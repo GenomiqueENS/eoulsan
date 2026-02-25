@@ -2,6 +2,7 @@ package fr.ens.biologie.genomique.eoulsan.core;
 
 /**
  * This class define a runtime exception for filename parsing errors.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -15,6 +16,7 @@ public class FileNamingParsingRuntimeException extends RuntimeException {
 
   /**
    * Create a new FileNamingParsingRuntimeException with a message.
+   *
    * @param message the message
    */
   public FileNamingParsingRuntimeException(final String message) {
@@ -22,11 +24,8 @@ public class FileNamingParsingRuntimeException extends RuntimeException {
     super(message);
   }
 
-  /**
-   * Create a new FileNamingParsingRuntimeException.
-   */
+  /** Create a new FileNamingParsingRuntimeException. */
   public FileNamingParsingRuntimeException() {
     super();
   }
-
 }

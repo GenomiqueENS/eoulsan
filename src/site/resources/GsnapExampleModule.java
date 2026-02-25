@@ -1,13 +1,5 @@
 package com.example;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -33,10 +25,17 @@ import fr.ens.biologie.genomique.eoulsan.util.FileUtils;
 import fr.ens.biologie.genomique.eoulsan.util.LocalReporter;
 import fr.ens.biologie.genomique.eoulsan.util.Reporter;
 import fr.ens.biologie.genomique.eoulsan.util.StringUtils;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
-//The "@LocalOnly" annotation means that the Eoulsan workflow engine will 
-//only use this module in local mode. The two other annotations are "@HadoopOnly" 
-//and "@HadoopCompatible" when a module can be executed in local or Hadoop mode.
+// The "@LocalOnly" annotation means that the Eoulsan workflow engine will
+// only use this module in local mode. The two other annotations are "@HadoopOnly"
+// and "@HadoopCompatible" when a module can be executed in local or Hadoop mode.
 @LocalOnly
 public class GsnapExampleModule extends AbstractModule {
 
@@ -70,21 +69,20 @@ public class GsnapExampleModule extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     // This method allow to configure the module
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
+        case "mapper.arguments":
+          this.mapperArguments = p.getStringValue();
+          break;
 
-      case "mapper.arguments":
-        this.mapperArguments = p.getStringValue();
-        break;
-
-      default:
-        Modules.unknownParameter(context, p);
-        break;
+        default:
+          Modules.unknownParameter(context, p);
+          break;
       }
     }
   }
@@ -118,8 +116,7 @@ public class GsnapExampleModule extends AbstractModule {
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     // The context object had many useful method for writing a Module
     // (e.g. access to file to process, the workflow description, the
@@ -164,18 +161,15 @@ public class GsnapExampleModule extends AbstractModule {
       final int inFileCount = readData.getDataFileCount();
 
       // Throw error if no reads file found.
-      if (inFileCount < 1)
-        throw new IOException("No reads file found.");
+      if (inFileCount < 1) throw new IOException("No reads file found.");
 
       // Throw error if more that 2 reads files found.
       if (inFileCount > 2)
-        throw new IOException(
-            "Cannot handle more than 2 reads files at the same time.");
+        throw new IOException("Cannot handle more than 2 reads files at the same time.");
 
       // Get the path to the output SAM file
       final File outSamFile =
-          context.getOutputData(DataFormats.MAPPER_RESULTS_SAM, readData)
-              .getDataFile().toFile();
+          context.getOutputData(DataFormats.MAPPER_RESULTS_SAM, readData).getDataFile().toFile();
 
       // Single end mode
       if (inFileCount == 1) {
@@ -189,8 +183,13 @@ public class GsnapExampleModule extends AbstractModule {
         final File inFile = readData.getDataFile(0).toFile();
 
         // Single read mapping
-        mapSingleEnd(context, inFile, readData.getMetadata().getFastqFormat(),
-            archiveIndexFile, outSamFile, reporter);
+        mapSingleEnd(
+            context,
+            inFile,
+            readData.getMetadata().getFastqFormat(),
+            archiveIndexFile,
+            outSamFile,
+            reporter);
       }
 
       // Paired end mode
@@ -205,9 +204,14 @@ public class GsnapExampleModule extends AbstractModule {
         final File inFile2 = readData.getDataFile(1).toFile();
 
         // Single read mapping
-        mapPairedEnd(context, inFile1, inFile2,
-            readData.getMetadata().getFastqFormat(), archiveIndexFile,
-            outSamFile, reporter);
+        mapPairedEnd(
+            context,
+            inFile1,
+            inFile2,
+            readData.getMetadata().getFastqFormat(),
+            archiveIndexFile,
+            outSamFile,
+            reporter);
       }
 
       // Add counters for this sample to step result file
@@ -226,9 +230,13 @@ public class GsnapExampleModule extends AbstractModule {
   }
 
   // This method launch the computation in single end mode.
-  private void mapSingleEnd(final TaskContext context, final File inFile,
-      final FastqFormat format, final File archiveIndexFile,
-      final File outSamFile, final Reporter reporter)
+  private void mapSingleEnd(
+      final TaskContext context,
+      final File inFile,
+      final FastqFormat format,
+      final File archiveIndexFile,
+      final File outSamFile,
+      final Reporter reporter)
       throws IOException, InterruptedException {
 
     // Build the command line
@@ -247,9 +255,14 @@ public class GsnapExampleModule extends AbstractModule {
   }
 
   // This method launch the computation in paired-end mode
-  private void mapPairedEnd(final TaskContext context, final File inFile1,
-      final File inFile2, final FastqFormat format, final File archiveIndexFile,
-      final File outSamFile, final Reporter reporter)
+  private void mapPairedEnd(
+      final TaskContext context,
+      final File inFile1,
+      final File inFile2,
+      final FastqFormat format,
+      final File archiveIndexFile,
+      final File outSamFile,
+      final Reporter reporter)
       throws IOException, InterruptedException {
 
     // Build the command line
@@ -269,18 +282,25 @@ public class GsnapExampleModule extends AbstractModule {
   }
 
   // This method execute the mapping
-  private void map(final TaskContext context, final List<String> cmdArgs,
-      final FastqFormat format, final File archiveIndexFile,
-      final File outSamFile, final Reporter reporter)
+  private void map(
+      final TaskContext context,
+      final List<String> cmdArgs,
+      final FastqFormat format,
+      final File archiveIndexFile,
+      final File outSamFile,
+      final Reporter reporter)
       throws IOException, InterruptedException {
 
     // Extract and install the gsnap binary for eoulsan jar archive
-    final String gsnapPath = BinariesInstaller.install("gsnap", "2012-07-20",
-        "gsnap", context.getSettings().getTempDirectory());
+    final String gsnapPath =
+        BinariesInstaller.install(
+            "gsnap", "2012-07-20", "gsnap", context.getSettings().getTempDirectory());
 
     // Get the path to the uncommpressed genome index
-    final File archiveIndexDir = new File(archiveIndexFile.getParent(),
-        StringUtils.filenameWithoutExtension(archiveIndexFile.getName()));
+    final File archiveIndexDir =
+        new File(
+            archiveIndexFile.getParent(),
+            StringUtils.filenameWithoutExtension(archiveIndexFile.getName()));
 
     // Unzip archive index if necessary
     unzipArchiveIndexFile(archiveIndexFile, archiveIndexDir);
@@ -288,27 +308,35 @@ public class GsnapExampleModule extends AbstractModule {
     // Select the argument for the FASTQ format
     final String formatArg;
     switch (format) {
+      case FASTQ_ILLUMINA:
+        formatArg = "--quality-protocol=illumina";
+        break;
+      case FASTQ_ILLUMINA_1_5:
+        formatArg = "--quality-protocol=illumina";
+        break;
+      case FASTQ_SOLEXA:
+        throw new IOException("Gsnap not handle the Solexa FASTQ format.");
 
-    case FASTQ_ILLUMINA:
-      formatArg = "--quality-protocol=illumina";
-      break;
-    case FASTQ_ILLUMINA_1_5:
-      formatArg = "--quality-protocol=illumina";
-      break;
-    case FASTQ_SOLEXA:
-      throw new IOException("Gsnap not handle the Solexa FASTQ format.");
-
-    case FASTQ_SANGER:
-    default:
-      formatArg = "--quality-protocol=sanger";
-      break;
+      case FASTQ_SANGER:
+      default:
+        formatArg = "--quality-protocol=sanger";
+        break;
     }
 
     // Build the command line
     List<String> cmd =
-        new ArrayList<String>(Arrays.asList(gsnapPath, "-A", "sam", formatArg,
-            "-t", "" + context.getSettings().getLocalThreadsNumber(), "-D",
-            archiveIndexDir.getAbsolutePath(), "-d", "genome"));
+        new ArrayList<String>(
+            Arrays.asList(
+                gsnapPath,
+                "-A",
+                "sam",
+                formatArg,
+                "-t",
+                "" + context.getSettings().getLocalThreadsNumber(),
+                "-D",
+                archiveIndexDir.getAbsolutePath(),
+                "-d",
+                "genome"));
 
     // Add user arguments
     cmd.addAll(cmdArgs);
@@ -329,8 +357,7 @@ public class GsnapExampleModule extends AbstractModule {
 
     // if the exit value is not success (0) throw an exception
     if (exitValue != 0) {
-      throw new IOException(
-          "Bad error result for gsnap execution: " + exitValue);
+      throw new IOException("Bad error result for gsnap execution: " + exitValue);
     }
 
     // Count the number of alignment generated for the sample
@@ -338,49 +365,44 @@ public class GsnapExampleModule extends AbstractModule {
   }
 
   // Uncompress
-  private static final void unzipArchiveIndexFile(final File archiveIndexFile,
-      final File archiveIndexDir) throws IOException {
+  private static final void unzipArchiveIndexFile(
+      final File archiveIndexFile, final File archiveIndexDir) throws IOException {
 
     // Test if genome index file exists
     if (!archiveIndexFile.exists())
-      throw new IOException(
-          "No index for the mapper found: " + archiveIndexFile);
+      throw new IOException("No index for the mapper found: " + archiveIndexFile);
 
     // Uncompress archive if necessary
     if (!archiveIndexDir.exists()) {
 
       if (!archiveIndexDir.mkdir())
-        throw new IOException(
-            "Can't create directory for gsnap index: " + archiveIndexDir);
+        throw new IOException("Can't create directory for gsnap index: " + archiveIndexDir);
 
-      EoulsanLogger.getLogger().fine("Unzip archiveIndexFile "
-          + archiveIndexFile + " in " + archiveIndexDir);
+      EoulsanLogger.getLogger()
+          .fine("Unzip archiveIndexFile " + archiveIndexFile + " in " + archiveIndexDir);
       FileUtils.unzip(archiveIndexFile, archiveIndexDir);
     }
 
     // Test if extracted directory exists
-    FileUtils.checkExistingDirectoryFile(archiveIndexDir,
-        "gsnap index directory");
+    FileUtils.checkExistingDirectoryFile(archiveIndexDir, "gsnap index directory");
   }
 
   // Count the number of alignment in a SAM file and save the result in the
   // reporter object
-  private static final void parseSAMResults(final File samFile,
-      final Reporter reporter) throws IOException {
+  private static final void parseSAMResults(final File samFile, final Reporter reporter)
+      throws IOException {
 
     String line;
 
     // Parse SAM result file
-    final BufferedReader readerResults =
-        FileUtils.createBufferedReader(samFile);
+    final BufferedReader readerResults = FileUtils.createBufferedReader(samFile);
 
     int entriesParsed = 0;
 
     while ((line = readerResults.readLine()) != null) {
 
       final String trimmedLine = line.trim();
-      if ("".equals(trimmedLine) || trimmedLine.startsWith("@"))
-        continue;
+      if ("".equals(trimmedLine) || trimmedLine.startsWith("@")) continue;
 
       final int tabPos = trimmedLine.indexOf('\t');
 
@@ -388,15 +410,13 @@ public class GsnapExampleModule extends AbstractModule {
 
         entriesParsed++;
 
-        reporter.incrCounter(COUNTER_GROUP,
-            MappingCounters.OUTPUT_MAPPING_ALIGNMENTS_COUNTER.counterName(), 1);
+        reporter.incrCounter(
+            COUNTER_GROUP, MappingCounters.OUTPUT_MAPPING_ALIGNMENTS_COUNTER.counterName(), 1);
       }
     }
 
     readerResults.close();
 
-    EoulsanLogger.getLogger()
-        .info(entriesParsed + " entries parsed in gsnap output file");
+    EoulsanLogger.getLogger().info(entriesParsed + " entries parsed in gsnap output file");
   }
-
 }

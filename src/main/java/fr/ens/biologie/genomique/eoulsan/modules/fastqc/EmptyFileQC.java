@@ -1,8 +1,8 @@
 package fr.ens.biologie.genomique.eoulsan.modules.fastqc;
 
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import java.awt.BorderLayout;
 import java.io.IOException;
-
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -10,14 +10,13 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import javax.xml.stream.XMLStreamException;
-
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import uk.ac.babraham.FastQC.Modules.AbstractQCModule;
 import uk.ac.babraham.FastQC.Report.HTMLReportArchive;
 import uk.ac.babraham.FastQC.Sequence.Sequence;
 
 /**
  * Empty file FastQC module.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -29,7 +28,9 @@ public class EmptyFileQC extends AbstractQCModule {
   private class ResultsTable extends AbstractTableModel {
 
     private final String[] rowNames =
-        new String[] {"Filename", "Total Sequences",};
+        new String[] {
+          "Filename", "Total Sequences",
+        };
 
     @Override
     public int getColumnCount() {
@@ -44,16 +45,15 @@ public class EmptyFileQC extends AbstractQCModule {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
       switch (columnIndex) {
-      case 0:
-        return rowNames[rowIndex];
-      case 1:
-        switch (rowIndex) {
         case 0:
-          return filename;
+          return rowNames[rowIndex];
         case 1:
-          return "0";
-
-        }
+          switch (rowIndex) {
+            case 0:
+              return filename;
+            case 1:
+              return "0";
+          }
       }
       return null;
     }
@@ -61,10 +61,10 @@ public class EmptyFileQC extends AbstractQCModule {
     @Override
     public String getColumnName(int columnIndex) {
       switch (columnIndex) {
-      case 0:
-        return "Measure";
-      case 1:
-        return "Value";
+        case 0:
+          return "Measure";
+        case 1:
+          return "Value";
       }
       return null;
     }
@@ -72,10 +72,10 @@ public class EmptyFileQC extends AbstractQCModule {
     @Override
     public Class<?> getColumnClass(int columnIndex) {
       switch (columnIndex) {
-      case 0:
-        return String.class;
-      case 1:
-        return String.class;
+        case 0:
+          return String.class;
+        case 1:
+          return String.class;
       }
       return null;
     }
@@ -95,14 +95,12 @@ public class EmptyFileQC extends AbstractQCModule {
   public JPanel getResultsPanel() {
     JPanel returnPanel = new JPanel();
     returnPanel.setLayout(new BorderLayout());
-    returnPanel.add(new JLabel("Basic sequence stats", JLabel.CENTER),
-        BorderLayout.NORTH);
+    returnPanel.add(new JLabel("Basic sequence stats", JLabel.CENTER), BorderLayout.NORTH);
 
     TableModel model = new ResultsTable();
     returnPanel.add(new JScrollPane(new JTable(model)), BorderLayout.CENTER);
 
     return returnPanel;
-
   }
 
   @Override
@@ -136,8 +134,7 @@ public class EmptyFileQC extends AbstractQCModule {
   }
 
   @Override
-  public void makeReport(final HTMLReportArchive report)
-      throws XMLStreamException, IOException {
+  public void makeReport(final HTMLReportArchive report) throws XMLStreamException, IOException {
     super.writeTable(report, new ResultsTable());
   }
 
@@ -147,10 +144,10 @@ public class EmptyFileQC extends AbstractQCModule {
 
   /**
    * Constructor.
+   *
    * @param file The file
    */
   public EmptyFileQC(final DataFile file) {
     this.filename = file.getName();
   }
-
 }

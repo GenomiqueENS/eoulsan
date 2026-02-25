@@ -23,11 +23,14 @@
  */
 package fr.ens.biologie.genomique.eoulsan.actions;
 
+import fr.ens.biologie.genomique.eoulsan.Common;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import fr.ens.biologie.genomique.kenetre.it.ITFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -39,13 +42,9 @@ import org.testng.ITestResult;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
 
-import fr.ens.biologie.genomique.eoulsan.Common;
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
-import fr.ens.biologie.genomique.kenetre.it.ITFactory;
-
 /**
  * This class launch integration test with Testng class.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  * @author Sandrine Perrin
@@ -75,8 +74,7 @@ public class IntegrationTestAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[0]), true);
+      final CommandLine line = parser.parse(options, arguments.toArray(new String[0]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -87,21 +85,19 @@ public class IntegrationTestAction extends AbstractAction {
         final String val = line.getOptionValue("testconf").trim();
 
         if (!(Files.exists(Path.of(val)) && Files.isReadable(Path.of(val)))) {
-          Common.errorExit(null,
-              "Integration test configuration file doesn't exists");
+          Common.errorExit(null, "Integration test configuration file doesn't exists");
         }
 
         // Configuration test files
         System.setProperty(ITFactory.IT_CONF_PATH_SYSTEM_KEY, val);
         argsOptions += 2;
-
       }
 
       if (line.hasOption("exec")) {
 
         // Path to application version
-        System.setProperty(ITFactory.IT_APPLICATION_PATH_KEY_SYSTEM_KEY,
-            line.getOptionValue("exec").trim());
+        System.setProperty(
+            ITFactory.IT_APPLICATION_PATH_KEY_SYSTEM_KEY, line.getOptionValue("exec").trim());
         argsOptions += 2;
       }
 
@@ -109,8 +105,7 @@ public class IntegrationTestAction extends AbstractAction {
       if (line.hasOption("f")) {
 
         // List all test to launch
-        System.setProperty(ITFactory.IT_TEST_LIST_PATH_SYSTEM_KEY,
-            line.getOptionValue("f").trim());
+        System.setProperty(ITFactory.IT_TEST_LIST_PATH_SYSTEM_KEY, line.getOptionValue("f").trim());
         argsOptions += 2;
       }
 
@@ -118,8 +113,7 @@ public class IntegrationTestAction extends AbstractAction {
       if (line.hasOption("t")) {
 
         // Test to launch
-        System.setProperty(ITFactory.IT_TEST_SYSTEM_KEY,
-            line.getOptionValue("t").trim());
+        System.setProperty(ITFactory.IT_TEST_SYSTEM_KEY, line.getOptionValue("t").trim());
         argsOptions += 2;
       }
 
@@ -130,13 +124,11 @@ public class IntegrationTestAction extends AbstractAction {
         // Value equals all, regenerate all expected directories generated
         // automatically
         if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("all")) {
-          System.setProperty(ITFactory.IT_GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY,
-              "true");
+          System.setProperty(ITFactory.IT_GENERATE_ALL_EXPECTED_DATA_SYSTEM_KEY, "true");
         }
         // Value equals new, regenerate expected directories doesn't exists
         else if (s.toLowerCase(Globals.DEFAULT_LOCALE).equals("new")) {
-          System.setProperty(ITFactory.IT_GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY,
-              "true");
+          System.setProperty(ITFactory.IT_GENERATE_NEW_EXPECTED_DATA_SYSTEM_KEY, "true");
         }
 
         argsOptions += 2;
@@ -148,8 +140,8 @@ public class IntegrationTestAction extends AbstractAction {
         testOutputDirectory = Path.of(line.getOptionValue("d").trim());
 
         // Add property for test output directory
-        System.setProperty(ITFactory.IT_OUTPUT_DIR_SYSTEM_KEY,
-            testOutputDirectory.toAbsolutePath().toString());
+        System.setProperty(
+            ITFactory.IT_OUTPUT_DIR_SYSTEM_KEY, testOutputDirectory.toAbsolutePath().toString());
 
         argsOptions += 2;
       }
@@ -160,8 +152,8 @@ public class IntegrationTestAction extends AbstractAction {
         testNGReportDirectory = Path.of(line.getOptionValue("o").trim());
 
         try {
-          FileUtils.checkExistingDirectoryFile(testNGReportDirectory.toFile(),
-              "Output TestNG report");
+          FileUtils.checkExistingDirectoryFile(
+              testNGReportDirectory.toFile(), "Output TestNG report");
         } catch (IOException e) {
 
           throw new ParseException(e.getMessage());
@@ -171,8 +163,7 @@ public class IntegrationTestAction extends AbstractAction {
       }
 
     } catch (final ParseException e) {
-      Common.errorExit(e,
-          "Error while parse parameter file: " + e.getMessage());
+      Common.errorExit(e, "Error while parse parameter file: " + e.getMessage());
     }
 
     if (argsOptions == 0 || arguments.size() != argsOptions) {
@@ -185,6 +176,7 @@ public class IntegrationTestAction extends AbstractAction {
 
   /**
    * Create options for command line
+   *
    * @return an Options object
    */
   @SuppressWarnings("static-access")
@@ -197,51 +189,72 @@ public class IntegrationTestAction extends AbstractAction {
     options.addOption("h", "help", false, "display this help");
 
     // Path to test configuration
-    options.addOption(Option.builder("testconf").argName("file").hasArg(true)
-        .desc("configuration file").get());
+    options.addOption(
+        Option.builder("testconf").argName("file").hasArg(true).desc("configuration file").get());
 
     // Path to application version to execute
-    options.addOption(Option.builder("exec").argName("appliPath").hasArg()
-        .desc("application path to launch").get());
+    options.addOption(
+        Option.builder("exec")
+            .argName("appliPath")
+            .hasArg()
+            .desc("application path to launch")
+            .get());
 
     // Optional, path to file with list name tests to treat
-    options.addOption(Option.builder("f").argName("file").hasArg(true)
-        .desc("optional: files with tests name to launch").longOpt("file")
-        .get());
+    options.addOption(
+        Option.builder("f")
+            .argName("file")
+            .hasArg(true)
+            .desc("optional: files with tests name to launch")
+            .longOpt("file")
+            .get());
 
     // Optional, the name of the test to execute
-    options.addOption(Option.builder("t").argName("test").hasArg(true)
-        .desc("optional: test name to launch").longOpt("test").get());
+    options.addOption(
+        Option.builder("t")
+            .argName("test")
+            .hasArg(true)
+            .desc("optional: test name to launch")
+            .longOpt("test")
+            .get());
 
     // Optional, force generated expected data
-    options.addOption(Option.builder("expected").argName("mode").hasArg().desc(
-        "optional: mode for generate data expected: all (remove existing) or mode to generate no exists directory new")
-        .get());
+    options.addOption(
+        Option.builder("expected")
+            .argName("mode")
+            .hasArg()
+            .desc(
+                "optional: mode for generate data expected: all (remove existing) or mode to generate no exists directory new")
+            .get());
 
     // Optional, the test output directory
-    options.addOption(Option.builder("d").argName("outputdir").hasArg(true)
-        .desc("optional: test output directory").longOpt("dir").get());
+    options.addOption(
+        Option.builder("d")
+            .argName("outputdir")
+            .hasArg(true)
+            .desc("optional: test output directory")
+            .longOpt("dir")
+            .get());
 
     // Optional, path to TestNG report directory
-    options.addOption(Option.builder("o").argName("file").hasArg(true)
-        .desc("TestNG report directory").get());
+    options.addOption(
+        Option.builder("o").argName("file").hasArg(true).desc("TestNG report directory").get());
 
     return options;
   }
 
   /**
    * Show command line help.
+   *
    * @param options Options of the software
    */
   private void help(final Options options) {
 
     // Show help message
-    final HelpFormatter formatter =
-        HelpFormatter.builder().setShowSince(false).get();
+    final HelpFormatter formatter = HelpFormatter.builder().setShowSince(false).get();
     try {
       formatter.printHelp(
-          Globals.APP_NAME_LOWER_CASE + ".sh " + getName() + " [options]", "",
-          options, "", false);
+          Globals.APP_NAME_LOWER_CASE + ".sh " + getName() + " [options]", "", options, "", false);
     } catch (IOException e) {
       Common.errorExit(e, "Error while creating help message.");
     }
@@ -254,31 +267,31 @@ public class IntegrationTestAction extends AbstractAction {
 
   /**
    * Run all integrated test.
-   * @param testNGReportDirectory TestNG report directory, if it is null use the
-   *          default directory
+   *
+   * @param testNGReportDirectory TestNG report directory, if it is null use the default directory
    */
   private void runIT(final Path testNGReportDirectory) {
 
     // Define a listener that print information about the results of the
     // integration tests
-    final TestListenerAdapter tla = new TestListenerAdapter() {
+    final TestListenerAdapter tla =
+        new TestListenerAdapter() {
 
-      @Override
-      public void onTestSuccess(final ITestResult tr) {
+          @Override
+          public void onTestSuccess(final ITestResult tr) {
 
-        super.onTestSuccess(tr);
-        System.out.println(tr);
-      }
+            super.onTestSuccess(tr);
+            System.out.println(tr);
+          }
 
-      @Override
-      public void onTestFailure(final ITestResult tr) {
+          @Override
+          public void onTestFailure(final ITestResult tr) {
 
-        super.onTestFailure(tr);
-        System.err.println(tr);
-        System.err.println(tr.getThrowable().getMessage());
-      }
-
-    };
+            super.onTestFailure(tr);
+            System.err.println(tr);
+            System.err.println(tr.getThrowable().getMessage());
+          }
+        };
 
     final TestNG testng = new TestNG();
     try {
@@ -292,13 +305,10 @@ public class IntegrationTestAction extends AbstractAction {
       }
 
     } catch (final Throwable e) {
-      Common.errorExit(e,
-          "Integration test can not be initialized the test factory.");
+      Common.errorExit(e, "Integration test can not be initialized the test factory.");
     }
 
     // Launch integration tests using TestNG
     testng.run();
-
   }
-
 }

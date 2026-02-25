@@ -30,6 +30,13 @@ import static fr.ens.biologie.genomique.eoulsan.Globals.APP_BUILD_NUMBER;
 import static fr.ens.biologie.genomique.eoulsan.Globals.APP_NAME_LOWER_CASE;
 import static fr.ens.biologie.genomique.eoulsan.Globals.APP_VERSION_STRING;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.core.Step;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -43,11 +50,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -55,45 +60,42 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.core.Step;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
-import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
-
 /**
  * This class allow parse the workflow file.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
 public class CommandWorkflowParser {
 
   /** Version constant name. */
-  public static final String VERSION_CONSTANT_NAME =
-      APP_NAME_LOWER_CASE + ".version";
+  public static final String VERSION_CONSTANT_NAME = APP_NAME_LOWER_CASE + ".version";
+
   /** Build number constant name. */
-  public static final String BUILD_NUMBER_CONSTANT_NAME =
-      APP_NAME_LOWER_CASE + ".build.number";
+  public static final String BUILD_NUMBER_CONSTANT_NAME = APP_NAME_LOWER_CASE + ".build.number";
+
   /** Build date constant name. */
-  public static final String BUILD_DATE_CONSTANT_NAME =
-      APP_NAME_LOWER_CASE + ".build.date";
+  public static final String BUILD_DATE_CONSTANT_NAME = APP_NAME_LOWER_CASE + ".build.date";
+
   /** Available processor constant name. */
   public static final String AVAILABLE_PROCESSORS_CONSTANT_NAME =
       APP_NAME_LOWER_CASE + "available.processors";
+
   /** Design file path constant name. */
-  public static final String DESIGN_FILE_PATH_CONSTANT_NAME =
-      "design.file.path";
+  public static final String DESIGN_FILE_PATH_CONSTANT_NAME = "design.file.path";
+
   /** Parameters file path constant name. */
-  public static final String WORKFLOW_FILE_PATH_CONSTANT_NAME =
-      "workflow.file.path";
+  public static final String WORKFLOW_FILE_PATH_CONSTANT_NAME = "workflow.file.path";
+
   /** Output path constant name. */
   public static final String OUTPUT_PATH_CONSTANT_NAME = "output.path";
+
   /** Job id constant name. */
   public static final String JOB_ID_CONSTANT_NAME = "job.id";
+
   /** Job UUID constant name. */
   public static final String JOB_UUID_CONSTANT_NAME = "job.uuid";
+
   /** Logs path constant name. */
   public static final String JOB_PATH_CONSTANT_NAME = "job.path";
 
@@ -134,9 +136,7 @@ public class CommandWorkflowParser {
 
   private final Map<String, String> constants = initConstants();
 
-  /**
-   * Define a step output port.
-   */
+  /** Define a step output port. */
   public static final class StepOutputPort {
 
     public final String stepId;
@@ -144,19 +144,20 @@ public class CommandWorkflowParser {
 
     /**
      * Constructor.
+     *
      * @param stepId step id
      * @param outputPortName output port name
      */
     public StepOutputPort(final String stepId, final String outputPortName) {
 
       this.stepId = stepId == null ? null : stepId.trim();
-      this.outputPortName =
-          outputPortName == null ? null : outputPortName.trim();
+      this.outputPortName = outputPortName == null ? null : outputPortName.trim();
     }
   }
 
   /**
    * Parse the workflow file.
+   *
    * @return a CommandWorkflowModel object
    * @throws EoulsanException if an error occurs while parsing file
    */
@@ -173,18 +174,15 @@ public class CommandWorkflowParser {
 
     try {
 
-      final DocumentBuilderFactory dbFactory =
-          DocumentBuilderFactory.newInstance();
+      final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
       final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
       doc = dBuilder.parse(this.is);
       doc.getDocumentElement().normalize();
 
     } catch (ParserConfigurationException | SAXException e) {
-      throw new EoulsanException(
-          "Error while parsing workflow file: " + e.getMessage(), e);
+      throw new EoulsanException("Error while parsing workflow file: " + e.getMessage(), e);
     } catch (IOException e) {
-      throw new EoulsanException(
-          "Error while reading workflow file. " + e.getMessage(), e);
+      throw new EoulsanException("Error while reading workflow file. " + e.getMessage(), e);
     }
 
     final NodeList nAnalysisList = doc.getElementsByTagName(ROOT_TAG_NAME);
@@ -197,19 +195,23 @@ public class CommandWorkflowParser {
         Element eElement = (Element) nNode;
 
         // Check allowed child tags of the root tag
-        checkAllowedChildTags(eElement, FORMATVERSION_TAG_NAME,
-            WORKFLOWNAME_TAG_NAME, DESCRIPTION_TAG_NAME, AUTHOR_TAG_NAME,
-            CONSTANTS_TAG_NAME, STEPS_TAG_NAME, GLOBALS_TAG_NAME);
+        checkAllowedChildTags(
+            eElement,
+            FORMATVERSION_TAG_NAME,
+            WORKFLOWNAME_TAG_NAME,
+            DESCRIPTION_TAG_NAME,
+            AUTHOR_TAG_NAME,
+            CONSTANTS_TAG_NAME,
+            STEPS_TAG_NAME,
+            GLOBALS_TAG_NAME);
 
         //
         // Parse description elements
         //
 
-        final String formatVersion =
-            getTagValue(FORMATVERSION_TAG_NAME, eElement);
+        final String formatVersion = getTagValue(FORMATVERSION_TAG_NAME, eElement);
         if (formatVersion == null || !FORMAT_VERSION.equals(formatVersion)) {
-          throw new EoulsanException(
-              "Invalid version of the format of the workflow file.");
+          throw new EoulsanException("Invalid version of the format of the workflow file.");
         }
 
         final String name = getTagValue(WORKFLOWNAME_TAG_NAME, eElement);
@@ -225,15 +227,13 @@ public class CommandWorkflowParser {
         // Parse constants
         //
 
-        addConstants(
-            parseParameters(eElement, CONSTANTS_TAG_NAME, null, false));
+        addConstants(parseParameters(eElement, CONSTANTS_TAG_NAME, null, false));
 
         //
         // Parse steps
         //
 
-        final NodeList nStepsList =
-            eElement.getElementsByTagName(STEPS_TAG_NAME);
+        final NodeList nStepsList = eElement.getElementsByTagName(STEPS_TAG_NAME);
 
         for (int j = 0; j < nStepsList.getLength(); j++) {
 
@@ -245,8 +245,7 @@ public class CommandWorkflowParser {
             // Check allowed child tag for the "steps" tag
             checkAllowedChildTags(stepsElement, STEP_TAG_NAME);
 
-            final NodeList nStepList =
-                stepsElement.getElementsByTagName(STEP_TAG_NAME);
+            final NodeList nStepList = stepsElement.getElementsByTagName(STEP_TAG_NAME);
 
             for (int k = 0; k < nStepList.getLength(); k++) {
 
@@ -256,41 +255,49 @@ public class CommandWorkflowParser {
                 final Element eStepElement = (Element) nStepNode;
 
                 // Check allowed attributes for the "step" tag
-                checkAllowedAttributes(eStepElement, ID_ATTR_NAME_STEP_TAG,
-                    SKIP_ATTR_NAME_STEP_TAG, REQUIRED_MEM_ATTR_NAME_STEP_TAG,
+                checkAllowedAttributes(
+                    eStepElement,
+                    ID_ATTR_NAME_STEP_TAG,
+                    SKIP_ATTR_NAME_STEP_TAG,
+                    REQUIRED_MEM_ATTR_NAME_STEP_TAG,
                     REQUIRED_CPU_ATTR_NAME_STEP_TAG,
                     REQUIRED_CPU_ATTR_NAME_STEP_TAG,
                     DISCARDOUTPUT_ATTR_NAME_STEP_TAG,
                     DATAPRODUCT_ATTR_NAME_STEP_TAG);
 
                 // Check allowed child tag of the the "step" tag
-                checkAllowedChildTags(eStepElement, MODULE_TAG_NAME,
-                    STEPNAME_TAG_NAME, NAME_TAG_NAME, VERSION_TAG,
-                    INPUTS_TAG_NAME, PARAMETERS_TAG_NAME);
+                checkAllowedChildTags(
+                    eStepElement,
+                    MODULE_TAG_NAME,
+                    STEPNAME_TAG_NAME,
+                    NAME_TAG_NAME,
+                    VERSION_TAG,
+                    INPUTS_TAG_NAME,
+                    PARAMETERS_TAG_NAME);
 
                 final String stepId =
-                    getAttribute(eStepElement, ID_ATTR_NAME_STEP_TAG).trim()
+                    getAttribute(eStepElement, ID_ATTR_NAME_STEP_TAG)
+                        .trim()
                         .toLowerCase(Globals.DEFAULT_LOCALE);
 
-                final boolean skip = Boolean.parseBoolean(
-                    getAttribute(eStepElement, SKIP_ATTR_NAME_STEP_TAG).trim()
-                        .toLowerCase(Globals.DEFAULT_LOCALE));
+                final boolean skip =
+                    Boolean.parseBoolean(
+                        getAttribute(eStepElement, SKIP_ATTR_NAME_STEP_TAG)
+                            .trim()
+                            .toLowerCase(Globals.DEFAULT_LOCALE));
 
                 final int requiredMemory =
-                    parseMemory(getAttribute(eStepElement,
-                        REQUIRED_MEM_ATTR_NAME_STEP_TAG));
+                    parseMemory(getAttribute(eStepElement, REQUIRED_MEM_ATTR_NAME_STEP_TAG));
 
                 final int requiredProcs =
-                    parseProcessors(getAttribute(eStepElement,
-                        REQUIRED_CPU_ATTR_NAME_STEP_TAG));
+                    parseProcessors(getAttribute(eStepElement, REQUIRED_CPU_ATTR_NAME_STEP_TAG));
 
                 final Step.DiscardOutput discardOutput =
-                    Step.DiscardOutput.parse(getAttribute(eStepElement,
-                        DISCARDOUTPUT_ATTR_NAME_STEP_TAG));
+                    Step.DiscardOutput.parse(
+                        getAttribute(eStepElement, DISCARDOUTPUT_ATTR_NAME_STEP_TAG));
 
                 final String dataProduct =
-                    getAttribute(eStepElement, DATAPRODUCT_ATTR_NAME_STEP_TAG)
-                        .trim();
+                    getAttribute(eStepElement, DATAPRODUCT_ATTR_NAME_STEP_TAG).trim();
 
                 // Parse the module tags
                 String module = getTagValue(MODULE_TAG_NAME, eStepElement);
@@ -301,22 +308,34 @@ public class CommandWorkflowParser {
                   module = getTagValue(NAME_TAG_NAME, eStepElement);
                 }
                 if (module == null) {
-                  throw new EoulsanException(
-                      "Module name not found in workflow file.");
+                  throw new EoulsanException("Module name not found in workflow file.");
                 }
 
                 final String version = getTagValue(VERSION_TAG, eStepElement);
 
-                final Map<String, StepOutputPort> inputs = parseInputs(
-                    eStepElement, "".equals(stepId) ? module : stepId);
+                final Map<String, StepOutputPort> inputs =
+                    parseInputs(eStepElement, "".equals(stepId) ? module : stepId);
 
-                final Set<Parameter> parameters = parseParameters(eStepElement,
-                    PARAMETERS_TAG_NAME, module, true);
+                final Set<Parameter> parameters =
+                    parseParameters(eStepElement, PARAMETERS_TAG_NAME, module, true);
 
-                getLogger().info("In workflow file found "
-                    + module + " step (parameters: " + parameters + ").");
-                result.addStep(stepId, module, version, inputs, parameters,
-                    skip, discardOutput, requiredMemory, requiredProcs,
+                getLogger()
+                    .info(
+                        "In workflow file found "
+                            + module
+                            + " step (parameters: "
+                            + parameters
+                            + ").");
+                result.addStep(
+                    stepId,
+                    module,
+                    version,
+                    inputs,
+                    parameters,
+                    skip,
+                    discardOutput,
+                    requiredMemory,
+                    requiredProcs,
                     dataProduct);
               }
             }
@@ -327,27 +346,25 @@ public class CommandWorkflowParser {
         // Parse globals parameters
         //
 
-        result.setGlobalParameters(
-            parseParameters(eElement, GLOBALS_TAG_NAME, null, true));
-
+        result.setGlobalParameters(parseParameters(eElement, GLOBALS_TAG_NAME, null, true));
       }
     }
 
     getLogger().info("End of parsing of workflow file");
-    getLogger().info(
-        "Found " + result.getStepIds().size() + " step(s) in workflow file");
+    getLogger().info("Found " + result.getStepIds().size() + " step(s) in workflow file");
 
     return result;
   }
 
   /**
    * Parse inputs sections
+   *
    * @param root root element to parse
    * @param stepId step id for the exception message
    * @throws EoulsanException if the tags of the parameter are not found
    */
-  private Map<String, StepOutputPort> parseInputs(final Element root,
-      final String stepId) throws EoulsanException {
+  private Map<String, StepOutputPort> parseInputs(final Element root, final String stepId)
+      throws EoulsanException {
 
     final Map<String, StepOutputPort> result = new HashMap<>();
 
@@ -363,8 +380,7 @@ public class CommandWorkflowParser {
         // Check allowed child tag for the "inputs" tag
         checkAllowedChildTags(element, INPUT_TAG_NAME);
 
-        final NodeList nParameterList =
-            element.getElementsByTagName(INPUT_TAG_NAME);
+        final NodeList nParameterList = element.getElementsByTagName(INPUT_TAG_NAME);
 
         for (int j = 0; j < nParameterList.getLength(); j++) {
 
@@ -375,43 +391,52 @@ public class CommandWorkflowParser {
             Element inputElement = (Element) nParameterNode;
 
             // Check allowed child tag for the "input" tag
-            checkAllowedChildTags(inputElement, PORT_TAG_NAME,
-                FROMSTEP_TAG_NAME, FROMPORT_TAG_NAME);
+            checkAllowedChildTags(
+                inputElement, PORT_TAG_NAME, FROMSTEP_TAG_NAME, FROMPORT_TAG_NAME);
 
             // Get and check the toInput attribute
             final String portName = getTagValue(PORT_TAG_NAME, inputElement);
             if (portName == null) {
               throw new EoulsanException(
                   "the \"toInput\" attribute not exists in an input section of step \""
-                      + stepId + "\" in workflow file.");
+                      + stepId
+                      + "\" in workflow file.");
             }
             if (portName.isEmpty()) {
               throw new EoulsanException(
                   "the \"toInput\" attribute is empty in an input section of step \""
-                      + stepId + "\" in workflow file.");
+                      + stepId
+                      + "\" in workflow file.");
             }
             if (result.containsKey(portName)) {
-              throw new EoulsanException("an input for "
-                  + portName
-                  + " port has been already defined in the inputs section of step \""
-                  + stepId + "\" in workflow file.");
+              throw new EoulsanException(
+                  "an input for "
+                      + portName
+                      + " port has been already defined in the inputs section of step \""
+                      + stepId
+                      + "\" in workflow file.");
             }
 
             final StepOutputPort input =
-                new StepOutputPort(getTagValue(FROMSTEP_TAG_NAME, inputElement),
+                new StepOutputPort(
+                    getTagValue(FROMSTEP_TAG_NAME, inputElement),
                     getTagValue(FROMPORT_TAG_NAME, inputElement));
 
             // Check step ID
             if (input.stepId == null) {
               throw new EoulsanException(
                   "the \"fromStep\" attribute has not been defined for "
-                      + portName + " input in section of step \"" + stepId
+                      + portName
+                      + " input in section of step \""
+                      + stepId
                       + "\" in workflow file.");
             }
             if (input.stepId.isEmpty()) {
               throw new EoulsanException(
                   "the \"fromStep\" attribute is empty for "
-                      + portName + " input in section of step \"" + stepId
+                      + portName
+                      + " input in section of step \""
+                      + stepId
                       + "\" in workflow file.");
             }
 
@@ -419,13 +444,17 @@ public class CommandWorkflowParser {
             if (input.outputPortName == null) {
               throw new EoulsanException(
                   "the \"fromPort\" attribute has not been defined for "
-                      + portName + " input in section of step \"" + stepId
+                      + portName
+                      + " input in section of step \""
+                      + stepId
                       + "\" in workflow file.");
             }
             if (input.outputPortName.isEmpty()) {
               throw new EoulsanException(
                   "the \"fromPort\" attribute is empty for "
-                      + portName + " input in section of step \"" + stepId
+                      + portName
+                      + " input in section of step \""
+                      + stepId
                       + "\" in workflow file.");
             }
 
@@ -440,15 +469,19 @@ public class CommandWorkflowParser {
 
   /**
    * Parse parameter sections
+   *
    * @param root root element to parse
    * @param elementName name of the element
    * @param evaluateValues evaluate parameters values
    * @return a set of Parameter object
    * @throws EoulsanException if the tags of the parameter are not found
    */
-  private Set<Parameter> parseParameters(final Element root,
-      final String elementName, final String stepName,
-      final boolean evaluateValues) throws EoulsanException {
+  private Set<Parameter> parseParameters(
+      final Element root,
+      final String elementName,
+      final String stepName,
+      final boolean evaluateValues)
+      throws EoulsanException {
 
     final Set<Parameter> result = new LinkedHashSet<>();
     final Set<String> parameterNames = new HashSet<>();
@@ -465,8 +498,7 @@ public class CommandWorkflowParser {
         // Check allowed tags for the "parameter" tag
         checkAllowedChildTags(element, PARAMETER_TAG_NAME);
 
-        final NodeList nParameterList =
-            element.getElementsByTagName(PARAMETER_TAG_NAME);
+        final NodeList nParameterList = element.getElementsByTagName(PARAMETER_TAG_NAME);
 
         for (int j = 0; j < nParameterList.getLength(); j++) {
 
@@ -476,43 +508,41 @@ public class CommandWorkflowParser {
 
             Element eParameterElement = (Element) nParameterNode;
 
-            checkAllowedChildTags(eParameterElement, PARAMETERNAME_TAG_NAME,
-                PARAMETERVALUE_TAG_NAME);
+            checkAllowedChildTags(
+                eParameterElement, PARAMETERNAME_TAG_NAME, PARAMETERVALUE_TAG_NAME);
 
-            final String paramName =
-                getTagValue(PARAMETERNAME_TAG_NAME, eParameterElement);
-            final String paramValue =
-                getTagValue(PARAMETERVALUE_TAG_NAME, eParameterElement);
+            final String paramName = getTagValue(PARAMETERNAME_TAG_NAME, eParameterElement);
+            final String paramValue = getTagValue(PARAMETERVALUE_TAG_NAME, eParameterElement);
 
             if (paramName == null) {
               throw new EoulsanException(
                   "<name> Tag not found in parameter section of "
-                      + (stepName == null
-                          ? "global parameters" : stepName + " step")
+                      + (stepName == null ? "global parameters" : stepName + " step")
                       + " in workflow file.");
             }
             if (paramValue == null) {
               throw new EoulsanException(
                   "<value> Tag not found in parameter section of "
-                      + (stepName == null
-                          ? "global parameters" : stepName + " step")
+                      + (stepName == null ? "global parameters" : stepName + " step")
                       + " in workflow file.");
             }
 
             if (parameterNames.contains(paramName)) {
-              throw new EoulsanException("The parameter \""
-                  + paramName + "\" has been already defined for "
-                  + (stepName == null
-                      ? "global parameters" : stepName + " step")
-                  + " in workflow file.");
+              throw new EoulsanException(
+                  "The parameter \""
+                      + paramName
+                      + "\" has been already defined for "
+                      + (stepName == null ? "global parameters" : stepName + " step")
+                      + " in workflow file.");
             }
             parameterNames.add(paramName);
 
-            result.add(new Parameter(paramName, evaluateValues
-                ? evaluateExpressions(paramValue, true) : paramValue));
+            result.add(
+                new Parameter(
+                    paramName,
+                    evaluateValues ? evaluateExpressions(paramValue, true) : paramValue));
           }
         }
-
       }
     }
 
@@ -521,6 +551,7 @@ public class CommandWorkflowParser {
 
   /**
    * Get the value of a tag
+   *
    * @param tag name of the tag
    * @param element root element
    * @return the value of the tag
@@ -541,13 +572,13 @@ public class CommandWorkflowParser {
 
   /**
    * Check if the attribute of a tag is in a list of allowed attribute names.
+   *
    * @param element the tag element
    * @param attributeNames the allowed attribute names
-   * @throws EoulsanException if an attribute of the tag in not in the allowed
-   *           attribute list
+   * @throws EoulsanException if an attribute of the tag in not in the allowed attribute list
    */
-  private static void checkAllowedAttributes(final Element element,
-      String... attributeNames) throws EoulsanException {
+  private static void checkAllowedAttributes(final Element element, String... attributeNames)
+      throws EoulsanException {
 
     final List<String> attributeList = Arrays.asList(attributeNames);
 
@@ -562,9 +593,12 @@ public class CommandWorkflowParser {
         final String attributeName = n.getNodeName();
 
         if (!attributeList.contains(attributeName)) {
-          throw new EoulsanException("the \""
-              + element.getNodeName() + "\" tag contains an unknown attribute: "
-              + attributeName + ".");
+          throw new EoulsanException(
+              "the \""
+                  + element.getNodeName()
+                  + "\" tag contains an unknown attribute: "
+                  + attributeName
+                  + ".");
         }
       }
     }
@@ -572,13 +606,13 @@ public class CommandWorkflowParser {
 
   /**
    * Check if the child tags of a tag is in a list of allowed tag names.
+   *
    * @param element the tag element
    * @param tagNames the allowed tag names
-   * @throws EoulsanException if a child tag of the tag in not in the allowed
-   *           tag list
+   * @throws EoulsanException if a child tag of the tag in not in the allowed tag list
    */
-  private static void checkAllowedChildTags(final Element element,
-      String... tagNames) throws EoulsanException {
+  private static void checkAllowedChildTags(final Element element, String... tagNames)
+      throws EoulsanException {
 
     final List<String> tagList = Arrays.asList(tagNames);
 
@@ -593,9 +627,12 @@ public class CommandWorkflowParser {
         final String childTagName = n.getNodeName();
 
         if (!tagList.contains(childTagName)) {
-          throw new EoulsanException("the \""
-              + element.getNodeName() + "\" tag contains an unknown tag: "
-              + childTagName + ".");
+          throw new EoulsanException(
+              "the \""
+                  + element.getNodeName()
+                  + "\" tag contains an unknown tag: "
+                  + childTagName
+                  + ".");
         }
       }
     }
@@ -607,11 +644,11 @@ public class CommandWorkflowParser {
 
   /**
    * Set the constants values
+   *
    * @param parameters a set with the parameters
    * @throws EoulsanException if an error occurs while evaluating the parameters
    */
-  private void addConstants(final Set<Parameter> parameters)
-      throws EoulsanException {
+  private void addConstants(final Set<Parameter> parameters) throws EoulsanException {
 
     if (parameters == null) {
       return;
@@ -626,19 +663,18 @@ public class CommandWorkflowParser {
 
   /**
    * Add job arguments information to constants.
+   *
    * @param arguments job arguments
    * @throws EoulsanException if an error occurs while evaluating the constant
    */
-  public void addConstants(final ExecutorArguments arguments)
-      throws EoulsanException {
+  public void addConstants(final ExecutorArguments arguments) throws EoulsanException {
 
     if (arguments == null) {
       return;
     }
 
     addConstant(DESIGN_FILE_PATH_CONSTANT_NAME, arguments.getDesignPathname());
-    addConstant(WORKFLOW_FILE_PATH_CONSTANT_NAME,
-        arguments.getWorkflowPathname());
+    addConstant(WORKFLOW_FILE_PATH_CONSTANT_NAME, arguments.getWorkflowPathname());
     addConstant(OUTPUT_PATH_CONSTANT_NAME, arguments.getOutputPathname());
     addConstant(JOB_ID_CONSTANT_NAME, arguments.getJobId());
     addConstant(JOB_UUID_CONSTANT_NAME, arguments.getJobUUID());
@@ -647,6 +683,7 @@ public class CommandWorkflowParser {
 
   /**
    * Add a constant.
+   *
    * @param constantName constant Name
    * @param constantValue constant value
    * @throws EoulsanException if an error occurs while evaluating the constant
@@ -659,22 +696,23 @@ public class CommandWorkflowParser {
 
   /**
    * Add a constant.
+   *
    * @param constantName constant Name
    * @param constantValue constant value
-   * @param evaluateValue allow evaluate the value of the constant and start an
-   *          external process to do this
+   * @param evaluateValue allow evaluate the value of the constant and start an external process to
+   *     do this
    * @throws EoulsanException if an error occurs while evaluating the constant
    */
-  public void addConstant(final String constantName, final String constantValue,
-      final boolean evaluateValue) throws EoulsanException {
+  public void addConstant(
+      final String constantName, final String constantValue, final boolean evaluateValue)
+      throws EoulsanException {
 
     if (constantName == null || constantValue == null) {
       return;
     }
 
     if (evaluateValue) {
-      this.constants.put(constantName.trim(),
-          evaluateExpressions(constantValue, true));
+      this.constants.put(constantName.trim(), evaluateExpressions(constantValue, true));
     } else {
       this.constants.put(constantName.trim(), constantValue);
     }
@@ -682,6 +720,7 @@ public class CommandWorkflowParser {
 
   /**
    * Initialize the constants values.
+   *
    * @return a map with the constants
    */
   private static Map<String, String> initConstants() {
@@ -692,8 +731,8 @@ public class CommandWorkflowParser {
     constants.put(BUILD_NUMBER_CONSTANT_NAME, APP_BUILD_NUMBER);
     constants.put(BUILD_DATE_CONSTANT_NAME, APP_BUILD_DATE);
 
-    constants.put(AVAILABLE_PROCESSORS_CONSTANT_NAME,
-        "" + Runtime.getRuntime().availableProcessors());
+    constants.put(
+        AVAILABLE_PROCESSORS_CONSTANT_NAME, "" + Runtime.getRuntime().availableProcessors());
 
     // Add java properties
     for (Map.Entry<Object, Object> e : System.getProperties().entrySet()) {
@@ -710,11 +749,11 @@ public class CommandWorkflowParser {
 
   /**
    * Evaluate expression in a string.
+   *
    * @param s string in witch expression must be replaced
    * @param allowExec allow execution of code
    * @return a string with expression evaluated
-   * @throws EoulsanException if an error occurs while parsing the string or
-   *           executing an expression
+   * @throws EoulsanException if an error occurs while parsing the string or executing an expression
    */
   private String evaluateExpressions(final String s, final boolean allowExec)
       throws EoulsanException {
@@ -753,8 +792,7 @@ public class CommandWorkflowParser {
       if (c0 == '`' && allowExec) {
         final String expr = subStr(s, i + 1, '`');
         try {
-          final String r =
-              ProcessUtils.execToString(evaluateExpressions(expr, false));
+          final String r = ProcessUtils.execToString(evaluateExpressions(expr, false));
 
           // remove last '\n' in the result
           if (r.charAt(r.length() - 1) == '\n') {
@@ -764,8 +802,7 @@ public class CommandWorkflowParser {
           }
 
         } catch (IOException e) {
-          throw new EoulsanException(
-              "Error while evaluating expression \"" + expr + "\"", e);
+          throw new EoulsanException("Error while evaluating expression \"" + expr + "\"", e);
         }
         i += expr.length() + 1;
         continue;
@@ -777,14 +814,13 @@ public class CommandWorkflowParser {
     return result.toString();
   }
 
-  private String subStr(final String s, final int beginIndex,
-      final int charPoint) throws EoulsanException {
+  private String subStr(final String s, final int beginIndex, final int charPoint)
+      throws EoulsanException {
 
     final int endIndex = s.indexOf(charPoint, beginIndex);
 
     if (endIndex == -1) {
-      throw new EoulsanException(
-          "Unexpected end of expression in \"" + s + "\"");
+      throw new EoulsanException("Unexpected end of expression in \"" + s + "\"");
     }
 
     return s.substring(beginIndex, endIndex);
@@ -796,20 +832,20 @@ public class CommandWorkflowParser {
 
   /**
    * Get the value of an XML tag attribute and evaluate it if necessary.
+   *
    * @param eStepElement the XML tag element
    * @param name the name of the attribute
    * @return the value of the attribute
-   * @throws EoulsanException if an error occurs while getting the value of the
-   *           attribute
+   * @throws EoulsanException if an error occurs while getting the value of the attribute
    */
-  private String getAttribute(Element eStepElement, final String name)
-      throws EoulsanException {
+  private String getAttribute(Element eStepElement, final String name) throws EoulsanException {
 
     return evaluateExpressions(eStepElement.getAttribute(name), true);
   }
 
   /**
    * Parse the required processors attribute.
+   *
    * @param s the string to parse
    * @return the processor count required in MB
    * @throws EoulsanException if the string if not valid
@@ -831,9 +867,13 @@ public class CommandWorkflowParser {
     final Matcher matcher = pattern.matcher(value);
 
     if (!matcher.matches()) {
-      throw new EoulsanException("Invalid memory value in "
-          + REQUIRED_MEM_ATTR_NAME_STEP_TAG + " attribute of tag "
-          + STEP_TAG_NAME + ": " + s);
+      throw new EoulsanException(
+          "Invalid memory value in "
+              + REQUIRED_MEM_ATTR_NAME_STEP_TAG
+              + " attribute of tag "
+              + STEP_TAG_NAME
+              + ": "
+              + s);
     }
 
     int result;
@@ -841,29 +881,36 @@ public class CommandWorkflowParser {
     try {
       result = Integer.parseInt(matcher.group(1));
     } catch (NumberFormatException e) {
-      throw new EoulsanException("Invalid memory value in "
-          + REQUIRED_MEM_ATTR_NAME_STEP_TAG + " attribute of tag "
-          + STEP_TAG_NAME + ": " + s);
+      throw new EoulsanException(
+          "Invalid memory value in "
+              + REQUIRED_MEM_ATTR_NAME_STEP_TAG
+              + " attribute of tag "
+              + STEP_TAG_NAME
+              + ": "
+              + s);
     }
 
     switch (matcher.group(2)) {
+      case "mib":
+      case "mb":
+      case "m":
+      case "":
+        break;
 
-    case "mib":
-    case "mb":
-    case "m":
-    case "":
-      break;
+      case "gib":
+      case "gb":
+      case "g":
+        result *= 1024;
+        break;
 
-    case "gib":
-    case "gb":
-    case "g":
-      result *= 1024;
-      break;
-
-    default:
-      throw new EoulsanException("Invalid memory value in "
-          + REQUIRED_MEM_ATTR_NAME_STEP_TAG + " attribute of tag "
-          + STEP_TAG_NAME + ": " + s);
+      default:
+        throw new EoulsanException(
+            "Invalid memory value in "
+                + REQUIRED_MEM_ATTR_NAME_STEP_TAG
+                + " attribute of tag "
+                + STEP_TAG_NAME
+                + ": "
+                + s);
     }
 
     return result;
@@ -871,6 +918,7 @@ public class CommandWorkflowParser {
 
   /**
    * Parse the required processors attribute.
+   *
    * @param s the string to parse
    * @return the processor count required
    * @throws EoulsanException if the string if not valid
@@ -890,9 +938,13 @@ public class CommandWorkflowParser {
     try {
       return Integer.parseInt(s.trim());
     } catch (NumberFormatException e) {
-      throw new EoulsanException("Invalid processor count in "
-          + REQUIRED_CPU_ATTR_NAME_STEP_TAG + " attribute of tag "
-          + STEP_TAG_NAME + ": " + s);
+      throw new EoulsanException(
+          "Invalid processor count in "
+              + REQUIRED_CPU_ATTR_NAME_STEP_TAG
+              + " attribute of tag "
+              + STEP_TAG_NAME
+              + ": "
+              + s);
     }
   }
 
@@ -902,6 +954,7 @@ public class CommandWorkflowParser {
 
   /**
    * Public constructor.
+   *
    * @param file the workflow file
    * @throws FileNotFoundException if the file is not found
    */
@@ -912,6 +965,7 @@ public class CommandWorkflowParser {
 
   /**
    * Public constructor.
+   *
    * @param file the workflow file
    * @throws IOException if an error occurs while opening the file
    */
@@ -922,11 +976,11 @@ public class CommandWorkflowParser {
 
   /**
    * Public constructor.
+   *
    * @param is Input stream
    */
   public CommandWorkflowParser(final InputStream is) {
 
     this.is = is;
   }
-
 }

@@ -27,6 +27,8 @@ package fr.ens.biologie.genomique.eoulsan.design;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.MoreObjects;
+import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,12 +38,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.google.common.base.MoreObjects;
-
-import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
-
 /**
  * This class defines the default implementation of an experiment.
+ *
  * @author Xavier Bauquet
  * @since 2.0
  */
@@ -136,8 +135,7 @@ public class ExperimentImpl implements Serializable, Experiment {
   @Override
   public void setName(String newExperimentName) {
 
-    requireNonNull(newExperimentName,
-        "newExperimentName argument cannot be null");
+    requireNonNull(newExperimentName, "newExperimentName argument cannot be null");
 
     final String name = newExperimentName.trim();
 
@@ -146,7 +144,8 @@ public class ExperimentImpl implements Serializable, Experiment {
       return;
     }
 
-    checkArgument(!this.design.containsExperimentName(name),
+    checkArgument(
+        !this.design.containsExperimentName(name),
         "The experiment name already exists in the design: " + name);
 
     this.experimentName = name;
@@ -160,14 +159,14 @@ public class ExperimentImpl implements Serializable, Experiment {
   public ExperimentSample addSample(final Sample sample) {
 
     requireNonNull(sample, "sample argument cannot be null");
-    checkArgument(!this.sampleNames.contains(sample.getId()),
+    checkArgument(
+        !this.sampleNames.contains(sample.getId()),
         "The sample already exists in the experiment: " + sample.getId());
-    checkArgument(sample.getDesign() == this.design,
-        "The sample to add to the experiment is not a sample of the design: "
-            + sample.getId());
+    checkArgument(
+        sample.getDesign() == this.design,
+        "The sample to add to the experiment is not a sample of the design: " + sample.getId());
 
-    final ExperimentSampleImpl newExperimentSample =
-        new ExperimentSampleImpl(sample);
+    final ExperimentSampleImpl newExperimentSample = new ExperimentSampleImpl(sample);
 
     this.samples.add(newExperimentSample);
     this.sampleNames.add(sample.getId());
@@ -183,11 +182,12 @@ public class ExperimentImpl implements Serializable, Experiment {
   public void removeSample(final Sample sample) {
 
     requireNonNull(sample, "sample argument cannot be null");
-    checkArgument(this.sampleNames.contains(sample.getId()),
+    checkArgument(
+        this.sampleNames.contains(sample.getId()),
         "The sample does not exists in the experiment: " + sample.getId());
-    checkArgument(sample.getDesign() == this.design,
-        "The sample to remove to the experiment is not a sample of the design: "
-            + sample.getId());
+    checkArgument(
+        sample.getDesign() == this.design,
+        "The sample to remove to the experiment is not a sample of the design: " + sample.getId());
 
     this.samples.remove(getExperimentSample(sample));
     this.sampleNames.remove(sample.getId());
@@ -217,14 +217,14 @@ public class ExperimentImpl implements Serializable, Experiment {
         .add("experimentNumber", this.experimentNumber)
         .add("experimentName", this.experimentName)
         .add("experimentMetadata", this.metadata)
-        .add("experimentSamples", this.samples).toString();
+        .add("experimentSamples", this.samples)
+        .toString();
   }
 
   @Override
   public int hashCode() {
 
-    return Objects.hash(this.experimentId, this.experimentName, this.metadata,
-        this.samples);
+    return Objects.hash(this.experimentId, this.experimentName, this.metadata, this.samples);
   }
 
   @Override
@@ -252,6 +252,7 @@ public class ExperimentImpl implements Serializable, Experiment {
 
   /**
    * Constructor.
+   *
    * @param design the design object
    * @param experimentId the experiment id
    */
@@ -259,12 +260,11 @@ public class ExperimentImpl implements Serializable, Experiment {
 
     requireNonNull(design, "design argument cannot be null");
     requireNonNull(experimentId, "sampleId argument cannot be null");
-    checkArgument(FileNaming.isDataNameValid(experimentId),
-        "The id of an experiment can only contains letters and digit: "
-            + experimentId);
+    checkArgument(
+        FileNaming.isDataNameValid(experimentId),
+        "The id of an experiment can only contains letters and digit: " + experimentId);
 
     this.design = design;
     this.experimentId = experimentId.trim();
   }
-
 }

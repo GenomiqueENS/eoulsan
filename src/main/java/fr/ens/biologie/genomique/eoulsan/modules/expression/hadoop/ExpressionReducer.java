@@ -26,23 +26,23 @@ package fr.ens.biologie.genomique.eoulsan.modules.expression.hadoop;
 
 import java.io.IOException;
 import java.util.Iterator;
-
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 /**
  * Reducer for the expression estimation.
+ *
  * @since 1.2
  * @author Claire Wallon
  */
-public class ExpressionReducer
-    extends Reducer<Text, LongWritable, Text, LongWritable> {
+public class ExpressionReducer extends Reducer<Text, LongWritable, Text, LongWritable> {
 
   final LongWritable outValue = new LongWritable();
 
   /**
    * This method allow to sum of the values of an Iterable of longs.
+   *
    * @param values values to sum
    * @return the sum of the values
    */
@@ -59,16 +59,14 @@ public class ExpressionReducer
   }
 
   /**
-   * 'key': annotation identifier of the feature (gene, mRNA, exon...).
-   * 'values': a list of '1', the size of this list is the number of reads found
-   * on the feature.
+   * 'key': annotation identifier of the feature (gene, mRNA, exon...). 'values': a list of '1', the
+   * size of this list is the number of reads found on the feature.
    */
   @Override
-  protected void reduce(final Text key, final Iterable<LongWritable> values,
-      final Context context) throws IOException, InterruptedException {
+  protected void reduce(final Text key, final Iterable<LongWritable> values, final Context context)
+      throws IOException, InterruptedException {
 
     this.outValue.set(sum(values));
     context.write(key, this.outValue);
   }
-
 }

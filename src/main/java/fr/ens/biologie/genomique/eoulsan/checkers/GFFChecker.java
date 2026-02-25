@@ -30,16 +30,8 @@ import static fr.ens.biologie.genomique.kenetre.bio.expressioncounter.HTSeqCount
 import static fr.ens.biologie.genomique.kenetre.bio.expressioncounter.HTSeqCounter.GENOMIC_TYPE_PARAMETER_NAME;
 import static fr.ens.biologie.genomique.kenetre.bio.expressioncounter.HTSeqCounter.STRANDED_PARAMETER_NAME;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
@@ -54,9 +46,16 @@ import fr.ens.biologie.genomique.kenetre.bio.GenomicArray;
 import fr.ens.biologie.genomique.kenetre.bio.GenomicInterval;
 import fr.ens.biologie.genomique.kenetre.bio.io.GFFReader;
 import fr.ens.biologie.genomique.kenetre.bio.io.GTFReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class define a Checker on GFF annotation.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -89,8 +88,7 @@ public class GFFChecker implements Checker {
   }
 
   @Override
-  public void configure(final Set<Parameter> stepParameters)
-      throws EoulsanException {
+  public void configure(final Set<Parameter> stepParameters) throws EoulsanException {
 
     // TODO the parsing of the parameter must be shared with
     // AbstractExpressionStep
@@ -98,29 +96,26 @@ public class GFFChecker implements Checker {
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
+        case GENOMIC_TYPE_PARAMETER_NAME:
+          this.genomicType = p.getStringValue();
+          break;
 
-      case GENOMIC_TYPE_PARAMETER_NAME:
-        this.genomicType = p.getStringValue();
-        break;
+        case ATTRIBUTE_ID_PARAMETER_NAME:
+          this.attributeId = p.getStringValue();
+          break;
 
-      case ATTRIBUTE_ID_PARAMETER_NAME:
-        this.attributeId = p.getStringValue();
-        break;
+        case STRANDED_PARAMETER_NAME:
+          this.stranded = "yes".equals(p.getStringValue()) || "reverse".equals(p.getStringValue());
+          break;
 
-      case STRANDED_PARAMETER_NAME:
-        this.stranded = "yes".equals(p.getStringValue())
-            || "reverse".equals(p.getStringValue());
-        break;
-
-      default:
-        break;
+        default:
+          break;
       }
     }
   }
 
   @Override
-  public boolean check(final Data data, final CheckStore checkInfo)
-      throws EoulsanException {
+  public boolean check(final Data data, final CheckStore checkInfo) throws EoulsanException {
 
     if (data == null) {
       throw new NullPointerException("The data is null");
@@ -151,27 +146,28 @@ public class GFFChecker implements Checker {
         return true;
       }
 
-      final GenomeDescription desc =
-          getGenomeDescription(featureFile, checkInfo);
+      final GenomeDescription desc = getGenomeDescription(featureFile, checkInfo);
 
-      validationAnnotation(featureFile, this.gtfFormat, desc, this.genomicType,
-          this.attributeId, this.stranded);
+      validationAnnotation(
+          featureFile, this.gtfFormat, desc, this.genomicType, this.attributeId, this.stranded);
 
     } catch (IOException e) {
       throw new EoulsanException(
-          "Annotation Check: Error while reading annotation file for checking: "
-              + e.getMessage(),
+          "Annotation Check: Error while reading annotation file for checking: " + e.getMessage(),
           e);
     } catch (BadBioEntryException e) {
-      throw new EoulsanException("Annotation Check: "
-          + e.getMessage() + " in line \"" + e.getEntry() + "\"", e);
+      throw new EoulsanException(
+          "Annotation Check: " + e.getMessage() + " in line \"" + e.getEntry() + "\"", e);
     }
     return false;
   }
 
-  private static void validationAnnotation(final DataFile file,
-      final boolean gtfFormat, final GenomeDescription desc,
-      final String featureType, final String attributeId,
+  private static void validationAnnotation(
+      final DataFile file,
+      final boolean gtfFormat,
+      final GenomeDescription desc,
+      final String featureType,
+      final String attributeId,
       final boolean stranded)
       throws IOException, BadBioEntryException, EoulsanException {
 
@@ -208,17 +204,21 @@ public class GFFChecker implements Checker {
 
             if (interval == null) {
               throw new BadBioEntryException(
-                  "GFF entry with id ("
-                      + sequenceName + ") not found in sequence region",
+                  "GFF entry with id (" + sequenceName + ") not found in sequence region",
                   formatEntry(e, gtfFormat));
             }
           }
 
           if (Math.min(start, end) < interval[0]) {
-            throw new BadBioEntryException("GFF entry with start position ("
-                + Math.min(start, end)
-                + ") lower than the start of sequence region" + sequenceName
-                + " (" + interval[0] + ")", formatEntry(e, gtfFormat));
+            throw new BadBioEntryException(
+                "GFF entry with start position ("
+                    + Math.min(start, end)
+                    + ") lower than the start of sequence region"
+                    + sequenceName
+                    + " ("
+                    + interval[0]
+                    + ")",
+                formatEntry(e, gtfFormat));
           }
 
           if (Math.max(start, end) > interval[1]) {
@@ -226,7 +226,10 @@ public class GFFChecker implements Checker {
                 "GFF entry with end position ("
                     + Math.max(start, end)
                     + ") greater than the end of sequence region "
-                    + sequenceName + " (" + interval[1] + ")",
+                    + sequenceName
+                    + " ("
+                    + interval[1]
+                    + ")",
                 formatEntry(e, gtfFormat));
           }
         }
@@ -237,8 +240,7 @@ public class GFFChecker implements Checker {
 
             if (!sequenceLengths.containsKey(sequenceName)) {
               throw new BadBioEntryException(
-                  "GFF entry with id ("
-                      + sequenceName + ") not found in genome",
+                  "GFF entry with id (" + sequenceName + ") not found in genome",
                   formatEntry(e, gtfFormat));
             }
 
@@ -246,9 +248,12 @@ public class GFFChecker implements Checker {
           }
 
           if (Math.min(start, end) < 1) {
-            throw new BadBioEntryException("GFF entry with start position ("
-                + Math.min(start, end) + ") lower than 1 in sequence "
-                + sequenceName, formatEntry(e, gtfFormat));
+            throw new BadBioEntryException(
+                "GFF entry with start position ("
+                    + Math.min(start, end)
+                    + ") lower than 1 in sequence "
+                    + sequenceName,
+                formatEntry(e, gtfFormat));
           }
 
           if (Math.max(start, end) - 1 > sequenceLength) {
@@ -256,7 +261,10 @@ public class GFFChecker implements Checker {
                 "GFF entry with end position ("
                     + Math.max(start, end)
                     + ") greater than the the length of sequence "
-                    + sequenceName + " (" + sequenceLength + ")",
+                    + sequenceName
+                    + " ("
+                    + sequenceLength
+                    + ")",
                 formatEntry(e, gtfFormat));
           }
         }
@@ -264,9 +272,9 @@ public class GFFChecker implements Checker {
         final String featureId = e.getAttributeValue(attributeId);
 
         if (attributeId != null && featureId == null) {
-          throw new BadBioEntryException("Feature "
-              + featureType + " does not contain a " + attributeId
-              + " attribute", formatEntry(e, gtfFormat));
+          throw new BadBioEntryException(
+              "Feature " + featureType + " does not contain a " + attributeId + " attribute",
+              formatEntry(e, gtfFormat));
         }
 
         if (featureId != null) {
@@ -286,16 +294,19 @@ public class GFFChecker implements Checker {
       }
 
       if (featureType != null && !featuresFound) {
-        throw new EoulsanException("No feature \""
-            + featureType + "\" with attribute \"" + attributeId
-            + "\" in annotation.");
+        throw new EoulsanException(
+            "No feature \""
+                + featureType
+                + "\" with attribute \""
+                + attributeId
+                + "\" in annotation.");
       }
-
     }
   }
 
   /**
    * Format a GFFEntry in GFF3 or GTF format.
+   *
    * @param e the entry
    * @param gtfFormat true if the entry is in GTF format
    * @return the entry in the correct format
@@ -309,8 +320,7 @@ public class GFFChecker implements Checker {
     return e.toGFF3();
   }
 
-  private static Map<String, Long> getSequencesLengths(
-      final GenomeDescription desc) {
+  private static Map<String, Long> getSequencesLengths(final GenomeDescription desc) {
 
     if (desc == null) {
       return null;
@@ -325,8 +335,8 @@ public class GFFChecker implements Checker {
     return result;
   }
 
-  private static Map<String, long[]> checkSequenceRegions(final GFFEntry entry,
-      final GenomeDescription desc) throws BadBioEntryException {
+  private static Map<String, long[]> checkSequenceRegions(
+      final GFFEntry entry, final GenomeDescription desc) throws BadBioEntryException {
 
     if (entry == null || desc == null) {
       return null;
@@ -334,8 +344,7 @@ public class GFFChecker implements Checker {
 
     final Map<String, long[]> result = new HashMap<>();
 
-    final List<String> sequenceRegions =
-        entry.getMetadata().get("sequence-region");
+    final List<String> sequenceRegions = entry.getMetadata().get("sequence-region");
 
     if (sequenceRegions == null) {
       return null;
@@ -350,8 +359,8 @@ public class GFFChecker implements Checker {
       final List<String> fields = Splitter.on(' ').splitToList(sequenceRegion.trim());
 
       if (fields.size() != 3) {
-        throw new BadBioEntryException("Invalid GFF metadata",
-            "##sequence-region " + sequenceRegion);
+        throw new BadBioEntryException(
+            "Invalid GFF metadata", "##sequence-region " + sequenceRegion);
       }
 
       try {
@@ -364,8 +373,7 @@ public class GFFChecker implements Checker {
 
         if (len == -1) {
           throw new BadBioEntryException(
-              "Unknown sequence found in GFF metadata",
-              "##sequence-region " + sequenceRegion);
+              "Unknown sequence found in GFF metadata", "##sequence-region " + sequenceRegion);
         }
 
         // Don't check the start position because it can
@@ -375,33 +383,33 @@ public class GFFChecker implements Checker {
         if (end > len + 2) {
           throw new BadBioEntryException(
               "Invalid GFF metadata, the end position ("
-                  + end + ") is greater than the length of the sequence ("
-                  + (len + 2) + ")",
+                  + end
+                  + ") is greater than the length of the sequence ("
+                  + (len + 2)
+                  + ")",
               "##sequence-region " + sequenceRegion);
         }
 
       } catch (NumberFormatException e) {
-        throw new BadBioEntryException("Invalid GFF metadata",
-            "##sequence-region " + sequenceRegion);
+        throw new BadBioEntryException(
+            "Invalid GFF metadata", "##sequence-region " + sequenceRegion);
       }
     }
 
     return result;
   }
 
-  private GenomeDescription getGenomeDescription(final DataFile annotationFile,
-      final CheckStore checkInfo)
+  private GenomeDescription getGenomeDescription(
+      final DataFile annotationFile, final CheckStore checkInfo)
       throws EoulsanException, BadBioEntryException, IOException {
 
-    GenomeDescription result =
-        (GenomeDescription) checkInfo.get(GenomeChecker.GENOME_DESCRIPTION);
+    GenomeDescription result = (GenomeDescription) checkInfo.get(GenomeChecker.GENOME_DESCRIPTION);
 
     if (result != null) {
       return result;
     }
 
-    result = new GenomeDescriptionCreator()
-        .createGenomeDescriptionFromAnnotation(annotationFile);
+    result = new GenomeDescriptionCreator().createGenomeDescriptionFromAnnotation(annotationFile);
 
     return result;
   }
@@ -412,17 +420,15 @@ public class GFFChecker implements Checker {
 
   /**
    * Protected constructor.
+   *
    * @param gtfFormat true if the format the file is GTF
    */
   protected GFFChecker(final boolean gtfFormat) {
     this.gtfFormat = gtfFormat;
   }
 
-  /**
-   * Public constructor.
-   */
+  /** Public constructor. */
   public GFFChecker() {
     this(false);
   }
-
 }

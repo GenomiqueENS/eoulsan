@@ -1,34 +1,37 @@
 /*
 
 
- *                  Eoulsan development code
- *
- * This code may be freely distributed and modified under the
- * terms of the GNU Lesser General Public License version 2.1 or
- * later and CeCILL-C. This should be distributed with the code.
- * If you do not have a copy, see:
- *
- *      http://www.gnu.org/licenses/lgpl-2.1.txt
- *      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
- *
- * Copyright for this code is held jointly by the Genomic platform
- * of the Institut de Biologie de l'École normale supérieure and
- * the individual authors. These should be listed in @author doc
- * comments.
- *
- * For more information on the Eoulsan project and its aims,
- * or to join the Eoulsan Google group, visit the home page
- * at:
- *
- *      http://outils.genomique.biologie.ens.fr/eoulsan
- *
- */
+*                  Eoulsan development code
+*
+* This code may be freely distributed and modified under the
+* terms of the GNU Lesser General Public License version 2.1 or
+* later and CeCILL-C. This should be distributed with the code.
+* If you do not have a copy, see:
+*
+*      http://www.gnu.org/licenses/lgpl-2.1.txt
+*      http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt
+*
+* Copyright for this code is held jointly by the Genomic platform
+* of the Institut de Biologie de l'École normale supérieure and
+* the individual authors. These should be listed in @author doc
+* comments.
+*
+* For more information on the Eoulsan project and its aims,
+* or to join the Eoulsan Google group, visit the home page
+* at:
+*
+*      http://outils.genomique.biologie.ens.fr/eoulsan
+*
+*/
 
 package fr.ens.biologie.genomique.eoulsan;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.Splitter;
+import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
+import fr.ens.biologie.genomique.kenetre.util.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,13 +50,9 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 
-import com.google.common.base.Splitter;
-
-import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
-import fr.ens.biologie.genomique.kenetre.util.Utils;
-
 /**
  * This class define a settings class.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -68,36 +67,27 @@ public final class Settings implements Serializable {
   private static final String AWS_ACCESS_KEY = "aws.access.key";
   private static final String AWS_SECRET_KEY = "aws.secret.key";
 
-  private static final String PRINT_STACK_TRACE_KEY =
-      MAIN_PREFIX_KEY + "printstacktrace";
+  private static final String PRINT_STACK_TRACE_KEY = MAIN_PREFIX_KEY + "printstacktrace";
 
   private static final String BYPASS_PLATFORM_CHECKING_KEY =
       MAIN_PREFIX_KEY + "bypass.platform.checking";
 
   private static final String TMP_DIR_KEY = MAIN_PREFIX_KEY + "tmp.dir";
 
-  private static final String EXECUTABLES_TMP_DIR_KEY =
-      MAIN_PREFIX_KEY + "executables.tmp.dir";
+  private static final String EXECUTABLES_TMP_DIR_KEY = MAIN_PREFIX_KEY + "executables.tmp.dir";
 
-  private static final String LOCAL_THREADS_NUMBER =
-      MAIN_PREFIX_KEY + "local.threads";
+  private static final String LOCAL_THREADS_NUMBER = MAIN_PREFIX_KEY + "local.threads";
 
-  private static final String OUTPUT_TREE_TYPE =
-      MAIN_PREFIX_KEY + "output.tree.type";
+  private static final String OUTPUT_TREE_TYPE = MAIN_PREFIX_KEY + "output.tree.type";
 
-  private static final String SAVE_WORKFLOW_IMAGE_KEY =
-      MAIN_PREFIX_KEY + "generate.workflow.image";
+  private static final String SAVE_WORKFLOW_IMAGE_KEY = MAIN_PREFIX_KEY + "generate.workflow.image";
 
-  public static final String DATA_FORMAT_PATH_KEY =
-      MAIN_PREFIX_KEY + "format.path";
+  public static final String DATA_FORMAT_PATH_KEY = MAIN_PREFIX_KEY + "format.path";
 
-  public static final String GALAXY_TOOL_PATH_KEY =
-      MAIN_PREFIX_KEY + "galaxy.tool.path";
+  public static final String GALAXY_TOOL_PATH_KEY = MAIN_PREFIX_KEY + "galaxy.tool.path";
 
-  private static final String HADOOP_AWS_ACCESS_KEY =
-      "hadoop.conf.fs.s3n.awsAccessKeyId";
-  private static final String HADOOP_AWS_SECRET_KEY =
-      "hadoop.conf.fs.s3n.awsSecretAccessKey";
+  private static final String HADOOP_AWS_ACCESS_KEY = "hadoop.conf.fs.s3n.awsAccessKeyId";
+  private static final String HADOOP_AWS_SECRET_KEY = "hadoop.conf.fs.s3n.awsSecretAccessKey";
 
   private static final String CLUSTER_SCHEDULER_NAME_KEY =
       MAIN_PREFIX_KEY + "cluster.scheduler.name";
@@ -105,27 +95,20 @@ public final class Settings implements Serializable {
   private static final String CLUSTER_DEFAULT_MEMORY_REQUIRED =
       MAIN_PREFIX_KEY + "cluster.memory.required";
 
-  private static final String HADOOP_LOG_LEVEL_KEY =
-      MAIN_PREFIX_KEY + "hadoop.log.level";
+  private static final String HADOOP_LOG_LEVEL_KEY = MAIN_PREFIX_KEY + "hadoop.log.level";
 
-  private static final String RSERVE_ENABLED_KEY =
-      MAIN_PREFIX_KEY + "rserve.enable";
-  private static final String RSERVE_SERVER_NAME_KEY =
-      MAIN_PREFIX_KEY + "rserve.servername";
+  private static final String RSERVE_ENABLED_KEY = MAIN_PREFIX_KEY + "rserve.enable";
+  private static final String RSERVE_SERVER_NAME_KEY = MAIN_PREFIX_KEY + "rserve.servername";
 
-  private static final String RSERVE_KEEP_FILES_KEY =
-      MAIN_PREFIX_KEY + "rserve.keep.files";
-  private static final String SAVE_RSCRIPTS_KEY =
-      MAIN_PREFIX_KEY + "save.r.scripts";
+  private static final String RSERVE_KEEP_FILES_KEY = MAIN_PREFIX_KEY + "rserve.keep.files";
+  private static final String SAVE_RSCRIPTS_KEY = MAIN_PREFIX_KEY + "save.r.scripts";
 
-  private static final String OBFUSCATE_DESIGN_KEY =
-      MAIN_PREFIX_KEY + "design.obfuscate";
+  private static final String OBFUSCATE_DESIGN_KEY = MAIN_PREFIX_KEY + "design.obfuscate";
   private static final String OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_KEY =
       MAIN_PREFIX_KEY + "design.remove.replicate.info";
 
   // TODO To keep ?
-  private static final String DEFAULT_FASTQ_FORMAT_KEY =
-      MAIN_PREFIX_KEY + "default.fastq.format";
+  private static final String DEFAULT_FASTQ_FORMAT_KEY = MAIN_PREFIX_KEY + "default.fastq.format";
 
   private static final String GENOME_MAPPER_INDEX_STORAGE_KEY =
       MAIN_PREFIX_KEY + "genome.mapper.index.storage.path";
@@ -133,14 +116,11 @@ public final class Settings implements Serializable {
   private static final String GENOME_DESC_STORAGE_KEY =
       MAIN_PREFIX_KEY + "genome.desc.storage.path";
 
-  private static final String GENOME_STORAGE_KEY =
-      MAIN_PREFIX_KEY + "genome.storage.path";
+  private static final String GENOME_STORAGE_KEY = MAIN_PREFIX_KEY + "genome.storage.path";
 
-  private static final String GFF_STORAGE_KEY =
-      MAIN_PREFIX_KEY + "gff.storage.path";
+  private static final String GFF_STORAGE_KEY = MAIN_PREFIX_KEY + "gff.storage.path";
 
-  private static final String GTF_STORAGE_KEY =
-      MAIN_PREFIX_KEY + "gtf.storage.path";
+  private static final String GTF_STORAGE_KEY = MAIN_PREFIX_KEY + "gtf.storage.path";
 
   private static final String ADDITIONAL_ANNOTATION_STORAGE_KEY =
       MAIN_PREFIX_KEY + "additional.annotation.storage.path";
@@ -148,17 +128,13 @@ public final class Settings implements Serializable {
   private static final String ADDITIONAL_ANNOTATION_HYPERTEXT_LINKS_KEY =
       MAIN_PREFIX_KEY + "additional.annotation.hypertext.links.path";
 
-  private static final String SEND_RESULT_MAIL_KEY =
-      MAIN_PREFIX_KEY + "mail.send.result.mail";
+  private static final String SEND_RESULT_MAIL_KEY = MAIN_PREFIX_KEY + "mail.send.result.mail";
 
-  private static final String RESULT_MAIL_KEY =
-      MAIN_PREFIX_KEY + "mail.send.result.mail.to";
+  private static final String RESULT_MAIL_KEY = MAIN_PREFIX_KEY + "mail.send.result.mail.to";
 
-  private static final String SMTP_HOST_KEY =
-      MAIN_PREFIX_KEY + "mail.smtp.host";
+  private static final String SMTP_HOST_KEY = MAIN_PREFIX_KEY + "mail.smtp.host";
 
-  private static final String DOCKER_BACKEND_KEY =
-      MAIN_PREFIX_KEY + "docker.backend";
+  private static final String DOCKER_BACKEND_KEY = MAIN_PREFIX_KEY + "docker.backend";
 
   private static final String DOCKER_URI_KEY = MAIN_PREFIX_KEY + "docker.uri";
 
@@ -171,14 +147,11 @@ public final class Settings implements Serializable {
   private static final String DOCKER_MOUNT_NFS_ROOTS_KEY =
       MAIN_PREFIX_KEY + "docker.mount.nfs.roots";
 
-  private static final String ZOOKEEPER_CONNECT_STRING_KEY =
-      "zookeeper.connect.string";
+  private static final String ZOOKEEPER_CONNECT_STRING_KEY = "zookeeper.connect.string";
 
-  private static final String ZOOKEEPER_DEFAULT_PORT_KEY =
-      "zookeeper.default.port";
+  private static final String ZOOKEEPER_DEFAULT_PORT_KEY = "zookeeper.default.port";
 
-  private static final String ZOOKEEPER_SESSION_TIMEOUT_KEY =
-      "zookeeper.session.timeout";
+  private static final String ZOOKEEPER_SESSION_TIMEOUT_KEY = "zookeeper.session.timeout";
 
   private static final String USE_OLD_EOULSAN_RESULT_FORMAT_KEY =
       MAIN_PREFIX_KEY + "old.result.format";
@@ -188,12 +161,14 @@ public final class Settings implements Serializable {
   public static final String STANDARD_EXTERNAL_MODULES_ENABLED_KEY =
       MAIN_PREFIX_KEY + "standard.external.modules.enabled";
 
-  private static final Set<String> FORBIDDEN_KEYS = Utils.unmodifiableSet(
-      new String[] {HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY});
+  private static final Set<String> FORBIDDEN_KEYS =
+      Utils.unmodifiableSet(new String[] {HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY});
 
   private static final Set<String> OBFUSCATED_KEYS =
-      Utils.unmodifiableSet(new String[] {AWS_ACCESS_KEY, AWS_SECRET_KEY,
-          HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY});
+      Utils.unmodifiableSet(
+          new String[] {
+            AWS_ACCESS_KEY, AWS_SECRET_KEY, HADOOP_AWS_ACCESS_KEY, HADOOP_AWS_SECRET_KEY
+          });
 
   //
   // Getters
@@ -201,6 +176,7 @@ public final class Settings implements Serializable {
 
   /**
    * Test if a setting key exists.
+   *
    * @param key key to test
    * @return true if the setting exist
    */
@@ -211,30 +187,33 @@ public final class Settings implements Serializable {
 
   /**
    * Test is the debug mode is enabled.
+   *
    * @return true if the debug mode is enable
    */
   public boolean isDebug() {
 
-    final String value =
-        this.properties.getProperty(DEBUG_KEY, Boolean.toString(Globals.DEBUG));
+    final String value = this.properties.getProperty(DEBUG_KEY, Boolean.toString(Globals.DEBUG));
 
     return Boolean.valueOf(value);
   }
 
   /**
    * Test is the debug mode is enabled.
+   *
    * @return true if the debug mode is enable
    */
   public boolean isPrintStackTrace() {
 
-    final String value = this.properties.getProperty(PRINT_STACK_TRACE_KEY,
-        Boolean.toString(Globals.PRINT_STACK_TRACE_DEFAULT));
+    final String value =
+        this.properties.getProperty(
+            PRINT_STACK_TRACE_KEY, Boolean.toString(Globals.PRINT_STACK_TRACE_DEFAULT));
 
     return Boolean.valueOf(value);
   }
 
   /**
    * Get the AWS access key.
+   *
    * @return the AWS access key
    */
   public String getAWSAccessKey() {
@@ -244,6 +223,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the AWS secret key.
+   *
    * @return the AWS secret key
    */
   public String getAWSSecretKey() {
@@ -253,6 +233,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the Hadoop log level.
+   *
    * @return the Hadoop log level
    */
   public String getHadoopLogLevel() {
@@ -262,6 +243,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the name of the cluster scheduler.
+   *
    * @return the name of the cluster scheduler
    */
   public String getClusterSchedulerName() {
@@ -271,6 +253,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the default memory required for the steps in cluster mode.
+   *
    * @return the default memory required for the cluster mode
    */
   public int getDefaultClusterMemoryRequired() {
@@ -292,16 +275,17 @@ public final class Settings implements Serializable {
 
   /**
    * Test if RServe is enabled.
+   *
    * @return true if the RServe server is enabled
    */
   public boolean isRServeServerEnabled() {
 
-    return Boolean
-        .parseBoolean(this.properties.getProperty(RSERVE_ENABLED_KEY));
+    return Boolean.parseBoolean(this.properties.getProperty(RSERVE_ENABLED_KEY));
   }
 
   /**
    * Test if save.r.script is true
+   *
    * @return boolean with keep Rscripts values
    */
   public boolean isSaveRscripts() {
@@ -311,6 +295,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the RServe server name.
+   *
    * @return The name of the RServe to use
    */
   public String getRServeServerName() {
@@ -320,26 +305,27 @@ public final class Settings implements Serializable {
 
   /**
    * Test if save.r.keep.files is true
+   *
    * @return boolean if the RServe files must be kept
    */
   public boolean isKeepRServeFiles() {
 
-    return Boolean
-        .parseBoolean(this.properties.getProperty(RSERVE_KEEP_FILES_KEY));
+    return Boolean.parseBoolean(this.properties.getProperty(RSERVE_KEEP_FILES_KEY));
   }
 
   /**
    * Get the temporary directory.
+   *
    * @return The temporary directory
    */
   public String getTempDirectory() {
 
-    return this.properties.getProperty(TMP_DIR_KEY,
-        System.getProperty("java.io.tmpdir"));
+    return this.properties.getProperty(TMP_DIR_KEY, System.getProperty("java.io.tmpdir"));
   }
 
   /**
    * Get the temporary directory File.
+   *
    * @return The temporary directory as a File object
    */
   public File getTempDirectoryFile() {
@@ -349,6 +335,7 @@ public final class Settings implements Serializable {
 
   /**
    * Test if the temporary directory File has been defined by user.
+   *
    * @return true id the temporary directory has defined by user
    */
   public boolean isUserDefinedTempDirectory() {
@@ -358,16 +345,17 @@ public final class Settings implements Serializable {
 
   /**
    * Get the temporary directory for executables.
+   *
    * @return The temporary directory for executables
    */
   public String getExecutablesTempDirectory() {
 
-    return this.properties.getProperty(EXECUTABLES_TMP_DIR_KEY,
-        getTempDirectory());
+    return this.properties.getProperty(EXECUTABLES_TMP_DIR_KEY, getTempDirectory());
   }
 
   /**
    * Get the temporary directory File for executables.
+   *
    * @return The temporary directory for executables as a File object
    */
   public File getExecutablesTempDirectoryFile() {
@@ -377,58 +365,66 @@ public final class Settings implements Serializable {
 
   /**
    * Test if design must be obfuscated
+   *
    * @return true if design must be obfuscated
    */
   public boolean isObfuscateDesign() {
 
-    return Boolean
-        .parseBoolean(this.properties.getProperty(OBFUSCATE_DESIGN_KEY,
-            Boolean.toString(Globals.OBFUSCATE_DESIGN_DEFAULT)));
+    return Boolean.parseBoolean(
+        this.properties.getProperty(
+            OBFUSCATE_DESIGN_KEY, Boolean.toString(Globals.OBFUSCATE_DESIGN_DEFAULT)));
   }
 
   /**
    * Test if replicate information must be removed from design.
+   *
    * @return true if replicate information must be removed
    */
   public boolean isObfuscateDesignRemoveReplicateInfo() {
 
-    return Boolean.parseBoolean(this.properties
-        .getProperty(OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_KEY, Boolean
-            .toString(Globals.OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_DEFAULT)));
+    return Boolean.parseBoolean(
+        this.properties.getProperty(
+            OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_KEY,
+            Boolean.toString(Globals.OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_DEFAULT)));
   }
 
   /**
    * Get the number of threads to use in Steps computation in local mode.
+   *
    * @return the number of threads to use
    */
   public int getLocalThreadsNumber() {
 
-    return Integer.parseInt(this.properties.getProperty(LOCAL_THREADS_NUMBER,
-        "" + Runtime.getRuntime().availableProcessors()));
+    return Integer.parseInt(
+        this.properties.getProperty(
+            LOCAL_THREADS_NUMBER, "" + Runtime.getRuntime().availableProcessors()));
   }
 
   /**
    * Get the default fastq format.
+   *
    * @return the default fastq format
    */
   public FastqFormat getDefaultFastqFormat() {
 
-    return FastqFormat.getFormatFromName(this.properties.getProperty(
-        DEFAULT_FASTQ_FORMAT_KEY, Globals.FASTQ_FORMAT_DEFAULT.getName()));
+    return FastqFormat.getFormatFromName(
+        this.properties.getProperty(
+            DEFAULT_FASTQ_FORMAT_KEY, Globals.FASTQ_FORMAT_DEFAULT.getName()));
   }
 
   /**
    * Test if the platform checking must be avoided at Eoulsan startup.
+   *
    * @return true if the platform checking must be avoided
    */
   public boolean isBypassPlatformChecking() {
 
-    return Boolean.parseBoolean(
-        this.properties.getProperty(BYPASS_PLATFORM_CHECKING_KEY));
+    return Boolean.parseBoolean(this.properties.getProperty(BYPASS_PLATFORM_CHECKING_KEY));
   }
 
   /**
    * Get the genome mapper index storage path.
+   *
    * @return the path to genome mapper index storage path
    */
   public String getGenomeMapperIndexStoragePath() {
@@ -438,6 +434,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the genome description storage path.
+   *
    * @return the path to genome description storage path
    */
   public String getGenomeDescStoragePath() {
@@ -447,6 +444,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the genome storage path.
+   *
    * @return the path to genome storage path
    */
   public String getGenomeStoragePath() {
@@ -456,6 +454,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the GFF storage path.
+   *
    * @return the path to GFF storage path
    */
   public String getGFFStoragePath() {
@@ -465,6 +464,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the GTF storage path.
+   *
    * @return the path to GTF storage path
    */
   public String getGTFStoragePath() {
@@ -474,6 +474,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the additional annotation storage path.
+   *
    * @return the path to the additional annotation storage path
    */
   public String getAdditionalAnnotationStoragePath() {
@@ -483,26 +484,27 @@ public final class Settings implements Serializable {
 
   /**
    * Get the additional annotation hypertext links path.
+   *
    * @return the additional annotation hypertext links path
    */
   public String getAdditionalAnnotationHypertextLinksPath() {
 
-    return this.properties
-        .getProperty(ADDITIONAL_ANNOTATION_HYPERTEXT_LINKS_KEY);
+    return this.properties.getProperty(ADDITIONAL_ANNOTATION_HYPERTEXT_LINKS_KEY);
   }
 
   /**
    * Test if an email must be sent at the end of the analysis.
+   *
    * @return true if an email must be sent at the end of the analysis
    */
   public boolean isSendResultMail() {
 
-    return Boolean
-        .parseBoolean(this.properties.getProperty(SEND_RESULT_MAIL_KEY));
+    return Boolean.parseBoolean(this.properties.getProperty(SEND_RESULT_MAIL_KEY));
   }
 
   /**
    * Get the mail address for eoulsan results.
+   *
    * @return the mail address as a string
    */
   public String getResultMail() {
@@ -512,6 +514,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the name of the SMTP server host.
+   *
    * @return the name of the SMTP server host
    */
   public String getSMTPHost() {
@@ -521,6 +524,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the ZooKeeper connect string.
+   *
    * @return the ZooKeeper connect string
    */
   public String getZooKeeperConnectString() {
@@ -530,39 +534,43 @@ public final class Settings implements Serializable {
 
   /**
    * Get the ZooKeeper default port.
+   *
    * @return the ZooKeeper default port
    */
   public int getZooKeeperDefaultPort() {
 
-    return Integer
-        .parseInt(this.properties.getProperty(ZOOKEEPER_DEFAULT_PORT_KEY,
-            "" + Globals.ZOOKEEPER_DEFAULT_PORT_DEFAULT));
+    return Integer.parseInt(
+        this.properties.getProperty(
+            ZOOKEEPER_DEFAULT_PORT_KEY, "" + Globals.ZOOKEEPER_DEFAULT_PORT_DEFAULT));
   }
 
   /**
    * Get the ZooKeeper session timeout.
+   *
    * @return the ZooKeeper session timeout
    */
   public int getZooKeeperSessionTimeout() {
 
-    return Integer
-        .parseInt(this.properties.getProperty(ZOOKEEPER_SESSION_TIMEOUT_KEY,
-            "" + Globals.ZOOKEEPER_SESSION_TIMEOUT_DEFAULT));
+    return Integer.parseInt(
+        this.properties.getProperty(
+            ZOOKEEPER_SESSION_TIMEOUT_KEY, "" + Globals.ZOOKEEPER_SESSION_TIMEOUT_DEFAULT));
   }
 
   /**
    * Test if Eoulsan result files must be written using the old format.
+   *
    * @return true if Eoulsan result files must be written using the old format
    */
   public boolean isUseOldEoulsanResultFormat() {
 
     return Boolean.parseBoolean(
-        this.properties.getProperty(USE_OLD_EOULSAN_RESULT_FORMAT_KEY,
-            "" + Globals.USE_OLD_EOULSAN_RESULT_FORMAT_DEFAULT));
+        this.properties.getProperty(
+            USE_OLD_EOULSAN_RESULT_FORMAT_KEY, "" + Globals.USE_OLD_EOULSAN_RESULT_FORMAT_DEFAULT));
   }
 
   /**
    * Get the UI name.
+   *
    * @return the UI name
    */
   public String getUIName() {
@@ -572,6 +580,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the Docker backend name.
+   *
    * @return the docker connection string
    */
   public String getDockerBackend() {
@@ -581,6 +590,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the Docker connection string.
+   *
    * @return the docker connection string
    */
   public String getDockerConnection() {
@@ -590,16 +600,17 @@ public final class Settings implements Serializable {
 
   /**
    * Is Docker features are enabled using singularity.
+   *
    * @return true if the Docker features are enabled using Singularity
    */
   public boolean isDockerBySingularityEnabled() {
 
-    return Boolean.parseBoolean(
-        this.properties.getProperty(DOCKER_SINGULARITY_ENABLED_KEY));
+    return Boolean.parseBoolean(this.properties.getProperty(DOCKER_SINGULARITY_ENABLED_KEY));
   }
 
   /**
    * Get the Docker singularity storage path.
+   *
    * @return the path to GFF storage path
    */
   public String getDockerSingularityStoragePath() {
@@ -609,6 +620,7 @@ public final class Settings implements Serializable {
 
   /**
    * Test if a Docker connection has been set.
+   *
    * @return true if a Docker connection has been set
    */
   public boolean isDockerConnectionDefined() {
@@ -624,8 +636,8 @@ public final class Settings implements Serializable {
 
   /**
    * Test if when use Docker, NFS roots must been mounted instead of file paths.
-   * @return true if if when use Docker, NFS roots must been mounted instead of
-   *         file paths
+   *
+   * @return true if if when use Docker, NFS roots must been mounted instead of file paths
    */
   public boolean isDockerMountNFSRoots() {
 
@@ -635,6 +647,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the Docker connection URI.
+   *
    * @return the docker connection URI
    */
   public URI getDockerConnectionURI() {
@@ -654,6 +667,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the format paths.
+   *
    * @return the format path
    */
   public List<String> getDataFormatPaths() {
@@ -678,6 +692,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the Galaxy tool path.
+   *
    * @return the Galaxy tool path
    */
   public List<String> getGalaxyToolPaths() {
@@ -702,37 +717,42 @@ public final class Settings implements Serializable {
 
   /**
    * Get the output tree type.
+   *
    * @return the output tree type
    */
   public String getOutputTreeType() {
 
-    return this.properties.getProperty(OUTPUT_TREE_TYPE,
-        Globals.OUTPUT_TREE_TYPE_DEFAULT);
+    return this.properties.getProperty(OUTPUT_TREE_TYPE, Globals.OUTPUT_TREE_TYPE_DEFAULT);
   }
 
   /**
    * Test if an image of the workflow must be saved.
+   *
    * @return true if an image of the workflow must be saved
    */
   public boolean isSaveWorkflowImage() {
 
-    return Boolean.parseBoolean(this.properties.getProperty(
-        SAVE_WORKFLOW_IMAGE_KEY, "" + Globals.SAVE_WORKFLOW_IMAGE_DEFAULT));
+    return Boolean.parseBoolean(
+        this.properties.getProperty(
+            SAVE_WORKFLOW_IMAGE_KEY, "" + Globals.SAVE_WORKFLOW_IMAGE_DEFAULT));
   }
 
   /**
    * Test if standard external modules must be used.
+   *
    * @return true if standard external modules must be used
    */
   public boolean isUseStandardExternalModules() {
 
     return Boolean.parseBoolean(
-        this.properties.getProperty(STANDARD_EXTERNAL_MODULES_ENABLED_KEY,
+        this.properties.getProperty(
+            STANDARD_EXTERNAL_MODULES_ENABLED_KEY,
             "" + Globals.STANDARD_EXTERNAL_MODULES_ENABLED_DEFAULT));
   }
 
   /**
    * Get a setting value.
+   *
    * @param settingName setting name
    * @return settingName value as a String
    */
@@ -751,6 +771,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the value of the setting as a integer value.
+   *
    * @param settingName setting name
    * @return the value of the setting as an integer
    * @throws EoulsanException if the value is not an integer
@@ -765,7 +786,8 @@ public final class Settings implements Serializable {
     if (value == null) {
       throw new EoulsanException(
           "Invalid parameter, an integer parameter is need for "
-              + settingName + " parameter: null");
+              + settingName
+              + " parameter: null");
     }
 
     try {
@@ -775,19 +797,20 @@ public final class Settings implements Serializable {
 
       throw new EoulsanException(
           "Invalid parameter, an integer parameter is need for "
-              + settingName + " parameter: " + value);
+              + settingName
+              + " parameter: "
+              + value);
     }
-
   }
 
   /**
    * Get the value of the setting as a double value.
+   *
    * @param settingName setting name
    * @return the value of the setting as an double
    * @throws EoulsanException if the value is not an double
    */
-  public double getDoubleSetting(final String settingName)
-      throws EoulsanException {
+  public double getDoubleSetting(final String settingName) throws EoulsanException {
 
     if (settingName == null) {
       throw new EoulsanException("The setting name is null");
@@ -797,7 +820,8 @@ public final class Settings implements Serializable {
     if (value == null) {
       throw new EoulsanException(
           "Invalid parameter, an integer parameter is need for "
-              + settingName + " parameter: null");
+              + settingName
+              + " parameter: null");
     }
 
     try {
@@ -807,13 +831,15 @@ public final class Settings implements Serializable {
 
       throw new EoulsanException(
           "Invalid parameter, an integer parameter is need for "
-              + settingName + " parameter: " + value);
+              + settingName
+              + " parameter: "
+              + value);
     }
-
   }
 
   /**
    * Get the value of the setting as a boolean value.
+   *
    * @param settingName setting name
    * @return the value of the setting as an integer
    */
@@ -824,6 +850,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get a set of settings names.
+   *
    * @return a set with all the name of the settings
    */
   public Set<String> getSettingsNames() {
@@ -845,6 +872,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the debug setting.
+   *
    * @param debug value of the debug setting
    */
   public void setDebug(final boolean debug) {
@@ -854,16 +882,17 @@ public final class Settings implements Serializable {
 
   /**
    * Set the print stack trace setting.
+   *
    * @param printStackTrace value of the print stack trace setting
    */
   public void setPrintStackTrace(final boolean printStackTrace) {
 
-    this.properties.setProperty(PRINT_STACK_TRACE_KEY,
-        Boolean.toString(printStackTrace));
+    this.properties.setProperty(PRINT_STACK_TRACE_KEY, Boolean.toString(printStackTrace));
   }
 
   /**
    * Set the AWS access key.
+   *
    * @param value the AWS access key
    */
   public void setAWSAccessKey(final String value) {
@@ -878,6 +907,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the AWS secret key.
+   *
    * @param value the AWS secret key
    */
   public void setAWSSecretKey(final String value) {
@@ -892,6 +922,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the Hadoop log level.
+   *
    * @param value the HAdoop log level
    */
   public void setHadoopLogLevel(final String value) {
@@ -901,6 +932,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the name of the cluster scheduler.
+   *
    * @param schedulerName the name of the cluster scheduler
    */
   public void setClusterSchedulerName(final String schedulerName) {
@@ -910,6 +942,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the default memory required for the steps in cluster mode.
+   *
    * @param memory the required memory
    */
   public void setDefaultClusterMemoryRequired(final int memory) {
@@ -919,6 +952,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set if RServe is enabled.
+   *
    * @param enable true if the RServe server is enable
    */
   public void setRServeServerEnabled(final boolean enable) {
@@ -928,6 +962,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set if save Rscripts is true
+   *
    * @param krs boolean
    */
   public void setSaveRscript(final boolean krs) {
@@ -937,16 +972,17 @@ public final class Settings implements Serializable {
 
   /**
    * Set if save Rscripts is true
+   *
    * @param keepRServeFiles true if Rserve file must be kept
    */
   public void setKeepRServeFiles(final boolean keepRServeFiles) {
 
-    this.properties.setProperty(RSERVE_KEEP_FILES_KEY,
-        Boolean.toString(keepRServeFiles));
+    this.properties.setProperty(RSERVE_KEEP_FILES_KEY, Boolean.toString(keepRServeFiles));
   }
 
   /**
    * Set the RServe server name.
+   *
    * @param serverName The name of the RServe to use
    */
   public void setRServeServerName(final String serverName) {
@@ -956,6 +992,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the temporary directory.
+   *
    * @param tempDirectory The path to the temporary directory
    */
   public void setTempDirectory(final String tempDirectory) {
@@ -967,40 +1004,40 @@ public final class Settings implements Serializable {
 
   /**
    * Set the temporary directory for executables.
-   * @param executablesTempDirectory The path to the temporary directory for
-   *          executables
+   *
+   * @param executablesTempDirectory The path to the temporary directory for executables
    */
-  public void setExecutablesTempDirectory(
-      final String executablesTempDirectory) {
+  public void setExecutablesTempDirectory(final String executablesTempDirectory) {
 
     if (executablesTempDirectory != null) {
-      this.properties.setProperty(EXECUTABLES_TMP_DIR_KEY,
-          executablesTempDirectory);
+      this.properties.setProperty(EXECUTABLES_TMP_DIR_KEY, executablesTempDirectory);
     }
   }
 
   /**
    * Set if the design must be obfuscated
+   *
    * @param obfuscate true if the design must be obfuscated
    */
   public void setObfuscateDesign(final boolean obfuscate) {
 
-    this.properties.setProperty(OBFUSCATE_DESIGN_KEY,
-        Boolean.toString(obfuscate));
+    this.properties.setProperty(OBFUSCATE_DESIGN_KEY, Boolean.toString(obfuscate));
   }
 
   /**
    * Set if the replicate information must be removed from the design.
+   *
    * @param remove true if the replicate information must be remove
    */
   public void setObfuscateRemoveDesignInfo(final boolean remove) {
 
-    this.properties.setProperty(OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_KEY,
-        Boolean.toString(remove));
+    this.properties.setProperty(
+        OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_KEY, Boolean.toString(remove));
   }
 
   /**
    * Set the number of threads to use in local mode.
+   *
    * @param threadsNumber the number of threads to use in local mode
    */
   public void setLocalThreadsNumber(final int threadsNumber) {
@@ -1009,12 +1046,12 @@ public final class Settings implements Serializable {
       return;
     }
 
-    this.properties.setProperty(LOCAL_THREADS_NUMBER,
-        Integer.toString(threadsNumber));
+    this.properties.setProperty(LOCAL_THREADS_NUMBER, Integer.toString(threadsNumber));
   }
 
   /**
    * Set the Fastq format default value.
+   *
    * @param format the value to set
    */
   public void setDefaultFastqFormat(final FastqFormat format) {
@@ -1028,27 +1065,27 @@ public final class Settings implements Serializable {
 
   /**
    * Set if the platform checking must be avoided.
+   *
    * @param bypass true to bypass the platform checking
    */
   public void setBypassPlatformChecking(final boolean bypass) {
 
-    this.properties.setProperty(BYPASS_PLATFORM_CHECKING_KEY,
-        Boolean.toString(bypass));
+    this.properties.setProperty(BYPASS_PLATFORM_CHECKING_KEY, Boolean.toString(bypass));
   }
 
   /**
    * Set the genome index storage path.
+   *
    * @param genomeMapperIndexStoragePath the path to genome index storage path
    */
-  public void setGenomeMapperIndexStoragePath(
-      final String genomeMapperIndexStoragePath) {
+  public void setGenomeMapperIndexStoragePath(final String genomeMapperIndexStoragePath) {
 
-    this.properties.setProperty(GENOME_MAPPER_INDEX_STORAGE_KEY,
-        genomeMapperIndexStoragePath);
+    this.properties.setProperty(GENOME_MAPPER_INDEX_STORAGE_KEY, genomeMapperIndexStoragePath);
   }
 
   /**
    * Set the genome description storage path.
+   *
    * @param genomeDescStoragePath the path to genome index storage path
    */
   public void setGenomeDescStoragePath(final String genomeDescStoragePath) {
@@ -1058,6 +1095,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the genome storage path.
+   *
    * @param genomeStoragePath the path to genome index storage path
    */
   public void setGenomeStoragePath(final String genomeStoragePath) {
@@ -1067,6 +1105,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the GFF storage path.
+   *
    * @param gffStoragePath the path to GFF index storage path
    */
   public void setGFFStoragePath(final String gffStoragePath) {
@@ -1076,6 +1115,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the GTF storage path.
+   *
    * @param gtfStoragePath the path to GTF index storage path
    */
   public void setGTFStoragePath(final String gtfStoragePath) {
@@ -1085,41 +1125,40 @@ public final class Settings implements Serializable {
 
   /**
    * Set the additional annotation storage path.
-   * @param additionalAnnotationStoragePath the path to the additional
-   *          annotation index storage path
+   *
+   * @param additionalAnnotationStoragePath the path to the additional annotation index storage path
    */
-  public void setAdditionalAnnotationStoragePath(
-      final String additionalAnnotationStoragePath) {
+  public void setAdditionalAnnotationStoragePath(final String additionalAnnotationStoragePath) {
 
-    this.properties.setProperty(ADDITIONAL_ANNOTATION_STORAGE_KEY,
-        additionalAnnotationStoragePath);
+    this.properties.setProperty(ADDITIONAL_ANNOTATION_STORAGE_KEY, additionalAnnotationStoragePath);
   }
 
   /**
    * Set the additional annotation hypertext links path.
-   * @param additionalAnnotationHypertextLinksPath the path to the additional
-   *          annotation hypertext links path
+   *
+   * @param additionalAnnotationHypertextLinksPath the path to the additional annotation hypertext
+   *     links path
    */
   public void setAdditionalAnnotationHypertextLinksPath(
       final String additionalAnnotationHypertextLinksPath) {
 
-    this.properties.setProperty(ADDITIONAL_ANNOTATION_HYPERTEXT_LINKS_KEY,
-        additionalAnnotationHypertextLinksPath);
+    this.properties.setProperty(
+        ADDITIONAL_ANNOTATION_HYPERTEXT_LINKS_KEY, additionalAnnotationHypertextLinksPath);
   }
 
   /**
    * Set if an email must be sent at the end of the analysis.
-   * @param enableSendResultMail true if an email must be sent at the end of the
-   *          analysis
+   *
+   * @param enableSendResultMail true if an email must be sent at the end of the analysis
    */
   public void setSendResultMail(final boolean enableSendResultMail) {
 
-    this.properties.setProperty(SEND_RESULT_MAIL_KEY,
-        Boolean.toString(enableSendResultMail));
+    this.properties.setProperty(SEND_RESULT_MAIL_KEY, Boolean.toString(enableSendResultMail));
   }
 
   /**
    * Set the mail address for eoulsan results.
+   *
    * @param mail the mail address as a string
    */
   public void setResultMail(final String mail) {
@@ -1129,6 +1168,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the SMTP server host.
+   *
    * @param smtpHost the name of the SMTP server host
    */
   public void setSMTPHost(final String smtpHost) {
@@ -1138,6 +1178,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the ZooKeeper connect string.
+   *
    * @param connectString the ZooKeeper connect string
    */
   public void setZooKeeperConnectString(final String connectString) {
@@ -1147,6 +1188,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the ZooKeeper default port.
+   *
    * @param port the ZooKeeper default port
    */
   public void setZooKeeperDefaultPort(final int port) {
@@ -1156,6 +1198,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the ZooKeeper session timeout.
+   *
    * @param timeout the ZooKeeper session timeout
    */
   public void setZooKeeperSessionTimeout(final int timeout) {
@@ -1165,18 +1208,19 @@ public final class Settings implements Serializable {
 
   /**
    * Set if Eoulsan result files must be written using the old format.
-   * @param useOldEoulsanResultFormat true if Eoulsan result files must be
-   *          written using the old format
+   *
+   * @param useOldEoulsanResultFormat true if Eoulsan result files must be written using the old
+   *     format
    */
-  public void setUseOldEoulsanResultFormat(
-      final boolean useOldEoulsanResultFormat) {
+  public void setUseOldEoulsanResultFormat(final boolean useOldEoulsanResultFormat) {
 
-    this.properties.setProperty(USE_OLD_EOULSAN_RESULT_FORMAT_KEY,
-        Boolean.toString(useOldEoulsanResultFormat));
+    this.properties.setProperty(
+        USE_OLD_EOULSAN_RESULT_FORMAT_KEY, Boolean.toString(useOldEoulsanResultFormat));
   }
 
   /**
    * Set the UI name.
+   *
    * @param uiName the UI name
    */
   public void setUIName(final String uiName) {
@@ -1186,6 +1230,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the Docker URI.
+   *
    * @param backend the Docker back-end
    */
   public void setDockerBackEnd(final String backend) {
@@ -1195,6 +1240,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the Docker URI.
+   *
    * @param uri the Docker URI
    */
   public void setDockerConnectionURI(final String uri) {
@@ -1204,6 +1250,7 @@ public final class Settings implements Serializable {
 
   /**
    * Enable Docker features using Singularity
+   *
    * @param enabled true to enable the feature
    */
   public void setDockerBySingularityEnabled(final boolean enabled) {
@@ -1213,6 +1260,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the Docker singularity storage path.
+   *
    * @param storagePath the path to Docker singularity storage path
    */
   public void setDockerSingularityStoragePath(final String storagePath) {
@@ -1222,6 +1270,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set if when use Docker, NFS roots must been mounted instead of file paths.
+   *
    * @param enable the value of the parameter
    */
   public void setDockerMountNFSRoots(final boolean enable) {
@@ -1231,6 +1280,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the format path.
+   *
    * @param path the format
    */
   public void setDataFormatPath(final String path) {
@@ -1240,6 +1290,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the data format paths
+   *
    * @param paths the path to set
    */
   public void setDataFormatPaths(List<String> paths) {
@@ -1263,6 +1314,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the Galaxy tool path.
+   *
    * @param path the format
    */
   public void setGalaxyToolPath(final String path) {
@@ -1272,6 +1324,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the Galaxy tools paths
+   *
    * @param paths the path to set
    */
   public void setGalaxyToolsPaths(List<String> paths) {
@@ -1295,6 +1348,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set the output tree type.
+   *
    * @param outputTreeType the output tree type
    */
   public void setOutputTreeType(final String outputTreeType) {
@@ -1304,6 +1358,7 @@ public final class Settings implements Serializable {
 
   /**
    * Set if an image of the workflow must be saved.
+   *
    * @param save the value
    */
   public void setSaveWorkflowImage(final boolean save) {
@@ -1313,16 +1368,17 @@ public final class Settings implements Serializable {
 
   /**
    * Set if standard external modules must be used.
+   *
    * @param enable the value
    */
   public void setUseStandardExternalModules(final boolean enable) {
 
-    this.properties.getProperty(STANDARD_EXTERNAL_MODULES_ENABLED_KEY,
-        "" + enable);
+    this.properties.getProperty(STANDARD_EXTERNAL_MODULES_ENABLED_KEY, "" + enable);
   }
 
   /**
    * Set a setting value.
+   *
    * @param settingName name of the setting to set
    * @param settingValue value of the setting to set
    */
@@ -1333,12 +1389,13 @@ public final class Settings implements Serializable {
 
   /**
    * Set a setting value.
+   *
    * @param settingName name of the setting to set
    * @param settingValue value of the setting to set
    * @param logChange if true the change will be logged
    */
-  public void setSetting(final String settingName, final String settingValue,
-      final boolean logChange) {
+  public void setSetting(
+      final String settingName, final String settingValue, final boolean logChange) {
 
     if (settingName == null || settingValue == null) {
       return;
@@ -1363,6 +1420,7 @@ public final class Settings implements Serializable {
 
   /**
    * Get the configuration file path.
+   *
    * @return the configuration file path
    */
   public static String getConfigurationFilePath() {
@@ -1372,8 +1430,11 @@ public final class Settings implements Serializable {
 
     if (os.toLowerCase(Globals.DEFAULT_LOCALE).startsWith("windows")) {
       return home
-          + File.separator + "Application Data" + File.separator
-          + Globals.APP_NAME_LOWER_CASE + ".conf";
+          + File.separator
+          + "Application Data"
+          + File.separator
+          + Globals.APP_NAME_LOWER_CASE
+          + ".conf";
     }
 
     return home + File.separator + "." + Globals.APP_NAME_LOWER_CASE;
@@ -1381,6 +1442,7 @@ public final class Settings implements Serializable {
 
   /**
    * Create a property object for javamail smtp configuration from the settings.
+   *
    * @return a property object
    */
   public Properties getJavaMailSMTPProperties() {
@@ -1398,7 +1460,6 @@ public final class Settings implements Serializable {
       if (key != null && key.startsWith(prefix)) {
         result.setProperty(key.substring(keyPosStart), value);
       }
-
     }
 
     return result;
@@ -1406,6 +1467,7 @@ public final class Settings implements Serializable {
 
   /**
    * Save application options.
+   *
    * @throws IOException if an error occurs while writing results
    */
   public void saveSettings() throws IOException {
@@ -1415,6 +1477,7 @@ public final class Settings implements Serializable {
 
   /**
    * Save application options.
+   *
    * @param file File to save
    * @throws IOException if an error occurs while writing settings
    */
@@ -1426,6 +1489,7 @@ public final class Settings implements Serializable {
 
   /**
    * Save application options.
+   *
    * @param file File to save
    * @throws IOException if an error occurs while writing settings
    */
@@ -1433,15 +1497,19 @@ public final class Settings implements Serializable {
 
     try (OutputStream os = Files.newOutputStream(file)) {
 
-      this.properties.store(os,
+      this.properties.store(
+          os,
           " "
-              + Globals.APP_NAME + " version " + Globals.APP_VERSION_STRING
+              + Globals.APP_NAME
+              + " version "
+              + Globals.APP_VERSION_STRING
               + " configuration file");
     }
   }
 
   /**
    * Load application options.
+   *
    * @throws IOException if an error occurs while reading settings
    * @throws EoulsanException if an invalid key is found in configuration file
    */
@@ -1457,12 +1525,12 @@ public final class Settings implements Serializable {
 
   /**
    * Load application options.
+   *
    * @param file file to save
    * @throws IOException if an error occurs while reading the file
    * @throws EoulsanException if an invalid key is found in configuration file
    */
-  public void loadSettings(final File file)
-      throws IOException, EoulsanException {
+  public void loadSettings(final File file) throws IOException, EoulsanException {
 
     requireNonNull(file);
     loadSettings(file.toPath());
@@ -1470,12 +1538,12 @@ public final class Settings implements Serializable {
 
   /**
    * Load application options.
+   *
    * @param file file to save
    * @throws IOException if an error occurs while reading the file
    * @throws EoulsanException if an invalid key is found in configuration file
    */
-  public void loadSettings(final Path file)
-      throws IOException, EoulsanException {
+  public void loadSettings(final Path file) throws IOException, EoulsanException {
 
     getLogger().info("Load configuration file: " + file.toAbsolutePath());
 
@@ -1489,20 +1557,18 @@ public final class Settings implements Serializable {
 
       // Check for forbidden settings
       if (FORBIDDEN_KEYS.contains(key)) {
-        throw new EoulsanException(
-            "Forbiden key found in configuration file: " + key);
+        throw new EoulsanException("Forbiden key found in configuration file: " + key);
       }
 
       // Set the property with the current setting name
-      this.properties.setProperty(checkDeprecatedKey(key),
-          tmpProperties.getProperty(key));
+      this.properties.setProperty(checkDeprecatedKey(key), tmpProperties.getProperty(key));
     }
   }
 
   /**
    * Set the values of the settings with another Settings object.
-   * @param settings Settings object which values must be set in the current
-   *          object
+   *
+   * @param settings Settings object which values must be set in the current object
    */
   public void setSettings(final Settings settings) {
 
@@ -1516,13 +1582,10 @@ public final class Settings implements Serializable {
 
   private void init() {
 
-    getLogger()
-        .info("System temp directory: " + System.getProperty("java.io.tmpdir"));
+    getLogger().info("System temp directory: " + System.getProperty("java.io.tmpdir"));
   }
 
-  /**
-   * Add all the settings to the log.
-   */
+  /** Add all the settings to the log. */
   public void logSettings() {
 
     for (Object key : this.properties.keySet()) {
@@ -1532,6 +1595,7 @@ public final class Settings implements Serializable {
 
   /**
    * Log a setting value.
+   *
    * @param key key to log
    */
   private void logSetting(final String key) {
@@ -1539,13 +1603,13 @@ public final class Settings implements Serializable {
     if (OBFUSCATED_KEYS.contains(key)) {
       getLogger().info("Setting: " + key + "=xxxx value not shown xxxx");
     } else {
-      getLogger()
-          .info("Setting: " + key + "=" + this.properties.getProperty(key));
+      getLogger().info("Setting: " + key + "=" + this.properties.getProperty(key));
     }
   }
 
   /**
    * Get a set with the names of the settings to obfuscate.
+   *
    * @return a set of strings with the name of the settings to obfuscate
    */
   public Set<String> getSettingsKeyToObfuscated() {
@@ -1555,6 +1619,7 @@ public final class Settings implements Serializable {
 
   /**
    * Check deprecated setting key.
+   *
    * @param key the key to check
    * @return the new name of the key if exists or the current key name
    */
@@ -1567,21 +1632,20 @@ public final class Settings implements Serializable {
     final String trimmedKey = key.trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
     switch (trimmedKey) {
+      case "main.accesskey":
+        printWarningRenamedSetting(trimmedKey, AWS_ACCESS_KEY);
+        break;
 
-    case "main.accesskey":
-      printWarningRenamedSetting(trimmedKey, AWS_ACCESS_KEY);
-      break;
+      case "main.awssecretkey":
+        printWarningRenamedSetting(trimmedKey, AWS_SECRET_KEY);
+        break;
 
-    case "main.awssecretkey":
-      printWarningRenamedSetting(trimmedKey, AWS_SECRET_KEY);
-      break;
+      case "main.annotation.storage.path":
+        printWarningRenamedSetting(trimmedKey, GFF_STORAGE_KEY);
+        return GFF_STORAGE_KEY;
 
-    case "main.annotation.storage.path":
-      printWarningRenamedSetting(trimmedKey, GFF_STORAGE_KEY);
-      return GFF_STORAGE_KEY;
-
-    default:
-      return key;
+      default:
+        return key;
     }
 
     return key;
@@ -1589,15 +1653,18 @@ public final class Settings implements Serializable {
 
   /**
    * Print a warning message to inform user that a setting key has been renamed.
+   *
    * @param oldName the old setting key
    * @param newName the new setting key
    */
-  private static void printWarningRenamedSetting(final String oldName,
-      final String newName) {
+  private static void printWarningRenamedSetting(final String oldName, final String newName) {
 
-    Common.printWarning("The global/configuration parameter \""
-        + oldName + "\" is now deprecated. Please use the \"" + newName
-        + "\" parameter instead");
+    Common.printWarning(
+        "The global/configuration parameter \""
+            + oldName
+            + "\" is now deprecated. Please use the \""
+            + newName
+            + "\" parameter instead");
   }
 
   //
@@ -1606,24 +1673,23 @@ public final class Settings implements Serializable {
 
   /**
    * Public constructor. Load application options.
+   *
    * @throws IOException if an error occurs while reading settings
    * @throws EoulsanException if an invalid key is found in configuration file
    */
   Settings() throws IOException, EoulsanException {
 
     this(false);
-
   }
 
   /**
    * Public constructor. Load application options.
-   * @param loadDefaultConfigurationFile true if default configuration file must
-   *          be read
+   *
+   * @param loadDefaultConfigurationFile true if default configuration file must be read
    * @throws IOException if an error occurs while reading settings
    * @throws EoulsanException if an invalid key is found in configuration file
    */
-  Settings(final boolean loadDefaultConfigurationFile)
-      throws IOException, EoulsanException {
+  Settings(final boolean loadDefaultConfigurationFile) throws IOException, EoulsanException {
 
     init();
 
@@ -1634,6 +1700,7 @@ public final class Settings implements Serializable {
 
   /**
    * Public constructor. Load application options.
+   *
    * @param file file to save
    * @throws IOException if an error occurs while reading the file
    * @throws EoulsanException if an invalid key is found in configuration file
@@ -1646,6 +1713,7 @@ public final class Settings implements Serializable {
 
   /**
    * Public constructor. Load application options.
+   *
    * @param file file to save
    * @throws IOException if an error occurs while reading the file
    * @throws EoulsanException if an invalid key is found in configuration file
@@ -1660,5 +1728,4 @@ public final class Settings implements Serializable {
   public String toString() {
     return this.properties.toString();
   }
-
 }

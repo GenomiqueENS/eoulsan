@@ -24,16 +24,15 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.apache.hadoop.conf.Configuration;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.apache.hadoop.conf.Configuration;
 
 /**
  * This class contains utility methods for the Hadoop mapping package classes.
+ *
  * @author Laurent Jourdren
  * @since 1.2
  */
@@ -43,12 +42,13 @@ public class HadoopMappingUtils {
 
   /**
    * Add the parameters to an Hadoop job configuration.
+   *
    * @param parameters parameters to add.
    * @param prefix prefix for the parameters
    * @param jobConf job configuration
    */
-  static void addParametersToJobConf(final Map<String, String> parameters,
-      final String prefix, final Configuration jobConf) {
+  static void addParametersToJobConf(
+      final Map<String, String> parameters, final String prefix, final Configuration jobConf) {
 
     if (parameters == null || jobConf == null || prefix == null) {
       return;
@@ -64,18 +64,17 @@ public class HadoopMappingUtils {
     }
 
     // Set the key with the list of parameters keys as a string
-    jobConf.set(prefix + PARAM_KEYS_LIST_SUFFIX,
-        Joiner.on(',').join(parameters.keySet()));
+    jobConf.set(prefix + PARAM_KEYS_LIST_SUFFIX, Joiner.on(',').join(parameters.keySet()));
   }
 
   /**
    * Retrieve parameters from a job configuration
+   *
    * @param jobConf job configuration
    * @param prefix prefix for the parameters
    * @return a ordered map (LinkedHashMap) with the parameters
    */
-  static Map<String, String> jobConfToParameters(final Configuration jobConf,
-      final String prefix) {
+  static Map<String, String> jobConfToParameters(final Configuration jobConf, final String prefix) {
 
     final Map<String, String> result = new LinkedHashMap<>();
 
@@ -90,8 +89,7 @@ public class HadoopMappingUtils {
     }
 
     // Fill the result map with the parameters keys and values
-    for (String key : Splitter.on(',').omitEmptyStrings().trimResults()
-        .split(keys)) {
+    for (String key : Splitter.on(',').omitEmptyStrings().trimResults().split(keys)) {
 
       final String value = jobConf.get(prefix + key);
 
@@ -101,11 +99,8 @@ public class HadoopMappingUtils {
     return result;
   }
 
-  /**
-   * Private Constructor.
-   */
+  /** Private Constructor. */
   private HadoopMappingUtils() {
     throw new IllegalStateException();
   }
-
 }

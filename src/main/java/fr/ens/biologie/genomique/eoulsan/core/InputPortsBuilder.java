@@ -24,15 +24,15 @@
 
 package fr.ens.biologie.genomique.eoulsan.core;
 
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.kenetre.io.CompressionType;
-
 /**
  * This class allow to easily create input ports for a step.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -45,6 +45,7 @@ public class InputPortsBuilder {
 
   /**
    * Add an input port.
+   *
    * @param name name of the port
    * @param format format of the port
    * @return the instance of the builder
@@ -56,25 +57,28 @@ public class InputPortsBuilder {
 
   /**
    * Add an input port.
+   *
    * @param name name of the port
    * @param list true if a list is excepted as port value
    * @param format format of the port
    * @return the instance of the builder
    */
-  public InputPortsBuilder addPort(final String name, final boolean list,
-      final DataFormat format) {
+  public InputPortsBuilder addPort(final String name, final boolean list, final DataFormat format) {
 
     return addPort(new SimpleInputPort(name, list, format));
   }
 
   /**
    * Add an input port.
+   *
    * @param name name of the port
    * @param format format of the port
    * @param compressionsAccepted compression accepted
    * @return the instance of the builder
    */
-  public InputPortsBuilder addPort(final String name, final DataFormat format,
+  public InputPortsBuilder addPort(
+      final String name,
+      final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted) {
 
     return addPort(new SimpleInputPort(name, format, compressionsAccepted));
@@ -82,85 +86,97 @@ public class InputPortsBuilder {
 
   /**
    * Add an input port.
+   *
    * @param name name of the port
    * @param list true if a list is excepted as port value
    * @param format format of the port
    * @param compressionsAccepted compression accepted
    * @return the instance of the builder
    */
-  public InputPortsBuilder addPort(final String name, final boolean list,
+  public InputPortsBuilder addPort(
+      final String name,
+      final boolean list,
       final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted) {
 
-    return addPort(
-        new SimpleInputPort(name, list, format, compressionsAccepted));
+    return addPort(new SimpleInputPort(name, list, format, compressionsAccepted));
   }
 
   /**
    * Add an input port.
+   *
    * @param name name of the port
    * @param format format of the port
    * @param requiredInWorkingDirectory if data is required in working directory
    * @return the instance of the builder
    */
-  public InputPortsBuilder addPort(final String name, final DataFormat format,
-      final boolean requiredInWorkingDirectory) {
+  public InputPortsBuilder addPort(
+      final String name, final DataFormat format, final boolean requiredInWorkingDirectory) {
 
-    return addPort(
-        new SimpleInputPort(name, format, requiredInWorkingDirectory));
+    return addPort(new SimpleInputPort(name, format, requiredInWorkingDirectory));
   }
 
   /**
    * Add an input port.
+   *
    * @param name name of the port
    * @param list true if a list is excepted as port value
    * @param format format of the port
    * @param requiredInWorkingDirectory if data is required in working directory
    * @return the instance of the builder
    */
-  public InputPortsBuilder addPort(final String name, final boolean list,
-      final DataFormat format, final boolean requiredInWorkingDirectory) {
+  public InputPortsBuilder addPort(
+      final String name,
+      final boolean list,
+      final DataFormat format,
+      final boolean requiredInWorkingDirectory) {
 
-    return addPort(
-        new SimpleInputPort(name, list, format, requiredInWorkingDirectory));
+    return addPort(new SimpleInputPort(name, list, format, requiredInWorkingDirectory));
   }
 
   /**
    * Add an input port.
+   *
    * @param name name of the port
    * @param format format of the port
    * @param compressionsAccepted compression accepted
    * @param requiredInWorkingDirectory if data is required in working directory
    * @return the instance of the builder
    */
-  public InputPortsBuilder addPort(final String name, final DataFormat format,
-      final EnumSet<CompressionType> compressionsAccepted,
-      final boolean requiredInWorkingDirectory) {
-
-    return addPort(new SimpleInputPort(name, format, compressionsAccepted,
-        requiredInWorkingDirectory));
-  }
-
-  /**
-   * Add an input port.
-   * @param name name of the port
-   * @param list true if a list is excepted as port value
-   * @param format format of the port
-   * @param compressionsAccepted compression accepted
-   * @param requiredInWorkingDirectory if data is required in working directory
-   * @return the instance of the builder
-   */
-  public InputPortsBuilder addPort(final String name, final boolean list,
+  public InputPortsBuilder addPort(
+      final String name,
       final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted,
       final boolean requiredInWorkingDirectory) {
 
-    return addPort(new SimpleInputPort(name, list, format, compressionsAccepted,
-        requiredInWorkingDirectory));
+    return addPort(
+        new SimpleInputPort(name, format, compressionsAccepted, requiredInWorkingDirectory));
+  }
+
+  /**
+   * Add an input port.
+   *
+   * @param name name of the port
+   * @param list true if a list is excepted as port value
+   * @param format format of the port
+   * @param compressionsAccepted compression accepted
+   * @param requiredInWorkingDirectory if data is required in working directory
+   * @return the instance of the builder
+   */
+  public InputPortsBuilder addPort(
+      final String name,
+      final boolean list,
+      final DataFormat format,
+      final EnumSet<CompressionType> compressionsAccepted,
+      final boolean requiredInWorkingDirectory) {
+
+    return addPort(
+        new SimpleInputPort(name, list, format, compressionsAccepted, requiredInWorkingDirectory));
   }
 
   /**
    * Create the ports.
+   *
    * @return a new InputPorts object
    */
   public InputPorts create() {
@@ -185,6 +201,7 @@ public class InputPortsBuilder {
 
   /**
    * Create the ports with no ports.
+   *
    * @return a new InputPorts object
    */
   public static InputPorts noInputPort() {
@@ -194,36 +211,34 @@ public class InputPortsBuilder {
 
   /**
    * Convenient method to create the ports with only one port.
+   *
    * @param format format of the port
    * @return a new InputPorts object
    */
   public static InputPorts singleInputPort(final DataFormat format) {
 
-    return new InputPortsBuilder()
-        .addPort(DEFAULT_SINGLE_INPUT_PORT_NAME, format).create();
+    return new InputPortsBuilder().addPort(DEFAULT_SINGLE_INPUT_PORT_NAME, format).create();
   }
 
   /**
    * Convenient method to create the ports with only one port.
+   *
    * @param name of the port
    * @param format data format
    * @return a new InputPorts object
    */
-  public static InputPorts singleInputPort(final String name,
-      final DataFormat format) {
+  public static InputPorts singleInputPort(final String name, final DataFormat format) {
 
     return new InputPortsBuilder().addPort(name, format).create();
   }
 
   /**
-   * Set all ports of an existing input ports to be required in working
-   * directory.
+   * Set all ports of an existing input ports to be required in working directory.
+   *
    * @param inputPorts original input ports
-   * @return a new InputPorts object that ports data are required in working
-   *         directory
+   * @return a new InputPorts object that ports data are required in working directory
    */
-  public static InputPorts allPortsRequiredInWorkingDirectory(
-      final InputPorts inputPorts) {
+  public static InputPorts allPortsRequiredInWorkingDirectory(final InputPorts inputPorts) {
 
     if (inputPorts == null) {
       return null;
@@ -240,6 +255,7 @@ public class InputPortsBuilder {
 
   /**
    * Convenient method to create a defensive copy of an InputPorts object.
+   *
    * @param ports an existing OutputPorts object
    * @return a new InputPorts object or null if the ports parameter is null
    */
@@ -256,5 +272,4 @@ public class InputPortsBuilder {
 
     return builder.create();
   }
-
 }

@@ -26,9 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.Serializable;
-import java.util.logging.Logger;
-
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -37,9 +34,12 @@ import fr.ens.biologie.genomique.eoulsan.core.Workflow;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.kenetre.log.GenericLogger;
 import fr.ens.biologie.genomique.kenetre.util.SystemUtils;
+import java.io.Serializable;
+import java.util.logging.Logger;
 
 /**
  * This class define the context implementation.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -69,6 +69,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the local working directory.
+   *
    * @return Returns the local working path
    */
   public DataFile getLocalWorkingDirectory() {
@@ -78,6 +79,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the local working directory.
+   *
    * @return Returns the local working directory
    */
   public DataFile getHadoopWorkingDirectory() {
@@ -87,6 +89,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the output directory.
+   *
    * @return Returns the output directory
    */
   public DataFile getOutputDirectory() {
@@ -96,6 +99,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the job path.
+   *
    * @return Returns the log Path
    */
   public DataFile getJobDirectory() {
@@ -105,6 +109,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the task directory.
+   *
    * @return Returns the task directory
    */
   public DataFile getTaskDirectory() {
@@ -114,6 +119,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the data repository directory.
+   *
    * @return Returns the data repository directory
    */
   public DataFile getDataRepositoryDirectory() {
@@ -123,6 +129,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the job id.
+   *
    * @return the job id
    */
   public String getJobId() {
@@ -131,6 +138,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the host of the job.
+   *
    * @return a string with the host of the job
    */
   public String getJobHost() {
@@ -139,8 +147,8 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the creation time of the context.
-   * @return the creation time of the context in milliseconds since epoch
-   *         (1.1.1970)
+   *
+   * @return the creation time of the context in milliseconds since epoch (1.1.1970)
    */
   public long getContextCreationTime() {
     return this.contextCreationTime;
@@ -148,6 +156,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the design file.
+   *
    * @return the design file
    */
   public DataFile getDesignFile() {
@@ -156,6 +165,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the workflow file.
+   *
    * @return the workflow file
    */
   public DataFile getWorkflowFile() {
@@ -164,6 +174,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the application jar file.
+   *
    * @return Returns the jar file
    */
   public DataFile getJarFile() {
@@ -172,6 +183,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the UUID of the job.
+   *
    * @return the job UUID
    */
   public String getJobUUID() {
@@ -180,6 +192,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the job description.
+   *
    * @return the job description
    */
   public String getJobDescription() {
@@ -188,6 +201,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the job environment.
+   *
    * @return the job environment
    */
   public String getJobEnvironment() {
@@ -196,6 +210,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the command name.
+   *
    * @return the command name
    */
   public String getCommandName() {
@@ -204,6 +219,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get command description.
+   *
    * @return the command description
    */
   public String getCommandDescription() {
@@ -212,6 +228,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the command author.
+   *
    * @return the command author
    */
   public String getCommandAuthor() {
@@ -220,6 +237,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the workflow description.
+   *
    * @return the workflow description
    */
   public Workflow getWorkflow() {
@@ -233,6 +251,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Set the design file.
+   *
    * @param designFile The design file to set
    */
   public void setDesignFile(final DataFile designFile) {
@@ -242,6 +261,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Set the workflow file.
+   *
    * @param workflowFile The workflow file to set
    */
   public void setWorkflowFile(final DataFile workflowFile) {
@@ -251,6 +271,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Set the jar file.
+   *
    * @param jarFile The jar file to set
    */
   public void setJarFile(final DataFile jarFile) {
@@ -260,6 +281,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Set command name
+   *
    * @param commandName the command name
    */
   void setCommandName(final String commandName) {
@@ -269,6 +291,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Set command description
+   *
    * @param commandDescription the command name
    */
   void setCommandDescription(final String commandDescription) {
@@ -278,6 +301,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Set command author
+   *
    * @param commandAuthor the command name
    */
   void setCommandAuthor(final String commandAuthor) {
@@ -291,6 +315,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get EoulsanRuntime.
+   *
    * @return the EoulsanRuntime
    */
   public AbstractEoulsanRuntime getRuntime() {
@@ -300,6 +325,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get Eoulsan settings.
+   *
    * @return the Settings
    */
   public Settings getSettings() {
@@ -309,6 +335,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the logger.
+   *
    * @return the logger
    */
   public Logger getLogger() {
@@ -318,6 +345,7 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Get the generic logger.
+   *
    * @return the generic logger
    */
   public GenericLogger getGenericLogger() {
@@ -331,13 +359,12 @@ public class WorkflowContext implements Serializable {
 
   /**
    * Constructor.
+   *
    * @param arguments arguments object
    */
-  WorkflowContext(final ExecutorArguments arguments,
-      final AbstractWorkflow workflow) {
+  WorkflowContext(final ExecutorArguments arguments, final AbstractWorkflow workflow) {
 
-    requireNonNull(arguments.getLocalWorkingPathname(),
-        "arguments cannot be null");
+    requireNonNull(arguments.getLocalWorkingPathname(), "arguments cannot be null");
     requireNonNull(workflow, "workflow cannot be null");
 
     this.workflow = workflow;
@@ -346,22 +373,17 @@ public class WorkflowContext implements Serializable {
     this.contextCreationTime = arguments.getCreationTime();
     this.host = SystemUtils.getHostName();
 
-    requireNonNull(arguments.getLocalWorkingPathname(),
-        "base path cannot be null");
-    requireNonNull(arguments.getWorkflowPathname(),
-        "parameter path cannot be null");
+    requireNonNull(arguments.getLocalWorkingPathname(), "base path cannot be null");
+    requireNonNull(arguments.getWorkflowPathname(), "parameter path cannot be null");
     requireNonNull(arguments.getDesignPathname(), "design cannot be null");
     requireNonNull(arguments.getOutputPathname(), "output path cannot be null");
     requireNonNull(arguments.getJobPathname(), "log path cannot be null");
-    requireNonNull(arguments.getJobDescription(),
-        "job description cannot be null");
-    requireNonNull(arguments.getJobEnvironment(),
-        "job environment cannot be null");
+    requireNonNull(arguments.getJobDescription(), "job description cannot be null");
+    requireNonNull(arguments.getJobEnvironment(), "job environment cannot be null");
 
     this.workflowFile = new DataFile(arguments.getWorkflowPathname());
     this.designFile = new DataFile(arguments.getDesignPathname());
     this.jobDescription = arguments.getJobDescription();
     this.jobEnvironment = arguments.getJobEnvironment();
   }
-
 }

@@ -24,6 +24,14 @@
 
 package fr.ens.biologie.genomique.eoulsan.data.protocols;
 
+import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -40,17 +48,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
-import fr.ens.biologie.genomique.kenetre.io.CompressionType;
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
-import fr.ens.biologie.genomique.kenetre.util.StringUtils;
-
 /**
  * This class implements a File Protocol.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -123,20 +123,20 @@ public class FileDataProtocol extends AbstractDataProtocol {
     result.setContentLength(f.length());
     result.setLastModified(f.lastModified());
 
-    final DataFormat format = DataFormatRegistry.getInstance()
-        .getDataFormatFromFilename(src.getName());
+    final DataFormat format =
+        DataFormatRegistry.getInstance().getDataFormatFromFilename(src.getName());
 
     result.setDataFormat(format);
 
     if (format != null) {
       result.setContentType(format.getContentType());
     } else {
-      result.setContentType(StringUtils.getCommonContentTypeFromExtension(
-          StringUtils.extensionWithoutCompressionExtension(src.getName())));
+      result.setContentType(
+          StringUtils.getCommonContentTypeFromExtension(
+              StringUtils.extensionWithoutCompressionExtension(src.getName())));
     }
 
-    final CompressionType ct =
-        CompressionType.getCompressionTypeByFilename(src.getSource());
+    final CompressionType ct = CompressionType.getCompressionTypeByFilename(src.getSource());
 
     if (ct != null) {
       result.setContentEncoding(ct.getContentEncoding());
@@ -153,8 +153,8 @@ public class FileDataProtocol extends AbstractDataProtocol {
     return result;
   }
 
-  private static void setLinkTargetInMetadata(
-      final SimpleDataFileMetadata result, Path link) throws IOException {
+  private static void setLinkTargetInMetadata(final SimpleDataFileMetadata result, Path link)
+      throws IOException {
 
     try {
       result.setSymbolicLink(new DataFile(Files.readSymbolicLink(link)));
@@ -170,8 +170,7 @@ public class FileDataProtocol extends AbstractDataProtocol {
 
     final Path path = getSourceAsFile(src).toPath();
 
-    return followLink
-        ? Files.exists(path) : Files.exists(path, LinkOption.NOFOLLOW_LINKS);
+    return followLink ? Files.exists(path) : Files.exists(path, LinkOption.NOFOLLOW_LINKS);
   }
 
   @Override
@@ -194,7 +193,6 @@ public class FileDataProtocol extends AbstractDataProtocol {
     if (!file.mkdir()) {
       throw new IOException("Unable to create the directory: " + dir);
     }
-
   }
 
   @Override
@@ -214,8 +212,7 @@ public class FileDataProtocol extends AbstractDataProtocol {
   }
 
   @Override
-  public void symlink(final DataFile target, final DataFile link)
-      throws IOException {
+  public void symlink(final DataFile target, final DataFile link) throws IOException {
 
     if (target == null) {
       throw new NullPointerException("target argument is null");
@@ -230,13 +227,12 @@ public class FileDataProtocol extends AbstractDataProtocol {
     }
 
     if (target.getProtocol() != this) {
-      throw new IOException("the protocol of the target is not "
-          + getName() + " protocol: " + target);
+      throw new IOException(
+          "the protocol of the target is not " + getName() + " protocol: " + target);
     }
 
     if (link.getProtocol() != this) {
-      throw new IOException("the protocol of the link is not "
-          + getName() + " protocol: " + link);
+      throw new IOException("the protocol of the link is not " + getName() + " protocol: " + link);
     }
 
     final Path targetPath = target.toFile().toPath();
@@ -252,8 +248,7 @@ public class FileDataProtocol extends AbstractDataProtocol {
   }
 
   @Override
-  public void delete(final DataFile file, final boolean recursive)
-      throws IOException {
+  public void delete(final DataFile file, final boolean recursive) throws IOException {
 
     final Path path = getSourceAsFile(file).toPath();
 
@@ -270,33 +265,31 @@ public class FileDataProtocol extends AbstractDataProtocol {
     }
 
     // Remove recursively a directory
-    Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+    Files.walkFileTree(
+        path,
+        new SimpleFileVisitor<Path>() {
 
-      @Override
-      public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-          throws IOException {
+          @Override
+          public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+              throws IOException {
 
-        Files.delete(file);
-        return FileVisitResult.CONTINUE;
-      }
+            Files.delete(file);
+            return FileVisitResult.CONTINUE;
+          }
 
-      @Override
-      public FileVisitResult postVisitDirectory(Path dir, IOException e)
-          throws IOException {
+          @Override
+          public FileVisitResult postVisitDirectory(Path dir, IOException e) throws IOException {
 
-        Files.delete(dir);
-        return FileVisitResult.CONTINUE;
-      }
+            Files.delete(dir);
+            return FileVisitResult.CONTINUE;
+          }
 
-      @Override
-      public FileVisitResult visitFileFailed(Path file, IOException e)
-          throws IOException {
+          @Override
+          public FileVisitResult visitFileFailed(Path file, IOException e) throws IOException {
 
-        throw new IOException("Cannot remove file: " + file);
-      }
-
-    });
-
+            throw new IOException("Cannot remove file: " + file);
+          }
+        });
   }
 
   @Override
@@ -342,16 +335,14 @@ public class FileDataProtocol extends AbstractDataProtocol {
   }
 
   @Override
-  public void rename(final DataFile src, final DataFile dest)
-      throws IOException {
+  public void rename(final DataFile src, final DataFile dest) throws IOException {
 
     if (dest == null) {
       throw new NullPointerException("dest argument is null");
     }
 
     if (dest.getProtocol() != this) {
-      throw new IOException("the protocol of the dest is not "
-          + getName() + " protocol: " + dest);
+      throw new IOException("the protocol of the dest is not " + getName() + " protocol: " + dest);
     }
 
     final File file = getSourceAsFile(src);
@@ -367,5 +358,4 @@ public class FileDataProtocol extends AbstractDataProtocol {
 
     return true;
   }
-
 }

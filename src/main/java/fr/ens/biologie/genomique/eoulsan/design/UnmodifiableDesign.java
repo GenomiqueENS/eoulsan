@@ -115,8 +115,7 @@ class UnmodifiableDesign implements Design, Serializable {
   @Override
   public List<Experiment> getExperimentsUsingASample(Sample sampleId) {
 
-    List<Experiment> experiments =
-        this.design.getExperimentsUsingASample(sampleId);
+    List<Experiment> experiments = this.design.getExperimentsUsingASample(sampleId);
     List<Experiment> result = new ArrayList<>(experiments.size());
 
     for (Experiment experiment : experiments) {
@@ -144,5 +143,4 @@ class UnmodifiableDesign implements Design, Serializable {
 
     this.design = design;
   }
-
 }

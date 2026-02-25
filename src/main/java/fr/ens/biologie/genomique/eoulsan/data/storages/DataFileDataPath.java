@@ -26,6 +26,11 @@ package fr.ens.biologie.genomique.eoulsan.data.storages;
 
 import static java.util.Objects.requireNonNull;
 
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
+import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import fr.ens.biologie.genomique.kenetre.storage.DataPath;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,25 +39,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
-import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
-import fr.ens.biologie.genomique.kenetre.storage.DataPath;
-
 /**
- * This class define a bridge between Kenetre DataPath objects and Eoulsan
- * DataFile objects.
+ * This class define a bridge between Kenetre DataPath objects and Eoulsan DataFile objects.
+ *
  * @since 2.6
  * @author Laurent Jourdren
  */
-public class DataFileDataPath
-    implements DataPath, Comparable<DataFileDataPath> {
+public class DataFileDataPath implements DataPath, Comparable<DataFileDataPath> {
 
   private final DataFile file;
 
   /**
    * Get the DataFile.
+   *
    * @return the DataFile object
    */
   public DataFile getDataFile() {
@@ -214,6 +213,7 @@ public class DataFileDataPath
 
   /**
    * Constructor.
+   *
    * @param source source of the DataFile
    */
   public DataFileDataPath(String source) {
@@ -225,6 +225,7 @@ public class DataFileDataPath
 
   /**
    * Constructor.
+   *
    * @param file DataFile object to wrap
    */
   public DataFileDataPath(DataFile file) {
@@ -236,6 +237,7 @@ public class DataFileDataPath
 
   /**
    * Constructor.
+   *
    * @param parent parent DataFile
    * @param filename filename
    */
@@ -245,13 +247,11 @@ public class DataFileDataPath
     requireNonNull(filename);
 
     if (!(parent instanceof DataFileDataPath)) {
-      throw new IllegalArgumentException(
-          "parent is not a DataFileDataPath object");
+      throw new IllegalArgumentException("parent is not a DataFileDataPath object");
     }
 
     DataFileDataPath p = (DataFileDataPath) parent;
 
     this.file = new DataFile(p.file, filename);
   }
-
 }

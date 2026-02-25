@@ -33,6 +33,7 @@ import java.util.Arrays;
 
 /**
  * This class define a ticket for the TicketLocker.
+ *
  * @since 1.1
  * @author Laurent Jourdren
  */
@@ -106,15 +107,15 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
     final Ticket t = (Ticket) o;
 
     return this.creationTime == t.creationTime
-        && this.nanoCreationTime == t.nanoCreationTime && this.pid == t.pid
+        && this.nanoCreationTime == t.nanoCreationTime
+        && this.pid == t.pid
         && this.threadId == t.threadId;
   }
 
   @Override
   public int hashCode() {
 
-    return hashCode(this.creationTime, this.nanoCreationTime, this.pid,
-        this.threadId);
+    return hashCode(this.creationTime, this.nanoCreationTime, this.pid, this.threadId);
   }
 
   @Override
@@ -132,8 +133,7 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
     }
 
     // Compare Nano creation time
-    final int comp2 =
-        Long.compare(this.nanoCreationTime, ticket.nanoCreationTime);
+    final int comp2 = Long.compare(this.nanoCreationTime, ticket.nanoCreationTime);
     if (comp2 != 0) {
       return comp2;
     }
@@ -150,20 +150,28 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
   @Override
   public String toString() {
 
-    final DateTimeFormatter timeFormatter = DateTimeFormatter
-        .ofPattern("HH:mm:ss.SSS").withZone(ZoneId.systemDefault());
+    final DateTimeFormatter timeFormatter =
+        DateTimeFormatter.ofPattern("HH:mm:ss.SSS").withZone(ZoneId.systemDefault());
 
     Instant creationInstant = Instant.ofEpochMilli(this.creationTime);
     Instant lastActiveInstant = Instant.ofEpochMilli(this.lastActiveTime);
-    Instant uptimeInstant =
-        Instant.ofEpochMilli(System.currentTimeMillis() - this.creationTime);
+    Instant uptimeInstant = Instant.ofEpochMilli(System.currentTimeMillis() - this.creationTime);
 
     return timeFormatter.format(creationInstant)
-        + " " + timeFormatter.format(lastActiveInstant) + " "
-        + timeFormatter.format(uptimeInstant) + " " + " "
-        + (this.working ? "WORKING" : "NOT WORKING") + " [" + this.pid + '.'
-        + this.threadId + " "
-        + (this.description != null ? this.description : "") + "]";
+        + " "
+        + timeFormatter.format(lastActiveInstant)
+        + " "
+        + timeFormatter.format(uptimeInstant)
+        + " "
+        + " "
+        + (this.working ? "WORKING" : "NOT WORKING")
+        + " ["
+        + this.pid
+        + '.'
+        + this.threadId
+        + " "
+        + (this.description != null ? this.description : "")
+        + "]";
   }
 
   //
@@ -192,29 +200,43 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
   }
 
   public Ticket(final String description) {
-    this(getCurrentPid(), Thread.currentThread().getId(),
-        System.currentTimeMillis(), System.nanoTime(), description, -1, false);
+    this(
+        getCurrentPid(),
+        Thread.currentThread().getId(),
+        System.currentTimeMillis(),
+        System.nanoTime(),
+        description,
+        -1,
+        false);
   }
 
   public Ticket(final Ticket ticket) {
 
-    this(ticket.pid, ticket.threadId, ticket.creationTime,
-        ticket.nanoCreationTime, ticket.description, ticket.lastActiveTime,
+    this(
+        ticket.pid,
+        ticket.threadId,
+        ticket.creationTime,
+        ticket.nanoCreationTime,
+        ticket.description,
+        ticket.lastActiveTime,
         ticket.working);
   }
 
-  public Ticket(final int pid, final long threadId, final long creationTime,
-      final long nanoCreationTime, final String description,
-      final long lastActiveTime, final boolean working) {
+  public Ticket(
+      final int pid,
+      final long threadId,
+      final long creationTime,
+      final long nanoCreationTime,
+      final String description,
+      final long lastActiveTime,
+      final boolean working) {
 
     this.pid = pid;
     this.threadId = threadId;
     this.creationTime = creationTime;
     this.nanoCreationTime = nanoCreationTime;
     this.description = description;
-    this.lastActiveTime =
-        lastActiveTime == -1 ? this.creationTime : lastActiveTime;
+    this.lastActiveTime = lastActiveTime == -1 ? this.creationTime : lastActiveTime;
     this.working = working;
   }
-
 }

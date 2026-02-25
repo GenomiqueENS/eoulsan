@@ -24,12 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.design.io;
 
-import java.io.IOException;
-
 import fr.ens.biologie.genomique.eoulsan.design.Design;
+import java.io.IOException;
 
 /**
  * This interface define a DesignReader.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -37,6 +37,7 @@ public interface DesignReader {
 
   /**
    * Read the design.
+   *
    * @return a new Design object
    * @throws IOException if an error occurs while reading the design
    */

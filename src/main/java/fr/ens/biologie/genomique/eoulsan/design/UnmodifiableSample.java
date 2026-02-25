@@ -57,5 +57,4 @@ class UnmodifiableSample implements Sample, Serializable {
 
     this.sample = sample;
   }
-
 }

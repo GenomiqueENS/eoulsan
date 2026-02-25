@@ -1,5 +1,13 @@
 package fr.ens.biologie.genomique.eoulsan.util.r;
 
+import com.google.common.base.Joiner;
+import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
+import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.process.SimpleProcess;
+import fr.ens.biologie.genomique.kenetre.util.process.SystemSimpleProcess;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -14,18 +22,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.Joiner;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
-import fr.ens.biologie.genomique.eoulsan.util.ProcessUtils;
-import fr.ens.biologie.genomique.kenetre.util.StringUtils;
-import fr.ens.biologie.genomique.kenetre.util.process.SimpleProcess;
-import fr.ens.biologie.genomique.kenetre.util.process.SystemSimpleProcess;
-
 /**
  * This class define a standard RExecutor using a system process.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -47,8 +46,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
   }
 
   @Override
-  protected void putFile(final DataFile inputFile, final String outputFilename)
-      throws IOException {
+  protected void putFile(final DataFile inputFile, final String outputFilename) throws IOException {
 
     final Path outputDir = getOutputDirectory().toAbsolutePath();
     final DataFile outputFile = new DataFile(outputDir, outputFilename);
@@ -62,19 +60,16 @@ public class ProcessRExecutor extends AbstractRExecutor {
       throw new IOException("The output file already exists: " + outputFile);
     }
 
-    if (!inputFile.isLocalFile()
-        || inputFile.getCompressionType().isCompressed()) {
+    if (!inputFile.isLocalFile() || inputFile.getCompressionType().isCompressed()) {
 
       // Copy the file if the file is not on local file system or compressed
       DataFiles.copy(inputFile, outputFile);
 
     } else {
 
-      final File parentDir =
-          inputFile.toFile().getParentFile().getAbsoluteFile();
+      final File parentDir = inputFile.toFile().getParentFile().getAbsoluteFile();
 
-      if (!parentDir.equals(outputDir.toFile())
-          || !inputFile.getName().equals(outputFilename)) {
+      if (!parentDir.equals(outputDir.toFile()) || !inputFile.getName().equals(outputFilename)) {
 
         // If the output file is not in the same directory that the original
         // file or its filename is different, create a symbolic link
@@ -83,12 +78,10 @@ public class ProcessRExecutor extends AbstractRExecutor {
         this.filenamesToKeep.add(outputFilename);
       }
     }
-
   }
 
   @Override
-  public void writeFile(final String content, final String outputFilename)
-      throws IOException {
+  public void writeFile(final String content, final String outputFilename) throws IOException {
 
     if (content == null) {
       throw new NullPointerException("content argument cannot be null");
@@ -98,15 +91,13 @@ public class ProcessRExecutor extends AbstractRExecutor {
       throw new NullPointerException("outputFilename argument cannot be null");
     }
 
-    final DataFile outputFile =
-        new DataFile(getOutputDirectory(), outputFilename);
+    final DataFile outputFile = new DataFile(getOutputDirectory(), outputFilename);
 
     if (outputFile.exists()) {
       throw new IOException("The output file already exists: " + outputFile);
     }
 
-    try (Writer writer =
-        new OutputStreamWriter(outputFile.create(), Charset.defaultCharset())) {
+    try (Writer writer = new OutputStreamWriter(outputFile.create(), Charset.defaultCharset())) {
       writer.write(content);
     }
   }
@@ -129,13 +120,16 @@ public class ProcessRExecutor extends AbstractRExecutor {
 
   /**
    * Create R command.
+   *
    * @param rScriptFile the R script file to execute
    * @param sweave true if the script is a Sweave file
    * @param scriptArguments script arguments
    * @return the R command as a list
    */
-  protected List<String> createCommand(final Path rScriptFile,
-      final boolean sweave, final String sweaveOuput,
+  protected List<String> createCommand(
+      final Path rScriptFile,
+      final boolean sweave,
+      final String sweaveOuput,
       final String... scriptArguments) {
 
     final List<String> result = new ArrayList<>();
@@ -171,6 +165,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
 
   /**
    * Create the process that will execute the R Script.
+   *
    * @return a SimpleProcess object
    * @throws IOException if an error occurs when creation the process object
    */
@@ -180,9 +175,13 @@ public class ProcessRExecutor extends AbstractRExecutor {
   }
 
   @Override
-  protected void executeRScript(final Path rScriptFile, final boolean sweave,
-      final String sweaveOuput, final Path workflowOutputDir,
-      final String... scriptArguments) throws IOException {
+  protected void executeRScript(
+      final Path rScriptFile,
+      final boolean sweave,
+      final String sweaveOuput,
+      final Path workflowOutputDir,
+      final String... scriptArguments)
+      throws IOException {
 
     final SimpleProcess process = createSimpleProcess();
 
@@ -191,46 +190,52 @@ public class ProcessRExecutor extends AbstractRExecutor {
 
     final Path stdoutFile = changeFileExtension(rScriptFile, ".out");
 
-    final int exitValue = process.execute(commandLine, getOutputDirectory().toFile(),
-        Collections.singletonMap(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG),
-        getTemporaryDirectory().toFile(), stdoutFile.toFile(), stdoutFile.toFile(), true,
-        workflowOutputDir.toFile());
+    final int exitValue =
+        process.execute(
+            commandLine,
+            getOutputDirectory().toFile(),
+            Collections.singletonMap(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG),
+            getTemporaryDirectory().toFile(),
+            stdoutFile.toFile(),
+            stdoutFile.toFile(),
+            true,
+            workflowOutputDir.toFile());
 
-    ProcessUtils.throwExitCodeException(exitValue,
-        Joiner.on(' ').join(commandLine));
+    ProcessUtils.throwExitCodeException(exitValue, Joiner.on(' ').join(commandLine));
   }
 
   @Override
-  public void executeR(String code, File workflowOutputDir)
-      throws IOException {
+  public void executeR(String code, File workflowOutputDir) throws IOException {
 
     final SimpleProcess process = createSimpleProcess();
 
-    final List<String> commandLine =
-        Arrays.asList(RSCRIPT_EXECUTABLE, "-e", code);
+    final List<String> commandLine = Arrays.asList(RSCRIPT_EXECUTABLE, "-e", code);
 
-    final File stdoutFile = getOutputDirectory()
-        .resolve("R-" + System.currentTimeMillis() + ".out").toFile();
+    final File stdoutFile =
+        getOutputDirectory().resolve("R-" + System.currentTimeMillis() + ".out").toFile();
 
     final int exitValue =
-        process.execute(commandLine, getOutputDirectory().toFile(),
+        process.execute(
+            commandLine,
+            getOutputDirectory().toFile(),
             Collections.singletonMap(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG),
-            getTemporaryDirectory().toFile(), stdoutFile, stdoutFile, true,
+            getTemporaryDirectory().toFile(),
+            stdoutFile,
+            stdoutFile,
+            true,
             workflowOutputDir);
 
-    ProcessUtils.throwExitCodeException(exitValue,
-        Joiner.on(' ').join(commandLine));
-
+    ProcessUtils.throwExitCodeException(exitValue, Joiner.on(' ').join(commandLine));
   }
 
   /**
    * Change the extendsion of a file
+   *
    * @param file the file
    * @param newExtension the new extension of the file
    * @return a file object
    */
-  protected static Path changeFileExtension(final Path file,
-      final String newExtension) {
+  protected static Path changeFileExtension(final Path file, final String newExtension) {
 
     if (file == null) {
       return null;
@@ -241,8 +246,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
     }
 
     final String newFilename =
-        StringUtils.filenameWithoutExtension(file.getFileName().toString())
-            + newExtension;
+        StringUtils.filenameWithoutExtension(file.getFileName().toString()) + newExtension;
 
     return file.getParent().resolve(newFilename);
   }
@@ -261,6 +265,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
 
   /**
    * Check if two file have the same local path
+   *
    * @param a first file
    * @param b second file
    * @return true if the file have the same local file
@@ -288,13 +293,13 @@ public class ProcessRExecutor extends AbstractRExecutor {
 
   /**
    * Constructor.
+   *
    * @param outputDirectory the output directory
    * @param temporaryDirectory the temporary directory
    * @throws IOException if an error occurs while creating the object
    */
-  protected ProcessRExecutor(final File outputDirectory,
-      final File temporaryDirectory) throws IOException {
+  protected ProcessRExecutor(final File outputDirectory, final File temporaryDirectory)
+      throws IOException {
     super(outputDirectory, temporaryDirectory);
   }
-
 }

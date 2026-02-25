@@ -27,16 +27,15 @@ package fr.ens.biologie.genomique.eoulsan.design;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.MoreObjects;
+import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.google.common.base.MoreObjects;
-
-import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
-
 /**
  * This class defines the default implementation of a sample.
+ *
  * @author Xavier Bauquet
  * @since 2.0
  */
@@ -103,7 +102,8 @@ class SampleImpl implements Serializable, Sample {
       return;
     }
 
-    checkArgument(!this.design.containsSampleName(name),
+    checkArgument(
+        !this.design.containsSampleName(name),
         "The sample name already exists in the design: " + name);
 
     this.sampleName = name;
@@ -116,10 +116,12 @@ class SampleImpl implements Serializable, Sample {
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this).add("sampleId", this.sampleId)
+    return MoreObjects.toStringHelper(this)
+        .add("sampleId", this.sampleId)
         .add("sampleNumber", this.sampleNumber)
         .add("sampleName", this.sampleName)
-        .add("sampleMetadata", this.sampleMetadata).toString();
+        .add("sampleMetadata", this.sampleMetadata)
+        .toString();
   }
 
   @Override
@@ -152,6 +154,7 @@ class SampleImpl implements Serializable, Sample {
 
   /**
    * Constructor.
+   *
    * @param design the design object
    * @param sampleId the sample id
    */
@@ -159,11 +162,11 @@ class SampleImpl implements Serializable, Sample {
 
     requireNonNull(design, "design argument cannot be null");
     requireNonNull(sampleId, "sampleId argument cannot be null");
-    checkArgument(FileNaming.isDataNameValid(sampleId),
+    checkArgument(
+        FileNaming.isDataNameValid(sampleId),
         "The id of a sample can only contains letters and digit: " + sampleId);
 
     this.design = design;
     this.sampleId = sampleId.trim();
   }
-
 }

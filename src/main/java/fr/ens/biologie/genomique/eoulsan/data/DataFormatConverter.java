@@ -26,12 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.data;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import fr.ens.biologie.genomique.kenetre.io.CompressionType;
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import fr.ens.biologie.genomique.kenetre.bio.BadBioEntryException;
 import fr.ens.biologie.genomique.kenetre.bio.ReadSequence;
 import fr.ens.biologie.genomique.kenetre.bio.io.FastqReader;
@@ -40,9 +34,15 @@ import fr.ens.biologie.genomique.kenetre.bio.io.ReadSequenceReader;
 import fr.ens.biologie.genomique.kenetre.bio.io.ReadSequenceWriter;
 import fr.ens.biologie.genomique.kenetre.bio.io.TFQReader;
 import fr.ens.biologie.genomique.kenetre.bio.io.TFQWriter;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * This class allow to copy and transform data while copying.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -56,14 +56,14 @@ public class DataFormatConverter {
 
   /**
    * Convert.
+   *
    * @throws IOException if an error occurs while converting data
    */
   public void convert() throws IOException {
 
     if (this.outFormat == null) {
 
-      final OutputStream destOs =
-          this.os == null ? this.outFile.create() : this.os;
+      final OutputStream destOs = this.os == null ? this.outFile.create() : this.os;
       FileUtils.copy(this.inFile.rawOpen(), destOs);
 
       return;
@@ -75,9 +75,21 @@ public class DataFormatConverter {
     final CompressionType destCT =
         CompressionType.getCompressionTypeByFilename(this.outFile.getName());
 
-    getLogger().fine("Convert "
-        + this.inFile + " (" + this.inFormat + "/" + srcCT + ") to "
-        + this.outFile + " (" + this.outFormat + "/" + destCT + ").");
+    getLogger()
+        .fine(
+            "Convert "
+                + this.inFile
+                + " ("
+                + this.inFormat
+                + "/"
+                + srcCT
+                + ") to "
+                + this.outFile
+                + " ("
+                + this.outFormat
+                + "/"
+                + destCT
+                + ").");
 
     if (this.inFormat.equals(this.outFormat) && srcCT.equals(destCT)) {
 
@@ -85,8 +97,7 @@ public class DataFormatConverter {
       return;
     }
 
-    final OutputStream destOs =
-        this.os == null ? this.outFile.create() : this.os;
+    final OutputStream destOs = this.os == null ? this.outFile.create() : this.os;
 
     if (this.inFormat.equals(this.outFormat)) {
 
@@ -97,10 +108,8 @@ public class DataFormatConverter {
       return;
     }
 
-    if ((this.inFormat == DataFormats.READS_FASTQ
-        || this.inFormat == DataFormats.READS_TFQ)
-        && (this.outFormat == DataFormats.READS_FASTQ
-            || this.outFormat == DataFormats.READS_TFQ)) {
+    if ((this.inFormat == DataFormats.READS_FASTQ || this.inFormat == DataFormats.READS_TFQ)
+        && (this.outFormat == DataFormats.READS_FASTQ || this.outFormat == DataFormats.READS_TFQ)) {
 
       final ReadSequenceReader reader;
 
@@ -148,43 +157,51 @@ public class DataFormatConverter {
 
   /**
    * Constructor
+   *
    * @param inFile input file
    * @param outFile output file
    * @param os outputStream
    * @throws IOException if an error occurs while creating converter
    */
-  public DataFormatConverter(final DataFile inFile, final DataFile outFile,
-      final OutputStream os) throws IOException {
+  public DataFormatConverter(final DataFile inFile, final DataFile outFile, final OutputStream os)
+      throws IOException {
 
-    this(inFile, outFile,
+    this(
+        inFile,
+        outFile,
         outFile == null
-            ? null : DataFormatRegistry.getInstance()
-                .getDataFormatFromFilename(outFile.getName()),
+            ? null
+            : DataFormatRegistry.getInstance().getDataFormatFromFilename(outFile.getName()),
         os);
   }
 
   /**
    * Constructor
+   *
    * @param inFile input file
    * @param outFile output file
    * @throws IOException if an error occurs while creating converter
    */
-  public DataFormatConverter(final DataFile inFile, final DataFile outFile)
-      throws IOException {
+  public DataFormatConverter(final DataFile inFile, final DataFile outFile) throws IOException {
 
     this(inFile, outFile, null);
   }
 
   /**
    * Constructor
+   *
    * @param inFile input file
    * @param outFile output file
    * @param outFormat output format
    * @param os output stream
    * @throws IOException if an error occurs while creating converter
    */
-  public DataFormatConverter(final DataFile inFile, final DataFile outFile,
-      final DataFormat outFormat, final OutputStream os) throws IOException {
+  public DataFormatConverter(
+      final DataFile inFile,
+      final DataFile outFile,
+      final DataFormat outFormat,
+      final OutputStream os)
+      throws IOException {
 
     if (inFile == null) {
       throw new NullPointerException("The input file is null");
@@ -205,5 +222,4 @@ public class DataFormatConverter {
     this.outFormat = outFormat;
     this.os = os;
   }
-
 }

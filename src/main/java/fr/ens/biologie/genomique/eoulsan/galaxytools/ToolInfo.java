@@ -33,17 +33,15 @@ import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserU
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractToolName;
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.extractToolVersion;
 
-import java.util.List;
-
-import org.w3c.dom.Document;
-
 import com.google.common.base.MoreObjects;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters.DockerExecutorInterpreter;
+import java.util.List;
+import org.w3c.dom.Document;
 
 /**
  * The class define a tool data which contains all data extracted from XML file.
+ *
  * @author Sandrine Perrin
  * @since 2.0
  */
@@ -81,6 +79,7 @@ public class ToolInfo {
 
   /**
    * Get the tool source.
+   *
    * @return the tool source
    */
   public String getToolSource() {
@@ -89,6 +88,7 @@ public class ToolInfo {
 
   /**
    * Get the tool Id.
+   *
    * @return the tool id
    */
   public String getToolID() {
@@ -97,6 +97,7 @@ public class ToolInfo {
 
   /**
    * Get the tool name.
+   *
    * @return the tool name
    */
   public String getToolName() {
@@ -105,6 +106,7 @@ public class ToolInfo {
 
   /**
    * Get the tool version.
+   *
    * @return the tool version
    */
   public String getToolVersion() {
@@ -113,6 +115,7 @@ public class ToolInfo {
 
   /**
    * Get the tool description.
+   *
    * @return the tool description
    */
   public String getDescription() {
@@ -121,6 +124,7 @@ public class ToolInfo {
 
   /**
    * Get the interpreter.
+   *
    * @param dockerEnabled enable docker container
    * @return the interpreter
    */
@@ -130,6 +134,7 @@ public class ToolInfo {
 
   /**
    * Get the Cheetah script.
+   *
    * @return the Cheetah script
    */
   public String getCheetahScript() {
@@ -138,6 +143,7 @@ public class ToolInfo {
 
   /**
    * Get Docker image.
+   *
    * @return the docker image
    */
   public String getDockerImage() {
@@ -146,11 +152,11 @@ public class ToolInfo {
 
   /**
    * Select the interpreter.
+   *
    * @param interpreters interpreters to checks
    * @return the interpreter to use
    */
-  private static String selectInterpreter(List<String> interpreters,
-      boolean dockerEnabled) {
+  private static String selectInterpreter(List<String> interpreters, boolean dockerEnabled) {
 
     if (interpreters == null || interpreters.isEmpty()) {
       return "";
@@ -160,8 +166,7 @@ public class ToolInfo {
       return interpreters.get(0);
     }
 
-    if (DockerExecutorInterpreter.INTERPRETER_NAME.equals(interpreters.get(0))
-        && !dockerEnabled) {
+    if (DockerExecutorInterpreter.INTERPRETER_NAME.equals(interpreters.get(0)) && !dockerEnabled) {
       return interpreters.get(1);
     }
     return interpreters.get(0);
@@ -174,12 +179,15 @@ public class ToolInfo {
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this).add("toolID", this.toolID)
-        .add("toolName", this.toolName).add("toolVersion", this.toolVersion)
+    return MoreObjects.toStringHelper(this)
+        .add("toolID", this.toolID)
+        .add("toolName", this.toolName)
+        .add("toolVersion", this.toolVersion)
         .add("description", this.description)
         .add("interpreters", this.interpreters)
         .add("dockerImage", this.dockerImage)
-        .add("commandScript", this.cheetahScript).toString();
+        .add("commandScript", this.cheetahScript)
+        .toString();
   }
 
   //
@@ -188,12 +196,12 @@ public class ToolInfo {
 
   /**
    * Constructor.
+   *
    * @param document the DOM document to parse
    * @param toolSource the source of the tool
    * @throws EoulsanException if an error occurs while parsing the document
    */
-  ToolInfo(final Document document, final String toolSource)
-      throws EoulsanException {
+  ToolInfo(final Document document, final String toolSource) throws EoulsanException {
 
     java.util.Objects.requireNonNull(document, "doc argument cannot be null");
 
@@ -219,5 +227,4 @@ public class ToolInfo {
 
     // TODO check the tool id string
   }
-
 }

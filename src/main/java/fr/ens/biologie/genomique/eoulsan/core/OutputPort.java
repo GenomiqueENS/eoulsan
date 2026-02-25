@@ -28,6 +28,7 @@ import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 
 /**
  * This interface define an output port of a step.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -35,8 +36,8 @@ public interface OutputPort extends Port {
 
   /**
    * Get the compression format of the port.
+   *
    * @return the compression format.
    */
   CompressionType getCompression();
-
 }

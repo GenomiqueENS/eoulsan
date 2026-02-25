@@ -19,7 +19,6 @@
 package fr.ens.biologie.genomique.eoulsan.bio.io.hadoop;
 
 import java.io.IOException;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -39,13 +38,10 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.mapreduce.lib.input.SplitLineReader;
 
-/**
- * Treats keys as offset in file and value as line.
- */
+/** Treats keys as offset in file and value as line. */
 public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
 
-  public static final String MAX_LINE_LENGTH =
-      "mapreduce.input.linerecordreader.line.maxlength";
+  public static final String MAX_LINE_LENGTH = "mapreduce.input.linerecordreader.line.maxlength";
 
   private long start;
   private long pos;
@@ -59,16 +55,14 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
   private Decompressor decompressor;
   private byte[] recordDelimiterBytes;
 
-  public FastqLineRecordReader() {
-  }
+  public FastqLineRecordReader() {}
 
   public FastqLineRecordReader(byte[] recordDelimiter) {
     this.recordDelimiterBytes = recordDelimiter;
   }
 
   @Override
-  public void initialize(InputSplit genericSplit, TaskAttemptContext context)
-      throws IOException {
+  public void initialize(InputSplit genericSplit, TaskAttemptContext context) throws IOException {
     FileSplit split = (FileSplit) genericSplit;
     Configuration job = context.getConfiguration();
     this.maxLineLength = job.getInt(MAX_LINE_LENGTH, Integer.MAX_VALUE);
@@ -86,17 +80,17 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
       decompressor = CodecPool.getDecompressor(codec);
       if (codec instanceof SplittableCompressionCodec) {
         final SplitCompressionInputStream cIn =
-            ((SplittableCompressionCodec) codec).createInputStream(fileIn,
-                decompressor, start, end,
-                SplittableCompressionCodec.READ_MODE.BYBLOCK);
-        in = new CompressedSplitFastqLineReader(cIn, job,
-            this.recordDelimiterBytes);
+            ((SplittableCompressionCodec) codec)
+                .createInputStream(
+                    fileIn, decompressor, start, end, SplittableCompressionCodec.READ_MODE.BYBLOCK);
+        in = new CompressedSplitFastqLineReader(cIn, job, this.recordDelimiterBytes);
         start = cIn.getAdjustedStart();
         end = cIn.getAdjustedEnd();
         filePosition = cIn;
       } else {
-        in = new SplitLineReader(codec.createInputStream(fileIn, decompressor),
-            job, this.recordDelimiterBytes);
+        in =
+            new SplitLineReader(
+                codec.createInputStream(fileIn, decompressor), job, this.recordDelimiterBytes);
         filePosition = fileIn;
       }
     } else {
@@ -133,8 +127,7 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
     // Strip BOM(Byte Order Mark)
     // Text only support UTF-8, we only need to check UTF-8 BOM
     // (0xEF,0xBB,0xBF) at the start of the text stream.
-    int newMaxLineLength =
-        (int) Math.min(3L + (long) maxLineLength, Integer.MAX_VALUE);
+    int newMaxLineLength = (int) Math.min(3L + (long) maxLineLength, Integer.MAX_VALUE);
     int newSize = in.readLine(value, newMaxLineLength, maxBytesToConsume(pos));
     // Even we read 3 extra bytes for the first line,
     // we won't alter existing behavior (no backwards incompat issue).
@@ -146,7 +139,8 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
     int textLength = value.getLength();
     byte[] textBytes = value.getBytes();
     if ((textLength >= 3)
-        && (textBytes[0] == (byte) 0xEF) && (textBytes[1] == (byte) 0xBB)
+        && (textBytes[0] == (byte) 0xEF)
+        && (textBytes[1] == (byte) 0xBB)
         && (textBytes[2] == (byte) 0xBF)) {
       // find UTF-8 BOM, strip it.
       textLength -= 3;
@@ -181,7 +175,8 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
     // We always read one extra line, which lies outside the upper
     // split limit i.e. (end - 1)
     while ((filePosition = getFilePosition()) <= end
-        || in.needAdditionalRecordAfterSplit() || cont) {
+        || in.needAdditionalRecordAfterSplit()
+        || cont) {
 
       if (filePosition > end && in instanceof CompressedSplitFastqLineReader) {
         ((CompressedSplitFastqLineReader) in).setContinue(cont);
@@ -197,7 +192,6 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
       if ((newSize == 0) || (newSize < maxLineLength)) {
         break;
       }
-
     }
     if (newSize == 0) {
       key = null;
@@ -218,16 +212,13 @@ public class FastqLineRecordReader extends RecordReader<LongWritable, Text> {
     return value;
   }
 
-  /**
-   * Get the progress within the split
-   */
+  /** Get the progress within the split */
   @Override
   public float getProgress() throws IOException {
     if (start == end) {
       return 0.0f;
     } else {
-      return Math.min(1.0f,
-          (getFilePosition() - start) / (float) (end - start));
+      return Math.min(1.0f, (getFilePosition() - start) / (float) (end - start));
     }
   }
 

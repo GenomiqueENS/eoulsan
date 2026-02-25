@@ -28,8 +28,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class define a storage where some results of the checker can be save for
- * later reuse by other checkers.
+ * This class define a storage where some results of the checker can be save for later reuse by
+ * other checkers.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -40,6 +41,7 @@ public class CheckStore {
 
   /**
    * Store some data.
+   *
    * @param key key of the data
    * @param value the data to store
    */
@@ -54,6 +56,7 @@ public class CheckStore {
 
   /**
    * Get some data.
+   *
    * @param key key of the data to retrieve
    * @return data if stored
    */
@@ -64,6 +67,7 @@ public class CheckStore {
 
   /**
    * Test if a data exists.
+   *
    * @param key key of the data to test
    * @return true if data exists
    */
@@ -72,9 +76,7 @@ public class CheckStore {
     return this.info.containsKey(key);
   }
 
-  /**
-   * Clear the content of the CheckStore.
-   */
+  /** Clear the content of the CheckStore. */
   public void clear() {
 
     this.info.clear();
@@ -86,6 +88,7 @@ public class CheckStore {
 
   /**
    * Get the instance of the CheckStore.
+   *
    * @return the CheckStore object
    */
   public static CheckStore getCheckStore() {
@@ -101,10 +104,6 @@ public class CheckStore {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
-  private CheckStore() {
-  }
-
+  /** Private constructor. */
+  private CheckStore() {}
 }

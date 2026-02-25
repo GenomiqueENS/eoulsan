@@ -26,20 +26,19 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkState;
 
-import java.io.Serializable;
-import java.util.Set;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.InputPort;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
+import java.io.Serializable;
+import java.util.Set;
 
 /**
  * This class define an auto configurable data product.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -65,18 +64,17 @@ class DefaultDataProduct implements DataProduct, Serializable {
     final String s = Strings.nullToEmpty(conf).trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
     switch (s) {
+      case MatchDataProduct.DATAPRODUCT_NAME:
+        this.dataproduct = new MatchDataProduct();
+        break;
 
-    case MatchDataProduct.DATAPRODUCT_NAME:
-      this.dataproduct = new MatchDataProduct();
-      break;
+      case CrossDataProduct.DATAPRODUCT_NAME:
+      case "":
+        this.dataproduct = new CrossDataProduct();
+        break;
 
-    case CrossDataProduct.DATAPRODUCT_NAME:
-    case "":
-      this.dataproduct = new CrossDataProduct();
-      break;
-
-    default:
-      throw new EoulsanException("Unknown data product method: " + conf);
+      default:
+        throw new EoulsanException("Unknown data product method: " + conf);
     }
 
     this.dataproduct.configure(conf);
@@ -84,12 +82,10 @@ class DefaultDataProduct implements DataProduct, Serializable {
 
   @Override
   public Set<ImmutableMap<InputPort, Data>> makeProduct(
-      final StepInputPorts inputPorts,
-      final Multimap<InputPort, Data> inputTokens) {
+      final StepInputPorts inputPorts, final Multimap<InputPort, Data> inputTokens) {
 
     checkState(dataproduct != null, "configure() has not been called");
 
     return this.dataproduct.makeProduct(inputPorts, inputTokens);
   }
-
 }

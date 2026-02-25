@@ -24,13 +24,13 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import java.util.HashMap;
 import java.util.Map;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
-
 /**
  * This class define a HTCondor cluster scheduler using a Bpipe script.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -64,23 +64,20 @@ public class HTCondorTaskScheduler extends BundledScriptBpipeTaskScheduler {
   // Constructor
   //
 
-  /**
-   * Constructor.
-   */
+  /** Constructor. */
   public HTCondorTaskScheduler() {
     super(SCHEDULER_NAME, COMMAND_WRAPPER_SCRIPT);
 
     // Get the concurrency limits
-    this.concurrencyLimits = EoulsanRuntime.getRuntime().getSettings()
-        .getSetting("htcondor.concurrency.limits");
+    this.concurrencyLimits =
+        EoulsanRuntime.getRuntime().getSettings().getSetting("htcondor.concurrency.limits");
 
     // Get nice user priority
-    this.niceUser = EoulsanRuntime.getRuntime().getSettings()
-        .getBooleanSetting("htcondor.nice.user");
+    this.niceUser =
+        EoulsanRuntime.getRuntime().getSettings().getBooleanSetting("htcondor.nice.user");
 
     // Get accounting group
-    this.accountingGroup = EoulsanRuntime.getRuntime().getSettings()
-        .getSetting("htcondor.accounting.group");
+    this.accountingGroup =
+        EoulsanRuntime.getRuntime().getSettings().getSetting("htcondor.accounting.group");
   }
-
 }

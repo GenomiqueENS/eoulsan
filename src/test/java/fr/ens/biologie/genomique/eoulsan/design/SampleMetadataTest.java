@@ -28,11 +28,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collections;
-
-import org.junit.Test;
-
 import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
+import java.util.Collections;
+import org.junit.Test;
 
 public class SampleMetadataTest {
 
@@ -122,5 +120,4 @@ public class SampleMetadataTest {
     // test containsCondition
     assertTrue(sm.containsCondition());
   }
-
 }

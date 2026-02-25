@@ -24,12 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -47,15 +41,21 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Copy output files of a step with a specified format to the output directory.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -93,45 +93,40 @@ public class CopyOutputDataModule extends AbstractModule {
   @Override
   public OutputPorts getOutputPorts() {
 
-    return new OutputPortsBuilder().addPort(this.portName, this.format)
-        .create();
+    return new OutputPortsBuilder().addPort(this.portName, this.format).create();
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
+        case FORMATS_PARAMETER:
+          final DataFormatRegistry registry = DataFormatRegistry.getInstance();
 
-      case FORMATS_PARAMETER:
+          final DataFormat format = registry.getDataFormatFromName(p.getValue());
 
-        final DataFormatRegistry registry = DataFormatRegistry.getInstance();
+          if (format == null) {
+            Modules.badParameterValue(context, p, "Unknown format: " + p.getValue());
+          }
 
-        final DataFormat format = registry.getDataFormatFromName(p.getValue());
+          this.format = format;
+          break;
 
-        if (format == null) {
-          Modules.badParameterValue(context, p,
-              "Unknown format: " + p.getValue());
-        }
+        case PORTS_PARAMETER:
+          this.portName = p.getValue();
+          break;
 
-        this.format = format;
-        break;
-
-      case PORTS_PARAMETER:
-        this.portName = p.getValue();
-        break;
-
-      default:
-        Modules.unknownParameter(context, p);
+        default:
+          Modules.unknownParameter(context, p);
       }
     }
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     try {
 
@@ -158,12 +153,12 @@ public class CopyOutputDataModule extends AbstractModule {
 
   /**
    * Check input and output files.
+   *
    * @param inFile input file
    * @param outFile output file
    * @throws IOException if copy cannot be started
    */
-  private static void checkFiles(final DataFile inFile, final DataFile outFile)
-      throws IOException {
+  private static void checkFiles(final DataFile inFile, final DataFile outFile) throws IOException {
 
     if (inFile.equals(outFile)) {
       throw new IOException("Cannot copy file on itself: " + inFile);
@@ -180,13 +175,14 @@ public class CopyOutputDataModule extends AbstractModule {
 
   /**
    * Copy files for a format and a samples.
+   *
    * @param context step context
    * @param inData input data
    * @param outData output data
    * @throws IOException if an error occurs while copying
    */
-  private void copyData(final TaskContext context, final Data inData,
-      final Data outData) throws IOException {
+  private void copyData(final TaskContext context, final Data inData, final Data outData)
+      throws IOException {
 
     final DataFile outputDir = context.getStepOutputDirectory();
 
@@ -228,5 +224,4 @@ public class CopyOutputDataModule extends AbstractModule {
       DataUtils.setDataFiles(outData, outFiles);
     }
   }
-
 }

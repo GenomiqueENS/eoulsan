@@ -28,17 +28,8 @@ import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_S
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.singleInputPort;
 import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.DEFAULT_SINGLE_OUTPUT_PORT_NAME;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -56,7 +47,6 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
@@ -65,10 +55,18 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.data.protocols.DataProtocol;
 import fr.ens.biologie.genomique.eoulsan.data.protocols.StorageDataProtocol;
 import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
- * Copy input files of a format in another location or in different compression
- * format.
+ * Copy input files of a format in another location or in different compression format.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -80,15 +78,12 @@ public class CopyInputDataModule extends AbstractModule {
 
   public static final String MODULE_NAME = "_copyinputformat";
   public static final String FORMAT_PARAMETER = "format";
-  public static final String OUTPUT_COMPRESSION_PARAMETER =
-      "output.compression";
-  public static final String OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER =
-      "output.compressions.allowed";
+  public static final String OUTPUT_COMPRESSION_PARAMETER = "output.compression";
+  public static final String OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER = "output.compressions.allowed";
 
   private DataFormat format;
   private CompressionType outputCompression;
-  private EnumSet<CompressionType> outputCompressionsAllowed =
-      EnumSet.allOf(CompressionType.class);
+  private EnumSet<CompressionType> outputCompressionsAllowed = EnumSet.allOf(CompressionType.class);
 
   @Override
   public String getName() {
@@ -111,36 +106,33 @@ public class CopyInputDataModule extends AbstractModule {
   @Override
   public OutputPorts getOutputPorts() {
 
-    return new OutputPortsBuilder().addPort(DEFAULT_SINGLE_OUTPUT_PORT_NAME,
-        this.format, this.outputCompression).create();
+    return new OutputPortsBuilder()
+        .addPort(DEFAULT_SINGLE_OUTPUT_PORT_NAME, this.format, this.outputCompression)
+        .create();
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
+        case FORMAT_PARAMETER:
+          this.format = DataFormatRegistry.getInstance().getDataFormatFromName(p.getValue());
+          break;
 
-      case FORMAT_PARAMETER:
-        this.format = DataFormatRegistry.getInstance()
-            .getDataFormatFromName(p.getValue());
-        break;
+        case OUTPUT_COMPRESSION_PARAMETER:
+          this.outputCompression = CompressionType.valueOf(p.getValue());
+          break;
 
-      case OUTPUT_COMPRESSION_PARAMETER:
-        this.outputCompression = CompressionType.valueOf(p.getValue());
-        break;
+        case OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER:
+          this.outputCompressionsAllowed = decodeAllowedCompressionsParameterValue(p.getValue());
+          break;
 
-      case OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER:
-        this.outputCompressionsAllowed =
-            decodeAllowedCompressionsParameterValue(p.getValue());
-        break;
-
-      default:
-        Modules.unknownParameter(context, p);
+        default:
+          Modules.unknownParameter(context, p);
       }
-
     }
 
     if (this.format == null) {
@@ -152,21 +144,18 @@ public class CopyInputDataModule extends AbstractModule {
     }
 
     if (this.outputCompressionsAllowed.isEmpty()) {
-      throw new EoulsanException(OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER
-          + " parameter value cannot be empty");
+      throw new EoulsanException(
+          OUTPUT_COMPRESSIONS_ALLOWED_PARAMETER + " parameter value cannot be empty");
     }
-
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     try {
 
       final Data inData = context.getInputData(DEFAULT_SINGLE_INPUT_PORT_NAME);
-      final Data outData =
-          context.getOutputData(DEFAULT_SINGLE_OUTPUT_PORT_NAME, inData);
+      final Data outData = context.getOutputData(DEFAULT_SINGLE_OUTPUT_PORT_NAME, inData);
 
       copyData(inData, outData, context);
       status.setProgress(1.0);
@@ -183,12 +172,12 @@ public class CopyInputDataModule extends AbstractModule {
 
   /**
    * Check input and output files.
+   *
    * @param inFile input file
    * @param outFile output file
    * @throws IOException if copy cannot be started
    */
-  private static void checkFiles(final DataFile inFile, final DataFile outFile)
-      throws IOException {
+  private static void checkFiles(final DataFile inFile, final DataFile outFile) throws IOException {
 
     if (inFile.equals(outFile)) {
       throw new IOException("Cannot copy file on itself: " + inFile);
@@ -204,8 +193,8 @@ public class CopyInputDataModule extends AbstractModule {
   }
 
   /**
-   * Get the real underlying file if the file protocol is a StorageDataProtocol
-   * instance.
+   * Get the real underlying file if the file protocol is a StorageDataProtocol instance.
+   *
    * @param file the file
    * @return the underlying file if exists or the file itself
    */
@@ -229,13 +218,14 @@ public class CopyInputDataModule extends AbstractModule {
 
   /**
    * Copy files for a format and a samples.
+   *
    * @param inData input data
    * @param outData output data
    * @param context task context
    * @throws IOException if an error occurs while copying
    */
-  private void copyData(final Data inData, final Data outData,
-      final TaskContext context) throws IOException {
+  private void copyData(final Data inData, final Data outData, final TaskContext context)
+      throws IOException {
 
     if (inData.getFormat().getMaxFilesCount() == 1) {
 
@@ -244,8 +234,8 @@ public class CopyInputDataModule extends AbstractModule {
       //
 
       // Copy the file
-      final DataFile outputFile = copyFile(inData.getDataFile(), -1,
-          outData.getName(), outData.getPart(), context);
+      final DataFile outputFile =
+          copyFile(inData.getDataFile(), -1, outData.getName(), outData.getPart(), context);
 
       // Set the file in the data object
       DataUtils.setDataFile(outData, outputFile);
@@ -264,8 +254,8 @@ public class CopyInputDataModule extends AbstractModule {
       for (int i = 0; i < count; i++) {
 
         // Copy the file
-        final DataFile outputFile = copyFile(inData.getDataFile(i), i,
-            outData.getName(), outData.getPart(), context);
+        final DataFile outputFile =
+            copyFile(inData.getDataFile(i), i, outData.getName(), outData.getPart(), context);
 
         dataFiles.add(outputFile);
       }
@@ -277,6 +267,7 @@ public class CopyInputDataModule extends AbstractModule {
 
   /**
    * Copy an input file to its destination.
+   *
    * @param inputFile the input file
    * @param fileIndex the output file index
    * @param outDataName the output data name
@@ -285,9 +276,13 @@ public class CopyInputDataModule extends AbstractModule {
    * @return the output file
    * @throws IOException if an error occurs while copying the data
    */
-  private DataFile copyFile(final DataFile inputFile, final int fileIndex,
-      final String outDataName, final int outDataPart,
-      final TaskContext context) throws IOException {
+  private DataFile copyFile(
+      final DataFile inputFile,
+      final int fileIndex,
+      final String outDataName,
+      final int outDataPart,
+      final TaskContext context)
+      throws IOException {
 
     final String stepId = context.getCurrentStep().getId();
     final DataFile outputDir = context.getStepOutputDirectory();
@@ -300,8 +295,14 @@ public class CopyInputDataModule extends AbstractModule {
 
     // Define the output filename
     final String outFilename =
-        FileNaming.filename(stepId, DEFAULT_SINGLE_OUTPUT_PORT_NAME,
-            this.format, outDataName, fileIndex, outDataPart, compression);
+        FileNaming.filename(
+            stepId,
+            DEFAULT_SINGLE_OUTPUT_PORT_NAME,
+            this.format,
+            outDataName,
+            fileIndex,
+            outDataPart,
+            compression);
 
     // Define the output file
     final DataFile out = new DataFile(outputDir, outFilename);
@@ -317,6 +318,7 @@ public class CopyInputDataModule extends AbstractModule {
 
   /**
    * Get the compression type to use for the output file.
+   *
    * @param inputFile the input file
    * @return the compression type to use for the output file
    */
@@ -337,8 +339,8 @@ public class CopyInputDataModule extends AbstractModule {
   }
 
   /**
-   * Method to encode an EnumSet of the allowed compressions parameter in a
-   * string.
+   * Method to encode an EnumSet of the allowed compressions parameter in a string.
+   *
    * @param outputCompressionAllowed the EnumSet to encode
    * @return a string with the EnumSet encoded
    */
@@ -354,6 +356,7 @@ public class CopyInputDataModule extends AbstractModule {
 
   /**
    * Method to decode the allowed compressions parameter.
+   *
    * @param value the parameter value as a string
    * @return the parameter value as an EnumSet
    * @throws EoulsanException if the value parameter is null
@@ -368,8 +371,7 @@ public class CopyInputDataModule extends AbstractModule {
 
     final Set<CompressionType> result = new HashSet<>();
 
-    for (String s : Splitter.on('\t').omitEmptyStrings().trimResults()
-        .split(value)) {
+    for (String s : Splitter.on('\t').omitEmptyStrings().trimResults().split(value)) {
 
       final CompressionType compression = CompressionType.valueOf(s);
 
@@ -380,5 +382,4 @@ public class CopyInputDataModule extends AbstractModule {
 
     return EnumSet.copyOf(result);
   }
-
 }

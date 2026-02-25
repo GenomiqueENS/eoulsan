@@ -24,19 +24,18 @@
 
 package fr.ens.biologie.genomique.eoulsan.data.protocols;
 
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.List;
 
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
-
 /**
- * This class is an abstract Protocol class that implements generic
- * getIn/OutputStream with length.
+ * This class is an abstract Protocol class that implements generic getIn/OutputStream with length.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -67,13 +66,11 @@ abstract class AbstractDataProtocol implements DataProtocol {
 
     final int parentSrcLen = sourceLen - nameLen - 1;
 
-    return new DataFile(
-        source.substring(0, parentSrcLen < 0 ? 0 : parentSrcLen));
+    return new DataFile(source.substring(0, parentSrcLen < 0 ? 0 : parentSrcLen));
   }
 
   @Override
-  public OutputStream putData(final DataFile src, final DataFileMetadata md)
-      throws IOException {
+  public OutputStream putData(final DataFile src, final DataFileMetadata md) throws IOException {
 
     if (!canWrite()) {
       throw new IOException("Writing is not allowed for the source: " + src);
@@ -83,22 +80,19 @@ abstract class AbstractDataProtocol implements DataProtocol {
   }
 
   @Override
-  public void putData(final DataFile src, final DataFile dest)
-      throws IOException {
+  public void putData(final DataFile src, final DataFile dest) throws IOException {
 
     if (src == null) {
       throw new NullPointerException("The source of the data to put is null");
     }
 
     if (dest == null) {
-      throw new NullPointerException(
-          "The destination of the data to put is null");
+      throw new NullPointerException("The destination of the data to put is null");
     }
 
     final DataFileMetadata mdSrc = src.getMetaData();
 
-    FileUtils.copy(src.getProtocol().getData(src),
-        dest.getProtocol().putData(dest, mdSrc));
+    FileUtils.copy(src.getProtocol().getData(src), dest.getProtocol().putData(dest, mdSrc));
   }
 
   @Override
@@ -124,16 +118,13 @@ abstract class AbstractDataProtocol implements DataProtocol {
   @Override
   public void mkdir(final DataFile dir) throws IOException {
 
-    throw new IOException("The mkdir() method is not supported by the "
-        + getName() + " protocol");
-
+    throw new IOException("The mkdir() method is not supported by the " + getName() + " protocol");
   }
 
   @Override
   public void mkdirs(final DataFile dir) throws IOException {
 
-    throw new IOException("The mkdir() method is not supported by the "
-        + getName() + " protocol");
+    throw new IOException("The mkdir() method is not supported by the " + getName() + " protocol");
   }
 
   @Override
@@ -143,11 +134,10 @@ abstract class AbstractDataProtocol implements DataProtocol {
   }
 
   @Override
-  public void symlink(final DataFile target, final DataFile link)
-      throws IOException {
+  public void symlink(final DataFile target, final DataFile link) throws IOException {
 
-    throw new IOException("The symlink() method is not supported by the "
-        + getName() + " protocol");
+    throw new IOException(
+        "The symlink() method is not supported by the " + getName() + " protocol");
   }
 
   @Override
@@ -157,11 +147,9 @@ abstract class AbstractDataProtocol implements DataProtocol {
   }
 
   @Override
-  public void delete(final DataFile file, final boolean recursive)
-      throws IOException {
+  public void delete(final DataFile file, final boolean recursive) throws IOException {
 
-    throw new IOException("The delete() method is not supported by the "
-        + getName() + " protocol");
+    throw new IOException("The delete() method is not supported by the " + getName() + " protocol");
   }
 
   @Override
@@ -173,8 +161,7 @@ abstract class AbstractDataProtocol implements DataProtocol {
   @Override
   public List<DataFile> list(final DataFile file) throws IOException {
 
-    throw new IOException(
-        "The list() method is not supported by the " + getName() + " protocol");
+    throw new IOException("The list() method is not supported by the " + getName() + " protocol");
   }
 
   @Override
@@ -190,11 +177,8 @@ abstract class AbstractDataProtocol implements DataProtocol {
   }
 
   @Override
-  public void rename(final DataFile oldName, final DataFile newName)
-      throws IOException {
+  public void rename(final DataFile oldName, final DataFile newName) throws IOException {
 
-    throw new IOException("The rename() method is not supported by the "
-        + getName() + " protocol");
+    throw new IOException("The rename() method is not supported by the " + getName() + " protocol");
   }
-
 }

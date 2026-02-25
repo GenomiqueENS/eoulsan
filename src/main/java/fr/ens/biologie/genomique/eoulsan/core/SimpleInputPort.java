@@ -24,20 +24,18 @@
 
 package fr.ens.biologie.genomique.eoulsan.core;
 
-import java.util.EnumSet;
-
 import com.google.common.base.MoreObjects;
-
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import java.util.EnumSet;
 
 /**
  * This class define an input port of a step.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
-public class SimpleInputPort extends AbstractPort
-    implements InputPort {
+public class SimpleInputPort extends AbstractPort implements InputPort {
 
   private static final long serialVersionUID = 4663590179211976634L;
 
@@ -59,8 +57,10 @@ public class SimpleInputPort extends AbstractPort
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this).add("name", getName())
-        .add("format", getFormat().getName()).add("list", isList())
+    return MoreObjects.toStringHelper(this)
+        .add("name", getName())
+        .add("format", getFormat().getName())
+        .add("list", isList())
         .add("compressionsAccepted", getCompressionsAccepted())
         .add("requiredInWorkingDirectory", isRequiredInWorkingDirectory())
         .toString();
@@ -72,6 +72,7 @@ public class SimpleInputPort extends AbstractPort
 
   /**
    * Constructor.
+   *
    * @param name name of the port
    * @param format format of the port
    */
@@ -82,23 +83,26 @@ public class SimpleInputPort extends AbstractPort
 
   /**
    * Constructor.
+   *
    * @param name name of the port
    * @param list true if a list is excepted as port value
    * @param format format of the port
    */
-  SimpleInputPort(final String name, final boolean list,
-      final DataFormat format) {
+  SimpleInputPort(final String name, final boolean list, final DataFormat format) {
 
     this(name, list, format, null);
   }
 
   /**
    * Constructor.
+   *
    * @param name name of the port
    * @param format format of the port
    * @param compressionsAccepted compression accepted
    */
-  SimpleInputPort(final String name, final DataFormat format,
+  SimpleInputPort(
+      final String name,
+      final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted) {
 
     this(name, format, compressionsAccepted, false);
@@ -106,12 +110,15 @@ public class SimpleInputPort extends AbstractPort
 
   /**
    * Constructor.
+   *
    * @param name name of the port
    * @param list true if a list is excepted as port value
    * @param format format of the port
    * @param compressionsAccepted compression accepted
    */
-  SimpleInputPort(final String name, final boolean list,
+  SimpleInputPort(
+      final String name,
+      final boolean list,
       final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted) {
 
@@ -120,37 +127,45 @@ public class SimpleInputPort extends AbstractPort
 
   /**
    * Constructor.
+   *
    * @param name name of the port
    * @param format format of the port
    * @param requiredInWorkingDirectory if data is required in working directory
    */
-  SimpleInputPort(final String name, final DataFormat format,
-      final boolean requiredInWorkingDirectory) {
+  SimpleInputPort(
+      final String name, final DataFormat format, final boolean requiredInWorkingDirectory) {
 
     this(name, false, format, null, requiredInWorkingDirectory);
   }
 
   /**
    * Constructor.
+   *
    * @param name name of the port
    * @param list true if a list is excepted as port value
    * @param format format of the port
    * @param requiredInWorkingDirectory if data is required in working directory
    */
-  SimpleInputPort(final String name, final boolean list,
-      final DataFormat format, final boolean requiredInWorkingDirectory) {
+  SimpleInputPort(
+      final String name,
+      final boolean list,
+      final DataFormat format,
+      final boolean requiredInWorkingDirectory) {
 
     this(name, list, format, null, requiredInWorkingDirectory);
   }
 
   /**
    * Constructor.
+   *
    * @param name name of the port
    * @param format format of the port
    * @param compressionsAccepted compression accepted
    * @param requiredInWorkingDirectory if data is required in working directory
    */
-  protected SimpleInputPort(final String name, final DataFormat format,
+  protected SimpleInputPort(
+      final String name,
+      final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted,
       final boolean requiredInWorkingDirectory) {
 
@@ -159,13 +174,16 @@ public class SimpleInputPort extends AbstractPort
 
   /**
    * Constructor.
+   *
    * @param name name of the port
    * @param list true if a list is excepted as port value
    * @param format format of the port
    * @param compressionsAccepted compression accepted
    * @param requiredInWorkingDirectory if data is required in working directory
    */
-  protected SimpleInputPort(final String name, final boolean list,
+  protected SimpleInputPort(
+      final String name,
+      final boolean list,
       final DataFormat format,
       final EnumSet<CompressionType> compressionsAccepted,
       final boolean requiredInWorkingDirectory) {
@@ -186,13 +204,15 @@ public class SimpleInputPort extends AbstractPort
 
   /**
    * Constructor.
+   *
    * @param inputPort input port to clone
    */
   SimpleInputPort(final InputPort inputPort) {
 
-    this(inputPort.getName(), inputPort.getFormat(),
+    this(
+        inputPort.getName(),
+        inputPort.getFormat(),
         inputPort.getCompressionsAccepted(),
         inputPort.isRequiredInWorkingDirectory());
   }
-
 }

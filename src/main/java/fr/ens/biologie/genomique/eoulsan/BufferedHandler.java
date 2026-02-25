@@ -35,6 +35,7 @@ import java.util.logging.LogRecord;
 
 /**
  * This class define a buffered handler.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -46,6 +47,7 @@ public class BufferedHandler extends Handler {
 
   /**
    * Add an Handler.
+   *
    * @param handler Handler to had
    */
   public void addHandler(final Handler handler) {
@@ -109,8 +111,7 @@ public class BufferedHandler extends Handler {
   }
 
   @Override
-  public synchronized void setLevel(final Level newLevel)
-      throws SecurityException {
+  public synchronized void setLevel(final Level newLevel) throws SecurityException {
 
     super.setLevel(newLevel);
 
@@ -120,8 +121,7 @@ public class BufferedHandler extends Handler {
   }
 
   @Override
-  public synchronized void setFormatter(final Formatter newFormatter)
-      throws SecurityException {
+  public synchronized void setFormatter(final Formatter newFormatter) throws SecurityException {
 
     super.setFormatter(newFormatter);
 
@@ -129,5 +129,4 @@ public class BufferedHandler extends Handler {
       h.setFormatter(newFormatter);
     }
   }
-
 }

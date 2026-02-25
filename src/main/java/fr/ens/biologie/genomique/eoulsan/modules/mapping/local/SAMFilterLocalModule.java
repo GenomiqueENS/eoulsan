@@ -30,13 +30,7 @@ import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.base.Joiner;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
@@ -60,9 +54,14 @@ import htsjdk.samtools.SAMRecordIterator;
 import htsjdk.samtools.SamInputResource;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class define a Step for alignments filtering.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  * @author Claire Wallon
@@ -71,8 +70,7 @@ import htsjdk.samtools.SamReaderFactory;
 public class SAMFilterLocalModule extends AbstractSAMFilterModule {
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     // Create the reporter
     final Reporter reporter = new LocalReporter();
@@ -80,19 +78,18 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
     try {
 
       // Get the read filter
-      final MultiReadAlignmentFilter filter = getAlignmentFilter(
-          context.getGenericLogger(), reporter, COUNTER_GROUP);
-      getLogger().info("Read alignments filters to apply: "
-          + Joiner.on(", ").join(filter.getFilterNames()));
+      final MultiReadAlignmentFilter filter =
+          getAlignmentFilter(context.getGenericLogger(), reporter, COUNTER_GROUP);
+      getLogger()
+          .info(
+              "Read alignments filters to apply: " + Joiner.on(", ").join(filter.getFilterNames()));
 
       filterSample(context, reporter, status, filter);
 
     } catch (IOException e) {
-      status.createTaskResult(e,
-          "Error while filtering alignments: " + e.getMessage());
+      status.createTaskResult(e, "Error while filtering alignments: " + e.getMessage());
     } catch (EoulsanException e) {
-      status.createTaskResult(e,
-          "Error while initializing filter: " + e.getMessage());
+      status.createTaskResult(e, "Error while initializing filter: " + e.getMessage());
     }
 
     return status.createTaskResult();
@@ -100,20 +97,23 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
 
   /**
    * Filter a sample data in single-end mode and in paired-end mode.
+   *
    * @param context Eoulsan context
    * @param reporter reporter to use
    * @param status task status
    * @param filter alignments filter to use
    * @throws IOException if an error occurs while filtering reads
    */
-  private static void filterSample(final TaskContext context,
-      final Reporter reporter, final TaskStatus status,
-      final ReadAlignmentFilter filter) throws IOException {
+  private static void filterSample(
+      final TaskContext context,
+      final Reporter reporter,
+      final TaskStatus status,
+      final ReadAlignmentFilter filter)
+      throws IOException {
 
     // Get input and output data
     final Data inData = context.getInputData(DataFormats.MAPPER_RESULTS_SAM);
-    final Data outData =
-        context.getOutputData(DataFormats.MAPPER_RESULTS_SAM, inData);
+    final Data outData = context.getOutputData(DataFormats.MAPPER_RESULTS_SAM, inData);
 
     // Get the source
     final DataFile inFile = inData.getDataFile();
@@ -122,12 +122,10 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
     final DataFile outFile = outData.getDataFile();
 
     // Filter alignments in single-end mode or in paired-end mode
-    filterFile(inFile, outFile, reporter, filter,
-        context.getLocalTempDirectory());
+    filterFile(inFile, outFile, reporter, filter, context.getLocalTempDirectory());
 
     // Set the description of the context
-    status.setDescription(
-        "Filter SAM file (" + inData.getName() + ", " + inFile.getName() + ")");
+    status.setDescription("Filter SAM file (" + inData.getName() + ", " + inFile.getName() + ")");
 
     // Add counters for this sample to log file
     status.setCounters(reporter, COUNTER_GROUP);
@@ -135,6 +133,7 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
 
   /**
    * Filter a file in single-end mode or paired-end mode.
+   *
    * @param inFile input file
    * @param outFile output file
    * @param reporter reporter to use
@@ -142,9 +141,13 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
    * @param tmpDir temporary directory
    * @throws IOException if an error occurs while filtering data
    */
-  private static void filterFile(final DataFile inFile, final DataFile outFile,
-      final Reporter reporter, final ReadAlignmentFilter filter,
-      final File tmpDir) throws IOException {
+  private static void filterFile(
+      final DataFile inFile,
+      final DataFile outFile,
+      final Reporter reporter,
+      final ReadAlignmentFilter filter,
+      final File tmpDir)
+      throws IOException {
 
     final List<SAMRecord> records = new ArrayList<>();
     int counterInput = 0;
@@ -153,8 +156,7 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
     boolean pairedEnd = false;
 
     // Creation of a buffer object to store alignments with the same read name
-    final ReadAlignmentFilterBuffer rafb =
-        new ReadAlignmentFilterBuffer(filter);
+    final ReadAlignmentFilterBuffer rafb = new ReadAlignmentFilterBuffer(filter);
 
     getLogger().info("Filter SAM file: " + inFile);
 
@@ -164,7 +166,8 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
 
     // Get Writer
     final SAMFileWriter outputSam =
-        new SAMFileWriterFactory().setTempDirectory(tmpDir)
+        new SAMFileWriterFactory()
+            .setTempDirectory(tmpDir)
             .makeSAMWriter(inputSam.getFileHeader(), false, outFile.create());
 
     final SAMRecordIterator it = inputSam.iterator();
@@ -209,7 +212,6 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
 
         rafb.addAlignment(samRecord);
       }
-
     }
 
     // treatment of the last record
@@ -229,26 +231,24 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
     if (pairedEnd) {
       int nbInput = counterInput / 2;
       int nbOutput = counterOutput / 2;
-      reporter.incrCounter(COUNTER_GROUP,
-          INPUT_ALIGNMENTS_COUNTER.counterName(), nbInput);
-      reporter.incrCounter(COUNTER_GROUP,
-          OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), nbOutput);
-      reporter.incrCounter(COUNTER_GROUP,
-          ALIGNMENTS_WITH_INVALID_SAM_FORMAT.counterName(), counterInvalid / 2);
-      reporter.incrCounter(COUNTER_GROUP,
-          ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(),
-          nbInput - nbOutput);
+      reporter.incrCounter(COUNTER_GROUP, INPUT_ALIGNMENTS_COUNTER.counterName(), nbInput);
+      reporter.incrCounter(
+          COUNTER_GROUP, OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), nbOutput);
+      reporter.incrCounter(
+          COUNTER_GROUP, ALIGNMENTS_WITH_INVALID_SAM_FORMAT.counterName(), counterInvalid / 2);
+      reporter.incrCounter(
+          COUNTER_GROUP, ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(), nbInput - nbOutput);
     }
 
     // single-end mode
     else {
-      reporter.incrCounter(COUNTER_GROUP,
-          INPUT_ALIGNMENTS_COUNTER.counterName(), counterInput);
-      reporter.incrCounter(COUNTER_GROUP,
-          OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), counterOutput);
-      reporter.incrCounter(COUNTER_GROUP,
-          ALIGNMENTS_WITH_INVALID_SAM_FORMAT.counterName(), counterInvalid);
-      reporter.incrCounter(COUNTER_GROUP,
+      reporter.incrCounter(COUNTER_GROUP, INPUT_ALIGNMENTS_COUNTER.counterName(), counterInput);
+      reporter.incrCounter(
+          COUNTER_GROUP, OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), counterOutput);
+      reporter.incrCounter(
+          COUNTER_GROUP, ALIGNMENTS_WITH_INVALID_SAM_FORMAT.counterName(), counterInvalid);
+      reporter.incrCounter(
+          COUNTER_GROUP,
           ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName(),
           counterInput - counterOutput);
     }

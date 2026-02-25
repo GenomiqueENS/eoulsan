@@ -3,7 +3,6 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 import com.google.common.eventbus.DeadEvent;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
@@ -11,6 +10,7 @@ import fr.ens.biologie.genomique.eoulsan.data.Data;
 
 /**
  * This class define a single for the event bus.
+ *
  * @since 2.3
  * @author Laurent Jourdren
  */
@@ -22,6 +22,7 @@ public class WorkflowEventBus {
 
   /**
    * Register an listener object.
+   *
    * @param object the listener object
    */
   public void register(final Object object) {
@@ -31,6 +32,7 @@ public class WorkflowEventBus {
 
   /**
    * Unregister an listener object.
+   *
    * @param object the listener object
    */
   public void unregister(final Object object) {
@@ -40,6 +42,7 @@ public class WorkflowEventBus {
 
   /**
    * Post an event.
+   *
    * @param object the event to post
    */
   private void post(final Object object) {
@@ -49,6 +52,7 @@ public class WorkflowEventBus {
 
   /**
    * Post a step state change event.
+   *
    * @param step the step
    * @param state the new state
    */
@@ -59,6 +63,7 @@ public class WorkflowEventBus {
 
   /**
    * Post a token.
+   *
    * @param fromPort the port emiting the token
    * @param tokenCount number of tokens sent for the port
    */
@@ -69,6 +74,7 @@ public class WorkflowEventBus {
 
   /**
    * Post a token.
+   *
    * @param fromPort the port emiting the token
    * @param data of the token
    */
@@ -79,6 +85,7 @@ public class WorkflowEventBus {
 
   /**
    * Post an UI event.
+   *
    * @param uiEvent UI event
    */
   void postUIEvent(final UIEvent uiEvent) {
@@ -98,6 +105,7 @@ public class WorkflowEventBus {
 
   /**
    * Get the singleton instance of WorkflowBusEvent.
+   *
    * @return the singleton instance of WorkflowBusEvent
    */
   public static synchronized WorkflowEventBus getInstance() {
@@ -113,13 +121,10 @@ public class WorkflowEventBus {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
+  /** Private constructor. */
   private WorkflowEventBus() {
 
     this.eventBus = new EventBus(Globals.APP_NAME);
     this.eventBus.register(this);
   }
-
 }

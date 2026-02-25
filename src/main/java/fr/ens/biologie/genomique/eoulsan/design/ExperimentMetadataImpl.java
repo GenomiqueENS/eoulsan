@@ -26,11 +26,11 @@ package fr.ens.biologie.genomique.eoulsan.design;
 
 /**
  * This class defines the default implementation of the experiment metadata.
+ *
  * @author Xavier Bauquet
  * @since 2.0
  */
-class ExperimentMetadataImpl extends AbstractMetadata
-    implements ExperimentMetadata {
+class ExperimentMetadataImpl extends AbstractMetadata implements ExperimentMetadata {
 
   /** Serialization version UID. */
   private static final long serialVersionUID = -625223839967520050L;
@@ -171,10 +171,6 @@ class ExperimentMetadataImpl extends AbstractMetadata
   // Constructor
   //
 
-  /**
-   * Constructor.
-   */
-  ExperimentMetadataImpl() {
-  }
-
+  /** Constructor. */
+  ExperimentMetadataImpl() {}
 }

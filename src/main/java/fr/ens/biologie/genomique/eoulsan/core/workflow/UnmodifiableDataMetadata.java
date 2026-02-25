@@ -26,12 +26,12 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.data.DataMetadata;
+import java.util.Set;
 
 /**
  * This class define an unmodifiable class for metadata of data objects.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -91,6 +91,7 @@ class UnmodifiableDataMetadata extends AbstractDataMetadata {
 
   /**
    * Get the AbstractData object wrapped by this object.
+   *
    * @return the AbstractData object wrapped by this object
    */
   DataMetadata getMetaData() {
@@ -110,6 +111,7 @@ class UnmodifiableDataMetadata extends AbstractDataMetadata {
 
   /**
    * Constructor.
+   *
    * @param metadata the DataMetadata object to wrap
    */
   UnmodifiableDataMetadata(final DataMetadata metadata) {
@@ -118,5 +120,4 @@ class UnmodifiableDataMetadata extends AbstractDataMetadata {
 
     this.metadata = metadata;
   }
-
 }

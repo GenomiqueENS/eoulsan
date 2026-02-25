@@ -30,6 +30,7 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 
 /**
  * This class define a simple implementation of the DataFileMetadata interface.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -150,19 +151,30 @@ class SimpleDataFileMetadata implements DataFileMetadata {
   public String toString() {
 
     return this.getClass().getSimpleName()
-        + "{contentLength=" + this.contentLength + ", contentType="
-        + this.contentType + ", contentEncoding=" + this.contentEncoding
-        + ", contentMD5=" + this.contentMD5 + ", lastModified="
-        + this.lastModified + ", dataFormat=" + this.dataFormat + ", directory="
-        + this.directory + ", symbolicLinkTarget=" + symbolicLinkTarget + "}";
+        + "{contentLength="
+        + this.contentLength
+        + ", contentType="
+        + this.contentType
+        + ", contentEncoding="
+        + this.contentEncoding
+        + ", contentMD5="
+        + this.contentMD5
+        + ", lastModified="
+        + this.lastModified
+        + ", dataFormat="
+        + this.dataFormat
+        + ", directory="
+        + this.directory
+        + ", symbolicLinkTarget="
+        + symbolicLinkTarget
+        + "}";
   }
 
   //
   // Constructors
   //
 
-  public SimpleDataFileMetadata() {
-  }
+  public SimpleDataFileMetadata() {}
 
   public SimpleDataFileMetadata(final DataFileMetadata md) {
 
@@ -176,5 +188,4 @@ class SimpleDataFileMetadata implements DataFileMetadata {
     setContentMD5(md.getContentMD5());
     setLastModified(md.getLastModified());
   }
-
 }

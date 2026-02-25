@@ -67,7 +67,6 @@ public class UnmodifiableDesignMetadataTest {
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
-
   }
 
   @Test
@@ -102,7 +101,5 @@ public class UnmodifiableDesignMetadataTest {
     assertEquals("/home/toto/titi.txt", udm.getAdditionalAnnotationFile());
     // test containsAdditionalAnnotationFile
     assertTrue(udm.containsAdditionalAnnotationFile());
-
   }
-
 }

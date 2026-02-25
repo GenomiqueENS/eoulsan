@@ -23,30 +23,30 @@
  */
 package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
-import org.w3c.dom.Element;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
+import org.w3c.dom.Element;
 
 /**
  * This class define a boolean tool element parameter.
+ *
  * @author Sandrine Perrin
  * @since 2.0
  */
 public class BooleanParameterToolElement extends AbstractParameterToolElement {
 
   /** The Constant TYPE. */
-  public final static String TYPE = "boolean";
+  public static final String TYPE = "boolean";
 
   /** The Constant ATT_CHECKED_KEY. */
-  private final static String ATT_CHECKED_KEY = "checked";
+  private static final String ATT_CHECKED_KEY = "checked";
 
   /** The Constant ATT_TRUEVALUE_KEY. */
-  private final static String ATT_TRUEVALUE_KEY = "truevalue";
+  private static final String ATT_TRUEVALUE_KEY = "truevalue";
 
   /** The Constant ATT_FALSEVALUE_KEY. */
-  private final static String ATT_FALSEVALUE_KEY = "falsevalue";
+  private static final String ATT_FALSEVALUE_KEY = "falsevalue";
 
   /** The checked_lowered. */
   private final boolean checked;
@@ -94,16 +94,15 @@ public class BooleanParameterToolElement extends AbstractParameterToolElement {
     }
 
     switch (value.trim().toLowerCase(Globals.DEFAULT_LOCALE)) {
+      case "yes":
+      case "on":
+      case "true":
+        this.value = true;
+        break;
 
-    case "yes":
-    case "on":
-    case "true":
-      this.value = true;
-      break;
-
-    default:
-      this.value = false;
-      break;
+      default:
+        this.value = false;
+        break;
     }
 
     this.set = true;
@@ -116,8 +115,14 @@ public class BooleanParameterToolElement extends AbstractParameterToolElement {
   @Override
   public String toString() {
     return "ToolParameterBoolean [checked="
-        + this.checked + ", trueValue=" + this.trueValue + ", falseValue="
-        + this.falseValue + ", value=" + this.value + "]";
+        + this.checked
+        + ", trueValue="
+        + this.trueValue
+        + ", falseValue="
+        + this.falseValue
+        + ", value="
+        + this.value
+        + "]";
   }
 
   //
@@ -126,22 +131,23 @@ public class BooleanParameterToolElement extends AbstractParameterToolElement {
 
   /**
    * Instantiates a new boolean tool parameter.
+   *
    * @param toolInfo the ToolInfo object
    * @param param the parameter
    */
-  public BooleanParameterToolElement(final ToolInfo toolInfo,
-      final Element param) {
+  public BooleanParameterToolElement(final ToolInfo toolInfo, final Element param) {
     this(toolInfo, param, null);
   }
 
   /**
    * Instantiates a new boolean tool parameter.
+   *
    * @param toolInfo the ToolInfo object
    * @param param the parameter
    * @param nameSpace the name space
    */
-  public BooleanParameterToolElement(final ToolInfo toolInfo,
-      final Element param, final String nameSpace) {
+  public BooleanParameterToolElement(
+      final ToolInfo toolInfo, final Element param, final String nameSpace) {
     super(param, nameSpace);
 
     this.checked = Boolean.parseBoolean(param.getAttribute(ATT_CHECKED_KEY));
@@ -155,5 +161,4 @@ public class BooleanParameterToolElement extends AbstractParameterToolElement {
     // Set default value
     this.value = this.checked;
   }
-
 }

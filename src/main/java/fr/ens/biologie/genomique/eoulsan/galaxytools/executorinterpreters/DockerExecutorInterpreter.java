@@ -2,17 +2,16 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.executorinterpreters;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
-import java.util.List;
-
 import com.google.common.base.MoreObjects;
-
 import fr.ens.biologie.genomique.eoulsan.util.EoulsanDockerManager;
 import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 import fr.ens.biologie.genomique.kenetre.util.process.SimpleProcess;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * This class define a Docker executor interpreter.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -49,8 +48,10 @@ public class DockerExecutorInterpreter extends AbstractExecutorInterpreter {
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this).add("name", getName())
-        .add("dockerImage", dockerImage).toString();
+    return MoreObjects.toStringHelper(this)
+        .add("name", getName())
+        .add("dockerImage", dockerImage)
+        .toString();
   }
 
   //
@@ -59,6 +60,7 @@ public class DockerExecutorInterpreter extends AbstractExecutorInterpreter {
 
   /**
    * Constructor.
+   *
    * @param dockerImage Docker image
    */
   public DockerExecutorInterpreter(final String dockerImage) {
@@ -67,5 +69,4 @@ public class DockerExecutorInterpreter extends AbstractExecutorInterpreter {
 
     this.dockerImage = dockerImage;
   }
-
 }

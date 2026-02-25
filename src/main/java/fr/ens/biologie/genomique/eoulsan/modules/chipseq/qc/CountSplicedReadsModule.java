@@ -6,9 +6,6 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
 
-import java.io.IOException;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -18,20 +15,22 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.kenetre.util.LocalReporter;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SamInputResource;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
+import java.io.IOException;
+import java.util.Set;
 
 /**
- * This step computes how many spliced alignments there are in a SAM file. This
- * QC step computes the number of spliced alignments in a SAM file, as well as
- * the total number of mapped reads.
+ * This step computes how many spliced alignments there are in a SAM file. This QC step computes the
+ * number of spliced alignments in a SAM file, as well as the total number of mapped reads.
+ *
  * @author Celine Hernandez - CSB lab - ENS - Paris
  */
 @LocalOnly
@@ -45,33 +44,25 @@ public class CountSplicedReadsModule extends AbstractModule {
   // Overriden methods.
   //
 
-  /**
-   * Name of the Step.
-   */
+  /** Name of the Step. */
   @Override
   public String getName() {
     return STEP_NAME;
   }
 
-  /**
-   * A short description of the tool and what is done in the step.
-   */
+  /** A short description of the tool and what is done in the step. */
   @Override
   public String getDescription() {
     return "This step performs a quality control by counting spliced mapped reads.";
   }
 
-  /**
-   * Version.
-   */
+  /** Version. */
   @Override
   public Version getVersion() {
     return Globals.APP_VERSION;
   }
 
-  /**
-   * Define input ports.
-   */
+  /** Define input ports. */
   @Override
   public InputPorts getInputPorts() {
     return singleInputPort(MAPPER_RESULTS_SAM);
@@ -82,30 +73,25 @@ public class CountSplicedReadsModule extends AbstractModule {
   //
 
   /**
-   * Set the parameters of the step to configure the step. No parameter
-   * accepted.
+   * Set the parameters of the step to configure the step. No parameter accepted.
+   *
    * @param stepParameters parameters of the step
    * @throws EoulsanException if a parameter is provided
    */
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     // No parameters
     if (!stepParameters.isEmpty()) {
-      throw new EoulsanException(
-          "Unknown parameter(s) for " + getName() + " step.");
+      throw new EoulsanException("Unknown parameter(s) for " + getName() + " step.");
     }
-
   }
 
-  /**
-   * Install all the files necessary in the tmp folder, then run idr.
-   */
+  /** Install all the files necessary in the tmp folder, then run idr. */
   @Override
   // public StepResult execute(final Design design, final Context context) {
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     // Get input data (SAM format)
     final Data inData = context.getInputData(MAPPER_RESULTS_SAM);
@@ -120,8 +106,8 @@ public class CountSplicedReadsModule extends AbstractModule {
 
     try {
       // Open SAM file
-      final SamReader reader = SamReaderFactory.makeDefault()
-          .open(SamInputResource.of(samFile.open()));
+      final SamReader reader =
+          SamReaderFactory.makeDefault().open(SamInputResource.of(samFile.open()));
 
       // To count total number of records
       int recordCount = 0;
@@ -160,44 +146,40 @@ public class CountSplicedReadsModule extends AbstractModule {
 
       // paired-end mode
       if (pairedEnd) {
-        reporter.setCounter(COUNTER_GROUP,
-            INPUT_ALIGNMENTS_COUNTER.counterName(), recordCount / 2);
-        reporter.setCounter(COUNTER_GROUP,
-            OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), 1);
-        reporter.setCounter(COUNTER_GROUP,
-            OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(),
-            splicedRecords / 2);
+        reporter.setCounter(COUNTER_GROUP, INPUT_ALIGNMENTS_COUNTER.counterName(), recordCount / 2);
+        reporter.setCounter(COUNTER_GROUP, OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), 1);
+        reporter.setCounter(
+            COUNTER_GROUP, OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), splicedRecords / 2);
       }
 
       // single-end mode
       else {
-        reporter.setCounter(COUNTER_GROUP,
-            INPUT_ALIGNMENTS_COUNTER.counterName(), recordCount);
-        reporter.setCounter(COUNTER_GROUP,
-            OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), 1);
-        reporter.setCounter(COUNTER_GROUP,
-            OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), splicedRecords);
+        reporter.setCounter(COUNTER_GROUP, INPUT_ALIGNMENTS_COUNTER.counterName(), recordCount);
+        reporter.setCounter(COUNTER_GROUP, OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), 1);
+        reporter.setCounter(
+            COUNTER_GROUP, OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName(), splicedRecords);
       }
 
       // Set the context description
-      status.setDescription("Count entries in SAM file ("
-          + inData.getName() + ", " + samFile.getName() + ")");
+      status.setDescription(
+          "Count entries in SAM file (" + inData.getName() + ", " + samFile.getName() + ")");
       // Add counters for this sample to log file
       status.setCounters(reporter, COUNTER_GROUP);
 
       // Create the reporter. The reporter collect information about the
       // process of the data (e.g. the number of reads, the number of
       // alignments generated...)
-      getLogger().info(reporter.countersValuesToString(COUNTER_GROUP,
-          " (" + inData.getName() + ", " + samFile.getName() + ") "));
+      getLogger()
+          .info(
+              reporter.countersValuesToString(
+                  COUNTER_GROUP, " (" + inData.getName() + ", " + samFile.getName() + ") "));
 
     } catch (IOException ioe) {
-      getLogger().severe("Could not open SAM file ("
-          + inData.getName() + ", " + samFile.getName() + ")");
+      getLogger()
+          .severe("Could not open SAM file (" + inData.getName() + ", " + samFile.getName() + ")");
       return status.createTaskResult();
     }
 
     return status.createTaskResult();
   }
-
 } // End of class CountSplicedReadsStep

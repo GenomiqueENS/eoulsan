@@ -27,21 +27,20 @@ package fr.ens.biologie.genomique.eoulsan.util;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.kenetre.util.ServiceListLoader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ServiceConfigurationError;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.kenetre.util.ServiceListLoader;
-
 /**
  * This class allow to define a resource loader for resources in the class path.
+ *
  * @param <S> Type of the data to load
  * @author Laurent Jourdren
  * @since 2.0
  */
-public abstract class ClassPathResourceLoader<S>
-    extends AbstractResourceLoader<S> {
+public abstract class ClassPathResourceLoader<S> extends AbstractResourceLoader<S> {
 
   private final Class<S> clazz;
   private final String resourceBasePath;
@@ -51,8 +50,7 @@ public abstract class ClassPathResourceLoader<S>
   //
 
   @Override
-  protected InputStream getResourceAsStream(final String resourcePath)
-      throws IOException {
+  protected InputStream getResourceAsStream(final String resourcePath) throws IOException {
 
     requireNonNull(resourcePath, "resourcePath argument cannot be null");
 
@@ -70,11 +68,10 @@ public abstract class ClassPathResourceLoader<S>
       for (String filename : ServiceListLoader.load(this.clazz.getName())) {
 
         final String resourcePath = this.resourceBasePath + filename;
-        getLogger().fine("Try to load "
-            + this.clazz.getSimpleName() + " from " + filename + " resource");
+        getLogger()
+            .fine("Try to load " + this.clazz.getSimpleName() + " from " + filename + " resource");
 
-        final S resource =
-            load(getResourceAsStream(resourcePath), resourcePath);
+        final S resource = load(getResourceAsStream(resourcePath), resourcePath);
 
         if (resource == null) {
           throw new EoulsanException("Cannot load resource: " + resourcePath);
@@ -83,8 +80,7 @@ public abstract class ClassPathResourceLoader<S>
         final String resourceName = getResourceName(resource);
 
         if (resourceName == null) {
-          throw new EoulsanException(
-              "Cannot get resource name for resource: " + resource);
+          throw new EoulsanException("Cannot get resource name for resource: " + resource);
         }
 
         addResource(resourceName, resourcePath);
@@ -100,12 +96,11 @@ public abstract class ClassPathResourceLoader<S>
 
   /**
    * Constructor.
+   *
    * @param clazz the Class type of the resource to load
-   * @param resourcePath the path in the class path where are the resources to
-   *          load
+   * @param resourcePath the path in the class path where are the resources to load
    */
-  public ClassPathResourceLoader(final Class<S> clazz,
-      final String resourcePath) {
+  public ClassPathResourceLoader(final Class<S> clazz, final String resourcePath) {
 
     requireNonNull(clazz, "clazz argument cannot be null");
     requireNonNull(resourcePath, "resourcePath argument cannot be null");
@@ -113,5 +108,4 @@ public abstract class ClassPathResourceLoader<S>
     this.clazz = clazz;
     this.resourceBasePath = resourcePath;
   }
-
 }

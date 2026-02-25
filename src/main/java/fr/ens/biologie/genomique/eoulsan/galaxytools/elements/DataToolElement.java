@@ -25,20 +25,18 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.newEoulsanException;
 
-import java.util.List;
-
-import org.w3c.dom.Element;
-
 import com.google.common.base.Joiner;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
 import fr.ens.biologie.genomique.kenetre.util.GuavaCompatibility;
+import java.util.List;
+import org.w3c.dom.Element;
 
 /**
  * The Class ToolOutputsData.
+ *
  * @author Sandrine Perrin
  * @since 2.0
  */
@@ -48,7 +46,7 @@ public class DataToolElement extends AbstractToolElement {
   public static final String TAG_NAME = "data";
 
   /** The Constant TYPE. */
-  public final static String TYPE = "data";
+  public static final String TYPE = "data";
 
   /** The formats. */
   private final List<String> formats;
@@ -70,6 +68,7 @@ public class DataToolElement extends AbstractToolElement {
 
   /**
    * Get the data format of the tool element.
+   *
    * @return the data format
    */
   public DataFormat getDataFormat() {
@@ -91,23 +90,24 @@ public class DataToolElement extends AbstractToolElement {
 
   /**
    * Instantiates a new tool outputs data.
+   *
    * @param toolInfo the ToolInfo object
    * @param param the param
    * @param nameSpace name space
    * @throws EoulsanException if an error occurs while setting the value
    */
-  public DataToolElement(final ToolInfo toolInfo, final Element param,
-      final String nameSpace) throws EoulsanException {
+  public DataToolElement(final ToolInfo toolInfo, final Element param, final String nameSpace)
+      throws EoulsanException {
     super(param, nameSpace);
 
-    this.formats =
-        GuavaCompatibility.splitToList(COMMA, param.getAttribute("format"));
+    this.formats = GuavaCompatibility.splitToList(COMMA, param.getAttribute("format"));
 
     // Check count format found
     if (this.formats.size() > 1) {
-      throw newEoulsanException(toolInfo, getName(),
-          "more one format data found ("
-              + Joiner.on(",").join(this.formats) + ")");
+      throw newEoulsanException(
+          toolInfo,
+          getName(),
+          "more one format data found (" + Joiner.on(",").join(this.formats) + ")");
     }
 
     if (this.formats.isEmpty()) {
@@ -119,15 +119,12 @@ public class DataToolElement extends AbstractToolElement {
     String format = this.formats.get(0);
 
     // Convert format in DataFormat
-    this.dataFormat = DataFormatRegistry.getInstance()
-        .getDataFormatFromGalaxyFormatNameOrNameOrAlias(format);
+    this.dataFormat =
+        DataFormatRegistry.getInstance().getDataFormatFromGalaxyFormatNameOrNameOrAlias(format);
 
     // Check if a valid format has been found
     if (this.dataFormat == null) {
-      throw newEoulsanException(toolInfo, getName(),
-          "unknown format: " + format);
+      throw newEoulsanException(toolInfo, getName(), "unknown format: " + format);
     }
-
   }
-
 }

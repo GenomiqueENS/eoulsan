@@ -27,23 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
-
 import com.google.common.base.MoreObjects;
-
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -59,9 +43,24 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.util.ClassLoaderObjectInputStream;
 import fr.ens.biologie.genomique.kenetre.log.GenericLogger;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 
 /**
  * This class define a task context.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -96,6 +95,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Get the local working directory.
+   *
    * @return Returns the local working directory
    */
   public DataFile getLocalWorkingPathname() {
@@ -105,6 +105,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Get the Hadoop working directory.
+   *
    * @return Returns the Hadoop working directory
    */
   public DataFile getHadoopWorkingPathname() {
@@ -114,6 +115,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Get the job directory.
+   *
    * @return Returns the job directory
    */
   @Override
@@ -124,6 +126,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Get the task output directory.
+   *
    * @return Returns the task output directory
    */
   public DataFile getTaskOutputDirectory() {
@@ -133,6 +136,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Get the data repository directory.
+   *
    * @return Returns the data repository directory
    */
   public DataFile getDataRepositoryDirectory() {
@@ -178,6 +182,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Get the application jar path.
+   *
    * @return Returns the jar path
    */
   public DataFile getJarPathname() {
@@ -227,6 +232,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Get the AbstractWorkflowStep object.
+   *
    * @return a AbstractWorkflowStep object
    */
   AbstractStep getStep() {
@@ -280,8 +286,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
   public Data getInputData(final String portName) {
 
     requireNonNull(portName, "portName cannot be null");
-    checkArgument(this.inputData.containsKey(portName),
-        "unknown input port name: " + portName);
+    checkArgument(this.inputData.containsKey(portName), "unknown input port name: " + portName);
 
     return new UnmodifiableData(this.inputData.get(portName));
   }
@@ -298,12 +303,10 @@ public class TaskContextImpl implements TaskContext, Serializable {
   }
 
   @Override
-  public Data getOutputData(final String portName, final String dataName,
-      final int part) {
+  public Data getOutputData(final String portName, final String dataName, final int part) {
 
     requireNonNull(portName, "portName cannot be null");
-    checkArgument(this.outputData.containsKey(portName),
-        "unknown output port name: " + portName);
+    checkArgument(this.outputData.containsKey(portName), "unknown output port name: " + portName);
 
     final AbstractData data = this.outputData.get(portName);
     data.setName(dataName, true);
@@ -317,13 +320,14 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
     requireNonNull(origin, "origin cannot be null");
     requireNonNull(portName, "portName cannot be null");
-    checkArgument(this.outputData.containsKey(portName),
-        "unknown output port name: " + portName);
+    checkArgument(this.outputData.containsKey(portName), "unknown output port name: " + portName);
 
     final AbstractData result = this.outputData.get(portName);
 
-    AbstractData oriData = origin instanceof UnmodifiableData
-        ? ((UnmodifiableData) origin).getData() : (AbstractData) origin;
+    AbstractData oriData =
+        origin instanceof UnmodifiableData
+            ? ((UnmodifiableData) origin).getData()
+            : (AbstractData) origin;
 
     result.setName(oriData.getName(), oriData.isDefaultName());
     result.setPart(oriData.getPart());
@@ -343,8 +347,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
   }
 
   @Override
-  public Data getOutputData(final DataFormat format, final String dataName,
-      final int part) {
+  public Data getOutputData(final DataFormat format, final String dataName, final int part) {
 
     return getOutputData(getOutputPortNameForFormat(format), dataName);
   }
@@ -356,21 +359,23 @@ public class TaskContextImpl implements TaskContext, Serializable {
   }
 
   /**
-   * Update serialized output data. This method is used when process serialized
-   * task result.
+   * Update serialized output data. This method is used when process serialized task result.
+   *
    * @param data data to set
    */
   private void updateOutputData(final Map<String, AbstractData> data) {
 
     requireNonNull(data, "data argument cannot be null");
-    checkArgument(data.size() == this.outputData.size(),
+    checkArgument(
+        data.size() == this.outputData.size(),
         "Unexpected number of output data ("
-            + this.outputData.size() + " was expected): " + data.size());
+            + this.outputData.size()
+            + " was expected): "
+            + data.size());
 
     for (Map.Entry<String, AbstractData> e : data.entrySet()) {
 
-      checkArgument(this.outputData.containsKey(e.getKey()),
-          "Unknown port: " + e.getKey());
+      checkArgument(this.outputData.containsKey(e.getKey()), "Unknown port: " + e.getKey());
 
       // Update outputData
       this.outputData.put(e.getKey(), e.getValue());
@@ -385,6 +390,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Create the prefix of a related task file.
+   *
    * @return a string with the prefix of the task file
    */
   public String getTaskFilePrefix() {
@@ -398,6 +404,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Get raw access to input data stored in the object.
+   *
    * @param port name of the input port
    * @return a Data object
    */
@@ -415,6 +422,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Get raw access to output data stored in the object.
+   *
    * @param port name of the output port
    * @return a Data object
    */
@@ -441,6 +449,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Get the input port for a given format.
+   *
    * @param format the format
    * @return the port that matches to the format
    */
@@ -452,23 +461,26 @@ public class TaskContextImpl implements TaskContext, Serializable {
         this.step.getWorkflowInputPorts().getPortsWithDataFormat(format);
 
     switch (ports.size()) {
-
-    case 0:
-      throw new EoulsanRuntimeException("The step "
-          + this.step.getId() + " do not provide an input port with format: "
-          + format.getName());
-    case 1:
-      return ports.get(0).getName();
-    default:
-      throw new EoulsanRuntimeException("The step "
-          + this.step.getId()
-          + " provide more than one input port with format: "
-          + format.getName());
+      case 0:
+        throw new EoulsanRuntimeException(
+            "The step "
+                + this.step.getId()
+                + " do not provide an input port with format: "
+                + format.getName());
+      case 1:
+        return ports.get(0).getName();
+      default:
+        throw new EoulsanRuntimeException(
+            "The step "
+                + this.step.getId()
+                + " provide more than one input port with format: "
+                + format.getName());
     }
   }
 
   /**
    * Get the output port for a given format.
+   *
    * @param format the format
    * @return the port that matches to the format
    */
@@ -480,18 +492,20 @@ public class TaskContextImpl implements TaskContext, Serializable {
         this.step.getWorkflowOutputPorts().getPortsWithDataFormat(format);
 
     switch (ports.size()) {
-
-    case 0:
-      throw new EoulsanRuntimeException("The step "
-          + this.step.getId() + " do not provide an output port with format: "
-          + format.getName());
-    case 1:
-      return ports.get(0).getName();
-    default:
-      throw new EoulsanRuntimeException("The step "
-          + this.step.getId()
-          + " provide more than one output port with format: "
-          + format.getName());
+      case 0:
+        throw new EoulsanRuntimeException(
+            "The step "
+                + this.step.getId()
+                + " do not provide an output port with format: "
+                + format.getName());
+      case 1:
+        return ports.get(0).getName();
+      default:
+        throw new EoulsanRuntimeException(
+            "The step "
+                + this.step.getId()
+                + " provide more than one output port with format: "
+                + format.getName());
     }
   }
 
@@ -501,8 +515,10 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this).add("id", this.id)
-        .add("step", this.step.getId()).add("contextName", this.contextName)
+    return MoreObjects.toStringHelper(this)
+        .add("id", this.id)
+        .add("step", this.step.getId())
+        .add("contextName", this.contextName)
         .toString();
   }
 
@@ -512,6 +528,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Serialize the TaskContext object.
+   *
    * @param file output DataFile
    * @throws IOException if an error occurs while creating the file
    */
@@ -526,6 +543,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Serialize the TaskContext object.
+   *
    * @param file output DataFile
    * @throws IOException if an error occurs while creating the file
    */
@@ -538,6 +556,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Serialize the TaskContext object.
+   *
    * @param file output DataFile
    * @throws IOException if an error occurs while creating the file
    */
@@ -552,6 +571,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Serialize the TaskContext object.
+   *
    * @param out output stream
    * @throws IOException if an error occurs while creating the file
    */
@@ -564,18 +584,17 @@ public class TaskContextImpl implements TaskContext, Serializable {
       oos.writeObject(this);
       oos.writeObject(EoulsanRuntime.getSettings());
     }
-
   }
 
   /**
-   * Deserialize the TaskContext object. Warning: this method update the values
-   * of the settings of the Eoulsan runtime.
+   * Deserialize the TaskContext object. Warning: this method update the values of the settings of
+   * the Eoulsan runtime.
+   *
    * @param file input DataFile
    * @return a deserialized TaskContextImpl object
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskContextImpl deserialize(final Path file)
-      throws IOException {
+  public static TaskContextImpl deserialize(final Path file) throws IOException {
 
     requireNonNull(file, "file argument cannot be null");
 
@@ -585,14 +604,14 @@ public class TaskContextImpl implements TaskContext, Serializable {
   }
 
   /**
-   * Deserialize the TaskContext object. Warning: this method update the values
-   * of the settings of the Eoulsan runtime.
+   * Deserialize the TaskContext object. Warning: this method update the values of the settings of
+   * the Eoulsan runtime.
+   *
    * @param file input DataFile
    * @return a deserialized TaskContextImpl object
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskContextImpl deserialize(final File file)
-      throws IOException {
+  public static TaskContextImpl deserialize(final File file) throws IOException {
 
     requireNonNull(file, "file argument cannot be null");
 
@@ -600,14 +619,14 @@ public class TaskContextImpl implements TaskContext, Serializable {
   }
 
   /**
-   * Deserialize the TaskContext object. Warning: this method update the values
-   * of the settings of the Eoulsan runtime.
+   * Deserialize the TaskContext object. Warning: this method update the values of the settings of
+   * the Eoulsan runtime.
+   *
    * @param file input DataFile
    * @return a deserialized TaskContextImpl object
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskContextImpl deserialize(final DataFile file)
-      throws IOException {
+  public static TaskContextImpl deserialize(final DataFile file) throws IOException {
 
     requireNonNull(file, "file argument cannot be null");
 
@@ -617,14 +636,14 @@ public class TaskContextImpl implements TaskContext, Serializable {
   }
 
   /**
-   * Deserialize the TaskContext object. Warning: this method update the values
-   * of the settings of the Eoulsan runtime.
+   * Deserialize the TaskContext object. Warning: this method update the values of the settings of
+   * the Eoulsan runtime.
+   *
    * @param in input stream
    * @return a deserialized TaskContextImpl object
    * @throws IOException if an error occurs while reading the file
    */
-  public static TaskContextImpl deserialize(final InputStream in)
-      throws IOException {
+  public static TaskContextImpl deserialize(final InputStream in) throws IOException {
 
     requireNonNull(in, "in argument cannot be null");
 
@@ -648,6 +667,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Serialize output data.
+   *
    * @param file output file
    * @throws IOException if an error occurs while creating the file
    */
@@ -660,6 +680,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Serialize output data.
+   *
    * @param file output file
    * @throws IOException if an error occurs while creating the file
    */
@@ -672,6 +693,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Serialize output data.
+   *
    * @param file output DataFile
    * @throws IOException if an error occurs while creating the file
    */
@@ -684,6 +706,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Serialize output data.
+   *
    * @param out output stream
    * @throws IOException if an error occurs while creating the file
    */
@@ -699,6 +722,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Deserialize output data.
+   *
    * @param file input datafile
    * @throws IOException if an error occurs while reading the file
    */
@@ -711,6 +735,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Deserialize output data.
+   *
    * @param file input file
    * @throws IOException if an error occurs while reading the file
    */
@@ -721,9 +746,9 @@ public class TaskContextImpl implements TaskContext, Serializable {
     deserializeOutputData(Files.newInputStream(file));
   }
 
-
   /**
    * Deserialize output data.
+   *
    * @param file input file
    * @throws IOException if an error occurs while reading the file
    */
@@ -736,6 +761,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Deserialize output data.
+   *
    * @param in input stream
    * @throws IOException if an error occurs while reading the file
    */
@@ -748,8 +774,7 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
       // Read TaskContext object
       @SuppressWarnings("unchecked")
-      final Map<String, AbstractData> outputData =
-          (Map<String, AbstractData>) ois.readObject();
+      final Map<String, AbstractData> outputData = (Map<String, AbstractData>) ois.readObject();
 
       ois.close();
 
@@ -767,10 +792,13 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
   /**
    * Constructor.
+   *
    * @param step step related to the context
    */
-  TaskContextImpl(final WorkflowContext workflowContext,
-      final AbstractStep step, final Map<InputPort, Data> inputData,
+  TaskContextImpl(
+      final WorkflowContext workflowContext,
+      final AbstractStep step,
+      final Map<InputPort, Data> inputData,
       final Map<OutputPort, AbstractData> outputData) {
 
     requireNonNull(workflowContext, "workflow context cannot be null");
@@ -784,13 +812,11 @@ public class TaskContextImpl implements TaskContext, Serializable {
 
     // Copy input and output data
     for (Map.Entry<InputPort, Data> e : inputData.entrySet()) {
-      this.inputData.put(e.getKey().getName(),
-          DataUtils.copy((AbstractData) e.getValue()));
+      this.inputData.put(e.getKey().getName(), DataUtils.copy((AbstractData) e.getValue()));
     }
 
     for (Map.Entry<OutputPort, AbstractData> e : outputData.entrySet()) {
       this.outputData.put(e.getKey().getName(), e.getValue());
     }
   }
-
 }

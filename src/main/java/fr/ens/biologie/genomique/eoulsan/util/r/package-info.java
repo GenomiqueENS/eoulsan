@@ -24,6 +24,7 @@
 
 /**
  * This package contain utility classes for R usage.
+ *
  * @since 1.2
  */
 package fr.ens.biologie.genomique.eoulsan.util.r;

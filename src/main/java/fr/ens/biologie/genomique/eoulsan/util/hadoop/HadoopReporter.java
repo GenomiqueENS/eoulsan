@@ -26,19 +26,17 @@ package fr.ens.biologie.genomique.eoulsan.util.hadoop;
 
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.collect.Sets;
+import fr.ens.biologie.genomique.kenetre.util.Reporter;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.hadoop.mapreduce.Counter;
 import org.apache.hadoop.mapreduce.Counters;
 import org.apache.hadoop.mapreduce.TaskInputOutputContext;
 
-import com.google.common.collect.Sets;
-
-import fr.ens.biologie.genomique.kenetre.util.Reporter;
-
 /**
  * This class define a Hadoop reporter.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -49,22 +47,19 @@ public class HadoopReporter implements Reporter {
   private final Counters counters;
 
   @Override
-  public void incrCounter(final String counterGroup, final String counterName,
-      final long amount) {
+  public void incrCounter(final String counterGroup, final String counterName, final long amount) {
 
     if (this.context != null) {
       // Use in mappers and reducers
       this.context.getCounter(counterGroup, counterName).increment(amount);
     } else {
       // Use in other cases
-      this.counters.getGroup(counterGroup).findCounter(counterName)
-          .increment(amount);
+      this.counters.getGroup(counterGroup).findCounter(counterName).increment(amount);
     }
   }
 
   @Override
-  public long getCounterValue(final String counterGroup,
-      final String counterName) {
+  public long getCounterValue(final String counterGroup, final String counterName) {
 
     // This method does not works in Hadoop mappers and reducers
     if (this.context != null) {
@@ -108,6 +103,7 @@ public class HadoopReporter implements Reporter {
 
   /**
    * Constructor. This constructor is used by Hadoop mappers and reducers.
+   *
    * @param context context to use for counter incrementation
    */
   public HadoopReporter(final TaskInputOutputContext context) {
@@ -120,6 +116,7 @@ public class HadoopReporter implements Reporter {
 
   /**
    * Constructor.
+   *
    * @param counters counters to use for counter incrementation
    */
   public HadoopReporter(final Counters counters) {
@@ -129,5 +126,4 @@ public class HadoopReporter implements Reporter {
     this.counters = counters;
     this.context = null;
   }
-
 }

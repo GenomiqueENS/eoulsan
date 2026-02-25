@@ -25,11 +25,11 @@
 package fr.ens.biologie.genomique.eoulsan;
 
 /**
- * A nestable Eoulsan exception. This class came from from Java Code. In
- * Eoulsan, checked exceptions are generally preferred to RuntimeExceptions, but
- * RuntimeExceptions can be used as a fall-back if you are implementing an
- * interface which doesn't support checked exceptions. If you do this, please
- * document this clearly in the implementing class.
+ * A nestable Eoulsan exception. This class came from from Java Code. In Eoulsan, checked exceptions
+ * are generally preferred to RuntimeExceptions, but RuntimeExceptions can be used as a fall-back if
+ * you are implementing an interface which doesn't support checked exceptions. If you do this,
+ * please document this clearly in the implementing class.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -42,15 +42,14 @@ public class EoulsanRuntimeException extends RuntimeException {
   // Constructors
   //
 
-  /**
-   * Create a new EoulsanRuntimeException.
-   */
+  /** Create a new EoulsanRuntimeException. */
   public EoulsanRuntimeException() {
     super();
   }
 
   /**
    * Create a new EoulsanRuntimeException with a message.
+   *
    * @param message the message
    */
   public EoulsanRuntimeException(final String message) {
@@ -60,6 +59,7 @@ public class EoulsanRuntimeException extends RuntimeException {
 
   /**
    * Create a new EoulsanException with a message and a cause.
+   *
    * @param message the message
    * @param cause the cause
    */
@@ -70,11 +70,11 @@ public class EoulsanRuntimeException extends RuntimeException {
 
   /**
    * Create a new EoulsanException with a cause.
+   *
    * @param cause the cause
    */
   public EoulsanRuntimeException(Throwable cause) {
 
     super(cause);
   }
-
 }

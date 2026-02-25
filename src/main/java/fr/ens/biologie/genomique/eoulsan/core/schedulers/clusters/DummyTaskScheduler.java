@@ -24,13 +24,13 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.schedulers.clusters;
 
+import fr.ens.biologie.genomique.eoulsan.Main;
 import java.io.File;
 import java.nio.file.Path;
 
-import fr.ens.biologie.genomique.eoulsan.Main;
-
 /**
  * This class define a Dummy cluster scheduler.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -56,15 +56,11 @@ public class DummyTaskScheduler extends BpipeTaskScheduler {
   // Constructor
   //
 
-  /**
-   * Constructor.
-   */
+  /** Constructor. */
   public DummyTaskScheduler() {
 
-    final Path binDir =
-        Main.getInstance().getEoulsanDirectory().toPath().resolve("bin");
+    final Path binDir = Main.getInstance().getEoulsanDirectory().toPath().resolve("bin");
 
     this.commandWrapperFile = binDir.resolve(COMMAND_WRAPPER_SCRIPT);
   }
-
 }

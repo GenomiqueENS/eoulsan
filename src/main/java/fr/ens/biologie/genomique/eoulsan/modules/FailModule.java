@@ -24,8 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules;
 
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -39,13 +37,14 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.util.Set;
 
 /**
- * This module is a module that always fails. This module is only used for
- * debugging purpose.
+ * This module is a module that always fails. This module is only used for debugging purpose.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -80,57 +79,50 @@ public class FailModule extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
+        case "delay":
+          this.delay = p.getIntValueGreaterOrEqualsTo(0);
+          break;
 
-      case "delay":
-        this.delay = p.getIntValueGreaterOrEqualsTo(0);
-        break;
+        case "input.format":
+          this.inputFormat =
+              DataFormatRegistry.getInstance()
+                  .getDataFormatFromGalaxyFormatNameOrNameOrAlias(p.getLowerStringValue());
+          if (this.inputFormat == null) {
+            Modules.badParameterValue(context, p, "Unknown format");
+          }
+          break;
 
-      case "input.format":
-        this.inputFormat = DataFormatRegistry.getInstance()
-            .getDataFormatFromGalaxyFormatNameOrNameOrAlias(
-                p.getLowerStringValue());
-        if (this.inputFormat == null) {
-          Modules.badParameterValue(context, p, "Unknown format");
-        }
-        break;
-
-      default:
-        Modules.unknownParameter(context, p);
+        default:
+          Modules.unknownParameter(context, p);
       }
     }
 
     // Check delay value
     if (this.delay < 0) {
-      Modules.invalidConfiguration(context,
-          "Delay cannot be lower than 0: " + this.delay);
+      Modules.invalidConfiguration(context, "Delay cannot be lower than 0: " + this.delay);
     }
     if (this.delay * 1000L > Integer.MAX_VALUE) {
-      Modules.invalidConfiguration(context,
-          "Delay cannot be greater than " + Integer.MAX_VALUE + " ms");
+      Modules.invalidConfiguration(
+          context, "Delay cannot be greater than " + Integer.MAX_VALUE + " ms");
     }
-
   }
 
   @SuppressWarnings("NarrowCalculation")
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     try {
       Thread.sleep(this.delay * 1000);
     } catch (InterruptedException e) {
-      context.getLogger()
-          .warning("Thread.sleep() interrupted: " + e.getMessage());
+      context.getLogger().warning("Thread.sleep() interrupted: " + e.getMessage());
     }
 
-    return status.createTaskResult(
-        new EoulsanException("Fail of the step required by user"));
+    return status.createTaskResult(new EoulsanException("Fail of the step required by user"));
   }
-
 }

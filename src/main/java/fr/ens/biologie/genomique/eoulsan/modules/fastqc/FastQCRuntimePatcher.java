@@ -24,12 +24,9 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.fastqc;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-
-import javax.imageio.ImageIO;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import javassist.CannotCompileException;
 import javassist.ClassClassPath;
 import javassist.ClassPool;
@@ -37,22 +34,24 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
+import javax.imageio.ImageIO;
 import uk.ac.babraham.FastQC.Modules.QCModule;
 import uk.ac.babraham.FastQC.Report.HTMLReportArchiveNeigborClass;
 import uk.ac.babraham.FastQC.Utilities.ImageToBase64;
 
 /**
  * This class to patch FastQC to be compatible with Hadoop.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
 public class FastQCRuntimePatcher {
 
-  private static final String CLASS_NAME =
-      "uk.ac.babraham.FastQC.Report.HTMLReportArchive";
+  private static final String CLASS_NAME = "uk.ac.babraham.FastQC.Report.HTMLReportArchive";
 
   /**
    * Patch FastQC for hadoop mode.
+   *
    * @throws EoulsanException if an error occurs while patching FASTQC
    */
   public static synchronized void patchFastQC() throws EoulsanException {
@@ -72,16 +71,17 @@ public class FastQCRuntimePatcher {
       if (cc != null && !cc.isFrozen()) {
 
         // Remove the old base64ForIcon method
-        final CtMethod oldBase64ForIconMethod =
-            cc.getDeclaredMethod("base64ForIcon");
+        final CtMethod oldBase64ForIconMethod = cc.getDeclaredMethod("base64ForIcon");
         cc.removeMethod(oldBase64ForIconMethod);
 
         // Create the new base64ForIcon method
         final CtMethod newBase64ForIconMethod =
-            CtNewMethod.make("private String base64ForIcon (String path) { "
-                + " return fr.ens.biologie.genomique.eoulsan.modules.fastqc."
-                + "FastQCRuntimePatcher.base64ForIcon(path, this.getClass());"
-                + " } ", cc);
+            CtNewMethod.make(
+                "private String base64ForIcon (String path) { "
+                    + " return fr.ens.biologie.genomique.eoulsan.modules.fastqc."
+                    + "FastQCRuntimePatcher.base64ForIcon(path, this.getClass());"
+                    + " } ",
+                cc);
         cc.addMethod(newBase64ForIconMethod);
 
         // Load the class by the ClassLoader
@@ -99,12 +99,12 @@ public class FastQCRuntimePatcher {
 
   /**
    * Check if the version of Java use module system.
+   *
    * @return true if the version of Java use module system
    */
   private static boolean isJavaModuleSystemAvailable() {
 
-    String javaSpecVersion =
-        System.getProperty("java.vm.specification.version");
+    String javaSpecVersion = System.getProperty("java.vm.specification.version");
 
     // Is Java > 8
     return javaSpecVersion.indexOf('.') == -1;
@@ -112,21 +112,19 @@ public class FastQCRuntimePatcher {
 
   /**
    * This method replace the HTMLReportArchive.base64ForIcon() method.
+   *
    * @param path path of the resource to load
    * @param clazz the class that call the method
    * @return an image encoded in base64
    */
-  public static String base64ForIcon(String path, @SuppressWarnings("rawtypes")
-  Class clazz) {
+  public static String base64ForIcon(String path, @SuppressWarnings("rawtypes") Class clazz) {
 
     try {
-      BufferedImage b =
-          ImageIO.read(clazz.getResourceAsStream("/Templates/" + path));
+      BufferedImage b = ImageIO.read(clazz.getResourceAsStream("/Templates/" + path));
       return ImageToBase64.imageToBase64(b);
     } catch (IOException ioe) {
       ioe.printStackTrace();
       return "Failed";
     }
   }
-
 }

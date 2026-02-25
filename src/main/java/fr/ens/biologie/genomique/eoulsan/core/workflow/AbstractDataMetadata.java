@@ -27,13 +27,13 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
-import java.io.Serializable;
-
-import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataMetadata;
+import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
+import java.io.Serializable;
 
 /**
  * This class define an abstract class for metadata of data objects.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -70,8 +70,7 @@ abstract class AbstractDataMetadata implements DataMetadata, Serializable {
       return defaultValue;
     }
 
-    final FastqFormat result =
-        FastqFormat.getFormatFromName(get(FASTQ_FORMAT_KEY));
+    final FastqFormat result = FastqFormat.getFormatFromName(get(FASTQ_FORMAT_KEY));
 
     return result == null ? defaultValue : result;
   }
@@ -133,10 +132,9 @@ abstract class AbstractDataMetadata implements DataMetadata, Serializable {
   @Override
   public void setSampleNumber(final int sampleNumber) {
 
-    checkArgument(sampleNumber > 0,
-        "sampleNumber argument must be greater than 0: " + sampleNumber);
+    checkArgument(
+        sampleNumber > 0, "sampleNumber argument must be greater than 0: " + sampleNumber);
 
     set(SAMPLE_NUMBER_KEY, Integer.toString(sampleNumber));
   }
-
 }

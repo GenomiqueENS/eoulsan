@@ -28,6 +28,7 @@ import java.util.List;
 
 /**
  * This interface defines the design.
+ *
  * @author Xavier Bauquet
  * @since 2.0
  */
@@ -35,12 +36,14 @@ public interface Design {
 
   /**
    * Set the design name.
+   *
    * @param newDesignName the new design name
    */
   void setName(String newDesignName);
 
   /**
    * Get the name of a sample.
+   *
    * @param sampleId the sample id
    * @return a sample object
    */
@@ -48,12 +51,14 @@ public interface Design {
 
   /**
    * Get the list of the samples.
+   *
    * @return the list of the samples
    */
   List<Sample> getSamples();
 
   /**
    * Get the name of an experiment.
+   *
    * @param experimentId the experiment id
    * @return an experiment object
    */
@@ -61,42 +66,49 @@ public interface Design {
 
   /**
    * Get the list of the experiments.
+   *
    * @return the list of the experiments
    */
   List<Experiment> getExperiments();
 
   /**
    * Get the design Metadata.
+   *
    * @return a designMetadata object
    */
   DesignMetadata getMetadata();
 
   /**
    * Get design number.
+   *
    * @return the design number
    */
   int getNumber();
 
   /**
    * Get design name.
+   *
    * @return the design name
    */
   String getName();
 
   /**
    * Remove the sample.
+   *
    * @param sampleId the sample id
    */
   void removeSample(String sampleId);
 
   /**
    * Remove the experiment.
+   *
    * @param experimentId the experiment id
    */
   void removeExperiment(String experimentId);
 
   /**
    * Test if the sample exists.
+   *
    * @param sampleId the sample id
    * @return true if the sample exists
    */
@@ -104,6 +116,7 @@ public interface Design {
 
   /**
    * Test if the experiment exists.
+   *
    * @param experimentId the experiment id
    * @return true if the experiment exists
    */
@@ -111,6 +124,7 @@ public interface Design {
 
   /**
    * Test if the sample name exists.
+   *
    * @param sampleName the sample name
    * @return true if the sample exists
    */
@@ -118,6 +132,7 @@ public interface Design {
 
   /**
    * Test if the experiment exists.
+   *
    * @param experimentName the experiment name
    * @return true if the experiment exists
    */
@@ -125,6 +140,7 @@ public interface Design {
 
   /**
    * Add a sample.
+   *
    * @param sampleId the sample id
    * @return the sample object
    */
@@ -132,6 +148,7 @@ public interface Design {
 
   /**
    * Add an experiment.
+   *
    * @param experimentId the experiment id
    * @return the experiment object
    */
@@ -139,9 +156,9 @@ public interface Design {
 
   /**
    * Get all the experiments related to a sample.
+   *
    * @param sampleId the sample
    * @return a list with the experiments that use the sample
    */
   List<Experiment> getExperimentsUsingASample(Sample sampleId);
-
 }

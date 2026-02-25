@@ -7,10 +7,6 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.INPUT_RAW_READS_COUNTER;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.OUTPUT_FILTERED_READS_COUNTER;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
@@ -32,9 +28,13 @@ import fr.ens.biologie.genomique.kenetre.bio.io.FastqWriter;
 import fr.ens.biologie.genomique.kenetre.util.LocalReporter;
 import fr.ens.biologie.genomique.kenetre.util.Reporter;
 import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Set;
 
 /**
  * This class define a module for reads splitting.
+ *
  * @since 2.7
  * @author Laurent Jourdren
  */
@@ -82,29 +82,26 @@ public class SplitReadsModule extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
+        case "split.length":
+          this.splitLength = p.getIntValueGreaterOrEqualsTo(1);
 
-      case "split.length":
-        this.splitLength = p.getIntValueGreaterOrEqualsTo(1);
+          break;
 
-        break;
-
-      default:
-        Modules.unknownParameter(context, p);
-        break;
+        default:
+          Modules.unknownParameter(context, p);
+          break;
       }
-
     }
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     // Create the reporter
     final Reporter reporter = new LocalReporter();
@@ -123,8 +120,7 @@ public class SplitReadsModule extends AbstractModule {
       }
 
       if (inFileCount > 2) {
-        throw new IOException(
-            "Cannot handle more than 2 reads files at the same time.");
+        throw new IOException("Cannot handle more than 2 reads files at the same time.");
       }
 
       // Run the splitter in single or pair-end mode
@@ -137,8 +133,7 @@ public class SplitReadsModule extends AbstractModule {
     } catch (FileNotFoundException e) {
       return status.createTaskResult(e, "File not found: " + e.getMessage());
     } catch (IOException e) {
-      return status.createTaskResult(e,
-          "Error while filtering reads: " + e.getMessage());
+      return status.createTaskResult(e, "Error while filtering reads: " + e.getMessage());
     }
 
     return status.createTaskResult();
@@ -146,6 +141,7 @@ public class SplitReadsModule extends AbstractModule {
 
   /**
    * Split a sample data in single end mode.
+   *
    * @param inData input Data
    * @param outData output Data
    * @param reporter reporter to use
@@ -153,8 +149,12 @@ public class SplitReadsModule extends AbstractModule {
    * @param splitLength read length
    * @throws IOException if an error occurs while filtering reads
    */
-  private static void singleEnd(final Data inData, final Data outData,
-      final Reporter reporter, final TaskStatus status, final int splitLength)
+  private static void singleEnd(
+      final Data inData,
+      final Data outData,
+      final Reporter reporter,
+      final TaskStatus status,
+      final int splitLength)
       throws IOException {
 
     // Get the source
@@ -167,8 +167,7 @@ public class SplitReadsModule extends AbstractModule {
     splitFile(inFile, outFile, reporter, splitLength);
 
     // Set the description of the context
-    status.setDescription(
-        "Split reads (" + inData.getName() + ", " + inFile.getName() + ")");
+    status.setDescription("Split reads (" + inData.getName() + ", " + inFile.getName() + ")");
 
     // Add counters for this sample to log file
     status.setCounters(reporter, COUNTER_GROUP);
@@ -176,14 +175,19 @@ public class SplitReadsModule extends AbstractModule {
 
   /**
    * Split a sample data in paired-end mode.
+   *
    * @param inData input Data
    * @param outData output Data
    * @param reporter reporter to use
    * @param splitLength read length
    * @throws IOException if an error occurs while filtering reads
    */
-  private static void pairedEnd(final Data inData, final Data outData,
-      final Reporter reporter, final TaskStatus status, final int splitLength)
+  private static void pairedEnd(
+      final Data inData,
+      final Data outData,
+      final Reporter reporter,
+      final TaskStatus status,
+      final int splitLength)
       throws IOException {
 
     // Get the source
@@ -205,8 +209,7 @@ public class SplitReadsModule extends AbstractModule {
     splitFile(inFile, outFile, reporter, splitLength);
 
     // Set the description of the context
-    status.setDescription(
-        "Split reads (" + inData.getName() + ", " + inFile.getName() + ")");
+    status.setDescription("Split reads (" + inData.getName() + ", " + inFile.getName() + ")");
 
     // Add counters for this sample to log file
     status.setCounters(reporter, COUNTER_GROUP);
@@ -214,14 +217,16 @@ public class SplitReadsModule extends AbstractModule {
 
   /**
    * Split a file.
+   *
    * @param inFile input file
    * @param outFile output file
    * @param reporter reporter to use
    * @param splitLength split length
    * @throws IOException if an error occurs while filtering data
    */
-  private static void splitFile(final DataFile inFile, final DataFile outFile,
-      final Reporter reporter, final int splitLength) throws IOException {
+  private static void splitFile(
+      final DataFile inFile, final DataFile outFile, final Reporter reporter, final int splitLength)
+      throws IOException {
 
     getLogger().info("Filter file: " + inFile);
 
@@ -229,25 +234,25 @@ public class SplitReadsModule extends AbstractModule {
         FastqWriter writer = new FastqWriter(outFile.create())) {
       for (final ReadSequence read : reader) {
 
-        reporter.incrCounter(COUNTER_GROUP,
-            INPUT_RAW_READS_COUNTER.counterName(), 1);
+        reporter.incrCounter(COUNTER_GROUP, INPUT_RAW_READS_COUNTER.counterName(), 1);
 
         for (ReadSequence rout : read.split(splitLength)) {
 
           writer.write(rout);
-          reporter.incrCounter(COUNTER_GROUP,
-              OUTPUT_FILTERED_READS_COUNTER.counterName(), 1);
+          reporter.incrCounter(COUNTER_GROUP, OUTPUT_FILTERED_READS_COUNTER.counterName(), 1);
         }
-
       }
       reader.throwException();
 
     } catch (BadBioEntryException e) {
 
-      throw new IOException("Invalid Fastq format: "
-          + e.getMessage() + " File: " + inFile + " Entry: " + e.getEntry());
-
+      throw new IOException(
+          "Invalid Fastq format: "
+              + e.getMessage()
+              + " File: "
+              + inFile
+              + " Entry: "
+              + e.getEntry());
     }
   }
-
 }

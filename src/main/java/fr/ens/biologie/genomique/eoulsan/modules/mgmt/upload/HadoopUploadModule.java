@@ -24,13 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.mgmt.upload;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.StepOutputDataFile;
@@ -39,11 +32,17 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatConverter;
 import fr.ens.biologie.genomique.eoulsan.data.protocols.StorageDataProtocol;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
-import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.PathUtils;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
 
 /**
  * This class define a module for Hadoop file uploading.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -53,16 +52,20 @@ public class HadoopUploadModule extends UploadModule {
   private final Configuration conf;
 
   @Override
-  protected DataFile getUploadedDataFile(final DataFile file)
-      throws IOException {
+  protected DataFile getUploadedDataFile(final DataFile file) throws IOException {
 
     return new DataFile(getDest(), file.getName());
   }
 
   @Override
-  protected DataFile getUploadedDataFile(final DataFile file, final Step step,
-      final Sample sample, final String portName, final DataFormat format,
-      final int fileIndex) throws IOException {
+  protected DataFile getUploadedDataFile(
+      final DataFile file,
+      final Step step,
+      final Sample sample,
+      final String portName,
+      final DataFormat format,
+      final int fileIndex)
+      throws IOException {
 
     final String filename;
 
@@ -75,8 +78,9 @@ public class HadoopUploadModule extends UploadModule {
       filename = file.getName();
     } else {
 
-      filename = StepOutputDataFile.newStandardFilename(step, portName, format,
-          sample, fileIndex, CompressionType.NONE);
+      filename =
+          StepOutputDataFile.newStandardFilename(
+              step, portName, format, sample, fileIndex, CompressionType.NONE);
     }
 
     return new DataFile(getDest(), filename);
@@ -117,8 +121,7 @@ public class HadoopUploadModule extends UploadModule {
       // If the file comes from a storage
       if (src.getProtocol() instanceof StorageDataProtocol) {
 
-        final DataFile newSrc =
-            ((StorageDataProtocol) src.getProtocol()).getUnderLyingData(src);
+        final DataFile newSrc = ((StorageDataProtocol) src.getProtocol()).getUnderLyingData(src);
 
         // Update the map of files to copy
         if (src != null) {
@@ -130,8 +133,8 @@ public class HadoopUploadModule extends UploadModule {
 
     // Process to distributed copies
     if (files.size() > 0) {
-      final Path jobPath = PathUtils.createTempPath(
-          new Path(getDest().getSource()), "distcp-", "", this.conf);
+      final Path jobPath =
+          PathUtils.createTempPath(new Path(getDest().getSource()), "distcp-", "", this.conf);
 
       new DataFileDistCp(this.conf, jobPath).copy(files);
     }
@@ -143,6 +146,7 @@ public class HadoopUploadModule extends UploadModule {
 
   /**
    * Public constructor.
+   *
    * @param dest destination of the files to upload
    * @param conf Hadoop configuration
    */
@@ -156,5 +160,4 @@ public class HadoopUploadModule extends UploadModule {
 
     this.conf = conf;
   }
-
 }

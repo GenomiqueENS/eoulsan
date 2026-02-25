@@ -29,8 +29,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * This class define a filter that count the number of written bytes by an
- * InputStream.
+ * This class define a filter that count the number of written bytes by an InputStream.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -45,12 +45,10 @@ public class ByteCountOutputStream extends FilterOutputStream {
   //
 
   @Override
-  public void write(final byte[] b, final int off, final int len)
-      throws IOException {
+  public void write(final byte[] b, final int off, final int len) throws IOException {
 
     if (b == null) {
-      throw new NullPointerException(
-          "the array of bytes argument cannot be null");
+      throw new NullPointerException("the array of bytes argument cannot be null");
     }
 
     boolean add = false;
@@ -72,8 +70,7 @@ public class ByteCountOutputStream extends FilterOutputStream {
   public void write(final byte[] b) throws IOException {
 
     if (b == null) {
-      throw new NullPointerException(
-          "the array of bytes argument cannot be null");
+      throw new NullPointerException("the array of bytes argument cannot be null");
     }
 
     boolean add = false;
@@ -116,11 +113,13 @@ public class ByteCountOutputStream extends FilterOutputStream {
     }
 
     if (this.nWritten != this.attemptedNWritten) {
-      throw new IOException("Error wrote "
-          + this.nWritten + " bytes, attempted: " + this.attemptedNWritten
-          + " bytes.");
+      throw new IOException(
+          "Error wrote "
+              + this.nWritten
+              + " bytes, attempted: "
+              + this.attemptedNWritten
+              + " bytes.");
     }
-
   }
 
   //
@@ -129,6 +128,7 @@ public class ByteCountOutputStream extends FilterOutputStream {
 
   /**
    * Get the number of bytes written.
+   *
    * @return the number of bytes written
    */
   public long getBytesNumberWritten() {
@@ -142,6 +142,7 @@ public class ByteCountOutputStream extends FilterOutputStream {
 
   /**
    * Public constructor.
+   *
    * @param os output stream
    */
   public ByteCountOutputStream(final OutputStream os) {
@@ -151,14 +152,13 @@ public class ByteCountOutputStream extends FilterOutputStream {
 
   /**
    * Public constructor.
+   *
    * @param os output stream
    * @param attemptedNWritten attempt write count
    */
-  public ByteCountOutputStream(final OutputStream os,
-      final long attemptedNWritten) {
+  public ByteCountOutputStream(final OutputStream os, final long attemptedNWritten) {
 
     this(os);
     this.attemptedNWritten = attemptedNWritten;
   }
-
 }

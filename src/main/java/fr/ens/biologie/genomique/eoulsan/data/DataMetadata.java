@@ -24,14 +24,14 @@
 
 package fr.ens.biologie.genomique.eoulsan.data;
 
-import java.util.Set;
-
-import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
+import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
+import java.util.Set;
 
 /**
  * This interface define metadata of data objects.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -49,6 +49,7 @@ public interface DataMetadata {
 
   /**
    * Get the value of metadata entry.
+   *
    * @param key the key
    * @return the value related to key or null if the key does not exists
    */
@@ -56,6 +57,7 @@ public interface DataMetadata {
 
   /**
    * Set a metadata entry.
+   *
    * @param key the key
    * @param value the value
    */
@@ -63,6 +65,7 @@ public interface DataMetadata {
 
   /**
    * Test if a key exists.
+   *
    * @param key the key to test
    * @return true if the key exists
    */
@@ -70,25 +73,25 @@ public interface DataMetadata {
 
   /**
    * Remove a entry.
+   *
    * @param key the key of the entry to remove
    * @return true if the entry has been removed
    */
   boolean removeKey(String key);
 
   /**
-   * The the entries of the metadata with the entries of another metadata
-   * object.
+   * The the entries of the metadata with the entries of another metadata object.
+   *
    * @param metadata the entries to add
    */
   void set(DataMetadata metadata);
 
-  /**
-   * Clear the entries of the object.
-   */
+  /** Clear the entries of the object. */
   void clear();
 
   /**
    * Get the keys of the entries.
+   *
    * @return a set with the keys of the entries
    */
   Set<String> keySet();
@@ -99,24 +102,28 @@ public interface DataMetadata {
 
   /**
    * Test if the data is paired end data.
+   *
    * @return true if the data is paired end data
    */
   boolean isPairedEnd();
 
   /**
    * Set single-end/paired-end data type.
+   *
    * @param pairedEnd true if data is paired-end data
    */
   void setPairedEnd(boolean pairedEnd);
 
   /**
    * Get the FastqFormat. If value not set, the default format is fastq-sanger.
+   *
    * @return the fastq format
    */
   FastqFormat getFastqFormat();
 
   /**
    * Get the FastqFormat.
+   *
    * @param defaultValue the default value
    * @return the fastq format
    */
@@ -124,44 +131,50 @@ public interface DataMetadata {
 
   /**
    * Set the FASTQ format of the data.
+   *
    * @param fastqFormat the FASTQ format
    */
   void setFastqFormat(FastqFormat fastqFormat);
 
   /**
    * Get the sample name related to the data.
+   *
    * @return a String with the sample name related to the data
    */
   String getSampleName();
 
   /**
    * Set the sample name related to the data.
+   *
    * @param sampleName the sample name
    */
   void setSampleName(String sampleName);
 
   /**
    * Get the sample id related to the data.
+   *
    * @return the sample id or null if the value is not set
    */
   String getSampleId();
 
   /**
    * Set the sample id related to the data
+   *
    * @param sampleId the sample id
    */
   void setSampleId(String sampleId);
 
   /**
    * Get the sample number related to the data.
+   *
    * @return the sample number or -1 if the value is not set
    */
   int getSampleNumber();
 
   /**
    * Set the sample number related to the data
+   *
    * @param sampleNumber the sample number
    */
   void setSampleNumber(int sampleNumber);
-
 }

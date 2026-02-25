@@ -30,6 +30,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeDebug;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
+import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,17 +47,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import org.junit.Before;
 import org.junit.Test;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeDebug;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
-import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 
 public class FileDataProtocolTest {
 
@@ -167,7 +165,6 @@ public class FileDataProtocolTest {
     assertEquals("text/plain", md.getContentType());
     assertEquals("bzip2", md.getContentEncoding());
     f.delete();
-
   }
 
   @Test
@@ -199,7 +196,6 @@ public class FileDataProtocolTest {
     FileDataProtocol p = (FileDataProtocol) df.getProtocol();
 
     assertEquals(f, p.getSourceAsFile(df));
-
   }
 
   @Test
@@ -207,7 +203,6 @@ public class FileDataProtocolTest {
 
     FileDataProtocol p = new FileDataProtocol();
     assertTrue(p.canRead());
-
   }
 
   @Test
@@ -216,5 +211,4 @@ public class FileDataProtocolTest {
     FileDataProtocol p = new FileDataProtocol();
     assertTrue(p.canWrite());
   }
-
 }

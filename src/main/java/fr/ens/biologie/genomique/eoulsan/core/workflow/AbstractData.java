@@ -27,15 +27,15 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
-import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import fr.ens.biologie.genomique.eoulsan.core.FileNaming;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This class define an abstract data.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -83,6 +83,7 @@ abstract class AbstractData implements Data, Serializable {
 
   /**
    * Set the name of the data.
+   *
    * @param name the new name of the data
    */
   void setName(final String name) {
@@ -92,13 +93,15 @@ abstract class AbstractData implements Data, Serializable {
 
   /**
    * Set the name of the data.
+   *
    * @param name the new name of the data
    * @param defaultName true if the name of the data is a default name
    */
   void setName(final String name, final boolean defaultName) {
 
     requireNonNull(name, "The name of the data cannot be null");
-    checkArgument(FileNaming.isDataNameValid(name),
+    checkArgument(
+        FileNaming.isDataNameValid(name),
         "The name of data can only contains letters and digit: " + name);
 
     this.name = name;
@@ -114,6 +117,7 @@ abstract class AbstractData implements Data, Serializable {
 
   /**
    * Test if the name of the data is the default name.
+   *
    * @return true if the name of the data is the default name
    */
   boolean isDefaultName() {
@@ -122,6 +126,7 @@ abstract class AbstractData implements Data, Serializable {
 
   /**
    * Test if a name has been set for the data.
+   *
    * @return true if a name has been set for the data
    */
   boolean isNameSet() {
@@ -134,6 +139,7 @@ abstract class AbstractData implements Data, Serializable {
 
   /**
    * Constructor.
+   *
    * @param format format of the data
    */
   protected AbstractData(final DataFormat format) {
@@ -148,6 +154,7 @@ abstract class AbstractData implements Data, Serializable {
 
   /**
    * Copy constructor.
+   *
    * @param data data to copy
    */
   protected AbstractData(final AbstractData data) {
@@ -160,5 +167,4 @@ abstract class AbstractData implements Data, Serializable {
     this.format = data.format;
     this.part = data.part;
   }
-
 }

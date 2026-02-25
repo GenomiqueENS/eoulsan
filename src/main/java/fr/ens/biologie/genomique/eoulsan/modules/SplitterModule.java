@@ -30,15 +30,6 @@ import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.singleInp
 import static fr.ens.biologie.genomique.kenetre.io.CompressionType.NONE;
 import static fr.ens.biologie.genomique.kenetre.io.CompressionType.getCompressionTypeByContentEncoding;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -52,17 +43,26 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.data.DataMetadata;
-import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.splitermergers.Splitter;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class define a generic splitter module.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -79,10 +79,7 @@ public class SplitterModule extends AbstractModule {
   // Inner class
   //
 
-  /**
-   * This inner class allow to create iterator needed by SplitterMerger.split()
-   * method.
-   */
+  /** This inner class allow to create iterator needed by SplitterMerger.split() method. */
   private static final class SplitterIterator {
 
     private final Data data;
@@ -91,15 +88,15 @@ public class SplitterModule extends AbstractModule {
 
     private Data getData(final int index) {
 
-      checkState(index <= this.list.size(), "invalid index: "
-          + index + " (maximum expected index: " + this.list.size() + ")");
+      checkState(
+          index <= this.list.size(),
+          "invalid index: " + index + " (maximum expected index: " + this.list.size() + ")");
 
       checkArgument(index >= 0, "index argument cannot be lower than 0");
 
       if (index == this.list.size()) {
 
-        final Data newData =
-            this.data.addDataToList(this.data.getName(), index);
+        final Data newData = this.data.addDataToList(this.data.getName(), index);
         newData.getMetadata().set(this.metadata);
         this.list.add(newData);
       }
@@ -113,8 +110,7 @@ public class SplitterModule extends AbstractModule {
 
     Iterator<DataFile> getIterator(final int fileIndex) {
 
-      checkArgument(fileIndex >= -1,
-          "fileIndex argument cannot be lower than -1");
+      checkArgument(fileIndex >= -1, "fileIndex argument cannot be lower than -1");
 
       return new Iterator<DataFile>() {
 
@@ -122,6 +118,7 @@ public class SplitterModule extends AbstractModule {
 
         /**
          * Increment the counter for the current fileIndex.
+         *
          * @return the value of the counter before increment the count
          */
         private int incrCount() {
@@ -162,6 +159,7 @@ public class SplitterModule extends AbstractModule {
 
     /**
      * Constructor.
+     *
      * @param data the data
      */
     public SplitterIterator(final Data data, final DataMetadata metadata) {
@@ -169,7 +167,6 @@ public class SplitterModule extends AbstractModule {
       this.data = data;
       this.metadata = metadata;
     }
-
   }
 
   //
@@ -203,43 +200,41 @@ public class SplitterModule extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     final Set<Parameter> splitterParameters = new HashSet<>();
 
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
+        case "format":
+          // Get format
+          final DataFormat format =
+              DataFormatRegistry.getInstance().getDataFormatFromNameOrAlias(p.getValue());
 
-      case "format":
-        // Get format
-        final DataFormat format = DataFormatRegistry.getInstance()
-            .getDataFormatFromNameOrAlias(p.getValue());
+          // Check if the format exists
+          if (format == null) {
+            Modules.badParameterValue(context, p, "Unknown format: " + p.getValue());
+          }
 
-        // Check if the format exists
-        if (format == null) {
-          Modules.badParameterValue(context, p,
-              "Unknown format: " + p.getValue());
-        }
+          // Check if a splitter exists for the format
+          if (!format.isSplitter()) {
+            Modules.badParameterValue(
+                context, p, "No splitter exists for format: " + format.getName());
+          }
 
-        // Check if a splitter exists for the format
-        if (!format.isSplitter()) {
-          Modules.badParameterValue(context, p,
-              "No splitter exists for format: " + format.getName());
-        }
+          // Set the splitter
+          this.splitter = format.getSplitter();
+          break;
 
-        // Set the splitter
-        this.splitter = format.getSplitter();
-        break;
+        case "compression":
+          this.compression = getCompressionTypeByContentEncoding(p.getValue());
+          break;
 
-      case "compression":
-        this.compression = getCompressionTypeByContentEncoding(p.getValue());
-        break;
-
-      default:
-        splitterParameters.add(p);
-        break;
+        default:
+          splitterParameters.add(p);
+          break;
       }
     }
 
@@ -253,8 +248,7 @@ public class SplitterModule extends AbstractModule {
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     final DataFormat format = this.splitter.getFormat();
 
@@ -274,22 +268,19 @@ public class SplitterModule extends AbstractModule {
       if (format.getMaxFilesCount() == 1) {
 
         // Launch splitting
-        this.splitter.split(inData.getDataFile(),
-            new SplitterIterator(outData, metadata).getIterator());
+        this.splitter.split(
+            inData.getDataFile(), new SplitterIterator(outData, metadata).getIterator());
 
       } else {
 
         // Create iterator
-        final SplitterIterator iterator =
-            new SplitterIterator(outData, metadata);
+        final SplitterIterator iterator = new SplitterIterator(outData, metadata);
 
         // For each file of the multi-file format
-        for (int fileIndex = 0; fileIndex < inData
-            .getDataFileCount(); fileIndex++) {
+        for (int fileIndex = 0; fileIndex < inData.getDataFileCount(); fileIndex++) {
 
           // Launch splitting
-          this.splitter.split(inData.getDataFile(fileIndex),
-              iterator.getIterator(fileIndex));
+          this.splitter.split(inData.getDataFile(fileIndex), iterator.getIterator(fileIndex));
         }
       }
 

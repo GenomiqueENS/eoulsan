@@ -3,13 +3,6 @@ package fr.ens.biologie.genomique.eoulsan.modules.chipseq;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -22,14 +15,21 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import picard.sam.MergeSamFiles;
 
 /**
- * This class merges SAM files of input of the same experiment. It uses Picard's
- * MergeSamFiles to merge SAM files from inputs of the same experiment.
+ * This class merges SAM files of input of the same experiment. It uses Picard's MergeSamFiles to
+ * merge SAM files from inputs of the same experiment.
+ *
  * @author Celine Hernandez - CSB lab - ENS - Paris
  */
 @LocalOnly
@@ -41,34 +41,25 @@ public class MergeInputRepLocalModule extends AbstractModule {
   // Overridden methods
   //
 
-  /**
-   * Name of the Step.
-   */
+  /** Name of the Step. */
   @Override
   public String getName() {
     return STEP_NAME;
   }
 
-  /**
-   * A short description of the tool and what is done in the step.
-   */
+  /** A short description of the tool and what is done in the step. */
   @Override
   public String getDescription() {
-    return "This step merges Input files for each experiment. "
-        + "It uses Picard's MergeSamFiles.";
+    return "This step merges Input files for each experiment. " + "It uses Picard's MergeSamFiles.";
   }
 
-  /**
-   * Version.
-   */
+  /** Version. */
   @Override
   public Version getVersion() {
     return Globals.APP_VERSION;
   }
 
-  /**
-   * Define input port.
-   */
+  /** Define input port. */
   @Override
   public InputPorts getInputPorts() {
     final InputPortsBuilder builder = new InputPortsBuilder();
@@ -76,9 +67,7 @@ public class MergeInputRepLocalModule extends AbstractModule {
     return builder.create();
   }
 
-  /**
-   * Define output port.
-   */
+  /** Define output port. */
   @Override
   public OutputPorts getOutputPorts() {
     final OutputPortsBuilder builder = new OutputPortsBuilder();
@@ -88,52 +77,53 @@ public class MergeInputRepLocalModule extends AbstractModule {
 
   /**
    * Set the parameters of the step to configure the step.
+   *
    * @param stepParameters parameters of the step
    * @throws EoulsanException if a parameter is invalid
    */
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     for (Parameter p : stepParameters) {
 
-      getLogger().info("MergeInputRep parameter: "
-          + p.getName() + " : " + p.getStringValue());
-      throw new EoulsanException(
-          "Unknown parameter for " + getName() + " step: " + p.getName());
+      getLogger().info("MergeInputRep parameter: " + p.getName() + " : " + p.getStringValue());
+      throw new EoulsanException("Unknown parameter for " + getName() + " step: " + p.getName());
     }
-
   }
 
-  /**
-   * Merge input replicates.
-   */
+  /** Merge input replicates. */
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     // Get input data (SAM format)
     final Data inData = context.getInputData(MAPPER_RESULTS_SAM);
 
     // Get file name created by Eoulsan
-    final Data outputDataList =
-        context.getOutputData(MAPPER_RESULTS_SAM, "mergedinput");
+    final Data outputDataList = context.getOutputData(MAPPER_RESULTS_SAM, "mergedinput");
 
     Map<String, List<Data>> referenceSamples = new HashMap<>();
     for (Data anInputData : inData.getListElements()) {
 
-      getLogger().finest("Input file. ref : "
-          + anInputData.getMetadata().get("Reference") + "| exp : "
-          + anInputData.getMetadata().get("Experiment") + "| rep : "
-          + anInputData.getMetadata().get("RepTechGroup"));
+      getLogger()
+          .finest(
+              "Input file. ref : "
+                  + anInputData.getMetadata().get("Reference")
+                  + "| exp : "
+                  + anInputData.getMetadata().get("Experiment")
+                  + "| rep : "
+                  + anInputData.getMetadata().get("RepTechGroup"));
 
-      boolean isReference = anInputData.getMetadata().get("Reference")
-          .toLowerCase(Globals.DEFAULT_LOCALE).equals("true");
+      boolean isReference =
+          anInputData
+              .getMetadata()
+              .get("Reference")
+              .toLowerCase(Globals.DEFAULT_LOCALE)
+              .equals("true");
 
       // Only treat reference files
       if (isReference) {
-        final String experimentName =
-            anInputData.getMetadata().get("Experiment");
+        final String experimentName = anInputData.getMetadata().get("Experiment");
 
         if (referenceSamples.containsKey(experimentName)
             && referenceSamples.get(experimentName) != null) {
@@ -149,19 +139,23 @@ public class MergeInputRepLocalModule extends AbstractModule {
         // output
         // name (to make it available to further steps)
 
-        final Data outputData = outputDataList.addDataToList(anInputData
-            .getMetadata().get("Name").replaceAll("[^a-zA-Z0-9]", ""));
+        final Data outputData =
+            outputDataList.addDataToList(
+                anInputData.getMetadata().get("Name").replaceAll("[^a-zA-Z0-9]", ""));
         outputData.getMetadata().set(anInputData.getMetadata());
 
         try {
           anInputData.getDataFile().symlink(outputData.getDataFile());
         } catch (IOException ioe) {
-          getLogger().severe("Could not create symlink from "
-              + anInputData.getDataFile() + " to " + outputData.getDataFile());
+          getLogger()
+              .severe(
+                  "Could not create symlink from "
+                      + anInputData.getDataFile()
+                      + " to "
+                      + outputData.getDataFile());
           return status.createTaskResult();
         }
       }
-
     }
 
     // Loop through all references
@@ -177,15 +171,20 @@ public class MergeInputRepLocalModule extends AbstractModule {
         final Data inputData = expData.get(0);
 
         // Get file name created by Eoulsan
-        final Data outputData = outputDataList.addDataToList(
-            inputData.getMetadata().get("Name").replaceAll("[^a-zA-Z0-9]", ""));
+        final Data outputData =
+            outputDataList.addDataToList(
+                inputData.getMetadata().get("Name").replaceAll("[^a-zA-Z0-9]", ""));
         outputData.getMetadata().set(inputData.getMetadata());
 
         try {
           inputData.getDataFile().symlink(outputData.getDataFile());
         } catch (IOException ioe) {
-          getLogger().severe("Could not create symlink from "
-              + inputData.getDataFile() + " to " + outputData.getDataFile());
+          getLogger()
+              .severe(
+                  "Could not create symlink from "
+                      + inputData.getDataFile()
+                      + " to "
+                      + outputData.getDataFile());
           return status.createTaskResult();
         }
       }
@@ -194,12 +193,12 @@ public class MergeInputRepLocalModule extends AbstractModule {
       // input exists)
       if (expData.size() > 2) {
 
-        getLogger().info(
-            "Running Picard's MergeSamFiles for experiment  " + experimentName);
+        getLogger().info("Running Picard's MergeSamFiles for experiment  " + experimentName);
 
         // Get file name created by Eoulsan
-        final Data outputData = outputDataList.addDataToList(expData.get(0)
-            .getMetadata().get("Name").replaceAll("[^a-zA-Z0-9]", ""));
+        final Data outputData =
+            outputDataList.addDataToList(
+                expData.get(0).getMetadata().get("Name").replaceAll("[^a-zA-Z0-9]", ""));
         outputData.getMetadata().set(expData.get(0).getMetadata());
 
         String[] arguments = new String[expData.size() + 2];
@@ -213,13 +212,9 @@ public class MergeInputRepLocalModule extends AbstractModule {
 
         // Start MergeSamFiles
         new MergeSamFiles().instanceMain(arguments);
-
       }
-
     }
 
     return status.createTaskResult();
-
   }
-
 }

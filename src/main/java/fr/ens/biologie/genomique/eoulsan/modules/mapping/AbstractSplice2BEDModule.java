@@ -5,8 +5,6 @@ import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.singleOu
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULT_BED;
 
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
@@ -14,11 +12,13 @@ import fr.ens.biologie.genomique.eoulsan.core.Modules;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.util.Set;
 
 /**
  * This class define a module for converting SAM files into BED.
+ *
  * @since 2.3
  * @author Laurent Jourdren
  */
@@ -62,20 +62,16 @@ public abstract class AbstractSplice2BEDModule extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
-
-      default:
-
-        Modules.unknownParameter(context, p);
-        break;
+        default:
+          Modules.unknownParameter(context, p);
+          break;
       }
     }
-
   }
-
 }

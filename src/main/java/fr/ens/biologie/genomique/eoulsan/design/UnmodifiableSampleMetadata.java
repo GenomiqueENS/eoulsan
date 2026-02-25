@@ -1,12 +1,11 @@
 package fr.ens.biologie.genomique.eoulsan.design;
 
+import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-
-import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 
 class UnmodifiableSampleMetadata implements SampleMetadata, Serializable {
 
@@ -262,5 +261,4 @@ class UnmodifiableSampleMetadata implements SampleMetadata, Serializable {
   UnmodifiableSampleMetadata(final SampleMetadata md) {
     this.md = md;
   }
-
 }

@@ -24,28 +24,26 @@
 
 package fr.ens.biologie.genomique.eoulsan.data.protocols;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
-import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.PathUtils;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 
 /**
- * This class define an abstract class for DataProtocols based on the Hadoop
- * framework Path object.
+ * This class define an abstract class for DataProtocols based on the Hadoop framework Path object.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -55,6 +53,7 @@ public abstract class PathDataProtocol extends AbstractDataProtocol {
 
   /**
    * Get Convert a DataFile object to a Path object.
+   *
    * @param dataFile DataFile to convert
    * @return a Path object
    */
@@ -92,11 +91,9 @@ public abstract class PathDataProtocol extends AbstractDataProtocol {
     final SimpleDataFileMetadata result = new SimpleDataFileMetadata();
     result.setContentLength(status.getLen());
     result.setLastModified(status.getModificationTime());
-    result.setDataFormat(DataFormatRegistry.getInstance()
-        .getDataFormatFromFilename(src.getName()));
+    result.setDataFormat(DataFormatRegistry.getInstance().getDataFormatFromFilename(src.getName()));
 
-    final CompressionType ct =
-        CompressionType.getCompressionTypeByFilename(src.getSource());
+    final CompressionType ct = CompressionType.getCompressionTypeByFilename(src.getSource());
 
     if (ct != null) {
       result.setContentEncoding(ct.getContentEncoding());
@@ -155,17 +152,13 @@ public abstract class PathDataProtocol extends AbstractDataProtocol {
   // Constructor
   //
 
-  /**
-   * Constructor.
-   */
+  /** Constructor. */
   public PathDataProtocol() {
 
     final AbstractEoulsanRuntime runtime = EoulsanRuntime.getRuntime();
 
-    if (!runtime.getMode().isHadoopProtocolMode()
-        || !(runtime instanceof HadoopEoulsanRuntime)) {
-      throw new IllegalStateException(
-          "Can only create PathDataProtocol in hadoop mode.");
+    if (!runtime.getMode().isHadoopProtocolMode() || !(runtime instanceof HadoopEoulsanRuntime)) {
+      throw new IllegalStateException("Can only create PathDataProtocol in hadoop mode.");
     }
 
     final HadoopEoulsanRuntime hadoopRuntime = (HadoopEoulsanRuntime) runtime;
@@ -176,5 +169,4 @@ public abstract class PathDataProtocol extends AbstractDataProtocol {
       throw new NullPointerException("The Hadoop configuration object is null");
     }
   }
-
 }

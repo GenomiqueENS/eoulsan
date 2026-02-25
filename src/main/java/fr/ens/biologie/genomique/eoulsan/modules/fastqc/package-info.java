@@ -24,6 +24,7 @@
 
 /**
  * This package contain all the classes related to FastQC.
+ *
  * @since 2.0
  */
 package fr.ens.biologie.genomique.eoulsan.modules.fastqc;

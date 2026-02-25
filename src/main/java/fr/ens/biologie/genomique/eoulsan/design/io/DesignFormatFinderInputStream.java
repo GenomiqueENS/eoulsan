@@ -4,16 +4,16 @@ import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan1DesignReader.S
 import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignReader.DESIGN_FORMAT_VERSION_METADATA_KEY;
 import static fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignReader.EQUAL_SEPARATOR;
 
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import fr.ens.biologie.genomique.eoulsan.Globals;
-
 /**
  * This class allow to automatically detect the format of a design file.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -32,6 +32,7 @@ public class DesignFormatFinderInputStream extends InputStream {
 
   /**
    * Find the design format version.
+   *
    * @return the design format version
    * @throws IOException if an error occurs while finding the version
    */
@@ -48,14 +49,14 @@ public class DesignFormatFinderInputStream extends InputStream {
       this.cache = readed;
     }
 
-    try (final BufferedReader reader = new BufferedReader(new InputStreamReader(
-        new ByteArrayInputStream(this.cache), Globals.DEFAULT_CHARSET))) {
+    try (final BufferedReader reader =
+        new BufferedReader(
+            new InputStreamReader(new ByteArrayInputStream(this.cache), Globals.DEFAULT_CHARSET))) {
 
       String line;
       int lineCount = 0;
 
-      while (((line = reader.readLine()) != null)
-          && lineCount < MAX_LINES_TO_READ) {
+      while (((line = reader.readLine()) != null) && lineCount < MAX_LINES_TO_READ) {
 
         line = line.trim();
 
@@ -67,13 +68,11 @@ public class DesignFormatFinderInputStream extends InputStream {
           return 1;
         }
 
-        if (line
-            .startsWith(DESIGN_FORMAT_VERSION_METADATA_KEY + EQUAL_SEPARATOR)) {
+        if (line.startsWith(DESIGN_FORMAT_VERSION_METADATA_KEY + EQUAL_SEPARATOR)) {
 
           final int equalPos = line.indexOf(EQUAL_SEPARATOR);
 
-          final String version =
-              line.substring(equalPos + 1).replaceAll("\\s", "");
+          final String version = line.substring(equalPos + 1).replaceAll("\\s", "");
 
           try {
             return Integer.parseInt(version);
@@ -91,36 +90,35 @@ public class DesignFormatFinderInputStream extends InputStream {
 
   /**
    * Get the format of the data to read.
+   *
    * @return The format of the data to read
    * @throws IOException if an error occurs while reading data
    */
   public int getDesignFormatVersion() throws IOException {
 
-    if (!this.testFormatDone)
-      this.versionFormat = findFormatVersion();
+    if (!this.testFormatDone) this.versionFormat = findFormatVersion();
 
     return this.versionFormat;
   }
 
   /**
    * Get the DesignReader for the data.
+   *
    * @return the DesignReader for the data
    * @throws IOException if an error occurs while reading data
    */
   public DesignReader getDesignReader() throws IOException {
 
     switch (getDesignFormatVersion()) {
+      case 1:
+        return new Eoulsan1DesignReader(this);
 
-    case 1:
-      return new Eoulsan1DesignReader(this);
+      case 2:
+        return new Eoulsan2DesignReader(this);
 
-    case 2:
-      return new Eoulsan2DesignReader(this);
-
-    default:
-      throw new IOException("Unknown Design format");
+      default:
+        throw new IOException("Unknown Design format");
     }
-
   }
 
   //
@@ -134,8 +132,7 @@ public class DesignFormatFinderInputStream extends InputStream {
       return -1;
     }
 
-    if (this.cacheIndex < this.cache.length)
-      return this.cache[this.cacheIndex++];
+    if (this.cacheIndex < this.cache.length) return this.cache[this.cacheIndex++];
 
     return this.is.read();
   }
@@ -153,6 +150,7 @@ public class DesignFormatFinderInputStream extends InputStream {
 
   /**
    * Public constructor.
+   *
    * @param is InputStream to read
    */
   public DesignFormatFinderInputStream(final InputStream is) {
@@ -163,5 +161,4 @@ public class DesignFormatFinderInputStream extends InputStream {
 
     this.is = is;
   }
-
 }

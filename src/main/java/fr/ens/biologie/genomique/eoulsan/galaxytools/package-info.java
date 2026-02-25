@@ -24,7 +24,7 @@
 
 /**
  * This package contain classes related to read tool xml file from galaxy.
+ *
  * @since 2.0
  */
-
 package fr.ens.biologie.genomique.eoulsan.galaxytools;

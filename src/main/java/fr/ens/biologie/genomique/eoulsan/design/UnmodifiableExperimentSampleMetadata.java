@@ -142,10 +142,8 @@ public class UnmodifiableExperimentSampleMetadata
   // Constructor
   //
 
-  public UnmodifiableExperimentSampleMetadata(
-      final ExperimentSampleMetadata md) {
+  public UnmodifiableExperimentSampleMetadata(final ExperimentSampleMetadata md) {
 
     this.md = md;
   }
-
 }

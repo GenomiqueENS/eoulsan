@@ -24,20 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.actions;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.help.HelpFormatter;
-
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -49,9 +35,22 @@ import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.io.DesignWriter;
 import fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan1DesignWriter;
 import fr.ens.biologie.genomique.eoulsan.design.io.Eoulsan2DesignWriter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 
 /**
  * This class define an action to create design file.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -94,8 +93,7 @@ public class CreateDesignAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[0]), true);
+      final CommandLine line = parser.parse(options, arguments.toArray(new String[0]), true);
 
       // Pair-end option
       if (line.hasOption("paired-end")) {
@@ -143,15 +141,13 @@ public class CreateDesignAction extends AbstractAction {
         try {
           formatVersion = Integer.parseInt(line.getOptionValue("f").trim());
         } catch (NumberFormatException e) {
-          Common.errorExit(e,
-              "Invalid Eoulsan design format version: " + e.getMessage());
+          Common.errorExit(e, "Invalid Eoulsan design format version: " + e.getMessage());
         }
         argsOptions += 2;
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e,
-          "Error while parsing command line arguments: " + e.getMessage());
+      Common.errorExit(e, "Error while parsing command line arguments: " + e.getMessage());
     }
 
     // Write log entries
@@ -162,15 +158,13 @@ public class CreateDesignAction extends AbstractAction {
 
     try {
 
-      final List<String> newArgs =
-          arguments.subList(argsOptions, arguments.size());
+      final List<String> newArgs = arguments.subList(argsOptions, arguments.size());
 
       final DesignBuilder db = new DesignBuilder();
 
       // Add all the files of a Casava design if Casava design path is defined
       for (String sampleSheetPath : sampleSheetPaths) {
-        db.addBcl2FastqSamplesheetProject(Path.of(sampleSheetPath),
-            samplesProjectName);
+        db.addBcl2FastqSamplesheetProject(Path.of(sampleSheetPath), samplesProjectName);
       }
 
       // Add files in the command line
@@ -187,36 +181,34 @@ public class CreateDesignAction extends AbstractAction {
     }
 
     if (design.getSamples().isEmpty()) {
-      Common
-          .showErrorMessageAndExit("Error: Nothing to create, no file found.\n"
-              + "  Use the -h option to get more information.\n" + "usage: "
-              + Globals.APP_NAME_LOWER_CASE + " createdesign files");
-
+      Common.showErrorMessageAndExit(
+          "Error: Nothing to create, no file found.\n"
+              + "  Use the -h option to get more information.\n"
+              + "usage: "
+              + Globals.APP_NAME_LOWER_CASE
+              + " createdesign files");
     }
 
     try {
 
       if (designFile.exists()) {
-        throw new IOException(
-            "Output design file " + designFile + " already exists");
+        throw new IOException("Output design file " + designFile + " already exists");
       }
 
       final DesignWriter dw;
 
       switch (formatVersion) {
+        case 1:
+          dw = new Eoulsan1DesignWriter(designFile.create());
+          break;
 
-      case 1:
-        dw = new Eoulsan1DesignWriter(designFile.create());
-        break;
+        case 2:
+          dw = new Eoulsan2DesignWriter(designFile.create());
+          break;
 
-      case 2:
-        dw = new Eoulsan2DesignWriter(designFile.create());
-        break;
-
-      default:
-        Common.showErrorMessageAndExit(
-            "Unknown Eoulsan design format version: " + formatVersion);
-        return;
+        default:
+          Common.showErrorMessageAndExit("Unknown Eoulsan design format version: " + formatVersion);
+          return;
       }
 
       dw.write(design);
@@ -224,7 +216,6 @@ public class CreateDesignAction extends AbstractAction {
     } catch (IOException e) {
       Common.errorExit(e, "File not found: " + e.getMessage());
     }
-
   }
 
   //
@@ -233,6 +224,7 @@ public class CreateDesignAction extends AbstractAction {
 
   /**
    * Create options for command line
+   *
    * @return an Options object
    */
   @SuppressWarnings("static-access")
@@ -248,47 +240,62 @@ public class CreateDesignAction extends AbstractAction {
     options.addOption("h", "help", false, "Display this help");
 
     // Bcl2fastq samplesheet path option
-    options.addOption(Option.builder("s").argName("file").hasArg()
-        .desc("Illumina samplesheet file").longOpt("samplesheet").get());
+    options.addOption(
+        Option.builder("s")
+            .argName("file")
+            .hasArg()
+            .desc("Illumina samplesheet file")
+            .longOpt("samplesheet")
+            .get());
 
     // Bcl2fastq project option
-    options.addOption(Option.builder("n").argName("name").hasArg()
-        .desc("Illumina project name").longOpt("project-name").get());
+    options.addOption(
+        Option.builder("n")
+            .argName("name")
+            .hasArg()
+            .desc("Illumina project name")
+            .longOpt("project-name")
+            .get());
 
     // Create symbolic links
-    options.addOption("l", "symlinks", false,
-        "Create symbolic links in design file directory");
+    options.addOption("l", "symlinks", false, "Create symbolic links in design file directory");
 
     // Output option
-    options.addOption(Option.builder("o").argName("file").hasArg()
-        .desc("Output file").longOpt("output").get());
+    options.addOption(
+        Option.builder("o").argName("file").hasArg().desc("Output file").longOpt("output").get());
 
     // Eoulsan design format version
-    options.addOption(Option.builder("f").argName("version").hasArg()
-        .desc("Eoulsan design format version").longOpt("format-version").get());
+    options.addOption(
+        Option.builder("f")
+            .argName("version")
+            .hasArg()
+            .desc("Eoulsan design format version")
+            .longOpt("format-version")
+            .get());
 
     return options;
   }
 
   /**
    * Show command line help.
+   *
    * @param options Options of the software
    */
   private static void help(final Options options) {
 
     // Show help message
-    final HelpFormatter formatter =
-        HelpFormatter.builder().setShowSince(false).get();
+    final HelpFormatter formatter = HelpFormatter.builder().setShowSince(false).get();
     try {
       formatter.printHelp(
-          Globals.APP_NAME_LOWER_CASE
-              + ".sh " + ACTION_NAME + " [options] file1 file2 ... fileN",
-          "", options, "", false);
+          Globals.APP_NAME_LOWER_CASE + ".sh " + ACTION_NAME + " [options] file1 file2 ... fileN",
+          "",
+          options,
+          "",
+          false);
     } catch (IOException e) {
       Common.errorExit(e, "Error while creating help message.");
     }
 
     Common.exit(0);
   }
-
 }

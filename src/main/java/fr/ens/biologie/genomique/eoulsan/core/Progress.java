@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.core;
 
 /**
  * This interface allow to set the progress of a task.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -37,14 +38,15 @@ public interface Progress {
 
   /**
    * Get the progress message.
+   *
    * @return the message for the context
    */
   String getProgressMessage();
 
   /**
    * Get the progress of the context processing.
-   * @return the progress of the processing of the sample as percent (between
-   *         0.0 and 1.0)
+   *
+   * @return the progress of the processing of the sample as percent (between 0.0 and 1.0)
    */
   double getProgress();
 
@@ -54,12 +56,14 @@ public interface Progress {
 
   /**
    * Set the progress message.
+   *
    * @param message the message to set
    */
   void setProgressMessage(String message);
 
   /**
    * Set the progress of the processing.
+   *
    * @param min minimal value of the progress
    * @param max maximal value of the progress
    * @param value current value of the progress
@@ -68,9 +72,9 @@ public interface Progress {
 
   /**
    * Set the progress of the processing.
-   * @param progress value of the progress. This value must be greater or equals
-   *          to 0 and lower or equals to 1.0
+   *
+   * @param progress value of the progress. This value must be greater or equals to 0 and lower or
+   *     equals to 1.0
    */
   void setProgress(double progress);
-
 }

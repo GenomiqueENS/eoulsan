@@ -62,7 +62,6 @@ public class UnmodifiableExperimentTest {
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
-
   }
 
   @Test
@@ -108,5 +107,4 @@ public class UnmodifiableExperimentTest {
       assertTrue(false);
     }
   }
-
 }

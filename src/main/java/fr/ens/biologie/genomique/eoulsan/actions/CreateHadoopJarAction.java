@@ -24,9 +24,12 @@
 
 package fr.ens.biologie.genomique.eoulsan.actions;
 
+import fr.ens.biologie.genomique.eoulsan.Common;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.Main;
+import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopJarRepackager;
 import java.io.IOException;
 import java.util.List;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -34,13 +37,9 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 
-import fr.ens.biologie.genomique.eoulsan.Common;
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.Main;
-import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopJarRepackager;
-
 /**
  * This class define an action to create hadoop jar file.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -76,8 +75,7 @@ public class CreateHadoopJarAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[0]), true);
+      final CommandLine line = parser.parse(options, arguments.toArray(new String[0]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -85,8 +83,7 @@ public class CreateHadoopJarAction extends AbstractAction {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e,
-          "Error while parsing command line arguments: " + e.getMessage());
+      Common.errorExit(e, "Error while parsing command line arguments: " + e.getMessage());
     }
 
     if (arguments.size() != argsOptions) {
@@ -101,10 +98,9 @@ public class CreateHadoopJarAction extends AbstractAction {
       HadoopJarRepackager.repack();
 
     } catch (IOException e) {
-      Common.errorExit(e, "Error while executing "
-          + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
+      Common.errorExit(
+          e, "Error while executing " + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
     }
-
   }
 
   //
@@ -113,6 +109,7 @@ public class CreateHadoopJarAction extends AbstractAction {
 
   /**
    * Create options for command line
+   *
    * @return an Options object
    */
   private static Options makeOptions() {
@@ -128,21 +125,20 @@ public class CreateHadoopJarAction extends AbstractAction {
 
   /**
    * Show command line help.
+   *
    * @param options Options of the software
    */
   private static void help(final Options options) {
 
     // Show help message
-    final HelpFormatter formatter =
-        HelpFormatter.builder().setShowSince(false).get();
+    final HelpFormatter formatter = HelpFormatter.builder().setShowSince(false).get();
     try {
-      formatter.printHelp(Globals.APP_NAME_LOWER_CASE + ".sh " + ACTION_NAME,
-          "", options, "", false);
+      formatter.printHelp(
+          Globals.APP_NAME_LOWER_CASE + ".sh " + ACTION_NAME, "", options, "", false);
     } catch (IOException e) {
       Common.errorExit(e, "Error while creating help message.");
     }
 
     Common.exit(0);
   }
-
 }

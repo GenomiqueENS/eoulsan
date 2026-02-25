@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan;
 
 /**
  * A nestable Eoulsan exception.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -34,9 +35,7 @@ public class EoulsanException extends Exception {
   // Serialization version UID
   private static final long serialVersionUID = 7021095498629981700L;
 
-  /**
-   * Create a new EoulsanException.
-   */
+  /** Create a new EoulsanException. */
   public EoulsanException() {
 
     super();
@@ -44,6 +43,7 @@ public class EoulsanException extends Exception {
 
   /**
    * Create a new EoulsanException with a message.
+   *
    * @param message the message
    */
   public EoulsanException(final String message) {
@@ -53,6 +53,7 @@ public class EoulsanException extends Exception {
 
   /**
    * Create a new EoulsanException with a message and a cause.
+   *
    * @param message the message
    * @param cause the cause
    */
@@ -63,11 +64,11 @@ public class EoulsanException extends Exception {
 
   /**
    * Create a new EoulsanException with a cause.
+   *
    * @param cause the cause
    */
   public EoulsanException(Throwable cause) {
 
     super(cause);
   }
-
 }

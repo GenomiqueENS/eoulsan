@@ -28,6 +28,7 @@ import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
 
 /**
  * This class define the FTP protocol in Hadoop mode.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -42,5 +43,4 @@ public class FTPPathDataProtocol extends PathDataProtocol {
 
     return PROTOCOL_NAME;
   }
-
 }

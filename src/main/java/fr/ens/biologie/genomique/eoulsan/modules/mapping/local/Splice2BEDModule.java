@@ -2,9 +2,6 @@ package fr.ens.biologie.genomique.eoulsan.modules.mapping.local;
 
 import static fr.ens.biologie.genomique.kenetre.bio.SAMUtils.parseIntervalsToBEDEntry;
 
-import java.io.File;
-import java.io.IOException;
-
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopCompatible;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
@@ -22,9 +19,12 @@ import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SamInputResource;
 import htsjdk.samtools.SamReader;
 import htsjdk.samtools.SamReaderFactory;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * This class define a module for converting SAM files into BED.
+ *
  * @since 2.3
  * @author Laurent Jourdren
  */
@@ -35,8 +35,7 @@ public class Splice2BEDModule extends AbstractSplice2BEDModule {
   private static final String MINUS_COLOR = "0,0,255";
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     try {
 
@@ -47,8 +46,7 @@ public class Splice2BEDModule extends AbstractSplice2BEDModule {
       final Data inData = context.getInputData(DataFormats.MAPPER_RESULTS_SAM);
 
       // Get output BED data
-      final Data outBEDData =
-          context.getOutputData(DataFormats.MAPPER_RESULT_BED, inData);
+      final Data outBEDData = context.getOutputData(DataFormats.MAPPER_RESULT_BED, inData);
 
       final DataFile samFile = inData.getDataFile();
       final DataFile bedFile = outBEDData.getDataFile();
@@ -57,13 +55,24 @@ public class Splice2BEDModule extends AbstractSplice2BEDModule {
       String trackDescription = inData.getMetadata().get("Description");
       String trackColor = inData.getMetadata().get("TrackColor");
 
-      convert(samFile, bedFile, trackName, trackDescription, trackColor,
-          context.getLocalTempDirectory(), reporter);
+      convert(
+          samFile,
+          bedFile,
+          trackName,
+          trackDescription,
+          trackColor,
+          context.getLocalTempDirectory(),
+          reporter);
 
       // Set the description of the context
-      status.setDescription("Convert alignments to BED format ("
-          + inData.getName() + ", " + samFile.getName() + ", "
-          + bedFile.getName() + ")");
+      status.setDescription(
+          "Convert alignments to BED format ("
+              + inData.getName()
+              + ", "
+              + samFile.getName()
+              + ", "
+              + bedFile.getName()
+              + ")");
 
       // Add counters for this sample to log file
       status.setCounters(reporter, COUNTER_GROUP);
@@ -76,27 +85,31 @@ public class Splice2BEDModule extends AbstractSplice2BEDModule {
     }
   }
 
-  private static void convert(final DataFile samDataFile,
-      final DataFile bedDataFile, final String trackName,
-      final String trackDescription, final String trackColor,
-      File temporaryDirectory, final Reporter reporter) throws IOException {
+  private static void convert(
+      final DataFile samDataFile,
+      final DataFile bedDataFile,
+      final String trackName,
+      final String trackDescription,
+      final String trackColor,
+      File temporaryDirectory,
+      final Reporter reporter)
+      throws IOException {
 
-    try (
-        final SamReader samReader = SamReaderFactory.makeDefault()
-            .open(SamInputResource.of(samDataFile.open()));
-        final SortedBEDWriter bedWriter =
-            new SortedBEDWriter(bedDataFile.create())) {
+    try (final SamReader samReader =
+            SamReaderFactory.makeDefault().open(SamInputResource.of(samDataFile.open()));
+        final SortedBEDWriter bedWriter = new SortedBEDWriter(bedDataFile.create())) {
 
       // Set the temporary directory for sorting data
       bedWriter.setTemporaryDirectory(temporaryDirectory);
 
       // Define the metadata
       final EntryMetadata metadata = new EntryMetadata();
-      metadata.add("track",
+      metadata.add(
+          "track",
           "name=\""
-              + trackName + "\" "
-              + (trackDescription != null
-                  ? "description=\"" + trackDescription + "\"" : "")
+              + trackName
+              + "\" "
+              + (trackDescription != null ? "description=\"" + trackDescription + "\"" : "")
               + " itemRgb=\"On\"");
 
       for (final SAMRecord samRecord : samReader) {
@@ -130,5 +143,4 @@ public class Splice2BEDModule extends AbstractSplice2BEDModule {
       }
     }
   }
-
 }

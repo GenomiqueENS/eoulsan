@@ -4,11 +4,11 @@ import fr.ens.biologie.genomique.kenetre.util.ServiceNameLoader;
 
 /**
  * This class define a service to retrieve a InputPreprocessor.
+ *
  * @since 2.2
  * @author Laurent Jourdren
  */
-public class InputPreprocessorService
-    extends ServiceNameLoader<InputPreprocessor> {
+public class InputPreprocessorService extends ServiceNameLoader<InputPreprocessor> {
 
   private static InputPreprocessorService service;
 
@@ -18,6 +18,7 @@ public class InputPreprocessorService
 
   /**
    * Retrieve the singleton static instance of an AlignmentsFilter.
+   *
    * @return A ActionService instance
    */
   public static synchronized InputPreprocessorService getInstance() {
@@ -53,11 +54,8 @@ public class InputPreprocessorService
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
+  /** Private constructor. */
   private InputPreprocessorService() {
     super(InputPreprocessor.class);
   }
-
 }

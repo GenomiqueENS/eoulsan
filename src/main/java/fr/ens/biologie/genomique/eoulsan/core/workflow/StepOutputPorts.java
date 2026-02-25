@@ -24,16 +24,16 @@
 
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
+import fr.ens.biologie.genomique.eoulsan.core.AbstractPorts;
+import fr.ens.biologie.genomique.eoulsan.core.OutputPort;
+import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.core.AbstractPorts;
-import fr.ens.biologie.genomique.eoulsan.core.OutputPort;
-import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
-
 /**
  * This class define a group of Workflow output ports.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -43,6 +43,7 @@ class StepOutputPorts extends AbstractPorts<StepOutputPort> {
 
   /**
    * Get the steps linked to the ports.
+   *
    * @return a set with the steps related to the ports
    */
   public Set<AbstractStep> getLinkedSteps() {
@@ -64,6 +65,7 @@ class StepOutputPorts extends AbstractPorts<StepOutputPort> {
 
   /**
    * Return a WorkflowOutputPorts with no ports.
+   *
    * @return a WorkflowOutputPorts with no ports
    */
   static StepOutputPorts noOutputPort() {
@@ -74,12 +76,12 @@ class StepOutputPorts extends AbstractPorts<StepOutputPort> {
 
   /**
    * Convert an OutputPorts object to a set of WorkflowOutputPort
+   *
    * @param step step related to the WorkflowOutputPort objects
    * @param ports ports to convert
    * @return a new set
    */
-  private static Set<StepOutputPort> convert(final AbstractStep step,
-      final OutputPorts ports) {
+  private static Set<StepOutputPort> convert(final AbstractStep step, final OutputPorts ports) {
 
     if (ports == null) {
       throw new NullPointerException("Ports is null");
@@ -89,10 +91,10 @@ class StepOutputPorts extends AbstractPorts<StepOutputPort> {
 
     for (OutputPort port : ports) {
       if (port != null) {
-        result.add(new StepOutputPort(step, port.getName(), port.isList(),
-            port.getFormat(), port.getCompression()));
+        result.add(
+            new StepOutputPort(
+                step, port.getName(), port.isList(), port.getFormat(), port.getCompression()));
       }
-
     }
 
     return result;
@@ -104,6 +106,7 @@ class StepOutputPorts extends AbstractPorts<StepOutputPort> {
 
   /**
    * Constructor.
+   *
    * @param ports ports to add.
    */
   StepOutputPorts(final Set<StepOutputPort> ports) {
@@ -112,6 +115,7 @@ class StepOutputPorts extends AbstractPorts<StepOutputPort> {
 
   /**
    * Constructor.
+   *
    * @param step step related to the WorkflowOutputPort objects
    * @param ports port to convert
    */
@@ -119,5 +123,4 @@ class StepOutputPorts extends AbstractPorts<StepOutputPort> {
 
     super(convert(step, ports));
   }
-
 }

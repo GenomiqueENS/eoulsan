@@ -33,14 +33,7 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATED_EXPRE
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.biologie.genomique.eoulsan.util.EoulsanTranslatorUtils.loadTranslator;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.base.Splitter;
-
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -57,7 +50,6 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
@@ -69,10 +61,16 @@ import fr.ens.biologie.genomique.kenetre.translator.io.ODSTranslatorOutputFormat
 import fr.ens.biologie.genomique.kenetre.translator.io.TSVTranslatorOutputFormat;
 import fr.ens.biologie.genomique.kenetre.translator.io.TranslatorOutputFormat;
 import fr.ens.biologie.genomique.kenetre.translator.io.XLSXTranslatorOutputFormat;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
- * This class define a module that create annotated expression files in TSV, ODS
- * or XLSX format.
+ * This class define a module that create annotated expression files in TSV, ODS or XLSX format.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -83,8 +81,7 @@ public class ExpressionResultsAnnotationModule extends AbstractModule {
 
   public static final String COUNTER_GROUP = "expressionresultsannotation";
 
-  private static final DataFormat DEFAULT_FORMAT =
-      ANNOTATED_EXPRESSION_RESULTS_TSV;
+  private static final DataFormat DEFAULT_FORMAT = ANNOTATED_EXPRESSION_RESULTS_TSV;
 
   private final Map<String, DataFormat> outputFormats = new HashMap<>();
   private boolean useAdditionalAnnotationFile = true;
@@ -159,67 +156,63 @@ public class ExpressionResultsAnnotationModule extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     for (final Parameter p : stepParameters) {
 
       switch (p.getName()) {
+        case "annotationfile":
+          Modules.removedParameter(context, p);
+          break;
 
-      case "annotationfile":
-        Modules.removedParameter(context, p);
-        break;
+        case "use.additional.annotation.file":
+          this.useAdditionalAnnotationFile = p.getBooleanValue();
+          break;
 
-      case "use.additional.annotation.file":
-        this.useAdditionalAnnotationFile = p.getBooleanValue();
-        break;
-
-      case "outputformat":
-        Modules.renamedParameter(context, p, "output.format");
+        case "outputformat":
+          Modules.renamedParameter(context, p, "output.format");
         // fall through
-      case "output.format":
+        case "output.format":
 
-        // Set output format
-        for (String format : Splitter.on(',').trimResults().omitEmptyStrings()
-            .split(p.getValue())) {
+          // Set output format
+          for (String format :
+              Splitter.on(',').trimResults().omitEmptyStrings().split(p.getValue())) {
 
-          switch (format) {
+            switch (format) {
+              case "tsv":
+                this.outputFormats.put(format, ANNOTATED_EXPRESSION_RESULTS_TSV);
+                break;
 
-          case "tsv":
-            this.outputFormats.put(format, ANNOTATED_EXPRESSION_RESULTS_TSV);
-            break;
+              case "ods":
+                this.outputFormats.put(format, ANNOTATED_EXPRESSION_RESULTS_ODS);
+                break;
 
-          case "ods":
-            this.outputFormats.put(format, ANNOTATED_EXPRESSION_RESULTS_ODS);
-            break;
+              case "xlsx":
+                this.outputFormats.put(format, ANNOTATED_EXPRESSION_RESULTS_XLSX);
+                break;
 
-          case "xlsx":
-            this.outputFormats.put(format, ANNOTATED_EXPRESSION_RESULTS_XLSX);
-            break;
-
-          default:
-            throw new EoulsanException("Unknown output format: " + format);
+              default:
+                throw new EoulsanException("Unknown output format: " + format);
+            }
           }
-        }
 
-        break;
+          break;
 
-      default:
-        // Unknown option
-        Modules.unknownParameter(context, p);
+        default:
+          // Unknown option
+          Modules.unknownParameter(context, p);
       }
     }
 
     // Set the default format
     if (this.outputFormats.isEmpty()) {
-      this.outputFormats.put(DEFAULT_FORMAT.getDefaultExtension().substring(1),
-          DEFAULT_FORMAT);
+      this.outputFormats.put(DEFAULT_FORMAT.getDefaultExtension().substring(1), DEFAULT_FORMAT);
     }
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     // Avoid issue with AWT in ODF Toolkit
     System.setProperty("javax.accessibility.assistive_technologies", "");
@@ -235,12 +228,10 @@ public class ExpressionResultsAnnotationModule extends AbstractModule {
       if (this.useAdditionalAnnotationFile) {
 
         // If no annotation file parameter set
-        final Data additionalAnnotationData =
-            context.getInputData(ADDITIONAL_ANNOTATION_TSV);
+        final Data additionalAnnotationData = context.getInputData(ADDITIONAL_ANNOTATION_TSV);
 
         // Create translator with additional annotation file
-        translator =
-            loadTranslator(additionalAnnotationData.getDataFile(), linksFile);
+        translator = loadTranslator(additionalAnnotationData.getDataFile(), linksFile);
       } else {
         // Create translator without additional annotation file
         translator = loadTranslator(linksFile);
@@ -273,8 +264,7 @@ public class ExpressionResultsAnnotationModule extends AbstractModule {
         final TranslatorOutputFormat of;
 
         if (format == ANNOTATED_EXPRESSION_RESULTS_XLSX) {
-          of = new XLSXTranslatorOutputFormat(outFile.create(),
-              context.getLocalTempDirectory());
+          of = new XLSXTranslatorOutputFormat(outFile.create(), context.getLocalTempDirectory());
         } else if (format == ANNOTATED_EXPRESSION_RESULTS_ODS) {
           of = new ODSTranslatorOutputFormat(outFile.create());
         } else {
@@ -299,5 +289,4 @@ public class ExpressionResultsAnnotationModule extends AbstractModule {
     // Return the result
     return status.createTaskResult();
   }
-
 }

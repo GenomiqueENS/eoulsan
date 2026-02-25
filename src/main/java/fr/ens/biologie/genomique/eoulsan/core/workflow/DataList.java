@@ -26,19 +26,18 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.google.common.base.MoreObjects;
-
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * This class define a data list.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -93,6 +92,7 @@ public class DataList extends AbstractData {
 
   /**
    * Get the modifiable list of data object.
+   *
    * @return a list object
    */
   List<Data> getModifiableList() {
@@ -137,9 +137,13 @@ public class DataList extends AbstractData {
   @Override
   public String toString() {
 
-    return MoreObjects.toStringHelper(this).add("name", getName())
-        .add("format", getFormat().getName()).add("metadata", getMetadata())
-        .add("list", isList()).add("elements", this.list).toString();
+    return MoreObjects.toStringHelper(this)
+        .add("name", getName())
+        .add("format", getFormat().getName())
+        .add("metadata", getMetadata())
+        .add("list", isList())
+        .add("elements", this.list)
+        .toString();
   }
 
   //
@@ -148,6 +152,7 @@ public class DataList extends AbstractData {
 
   /**
    * Constructor.
+   *
    * @param port input port
    * @param design design
    */
@@ -163,6 +168,7 @@ public class DataList extends AbstractData {
 
   /**
    * Constructor.
+   *
    * @param port output port
    * @param design the design object
    */
@@ -176,9 +182,7 @@ public class DataList extends AbstractData {
     this.design = design;
   }
 
-  /**
-   * Copy constructor.
-   */
+  /** Copy constructor. */
   DataList(final DataList data) {
 
     super(data);
@@ -189,7 +193,5 @@ public class DataList extends AbstractData {
     for (Data d : data.getModifiableList()) {
       this.list.add(DataUtils.copy((AbstractData) d));
     }
-
   }
-
 }

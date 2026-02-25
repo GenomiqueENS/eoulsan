@@ -24,6 +24,10 @@
 
 package fr.ens.biologie.genomique.eoulsan;
 
+import fr.ens.biologie.genomique.eoulsan.io.FileCharsets;
+import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
+import fr.ens.biologie.genomique.kenetre.util.Utils;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
@@ -42,13 +46,9 @@ import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
-import fr.ens.biologie.genomique.eoulsan.io.FileCharsets;
-import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
-import fr.ens.biologie.genomique.kenetre.util.Utils;
-import fr.ens.biologie.genomique.kenetre.util.Version;
-
 /**
  * This class contains globals constants for the application.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -67,8 +67,7 @@ public final class Globals {
   public static final String APP_NAME_LOWER_CASE = APP_NAME.toLowerCase(DEFAULT_LOCALE);
 
   /** The prefix of the parameters of the application. */
-  public static final String PARAMETER_PREFIX =
-      "fr.ens.biologie.genomique." + APP_NAME_LOWER_CASE;
+  public static final String PARAMETER_PREFIX = "fr.ens.biologie.genomique." + APP_NAME_LOWER_CASE;
 
   /** The version of the application. */
   public static final String APP_VERSION_STRING = getVersion();
@@ -92,21 +91,30 @@ public final class Globals {
   public static final String APP_BUILD_YEAR = getBuiltYear();
 
   /** The welcome message. */
-  public static final String WELCOME_MSG = Globals.APP_NAME
-      + " version " + Globals.APP_VERSION_STRING + " (" + APP_BUILD_COMMIT
-      + ", " + Globals.APP_BUILD_NUMBER + " build on " + APP_BUILD_HOST + ", "
-      + Globals.APP_BUILD_DATE + ")";
+  public static final String WELCOME_MSG =
+      Globals.APP_NAME
+          + " version "
+          + Globals.APP_VERSION_STRING
+          + " ("
+          + APP_BUILD_COMMIT
+          + ", "
+          + Globals.APP_BUILD_NUMBER
+          + " build on "
+          + APP_BUILD_HOST
+          + ", "
+          + Globals.APP_BUILD_DATE
+          + ")";
 
   /** The prefix for temporary files. */
-  public static final String TEMP_PREFIX = APP_NAME_LOWER_CASE
-      + "-" + APP_VERSION_STRING + "-" + APP_BUILD_NUMBER + "-";
+  public static final String TEMP_PREFIX =
+      APP_NAME_LOWER_CASE + "-" + APP_VERSION_STRING + "-" + APP_BUILD_NUMBER + "-";
 
   /** The log level of the application. */
   public static final Level LOG_LEVEL = Level.INFO; // Level.OFF;
 
   /** Set the debug mode. */
-  public static final boolean DEBUG = APP_VERSION_STRING.endsWith("-SNAPSHOT")
-      || "UNKNOWN_VERSION".equals(APP_VERSION_STRING);
+  public static final boolean DEBUG =
+      APP_VERSION_STRING.endsWith("-SNAPSHOT") || "UNKNOWN_VERSION".equals(APP_VERSION_STRING);
 
   /** Bypass platform checking. */
   public static final boolean BYPASS_PLATFORM_CHECKING = false;
@@ -116,28 +124,29 @@ public final class Globals {
 
   /** Platforms where the application is available. */
   public static final Set<String> AVAILABLE_BINARY_ARCH =
-      Collections.unmodifiableSet(
-          new HashSet<>(Arrays.asList("linux\tamd64", "linux\tx86_64")));
+      Collections.unmodifiableSet(new HashSet<>(Arrays.asList("linux\tamd64", "linux\tx86_64")));
 
   /** Platforms alias. */
   public static final Map<String, String> AVAILABLE_BINARY_ARCH_ALIAS =
-      Collections.unmodifiableMap(
-          Collections.singletonMap("linux\tx86_64", "linux\tamd64"));
+      Collections.unmodifiableMap(Collections.singletonMap("linux\tx86_64", "linux\tamd64"));
 
   /** Format of the log. */
-  public static final Formatter LOG_FORMATTER = new Formatter() {
+  public static final Formatter LOG_FORMATTER =
+      new Formatter() {
 
-    private final DateTimeFormatter dtf =
-        DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss")
-                         .withZone(ZoneId.systemDefault());
+        private final DateTimeFormatter dtf =
+            DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss").withZone(ZoneId.systemDefault());
 
-    @Override
-    public String format(final LogRecord record) {
-      return record.getLevel()
-          + "\t" + dtf.format(Instant.ofEpochMilli(record.getMillis())) + "\t"
-          + record.getMessage() + "\n";
-    }
-  };
+        @Override
+        public String format(final LogRecord record) {
+          return record.getLevel()
+              + "\t"
+              + dtf.format(Instant.ofEpochMilli(record.getMillis()))
+              + "\t"
+              + record.getMessage()
+              + "\n";
+        }
+      };
 
   private static final String WEBSITE_URL_DEFAULT =
       "http://outils.genomique.biologie.ens.fr/" + APP_NAME_LOWER_CASE;
@@ -146,8 +155,7 @@ public final class Globals {
   public static final String WEBSITE_URL = getWebSiteURL();
 
   /** Project email. */
-  public static final String CONTACT_EMAIL =
-      APP_NAME_LOWER_CASE + "@biologie.ens.fr";
+  public static final String CONTACT_EMAIL = APP_NAME_LOWER_CASE + "@biologie.ens.fr";
 
   /** Project discussion group. */
   public static final String DISCUSSION_GROUP =
@@ -161,19 +169,45 @@ public final class Globals {
           + " version 2.1 or later and CeCILL-C.";
 
   /** About string, plain text version. */
-  public static final String ABOUT_TXT = Globals.APP_NAME
-      + " version " + Globals.APP_VERSION_STRING + " (" + APP_BUILD_COMMIT
-      + ", " + Globals.APP_BUILD_NUMBER + ")"
-      + " is a pipeline for NGS analysis.\n" + "This version has been built on "
-      + APP_BUILD_DATE + ".\n\n" + "Authors:\n"
-      + "  Laurent Jourdren (Project leader and maintainer)\n"
-      + "  Maria Bernard\n" + "  Stéphane Le Crom\n" + "  Claire Wallon\n"
-      + "  Vivien Deshaies\n" + "  Sandrine Perrin\n" + "  Xavier Bauquet\n"
-      + "  Cyril Firmo\n" + "  Runxin Du\n" + "  Aurélien Birer\n"
-      + "Contacts:\n" + "  Email: " + CONTACT_EMAIL + "\n"
-      + "  Discussion group: " + DISCUSSION_GROUP + "\n" + "  Website: "
-      + WEBSITE_URL + "\n" + "Copyright " + COPYRIGHT_DATE
-      + " IBENS genomics core facility\n" + LICENSE_TXT + "\n";
+  public static final String ABOUT_TXT =
+      Globals.APP_NAME
+          + " version "
+          + Globals.APP_VERSION_STRING
+          + " ("
+          + APP_BUILD_COMMIT
+          + ", "
+          + Globals.APP_BUILD_NUMBER
+          + ")"
+          + " is a pipeline for NGS analysis.\n"
+          + "This version has been built on "
+          + APP_BUILD_DATE
+          + ".\n\n"
+          + "Authors:\n"
+          + "  Laurent Jourdren (Project leader and maintainer)\n"
+          + "  Maria Bernard\n"
+          + "  Stéphane Le Crom\n"
+          + "  Claire Wallon\n"
+          + "  Vivien Deshaies\n"
+          + "  Sandrine Perrin\n"
+          + "  Xavier Bauquet\n"
+          + "  Cyril Firmo\n"
+          + "  Runxin Du\n"
+          + "  Aurélien Birer\n"
+          + "Contacts:\n"
+          + "  Email: "
+          + CONTACT_EMAIL
+          + "\n"
+          + "  Discussion group: "
+          + DISCUSSION_GROUP
+          + "\n"
+          + "  Website: "
+          + WEBSITE_URL
+          + "\n"
+          + "Copyright "
+          + COPYRIGHT_DATE
+          + " IBENS genomics core facility\n"
+          + LICENSE_TXT
+          + "\n";
 
   /** Default standard output state. */
   public static final boolean STD_OUTPUT_DEFAULT = false;
@@ -182,19 +216,15 @@ public final class Globals {
   public static final double DESIGN_FILE_VERSION = 1.1;
 
   /**
-   * The name of the system property that contains the list of libraries to
-   * repack for hadoop mode.
+   * The name of the system property that contains the list of libraries to repack for hadoop mode.
    */
-  public static final String LIBS_TO_HADOOP_REPACK_PROPERTY =
-      APP_NAME_LOWER_CASE + ".hadoop.libs";
+  public static final String LIBS_TO_HADOOP_REPACK_PROPERTY = APP_NAME_LOWER_CASE + ".hadoop.libs";
 
   /** Launch mode property. */
-  public static final String LAUNCH_MODE_PROPERTY =
-      APP_NAME_LOWER_CASE + ".launch.mode";
+  public static final String LAUNCH_MODE_PROPERTY = APP_NAME_LOWER_CASE + ".launch.mode";
 
   /** Launch script path. */
-  public static final String LAUNCH_SCRIPT_PATH =
-      APP_NAME_LOWER_CASE + ".launch.script.path";
+  public static final String LAUNCH_SCRIPT_PATH = APP_NAME_LOWER_CASE + ".launch.script.path";
 
   /** Print stack trace default. */
   public static final boolean PRINT_STACK_TRACE_DEFAULT = DEBUG;
@@ -212,8 +242,7 @@ public final class Globals {
   public static final boolean OBFUSCATE_DESIGN_DEFAULT = true;
 
   /** Remove design replicate info when obfuscate design default. */
-  public static final boolean OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_DEFAULT =
-      true;
+  public static final boolean OBFUSCATE_DESIGN_REMOVE_REPLICATE_INFO_DEFAULT = true;
 
   /** ZooKeeper default port. */
   public static final int ZOOKEEPER_DEFAULT_PORT_DEFAULT = 2181;
@@ -240,8 +269,7 @@ public final class Globals {
   public static final boolean STANDARD_EXTERNAL_MODULES_ENABLED_DEFAULT = true;
 
   /** Server name to check internet connection. */
-  public static final String INTERNET_CHECK_SERVER =
-      "raw.githubusercontent.com";
+  public static final String INTERNET_CHECK_SERVER = "raw.githubusercontent.com";
 
   /** Port of the server to check internet connection */
   public static final int INTERNET_CHECK_PORT = 443;
@@ -255,12 +283,10 @@ public final class Globals {
   //
 
   /** Default file encoding. */
-  public static final String DEFAULT_FILE_ENCODING =
-      FileCharsets.UTF8_FILE_ENCODING;
+  public static final String DEFAULT_FILE_ENCODING = FileCharsets.UTF8_FILE_ENCODING;
 
   /** Default charset. */
-  public static final Charset DEFAULT_CHARSET =
-      Charset.forName(DEFAULT_FILE_ENCODING);
+  public static final Charset DEFAULT_CHARSET = Charset.forName(DEFAULT_FILE_ENCODING);
 
   //
   // Default file extensions
@@ -400,13 +426,13 @@ public final class Globals {
       if (!classPath.startsWith("jar")) {
         // Class not from JAR
 
-        String basePath = classPath.substring(0,
-            classPath.length() - clazz.getName().length() - ".class".length());
+        String basePath =
+            classPath.substring(
+                0, classPath.length() - clazz.getName().length() - ".class".length());
         manifestPath = basePath + MANIFEST_FILE;
 
       } else {
-        manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1)
-            + MANIFEST_FILE;
+        manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1) + MANIFEST_FILE;
       }
 
       Manifest manifest = new Manifest(new URL(manifestPath).openStream());
@@ -419,9 +445,7 @@ public final class Globals {
     }
   }
 
-  /**
-   * Set the default Local of the application
-   */
+  /** Set the default Local of the application */
   public static void setDefaultLocale() {
 
     Locale.setDefault(DEFAULT_LOCALE);
@@ -431,9 +455,7 @@ public final class Globals {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
+  /** Private constructor. */
   private Globals() {
 
     throw new IllegalStateException();

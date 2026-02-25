@@ -2,6 +2,11 @@ package fr.ens.biologie.genomique.eoulsan.actions;
 
 import static java.util.Collections.nCopies;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+import fr.ens.biologie.genomique.eoulsan.Settings;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -9,15 +14,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-
-import fr.ens.biologie.genomique.eoulsan.Settings;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
-import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
-
 /**
  * This class define an action that show the list of available formats.
+ *
  * @author Laurent Jourdren
  * @since 2.3
  */
@@ -50,8 +49,9 @@ public class FormatsAction extends AbstractInfoAction {
     result.sort(Comparator.comparing(o -> o.get(0)));
 
     // Define the name of the columns
-    List<String> columnNames = Arrays.asList("Name", "Aliases", "Extensions",
-        "Prefix", "One file per analysis", "Description");
+    List<String> columnNames =
+        Arrays.asList(
+            "Name", "Aliases", "Extensions", "Prefix", "One file per analysis", "Description");
 
     // Get the maximal length of each column
     List<Integer> maxLengths = maxLengthKey(columnNames, result);
@@ -71,7 +71,6 @@ public class FormatsAction extends AbstractInfoAction {
         sb.append(Strings.padEnd(info.get(i), maxLengths.get(i) + 2, ' '));
       }
       sb.append('\n');
-
     }
 
     System.out.println();
@@ -117,6 +116,7 @@ public class FormatsAction extends AbstractInfoAction {
 
   /**
    * Convert null values to empty values.
+   *
    * @param s String to test
    * @return a non null string
    */
@@ -131,11 +131,11 @@ public class FormatsAction extends AbstractInfoAction {
 
   /**
    * Get the maximal length of the key of the Info objects.
+   *
    * @param values the info object
    * @return the maximal length of the key of the Info objects
    */
-  private static List<Integer> maxLengthKey(List<String> columnNames,
-      List<List<String>> values) {
+  private static List<Integer> maxLengthKey(List<String> columnNames, List<List<String>> values) {
 
     List<Integer> result = null;
 
@@ -155,5 +155,4 @@ public class FormatsAction extends AbstractInfoAction {
 
     return result;
   }
-
 }

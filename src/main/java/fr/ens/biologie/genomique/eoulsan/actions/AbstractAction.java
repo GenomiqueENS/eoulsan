@@ -28,6 +28,7 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
 
 /**
  * This class define an abstract Action
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -57,6 +58,7 @@ public abstract class AbstractAction implements Action {
 
   /**
    * Check if the application is available for current platform.
+   *
    * @return true if the application is available for current platform
    */
   public static boolean isApplicationAvailableForCurrentArch() {
@@ -66,5 +68,4 @@ public abstract class AbstractAction implements Action {
 
     return Globals.AVAILABLE_BINARY_ARCH.contains(os + "\t" + arch);
   }
-
 }

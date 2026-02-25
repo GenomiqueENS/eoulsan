@@ -31,24 +31,6 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ANNOTATION_GTF;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_FASTA;
 import static java.util.regex.Pattern.compile;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.core.Naming;
@@ -65,9 +47,27 @@ import fr.ens.biologie.genomique.kenetre.bio.io.FastqReader;
 import fr.ens.biologie.genomique.kenetre.illumina.samplesheet.SampleSheet;
 import fr.ens.biologie.genomique.kenetre.illumina.samplesheet.io.SampleSheetCSVReader;
 import fr.ens.biologie.genomique.kenetre.util.StringUtils;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This class allow to easily build Design object from files paths.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -87,6 +87,7 @@ public class DesignBuilder {
 
   /**
    * This class define a exception thrown when a fastq file is empty.
+   *
    * @author Laurent Jourdren
    */
   private static class EmptyFastqException extends EoulsanException {
@@ -95,17 +96,18 @@ public class DesignBuilder {
 
     /**
      * Public constructor
+     *
      * @param msg exception message
      */
     public EmptyFastqException(final String msg) {
 
       super(msg);
     }
-
   }
 
   /**
    * This inner class define a fastq entry.
+   *
    * @author Laurent Jourdren
    */
   private static class FastqEntry {
@@ -127,13 +129,13 @@ public class DesignBuilder {
       try {
         long last = file.getMetaData().getLastModified();
 
-        return Instant.ofEpochMilli(last).atZone(ZoneId.systemDefault())
+        return Instant.ofEpochMilli(last)
+            .atZone(ZoneId.systemDefault())
             .format(DateTimeFormatter.ofPattern(DATE_FORMAT));
 
       } catch (IOException e) {
         return null;
       }
-
     }
 
     //
@@ -142,13 +144,13 @@ public class DesignBuilder {
 
     /**
      * Get the identifier of the first read of a fastq file.
+     *
      * @param f the input file
      * @return the identifier of the first read of a fastq file as a string
-     * @throws EoulsanException if an error occurs while reading the file or if
-     *           the read format is invalid
+     * @throws EoulsanException if an error occurs while reading the file or if the read format is
+     *     invalid
      */
-    private static String getFirstReadSeqId(final DataFile f)
-        throws EoulsanException {
+    private static String getFirstReadSeqId(final DataFile f) throws EoulsanException {
 
       final FastqReader reader;
       try {
@@ -157,8 +159,7 @@ public class DesignBuilder {
         if (!reader.hasNext()) {
           reader.close();
           reader.throwException();
-          throw new EmptyFastqException(
-              "Fastq file is empty: " + f.getSource());
+          throw new EmptyFastqException("Fastq file is empty: " + f.getSource());
         }
 
         reader.close();
@@ -168,7 +169,6 @@ public class DesignBuilder {
       } catch (IOException | BadBioEntryException e) {
         throw new EoulsanException(e);
       }
-
     }
 
     private Object[] initPairedEnd() {
@@ -178,11 +178,16 @@ public class DesignBuilder {
 
       try {
         IlluminaReadId irid = new IlluminaReadId(this.firstReadId);
-        prefix = irid.getInstrumentId()
-            + "\t" + irid.getFlowCellLane() + "\t"
-            + irid.getTileNumberInFlowCellLane() + "\t"
-            + irid.getXClusterCoordinateInTile() + "\t"
-            + irid.getYClusterCoordinateInTile();
+        prefix =
+            irid.getInstrumentId()
+                + "\t"
+                + irid.getFlowCellLane()
+                + "\t"
+                + irid.getTileNumberInFlowCellLane()
+                + "\t"
+                + irid.getXClusterCoordinateInTile()
+                + "\t"
+                + irid.getYClusterCoordinateInTile();
 
         pairMember = irid.getPairMember();
 
@@ -285,9 +290,13 @@ public class DesignBuilder {
       this.pairMember = (Integer) array[1];
     }
 
-    public FastqEntry(final DataFile path, final String sampleId,
-        final String sampleName, final String sampleDesc,
-        final String sampleOperator) throws EoulsanException {
+    public FastqEntry(
+        final DataFile path,
+        final String sampleId,
+        final String sampleName,
+        final String sampleDesc,
+        final String sampleOperator)
+        throws EoulsanException {
 
       this.path = path;
       this.sampleId = sampleId;
@@ -300,11 +309,11 @@ public class DesignBuilder {
       this.prefix = (String) array[0];
       this.pairMember = (Integer) array[1];
     }
-
   }
 
   /**
    * Add a file to the design builder
+   *
    * @param file file to add
    * @throws EoulsanException if the file does not exist
    */
@@ -315,12 +324,10 @@ public class DesignBuilder {
     }
 
     if (!file.exists()) {
-      throw new EoulsanException(
-          "File " + file + " does not exist or is not a regular file.");
+      throw new EoulsanException("File " + file + " does not exist or is not a regular file.");
     }
 
-    final String extension =
-        StringUtils.extensionWithoutCompressionExtension(file.getName());
+    final String extension = StringUtils.extensionWithoutCompressionExtension(file.getName());
 
     DataFileMetadata md = null;
 
@@ -370,17 +377,16 @@ public class DesignBuilder {
       this.gffFile = file;
     } else if (isDataFormatExtension(ANNOTATION_GTF, extension, md)) {
       this.gtfFile = file;
-    } else if (isDataFormatExtension(ADDITIONAL_ANNOTATION_TSV, extension,
-        md)) {
+    } else if (isDataFormatExtension(ADDITIONAL_ANNOTATION_TSV, extension, md)) {
       this.additionalAnnotationFile = file;
     } else {
       throw new EoulsanException("Unknown file type: " + file);
     }
-
   }
 
   /**
    * Add a filename to the design builder
+   *
    * @param filename filename of the file to add
    * @throws EoulsanException if the file does not exists
    */
@@ -396,6 +402,7 @@ public class DesignBuilder {
 
   /**
    * Add filenames to the design builder
+   *
    * @param filenames array with the filenames to add
    * @throws EoulsanException if the file does not exists
    */
@@ -412,6 +419,7 @@ public class DesignBuilder {
 
   /**
    * Add filenames to the design builder
+   *
    * @param filenames array with the filenames to add
    * @throws EoulsanException if the file does not exists
    */
@@ -428,30 +436,29 @@ public class DesignBuilder {
 
   /**
    * Add all the sample from a Bclfastq samplesheet.
+   *
    * @param samplesheet The Bcl2fastq samplesheet object
    * @param projectName name of the project
    * @param bcl2fastqOutputDir the output directory of Bcl2fastq demultiplexing
-   * @throws EoulsanException if an error occurs while adding the Bcl2fastq
-   *           samplesheet
+   * @throws EoulsanException if an error occurs while adding the Bcl2fastq samplesheet
    */
-  public void addBcl2FastqSamplesheetProject(final SampleSheet samplesheet,
-      final String projectName, final File bcl2fastqOutputDir)
+  public void addBcl2FastqSamplesheetProject(
+      final SampleSheet samplesheet, final String projectName, final File bcl2fastqOutputDir)
       throws EoulsanException {
 
-    addBcl2FastqSamplesheetProject(samplesheet, projectName,
-        bcl2fastqOutputDir.toPath());
+    addBcl2FastqSamplesheetProject(samplesheet, projectName, bcl2fastqOutputDir.toPath());
   }
 
   /**
    * Add all the sample from a Bclfastq samplesheet.
+   *
    * @param samplesheet The Bcl2fastq samplesheet object
    * @param projectName name of the project
    * @param bcl2fastqOutputDir the output directory of Bcl2fastq demultiplexing
-   * @throws EoulsanException if an error occurs while adding the Bcl2fastq
-   *           samplesheet
+   * @throws EoulsanException if an error occurs while adding the Bcl2fastq samplesheet
    */
-  public void addBcl2FastqSamplesheetProject(final SampleSheet samplesheet,
-      final String projectName, final Path bcl2fastqOutputDir)
+  public void addBcl2FastqSamplesheetProject(
+      final SampleSheet samplesheet, final String projectName, final Path bcl2fastqOutputDir)
       throws EoulsanException {
 
     if (samplesheet == null || bcl2fastqOutputDir == null) {
@@ -460,12 +467,11 @@ public class DesignBuilder {
 
     if (!Files.exists(bcl2fastqOutputDir) || !Files.isDirectory(bcl2fastqOutputDir)) {
       throw new EoulsanException(
-          "The Bcl2fastq output directory does not exists: "
-              + bcl2fastqOutputDir);
+          "The Bcl2fastq output directory does not exists: " + bcl2fastqOutputDir);
     }
 
-    final boolean Bcl2Fastq1 = Files.isDirectory(
-        Path.of(bcl2fastqOutputDir.toString() + "/Project_" + projectName));
+    final boolean Bcl2Fastq1 =
+        Files.isDirectory(Path.of(bcl2fastqOutputDir.toString() + "/Project_" + projectName));
 
     for (fr.ens.biologie.genomique.kenetre.illumina.samplesheet.Sample sample : samplesheet) {
 
@@ -478,8 +484,7 @@ public class DesignBuilder {
 
       // Check if sample id field exist for sample
       if (sampleId == null) {
-        throw new EoulsanException(
-            "No sample Id field found for sample: " + sample);
+        throw new EoulsanException("No sample Id field found for sample: " + sample);
       }
 
       final String samplePrefix = sampleName == null ? sampleId : sampleName;
@@ -490,8 +495,13 @@ public class DesignBuilder {
       }
       Path dataDir;
       if (Bcl2Fastq1) {
-        dataDir = Path.of(bcl2fastqOutputDir.toString()
-            + "/Project_" + sampleProject + "/Sample_" + sampleId);
+        dataDir =
+            Path.of(
+                bcl2fastqOutputDir.toString()
+                    + "/Project_"
+                    + sampleProject
+                    + "/Sample_"
+                    + sampleId);
       } else {
 
         dataDir = bcl2fastqOutputDir.resolve(sampleProject);
@@ -508,23 +518,25 @@ public class DesignBuilder {
         continue;
       }
 
-      final String laneKey =
-          sampleLane == -1 ? "_L" : String.format("_L%03d_", sampleLane);
+      final String laneKey = sampleLane == -1 ? "_L" : String.format("_L%03d_", sampleLane);
 
       // List the input FASTQ files
-      final File[] files = dataDir.toFile().listFiles(f -> {
+      final File[] files =
+          dataDir
+              .toFile()
+              .listFiles(
+                  f -> {
+                    final String filename =
+                        StringUtils.filenameWithoutCompressionExtension(f.getName());
 
-        final String filename =
-            StringUtils.filenameWithoutCompressionExtension(f.getName());
+                    if ((filename.endsWith(".fastq") || filename.endsWith(".fq"))
+                        && filename.contains(laneKey)
+                        && samplePrefix.equals(parseSampleNameFromFilename(filename))) {
+                      return true;
+                    }
 
-        if ((filename.endsWith(".fastq") || filename.endsWith(".fq"))
-            && filename.contains(laneKey)
-            && samplePrefix.equals(parseSampleNameFromFilename(filename))) {
-          return true;
-        }
-
-        return false;
-      });
+                    return false;
+                  });
 
       // Sort the list of input FASTQ files
       Arrays.sort(files);
@@ -542,44 +554,53 @@ public class DesignBuilder {
         }
 
         try {
-          list.add(new FastqEntry(new DataFile(fastqFile), normalizedSampleId,
-              samplePrefix, sampleDesc, sampleOperator));
+          list.add(
+              new FastqEntry(
+                  new DataFile(fastqFile),
+                  normalizedSampleId,
+                  samplePrefix,
+                  sampleDesc,
+                  sampleOperator));
         } catch (EmptyFastqException e) {
           getLogger().warning(e.getMessage());
         }
       }
     }
-
   }
 
   /**
    * Add all the samples from a Bcl2Fastq samplesheet.
+   *
    * @param samplesheetFile the path to the Casava design
    * @param projectName the name of the project
    * @throws EoulsanException if an error occurs while reading the Casava design
    */
-  public void addBcl2FastqSamplesheetProject(final File samplesheetFile,
-      final String projectName) throws EoulsanException {
+  public void addBcl2FastqSamplesheetProject(final File samplesheetFile, final String projectName)
+      throws EoulsanException {
 
     addBcl2FastqSamplesheetProject(samplesheetFile.toPath(), projectName);
   }
 
   /**
    * Add all the samples from a Bcl2Fastq samplesheet.
+   *
    * @param samplesheetFile the path to the Casava design
    * @param projectName the name of the project
    * @throws EoulsanException if an error occurs while reading the Casava design
    */
-  public void addBcl2FastqSamplesheetProject(final Path samplesheetFile,
-      final String projectName) throws EoulsanException {
+  public void addBcl2FastqSamplesheetProject(final Path samplesheetFile, final String projectName)
+      throws EoulsanException {
 
     if (samplesheetFile == null) {
       return;
     }
 
-    getLogger().info("Add Bcl2fastq samplesheet file "
-        + samplesheetFile + " to design with " + (projectName == null
-            ? "no project filter." : projectName + " project filter."));
+    getLogger()
+        .info(
+            "Add Bcl2fastq samplesheet file "
+                + samplesheetFile
+                + " to design with "
+                + (projectName == null ? "no project filter." : projectName + " project filter."));
 
     final Path baseDir;
     final Path file;
@@ -592,22 +613,24 @@ public class DesignBuilder {
     if (Files.isDirectory(samplesheetFile)) {
       baseDir = samplesheetFile;
 
-      final File[] files = baseDir.toFile().listFiles((dir, filename) -> {
-        if (filename.endsWith(".csv")) {
-          return true;
-        }
-        return false;
-      });
+      final File[] files =
+          baseDir
+              .toFile()
+              .listFiles(
+                  (dir, filename) -> {
+                    if (filename.endsWith(".csv")) {
+                      return true;
+                    }
+                    return false;
+                  });
 
       if (files == null || files.length == 0) {
-        throw new EoulsanException(
-            "No Bcl2fastq samplesheet file found in directory: " + baseDir);
+        throw new EoulsanException("No Bcl2fastq samplesheet file found in directory: " + baseDir);
       }
 
       if (files.length > 1) {
         throw new EoulsanException(
-            "More than one Bcl2fastq samplesheet found in directory: "
-                + baseDir);
+            "More than one Bcl2fastq samplesheet found in directory: " + baseDir);
       }
 
       file = files[0].toPath();
@@ -625,6 +648,7 @@ public class DesignBuilder {
 
   /**
    * Create design object.
+   *
    * @param pairedEndMode true if the paired end mode is enabled
    * @return a new Design object
    * @throws EoulsanException if an error occurs while analyzing input files
@@ -634,8 +658,7 @@ public class DesignBuilder {
     final Design result = DesignFactory.createEmptyDesign();
     result.addExperiment("exp1");
 
-    final FastqFormat defaultFastqFormat =
-        EoulsanRuntime.getSettings().getDefaultFastqFormat();
+    final FastqFormat defaultFastqFormat = EoulsanRuntime.getSettings().getDefaultFastqFormat();
 
     for (Map.Entry<String, List<FastqEntry>> e : this.fastqMap.entrySet()) {
 
@@ -653,10 +676,10 @@ public class DesignBuilder {
 
         if (pairedEndMode) {
 
-          final String finalSampleId = files.size() == 1
-              ? sampleId : sampleId + StringUtils.toLetter(count);
-          final String finalSampleName = files.size() == 1
-              ? sampleName : sampleName + StringUtils.toLetter(count);
+          final String finalSampleId =
+              files.size() == 1 ? sampleId : sampleId + StringUtils.toLetter(count);
+          final String finalSampleName =
+              files.size() == 1 ? sampleName : sampleName + StringUtils.toLetter(count);
 
           // Convert the list of DataFiles to a list of filenames
           final List<String> filenames = new ArrayList<>();
@@ -664,28 +687,43 @@ public class DesignBuilder {
             filenames.add(fe.path.getSource());
           }
 
-          addSample(result, finalSampleId, finalSampleName, desc, condition,
-              date, operator, defaultFastqFormat, filenames, fes.get(0).path);
+          addSample(
+              result,
+              finalSampleId,
+              finalSampleName,
+              desc,
+              condition,
+              date,
+              operator,
+              defaultFastqFormat,
+              filenames,
+              fes.get(0).path);
           count++;
 
         } else {
 
           for (FastqEntry fe : fes) {
 
-            final String finalSampleId = e.getValue().size() == 1
-                ? sampleId : sampleId + StringUtils.toLetter(count);
-            final String finalSampleName = e.getValue().size() == 1
-                ? sampleName : sampleName + StringUtils.toLetter(count);
+            final String finalSampleId =
+                e.getValue().size() == 1 ? sampleId : sampleId + StringUtils.toLetter(count);
+            final String finalSampleName =
+                e.getValue().size() == 1 ? sampleName : sampleName + StringUtils.toLetter(count);
 
-            addSample(result, finalSampleId, finalSampleName, desc, condition,
-                date, operator, defaultFastqFormat,
-                Collections.singletonList(fe.path.getSource()), fe.path);
+            addSample(
+                result,
+                finalSampleId,
+                finalSampleName,
+                desc,
+                condition,
+                date,
+                operator,
+                defaultFastqFormat,
+                Collections.singletonList(fe.path.getSource()),
+                fe.path);
             count++;
           }
-
         }
       }
-
     }
 
     return result;
@@ -693,6 +731,7 @@ public class DesignBuilder {
 
   /**
    * Add a Sample to the Design object
+   *
    * @param design Design object
    * @param sampleId the id of the sample
    * @param sampleName the name of the sample
@@ -705,11 +744,18 @@ public class DesignBuilder {
    * @param fileToCheck DataFile of the file to use to check fastq format
    * @throws EoulsanException if an error occurs while adding the sample
    */
-  private void addSample(final Design design, final String sampleId,
-      final String sampleName, final String desc, final String condition,
-      final String date, final String operator,
-      final FastqFormat defaultFastqFormat, final List<String> filenames,
-      final DataFile fileToCheck) throws EoulsanException {
+  private void addSample(
+      final Design design,
+      final String sampleId,
+      final String sampleName,
+      final String desc,
+      final String condition,
+      final String date,
+      final String operator,
+      final FastqFormat defaultFastqFormat,
+      final List<String> filenames,
+      final DataFile fileToCheck)
+      throws EoulsanException {
 
     if (design == null) {
       return;
@@ -763,8 +809,7 @@ public class DesignBuilder {
 
     // Set additional annotation file
     if (this.additionalAnnotationFile != null) {
-      design.getMetadata().setAdditionalAnnotationFile(
-          this.additionalAnnotationFile.toString());
+      design.getMetadata().setAdditionalAnnotationFile(this.additionalAnnotationFile.toString());
     }
 
     // Identify Fastq format
@@ -772,8 +817,7 @@ public class DesignBuilder {
 
     try {
       getLogger().info("Check fastq format for " + fileToCheck);
-      format = FastqFormat.identifyFormat(fileToCheck.open(),
-          MAX_FASTQ_ENTRIES_TO_READ);
+      format = FastqFormat.identifyFormat(fileToCheck.open(), MAX_FASTQ_ENTRIES_TO_READ);
     } catch (IOException | BadBioEntryException e) {
       throw new EoulsanException(e);
     }
@@ -796,8 +840,8 @@ public class DesignBuilder {
     es.getMetadata().setReference(false);
   }
 
-  private boolean isDataFormatExtension(final DataFormat dataFormat,
-      final String extension, final DataFileMetadata md) {
+  private boolean isDataFormatExtension(
+      final DataFormat dataFormat, final String extension, final DataFileMetadata md) {
 
     if (md != null && md.getDataFormat() != null) {
       return dataFormat.equals(md.getDataFormat());
@@ -815,12 +859,13 @@ public class DesignBuilder {
 
   /**
    * Group paired end files.
+   *
    * @return a list of 1-2 paired end files
-   * @throws EoulsanException if an error occurs while getting the id of first
-   *           read of the fastq files
+   * @throws EoulsanException if an error occurs while getting the id of first read of the fastq
+   *     files
    */
-  private List<List<FastqEntry>> findPairedEndFiles(
-      final List<FastqEntry> files) throws EoulsanException {
+  private List<List<FastqEntry>> findPairedEndFiles(final List<FastqEntry> files)
+      throws EoulsanException {
 
     final Map<String, List<FastqEntry>> mapPrefix = new HashMap<>();
     final Map<FastqEntry, Integer> mapPaired = new HashMap<>();
@@ -858,18 +903,15 @@ public class DesignBuilder {
         final int member2 = mapPaired.get(list.get(1));
 
         if (member1 == member2) {
-          throw new EoulsanException(
-              "Found two files with the same pair member: " + list);
+          throw new EoulsanException("Found two files with the same pair member: " + list);
         }
 
         if (member1 < 1 || member1 > 2) {
-          throw new EoulsanException(
-              "Invalid pair member for file: " + list.get(0));
+          throw new EoulsanException("Invalid pair member for file: " + list.get(0));
         }
 
         if (member2 < 1 || member2 > 2) {
-          throw new EoulsanException(
-              "Invalid pair member for file: " + list.get(1));
+          throw new EoulsanException("Invalid pair member for file: " + list.get(1));
         }
 
         // Change the order of the file if necessary
@@ -880,7 +922,6 @@ public class DesignBuilder {
           list.set(1, tmp);
         }
       }
-
     }
 
     return result;
@@ -888,6 +929,7 @@ public class DesignBuilder {
 
   /**
    * Parse the sample name from its filename.
+   *
    * @param filename the filename to parse
    * @return the sample name
    */
@@ -897,8 +939,7 @@ public class DesignBuilder {
       return null;
     }
 
-    final List<String> list =
-        new ArrayList<>(Arrays.asList(filename.split("_")));
+    final List<String> list = new ArrayList<>(Arrays.asList(filename.split("_")));
 
     final int size = list.size();
 
@@ -925,15 +966,16 @@ public class DesignBuilder {
 
   /**
    * Get the sample sub directory.
+   *
    * @param sampleId sample identifier
    * @param sampleName sample name
    * @return the sample sub directory or an empty string
    */
-  public static String defineSampleSubDirName(final String sampleId,
-      final String sampleName) {
+  public static String defineSampleSubDirName(final String sampleId, final String sampleName) {
 
     if (sampleId != null
-        && !"".equals(sampleId.trim()) && sampleName != null
+        && !"".equals(sampleId.trim())
+        && sampleName != null
         && !"".equals(sampleName.trim())) {
       return sampleId.trim();
     }
@@ -945,21 +987,17 @@ public class DesignBuilder {
   // Constructor
   //
 
-  /**
-   * Public constructor.
-   */
-  public DesignBuilder() {
-  }
+  /** Public constructor. */
+  public DesignBuilder() {}
 
   /**
    * Public constructor.
+   *
    * @param filenames filenames to add
-   * @throws EoulsanException if a file to add to the design does not exist or
-   *           is not handled
+   * @throws EoulsanException if a file to add to the design does not exist or is not handled
    */
   public DesignBuilder(final String[] filenames) throws EoulsanException {
 
     addFiles(filenames);
   }
-
 }

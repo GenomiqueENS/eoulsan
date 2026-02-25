@@ -24,6 +24,7 @@
 
 /**
  * This package contains and define data storages.
+ *
  * @since 1.2
  */
 package fr.ens.biologie.genomique.eoulsan.data.storages;

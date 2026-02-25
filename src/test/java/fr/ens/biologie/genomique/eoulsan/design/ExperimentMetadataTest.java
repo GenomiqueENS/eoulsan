@@ -105,7 +105,5 @@ public class ExperimentMetadataTest {
     assertEquals("toto", em.getContrastFile());
     // test containsContrastFile
     assertTrue(em.containsContrastFile());
-
   }
-
 }

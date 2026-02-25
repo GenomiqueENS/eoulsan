@@ -31,16 +31,7 @@ import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.HadoopMap
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAMHeaderHadoopUtils.createSAMSequenceDictionaryFromSAMHeader;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAMHeaderHadoopUtils.loadSAMHeaders;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Reducer;
-
 import com.google.common.base.Joiner;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -54,9 +45,16 @@ import fr.ens.biologie.genomique.kenetre.bio.alignmentfilter.ReadAlignmentFilter
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMLineParser;
 import htsjdk.samtools.SAMRecord;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
 
 /**
  * This class define a reducer for alignments filtering.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -76,8 +74,7 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
   private final List<SAMRecord> records = new ArrayList<>();
 
   @Override
-  protected void setup(final Context context)
-      throws IOException, InterruptedException {
+  protected void setup(final Context context) throws IOException, InterruptedException {
 
     EoulsanLogger.initConsoleHandler();
     getLogger().info("Start of setup()");
@@ -98,17 +95,17 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
 
     // Set the filters
     try {
-      final MultiReadAlignmentFilterBuilder mrafb =
-          new MultiReadAlignmentFilterBuilder();
+      final MultiReadAlignmentFilterBuilder mrafb = new MultiReadAlignmentFilterBuilder();
 
       // Add the parameters from the job configuration to the builder
-      mrafb.addParameters(
-          jobConfToParameters(conf, MAP_FILTER_PARAMETER_KEY_PREFIX));
+      mrafb.addParameters(jobConfToParameters(conf, MAP_FILTER_PARAMETER_KEY_PREFIX));
 
-      this.filter = mrafb.getAlignmentFilter(
-          new HadoopReporterIncrementer(context), this.counterGroup);
-      getLogger().info("Read alignments filters to apply: "
-          + Joiner.on(", ").join(this.filter.getFilterNames()));
+      this.filter =
+          mrafb.getAlignmentFilter(new HadoopReporterIncrementer(context), this.counterGroup);
+      getLogger()
+          .info(
+              "Read alignments filters to apply: "
+                  + Joiner.on(", ").join(this.filter.getFilterNames()));
 
     } catch (KenetreException e) {
       throw new IOException(e);
@@ -124,24 +121,23 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
     }
 
     // Set the sequences sizes in the parser
-    this.parser.getFileHeader().setSequenceDictionary(
-        createSAMSequenceDictionaryFromSAMHeader(samHeader));
+    this.parser
+        .getFileHeader()
+        .setSequenceDictionary(createSAMSequenceDictionaryFromSAMHeader(samHeader));
 
     getLogger().info("End of setup()");
   }
 
   /**
-   * 'key': identifier of the aligned read, without the integer indicating the
-   * pair member if data are in paired-end mode. 'value': alignments without the
-   * identifier part of the SAM line.
+   * 'key': identifier of the aligned read, without the integer indicating the pair member if data
+   * are in paired-end mode. 'value': alignments without the identifier part of the SAM line.
    */
   @Override
-  protected void reduce(final Text key, final Iterable<Text> values,
-      final Context context) throws IOException, InterruptedException {
+  protected void reduce(final Text key, final Iterable<Text> values, final Context context)
+      throws IOException, InterruptedException {
 
     // Creation of a buffer object to store alignments with the same read name
-    final ReadAlignmentFilterBuffer rafb =
-        new ReadAlignmentFilterBuffer(this.filter);
+    final ReadAlignmentFilterBuffer rafb = new ReadAlignmentFilterBuffer(this.filter);
 
     int cptRecords = 0;
     String strRecord = null;
@@ -152,13 +148,11 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
       cptRecords++;
       strRecord = key.toString() + val.toString();
       rafb.addAlignment(this.parser.parseLine(strRecord));
-
     }
 
     this.records.addAll(rafb.getFilteredAlignments());
     context
-        .getCounter(this.counterGroup,
-            ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName())
+        .getCounter(this.counterGroup, ALIGNMENTS_REJECTED_BY_FILTERS_COUNTER.counterName())
         .increment(cptRecords - this.records.size());
 
     // sort alignments of the current read
@@ -180,9 +174,9 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
       context.write(this.outKey, this.outValue);
 
       // Increment the counter
-      context.getCounter(this.counterGroup,
-          OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName()).increment(1);
+      context
+          .getCounter(this.counterGroup, OUTPUT_FILTERED_ALIGNMENTS_COUNTER.counterName())
+          .increment(1);
     }
-
   }
 }

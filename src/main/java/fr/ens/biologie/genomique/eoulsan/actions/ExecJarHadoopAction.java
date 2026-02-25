@@ -26,12 +26,19 @@ package fr.ens.biologie.genomique.eoulsan.actions;
 
 import static java.util.Objects.requireNonNull;
 
+import fr.ens.biologie.genomique.eoulsan.Common;
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
+import fr.ens.biologie.genomique.eoulsan.Main;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.Executor;
+import fr.ens.biologie.genomique.eoulsan.core.workflow.ExecutorArguments;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -43,17 +50,9 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
-import fr.ens.biologie.genomique.eoulsan.Common;
-import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.HadoopEoulsanRuntime;
-import fr.ens.biologie.genomique.eoulsan.Main;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.Executor;
-import fr.ens.biologie.genomique.eoulsan.core.workflow.ExecutorArguments;
-import fr.ens.biologie.genomique.kenetre.util.StringUtils;
-
 /**
  * This class define an action that allow to execute a jar on an Hadoop cluster.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -64,8 +63,11 @@ public class ExecJarHadoopAction extends AbstractAction {
 
   private static class HadoopExecutorArguments extends ExecutorArguments {
 
-    public HadoopExecutorArguments(final long millisSinceEpoch,
-        final Path paramPath, final Path designPath, final Path destPath) {
+    public HadoopExecutorArguments(
+        final long millisSinceEpoch,
+        final Path paramPath,
+        final Path designPath,
+        final Path destPath) {
       super(millisSinceEpoch);
 
       final Path outputPath = designPath.getParent();
@@ -74,8 +76,7 @@ public class ExecJarHadoopAction extends AbstractAction {
       final Path workingPath = new Path(jobPath, "working");
       final Path taskPath = new Path(jobPath, "tasks");
       final Path tmpDir = new Path(jobPath, "tmp");
-      final Path dataPath =
-          new Path(outputPath, Globals.APP_NAME_LOWER_CASE + "-data");
+      final Path dataPath = new Path(outputPath, Globals.APP_NAME_LOWER_CASE + "-data");
 
       // Set log pathname
       setJobPathname(jobPath.toString());
@@ -104,7 +105,6 @@ public class ExecJarHadoopAction extends AbstractAction {
       // Set the temporary directory
       setTemporaryPathname(tmpDir.toString());
     }
-
   }
 
   @Override
@@ -140,8 +140,7 @@ public class ExecJarHadoopAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[0]), true);
+      final CommandLine line = parser.parse(options, arguments.toArray(new String[0]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -171,8 +170,7 @@ public class ExecJarHadoopAction extends AbstractAction {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e,
-          "Error while parsing command line arguments: " + e.getMessage());
+      Common.errorExit(e, "Error while parsing command line arguments: " + e.getMessage());
     }
 
     if (arguments.size() != argsOptions + 3) {
@@ -185,13 +183,18 @@ public class ExecJarHadoopAction extends AbstractAction {
     final String destPathname = convertS3URL(arguments.get(argsOptions + 2));
 
     // Execute program in hadoop mode
-    run(paramPathname, designPathname, destPathname, jobDescription,
-        jobEnvironment, millisSinceEpoch);
-
+    run(
+        paramPathname,
+        designPathname,
+        destPathname,
+        jobDescription,
+        jobEnvironment,
+        millisSinceEpoch);
   }
 
   /**
    * Convert a s3:// URL to a s3n:// URL
+   *
    * @param url input URL
    * @return converted URL
    */
@@ -206,6 +209,7 @@ public class ExecJarHadoopAction extends AbstractAction {
 
   /**
    * Create options for command line
+   *
    * @return an Options object
    */
   @SuppressWarnings("static-access")
@@ -218,38 +222,58 @@ public class ExecJarHadoopAction extends AbstractAction {
     options.addOption("h", "help", false, "display this help");
 
     // Description option
-    options.addOption(Option.builder("d").argName("description").hasArg()
-        .desc("job description").longOpt("jobdesc").get());
+    options.addOption(
+        Option.builder("d")
+            .argName("description")
+            .hasArg()
+            .desc("job description")
+            .longOpt("jobdesc")
+            .get());
 
     // Environment option
-    options.addOption(Option.builder("e").argName("environment").hasArg()
-        .desc("environment description").longOpt("envdesc").get());
+    options.addOption(
+        Option.builder("e")
+            .argName("environment")
+            .hasArg()
+            .desc("environment description")
+            .longOpt("envdesc")
+            .get());
 
     // UploadOnly option
     options.addOption("upload", false, "upload only");
 
     // Parent job creation time
-    options.addOption(Option.builder("p").argName("parent-job-time").hasArg()
-        .desc("parent job time").longOpt("parent-job").get());
+    options.addOption(
+        Option.builder("p")
+            .argName("parent-job-time")
+            .hasArg()
+            .desc("parent job time")
+            .longOpt("parent-job")
+            .get());
 
     return options;
   }
 
   /**
    * Show command line help.
+   *
    * @param options Options of the software
    */
   private static void help(final Options options) {
 
     // Show help message
-    final HelpFormatter formatter =
-        HelpFormatter.builder().setShowSince(false).get();
+    final HelpFormatter formatter = HelpFormatter.builder().setShowSince(false).get();
     try {
       formatter.printHelp(
           "hadoop -jar "
-              + Globals.APP_NAME_LOWER_CASE + ".jar  [options] " + ACTION_NAME
+              + Globals.APP_NAME_LOWER_CASE
+              + ".jar  [options] "
+              + ACTION_NAME
               + " workflow.xml design.txt hdfs://server/path",
-          "", options, "", false);
+          "",
+          options,
+          "",
+          false);
     } catch (IOException e) {
       Common.errorExit(e, "Error while creating help message.");
     }
@@ -263,6 +287,7 @@ public class ExecJarHadoopAction extends AbstractAction {
 
   /**
    * Run Eoulsan in hadoop mode
+   *
    * @param workflowPathname workflow file path
    * @param designPathname design file path
    * @param destPathname data path
@@ -270,9 +295,12 @@ public class ExecJarHadoopAction extends AbstractAction {
    * @param jobEnvironment job environment
    * @param millisSinceEpoch milliseconds since epoch
    */
-  private static void run(final String workflowPathname,
-      final String designPathname, final String destPathname,
-      final String jobDescription, final String jobEnvironment,
+  private static void run(
+      final String workflowPathname,
+      final String designPathname,
+      final String destPathname,
+      final String jobDescription,
+      final String jobEnvironment,
       final long millisSinceEpoch) {
 
     requireNonNull(workflowPathname, "workflowPathname is null");
@@ -298,8 +326,7 @@ public class ExecJarHadoopAction extends AbstractAction {
 
       // Get the Hadoop configuration object
       final Configuration conf =
-          ((HadoopEoulsanRuntime) EoulsanRuntime.getRuntime())
-              .getConfiguration();
+          ((HadoopEoulsanRuntime) EoulsanRuntime.getRuntime()).getConfiguration();
 
       // Define parameter URI
       final URI workflowURI;
@@ -337,14 +364,16 @@ public class ExecJarHadoopAction extends AbstractAction {
       }
 
       // Create ExecutionArgument object
-      final ExecutorArguments arguments = new HadoopExecutorArguments(
-          millisSinceEpoch, workflowPath, designPath, destPath);
+      final ExecutorArguments arguments =
+          new HadoopExecutorArguments(millisSinceEpoch, workflowPath, designPath, destPath);
       arguments.setJobDescription(desc);
       arguments.setJobEnvironment(env);
 
       // Create the log Files
-      Main.getInstance().createLogFiles(arguments.logPath(Globals.LOG_FILENAME),
-          arguments.logPath(Globals.OTHER_LOG_FILENAME));
+      Main.getInstance()
+          .createLogFiles(
+              arguments.logPath(Globals.LOG_FILENAME),
+              arguments.logPath(Globals.OTHER_LOG_FILENAME));
 
       // Create executor
       final Executor e = new Executor(arguments);
@@ -360,10 +389,8 @@ public class ExecJarHadoopAction extends AbstractAction {
       Common.errorExit(e, "Error: " + e.getMessage());
     } catch (Throwable e) {
 
-      Common.errorExit(e, "Error while executing "
-          + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
+      Common.errorExit(
+          e, "Error while executing " + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
     }
-
   }
-
 }

@@ -26,8 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.data.storages;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
-
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
 import fr.ens.biologie.genomique.kenetre.io.FileUtils;
@@ -35,9 +33,11 @@ import fr.ens.biologie.genomique.kenetre.log.GenericLogger;
 import fr.ens.biologie.genomique.kenetre.storage.AbstractFileGenomeDescStorage;
 import fr.ens.biologie.genomique.kenetre.storage.DataPath;
 import fr.ens.biologie.genomique.kenetre.storage.GenomeDescStorage;
+import java.io.IOException;
 
 /**
  * This class define a storage for genome description files using DataFile API.
+ *
  * @since 2.6
  * @author Laurent Jourdren
  */
@@ -91,13 +91,13 @@ public class DataFileGenomeDescStorage extends AbstractFileGenomeDescStorage {
 
   /**
    * Create a GenomeDescStorage
+   *
    * @param dir the path of the genome descriptions storage
    * @param logger to use
-   * @return a GenomeDescStorage object if the path contains an index storage or
-   *         null if no index storage is found
+   * @return a GenomeDescStorage object if the path contains an index storage or null if no index
+   *     storage is found
    */
-  public static GenomeDescStorage getInstance(final DataFile dir,
-      final GenericLogger logger) {
+  public static GenomeDescStorage getInstance(final DataFile dir, final GenericLogger logger) {
 
     requireNonNull(dir);
 
@@ -114,14 +114,14 @@ public class DataFileGenomeDescStorage extends AbstractFileGenomeDescStorage {
 
   /**
    * Protected constructor.
+   *
    * @param dir directory of the storage.
    * @param logger logger to use
    * @throws IOException if an error occurs while initializing the object
    */
-  protected DataFileGenomeDescStorage(final DataPath dir,
-      final GenericLogger logger) throws IOException {
+  protected DataFileGenomeDescStorage(final DataPath dir, final GenericLogger logger)
+      throws IOException {
 
     super(dir, logger);
   }
-
 }

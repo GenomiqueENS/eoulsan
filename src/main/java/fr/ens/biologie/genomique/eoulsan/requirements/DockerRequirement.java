@@ -27,19 +27,19 @@ package fr.ens.biologie.genomique.eoulsan.requirements;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Progress;
 import fr.ens.biologie.genomique.eoulsan.util.EoulsanDockerManager;
 import fr.ens.biologie.genomique.kenetre.util.process.DockerImageInstance;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class define a Docker requirement.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -68,22 +68,19 @@ public class DockerRequirement extends AbstractRequirement {
   }
 
   @Override
-  public void configure(final Set<Parameter> parameters)
-      throws EoulsanException {
+  public void configure(final Set<Parameter> parameters) throws EoulsanException {
 
     for (Parameter p : parameters) {
 
       switch (p.getName()) {
+        case DOCKER_IMAGE_PARAMETER:
+          this.dockerImage = p.getValue();
+          break;
 
-      case DOCKER_IMAGE_PARAMETER:
-        this.dockerImage = p.getValue();
-        break;
-
-      default:
-        super.configure(Collections.singleton(p));
-        break;
+        default:
+          super.configure(Collections.singleton(p));
+          break;
       }
-
     }
   }
 
@@ -91,8 +88,7 @@ public class DockerRequirement extends AbstractRequirement {
   public boolean isAvailable() {
 
     try {
-      return EoulsanDockerManager.getInstance().listImageTags()
-          .contains(this.dockerImage);
+      return EoulsanDockerManager.getInstance().listImageTags().contains(this.dockerImage);
     } catch (IOException e) {
       return false;
     }
@@ -104,8 +100,8 @@ public class DockerRequirement extends AbstractRequirement {
     try {
 
       // Create Docker connection
-      final DockerImageInstance connnection = EoulsanDockerManager.getInstance()
-          .createImageInstance(this.dockerImage);
+      final DockerImageInstance connnection =
+          EoulsanDockerManager.getInstance().createImageInstance(this.dockerImage);
 
       // Pull image
       connnection.pullImageIfNotExists(progress::setProgress);
@@ -114,10 +110,8 @@ public class DockerRequirement extends AbstractRequirement {
     }
 
     if (!isAvailable()) {
-      throw new EoulsanException(
-          "Unable to to pull Docker image: " + this.dockerImage);
+      throw new EoulsanException("Unable to to pull Docker image: " + this.dockerImage);
     }
-
   }
 
   //
@@ -126,31 +120,29 @@ public class DockerRequirement extends AbstractRequirement {
 
   /**
    * Create a new docker image as mandatory requirement.
+   *
    * @param dockerImage the docker image name.
    * @return a new Requirement object
-   * @throws EoulsanException if an error occurs while configuring the
-   *           requirement
+   * @throws EoulsanException if an error occurs while configuring the requirement
    */
-  public static Requirement newDockerRequirement(final String dockerImage)
-      throws EoulsanException {
+  public static Requirement newDockerRequirement(final String dockerImage) throws EoulsanException {
 
     return newDockerRequirement(dockerImage, false);
   }
 
   /**
    * Create a new docker image requirement.
+   *
    * @param dockerImage the docker image
    * @param optional true if the docker image is a mandatory requirement
    * @return a new Requirement object
-   * @throws EoulsanException if an error occurs while configuring the
-   *           requirement
+   * @throws EoulsanException if an error occurs while configuring the requirement
    */
-  public static Requirement newDockerRequirement(final String dockerImage,
-      final boolean optional) throws EoulsanException {
+  public static Requirement newDockerRequirement(final String dockerImage, final boolean optional)
+      throws EoulsanException {
 
     requireNonNull(dockerImage, "dockerImage argument cannot be null");
-    checkArgument(!dockerImage.trim().isEmpty(),
-        "dockerImage argument cannot be empty");
+    checkArgument(!dockerImage.trim().isEmpty(), "dockerImage argument cannot be empty");
 
     final Requirement result = new DockerRequirement();
 
@@ -173,5 +165,4 @@ public class DockerRequirement extends AbstractRequirement {
   public String toString() {
     return "Docker image: " + this.dockerImage;
   }
-
 }

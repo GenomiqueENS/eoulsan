@@ -28,6 +28,15 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanRuntime.getSettings;
 import static java.util.Objects.requireNonNull;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.Main;
+import fr.ens.biologie.genomique.eoulsan.design.Design;
+import fr.ens.biologie.genomique.eoulsan.design.Sample;
+import fr.ens.biologie.genomique.eoulsan.util.ClassPathResourceLoader;
+import fr.ens.biologie.genomique.eoulsan.util.FileResourceLoader;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.Utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -40,36 +49,23 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.Main;
-import fr.ens.biologie.genomique.eoulsan.design.Design;
-import fr.ens.biologie.genomique.eoulsan.design.Sample;
-import fr.ens.biologie.genomique.eoulsan.util.ClassPathResourceLoader;
-import fr.ens.biologie.genomique.eoulsan.util.FileResourceLoader;
-import fr.ens.biologie.genomique.kenetre.util.StringUtils;
-import fr.ens.biologie.genomique.kenetre.util.Utils;
-
 /**
- * this class register DataFormat to allow get the DataFormat of a file from its
- * filename.
+ * this class register DataFormat to allow get the DataFormat of a file from its filename.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
 public class DataFormatRegistry {
 
-  private static final String RESOURCE_PREFIX =
-      "META-INF/services/xmldataformats/";
+  private static final String RESOURCE_PREFIX = "META-INF/services/xmldataformats/";
   private static final String FORMAT_SUBDIR = "formats";
 
   private final Set<DataFormat> formats = new HashSet<>();
   private final Map<String, DataFormat> mapFormats = new HashMap<>();
 
   private boolean xmlServicesCurrentlyLoading;
-  private final Map<String, DataFormat> mapDesignMetadataKeyDataFormat =
-      new HashMap<>();
-  private final Map<String, DataFormat> mapSampleMetadataKeyDataFormat =
-      new HashMap<>();
+  private final Map<String, DataFormat> mapDesignMetadataKeyDataFormat = new HashMap<>();
+  private final Map<String, DataFormat> mapSampleMetadataKeyDataFormat = new HashMap<>();
 
   private static DataFormatRegistry instance;
 
@@ -77,10 +73,7 @@ public class DataFormatRegistry {
   // Inner classes
   //
 
-  /**
-   * This class define a resource loader for resource defined in the file
-   * system.
-   */
+  /** This class define a resource loader for resource defined in the file system. */
   private static final class DataFormatFileResourceLoader
       extends FileResourceLoader<XMLDataFormat> {
 
@@ -107,6 +100,7 @@ public class DataFormatRegistry {
 
     /**
      * Get the default format directory.
+     *
      * @return the default format directory
      */
     private static DataFile getDefaultFormatDirectory() {
@@ -126,6 +120,7 @@ public class DataFormatRegistry {
 
     /**
      * Constructor.
+     *
      * @param resourcePaths paths where searching for the resources.
      */
     public DataFormatFileResourceLoader(final List<String> resourcePaths) {
@@ -139,9 +134,7 @@ public class DataFormatRegistry {
     }
   }
 
-  /**
-   * This class define a resource loader for resource defined in the class path.
-   */
+  /** This class define a resource loader for resource defined in the class path. */
   private static final class DataFormatClassPathLoader
       extends ClassPathResourceLoader<XMLDataFormat> {
 
@@ -173,6 +166,7 @@ public class DataFormatRegistry {
 
   /**
    * Register a DataFormat.
+   *
    * @param df the DataFormat to register
    * @throws EoulsanException if the DataFormat is not valid
    */
@@ -183,6 +177,7 @@ public class DataFormatRegistry {
 
   /**
    * Register a DataFormat.
+   *
    * @param df the DataFormat to register
    * @param callFromConstructor true if method is call from constructor
    * @throws EoulsanException if the DataFormat is not valid
@@ -208,6 +203,7 @@ public class DataFormatRegistry {
 
   /**
    * Register DataFormats.
+   *
    * @param array Array with DataFormats to register
    * @throws EoulsanException if the DataFormat is not valid
    */
@@ -226,14 +222,14 @@ public class DataFormatRegistry {
       throws EoulsanException {
 
     if (df.getName() == null) {
-      throw new EoulsanException(
-          "The DataFormat " + df.getClass().getName() + " as no name.");
+      throw new EoulsanException("The DataFormat " + df.getClass().getName() + " as no name.");
     }
 
     if (!df.getName().toLowerCase(Globals.DEFAULT_LOCALE).trim().equals(df.getName())) {
       throw new EoulsanException(
           "The DataFormat name can't contains upper case character"
-              + df.getClass().getName() + " as no name.");
+              + df.getClass().getName()
+              + " as no name.");
     }
 
     for (DataFormat format : this.formats) {
@@ -247,8 +243,7 @@ public class DataFormatRegistry {
 
     if (prefix == null || "".equals(prefix)) {
       throw new EoulsanException(
-          "The prefix of a DataFormat can't be null or empty ("
-              + df.getName() + ")");
+          "The prefix of a DataFormat can't be null or empty (" + df.getName() + ")");
     }
 
     if (prefix.indexOf('\t') != -1) {
@@ -259,14 +254,12 @@ public class DataFormatRegistry {
     final List<String> extensions = df.getExtensions();
 
     if (extensions == null || extensions.size() == 0) {
-      throw new EoulsanException(
-          "The extensions of a DataFormat can't be null or empty.");
+      throw new EoulsanException("The extensions of a DataFormat can't be null or empty.");
     }
 
     if (df.getDefaultExtension() == null) {
       throw new EoulsanException(
-          "The no default extension is provided for DataFormat: "
-              + df.getName());
+          "The no default extension is provided for DataFormat: " + df.getName());
     }
 
     boolean defaultExtensionFound = false;
@@ -274,13 +267,11 @@ public class DataFormatRegistry {
     for (String suffix : df.getExtensions()) {
 
       if (suffix == null) {
-        throw new EoulsanException(
-            "The extension of a DataFormat can't be null");
+        throw new EoulsanException("The extension of a DataFormat can't be null");
       }
       if (suffix.indexOf('\t') != -1) {
         throw new EoulsanException(
-            "The extension of a DataFormat can't contains tab character: "
-                + suffix);
+            "The extension of a DataFormat can't contains tab character: " + suffix);
       }
 
       if (suffix.equals(df.getDefaultExtension())) {
@@ -292,47 +283,49 @@ public class DataFormatRegistry {
       if (this.mapFormats.containsKey(key)) {
         throw new EoulsanException(
             "The DataFormat registry already contains entry for prefix \""
-                + prefix + "\" and extension \"" + suffix + "\"");
+                + prefix
+                + "\" and extension \""
+                + suffix
+                + "\"");
       }
 
       if (!callFromConstructor) {
-        throw new EoulsanException("This DataFormat "
-            + df.getName()
-            + " is not registered as a spi service. Cannot register it.");
+        throw new EoulsanException(
+            "This DataFormat "
+                + df.getName()
+                + " is not registered as a spi service. Cannot register it.");
       }
 
       // Register DataFormat for design fields is necessary
       if (df.getSampleMetadataKeyName() != null) {
-        this.mapSampleMetadataKeyDataFormat.put(df.getSampleMetadataKeyName(),
-            df);
+        this.mapSampleMetadataKeyDataFormat.put(df.getSampleMetadataKeyName(), df);
       }
 
       // Register DataFormat for design fields is necessary
       if (df.getDesignMetadataKeyName() != null) {
-        this.mapDesignMetadataKeyDataFormat.put(df.getDesignMetadataKeyName(),
-            df);
+        this.mapDesignMetadataKeyDataFormat.put(df.getDesignMetadataKeyName(), df);
       }
 
       this.formats.add(df);
       this.mapFormats.put(key, df);
-
     }
 
     if (!defaultExtensionFound) {
-      throw new EoulsanException("The default extension of DataFormat \""
-          + df.getName() + "\" is not in the list of extensions.");
+      throw new EoulsanException(
+          "The default extension of DataFormat \""
+              + df.getName()
+              + "\" is not in the list of extensions.");
     }
-
   }
 
   /**
    * Get a DataFormat From a file prefix and extension
+   *
    * @param prefix the prefix of the file
    * @param extension the extension of the file without compression extension
    * @return a DataFormat or null if the DataFormat was not found
    */
-  public DataFormat getDataFormatFromFilename(final String prefix,
-      final String extension) {
+  public DataFormat getDataFormatFromFilename(final String prefix, final String extension) {
 
     if (prefix == null) {
       throw new NullPointerException("The prefix is null");
@@ -349,6 +342,7 @@ public class DataFormatRegistry {
 
   /**
    * Get the DataFormat of a file from its filename
+   *
    * @param filename the filename of the file
    * @return a DataFormat or null if the DataFormat was not found
    */
@@ -358,8 +352,7 @@ public class DataFormatRegistry {
       throw new NullPointerException("The filename is null");
     }
 
-    final String f =
-        StringUtils.filenameWithoutCompressionExtension(filename.trim());
+    final String f = StringUtils.filenameWithoutCompressionExtension(filename.trim());
 
     final int dotPos = f.lastIndexOf('.');
 
@@ -396,6 +389,7 @@ public class DataFormatRegistry {
 
   /**
    * Get a DataFormat from its name.
+   *
    * @param dataFormatName the name of the DataFormat to get
    * @return a DataFormat if found or null
    */
@@ -416,6 +410,7 @@ public class DataFormatRegistry {
 
   /**
    * Get a DataFormat from its alias.
+   *
    * @param dataFormatAlias the name of the DataFormat to get
    * @return a DataFormat if found or null
    */
@@ -431,7 +426,6 @@ public class DataFormatRegistry {
 
       if (dataFormatAlias.toLowerCase(Globals.DEFAULT_LOCALE).equals(alias)) {
         return df;
-
       }
     }
 
@@ -440,6 +434,7 @@ public class DataFormatRegistry {
 
   /**
    * Get DataFormat from an Galaxy format name.
+   *
    * @param formatName Galaxy name extension.
    * @return DataFormat
    */
@@ -455,8 +450,7 @@ public class DataFormatRegistry {
       // Parse Galaxy tool extension
       for (String galaxyFormatName : df.getGalaxyFormatNames()) {
 
-        if (formatName.toLowerCase(Globals.DEFAULT_LOCALE)
-            .equals(galaxyFormatName)) {
+        if (formatName.toLowerCase(Globals.DEFAULT_LOCALE).equals(galaxyFormatName)) {
           return df;
         }
       }
@@ -467,6 +461,7 @@ public class DataFormatRegistry {
 
   /**
    * Get a DataFormat from its alias.
+   *
    * @param name the name of the DataFormat to get
    * @return a DataFormat if found or null
    */
@@ -479,11 +474,11 @@ public class DataFormatRegistry {
 
   /**
    * Get a DataFormat from its Galaxy format name or its name or alias.
+   *
    * @param name the name of the DataFormat to get
    * @return a DataFormat if found or null
    */
-  public DataFormat getDataFormatFromGalaxyFormatNameOrNameOrAlias(
-      final String name) {
+  public DataFormat getDataFormatFromGalaxyFormatNameOrNameOrAlias(final String name) {
 
     DataFormat result = getDataFormatFromGalaxyFormatName(name);
 
@@ -492,6 +487,7 @@ public class DataFormatRegistry {
 
   /**
    * Get DataFormats from an extension.
+   *
    * @param extension the extension of the file without compression extension
    * @return a set of DataFormat
    */
@@ -517,6 +513,7 @@ public class DataFormatRegistry {
 
   /**
    * Get all the registered formats.
+   *
    * @return a set with all the registered formats
    */
   public Set<DataFormat> getAllFormats() {
@@ -526,6 +523,7 @@ public class DataFormatRegistry {
 
   /**
    * Get the DataFormat that define a metadata entry in the design file.
+   *
    * @param key the name of the metadata key
    * @return a DataFormat
    */
@@ -539,8 +537,8 @@ public class DataFormatRegistry {
   }
 
   /**
-   * Get the DataFormat that define a metadata entry of a sample in the design
-   * file.
+   * Get the DataFormat that define a metadata entry of a sample in the design file.
+   *
    * @param key the name of the metadata key
    * @return a DataFormat
    */
@@ -555,12 +553,13 @@ public class DataFormatRegistry {
 
   /**
    * Get the field name in a Design object that correspond to a dataformat.
+   *
    * @param design design object
    * @param dataformat dataformat to search
    * @return the field name if found or null
    */
-  public String getDesignMetadataKeyForDataFormat(final Design design,
-      final DataFormat dataformat) {
+  public String getDesignMetadataKeyForDataFormat(
+      final Design design, final DataFormat dataformat) {
 
     if (design == null || dataformat == null) {
       return null;
@@ -579,12 +578,13 @@ public class DataFormatRegistry {
 
   /**
    * Get the field name in a Sample object that correspond to a dataformat.
+   *
    * @param sample sample object
    * @param dataformat dataformat to search
    * @return the field name if found or null
    */
-  public String getSampleMetadataKeyForDataFormat(final Sample sample,
-      final DataFormat dataformat) {
+  public String getSampleMetadataKeyForDataFormat(
+      final Sample sample, final DataFormat dataformat) {
 
     if (sample == null || dataformat == null) {
       return null;
@@ -601,13 +601,10 @@ public class DataFormatRegistry {
     return null;
   }
 
-  /**
-   * Register all type defines by classes.
-   */
+  /** Register all type defines by classes. */
   private void registerAllClassServices() {
 
-    final Iterator<DataFormat> it =
-        ServiceLoader.load(DataFormat.class).iterator();
+    final Iterator<DataFormat> it = ServiceLoader.load(DataFormat.class).iterator();
 
     for (final DataFormat df : Utils.newIterable(it)) {
 
@@ -617,25 +614,20 @@ public class DataFormatRegistry {
         register(df, true);
 
       } catch (EoulsanException e) {
-        getLogger()
-            .warning("Cannot register " + df.getName() + ": " + e.getMessage());
+        getLogger().warning("Cannot register " + df.getName() + ": " + e.getMessage());
       }
     }
   }
 
-  /**
-   * Register all type defines by XML files.
-   */
+  /** Register all type defines by XML files. */
   private void registerAllXMLServices() {
 
     try {
 
       // Load XML formats from the Jar
-      DataFormatClassPathLoader formatClassLoader =
-          new DataFormatClassPathLoader();
+      DataFormatClassPathLoader formatClassLoader = new DataFormatClassPathLoader();
       formatClassLoader.reload();
-      final List<DataFormat> formats =
-          new ArrayList<>(formatClassLoader.loadAllResources());
+      final List<DataFormat> formats = new ArrayList<>(formatClassLoader.loadAllResources());
 
       // Load XML formats from external resources (files...)
       DataFormatFileResourceLoader formatFileLoader =
@@ -654,9 +646,7 @@ public class DataFormatRegistry {
     }
   }
 
-  /**
-   * Reload the list of the available data types.
-   */
+  /** Reload the list of the available data types. */
   public void reload() {
 
     registerAllClassServices();
@@ -675,6 +665,7 @@ public class DataFormatRegistry {
 
   /**
    * Get the singleton instance of DataFormatRegistry
+   *
    * @return the DataFormatRegistry singleton
    */
   public static synchronized DataFormatRegistry getInstance() {
@@ -693,10 +684,6 @@ public class DataFormatRegistry {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
-  private DataFormatRegistry() {
-  }
-
+  /** Private constructor. */
+  private DataFormatRegistry() {}
 }

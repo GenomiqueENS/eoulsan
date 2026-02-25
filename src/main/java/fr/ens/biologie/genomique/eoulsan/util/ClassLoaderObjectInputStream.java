@@ -6,8 +6,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
 
 /**
- * This class allow to use ObjectInputStream with a ClassLoader that is not the
- * default bootstrap ClassLoader. This is very useful is Hadoop mode.
+ * This class allow to use ObjectInputStream with a ClassLoader that is not the default bootstrap
+ * ClassLoader. This is very useful is Hadoop mode.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -32,8 +33,8 @@ public class ClassLoaderObjectInputStream extends ObjectInputStream {
   //
 
   /**
-   * Constructor, use the thread ClassLoader to load classes of objects to
-   * instantiate.
+   * Constructor, use the thread ClassLoader to load classes of objects to instantiate.
+   *
    * @param in input stream
    * @throws IOException if an I/O error occurs while reading stream header
    */
@@ -44,13 +45,13 @@ public class ClassLoaderObjectInputStream extends ObjectInputStream {
 
   /**
    * Constructor.
-   * @param classLoader ClassLoader to use to load classes of objects to
-   *          instantiate.
+   *
+   * @param classLoader ClassLoader to use to load classes of objects to instantiate.
    * @param in input stream
    * @throws IOException if an I/O error occurs while reading stream header
    */
-  public ClassLoaderObjectInputStream(final ClassLoader classLoader,
-      final InputStream in) throws IOException {
+  public ClassLoaderObjectInputStream(final ClassLoader classLoader, final InputStream in)
+      throws IOException {
 
     super(in);
 
@@ -60,5 +61,4 @@ public class ClassLoaderObjectInputStream extends ObjectInputStream {
 
     this.classLoader = classLoader;
   }
-
 }

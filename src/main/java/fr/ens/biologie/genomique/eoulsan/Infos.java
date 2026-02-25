@@ -3,6 +3,13 @@ package fr.ens.biologie.genomique.eoulsan;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
+import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
+import fr.ens.biologie.genomique.eoulsan.util.LinuxCpuInfo;
+import fr.ens.biologie.genomique.eoulsan.util.LinuxMemInfo;
+import fr.ens.biologie.genomique.kenetre.util.StringUtils;
+import fr.ens.biologie.genomique.kenetre.util.SystemUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileStore;
@@ -20,18 +27,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-
-import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
-import fr.ens.biologie.genomique.eoulsan.util.LinuxCpuInfo;
-import fr.ens.biologie.genomique.eoulsan.util.LinuxMemInfo;
-import fr.ens.biologie.genomique.kenetre.util.StringUtils;
-import fr.ens.biologie.genomique.kenetre.util.SystemUtils;
-
 /**
- * This class gathers information about Eoulsan configuration and system
- * environment.
+ * This class gathers information about Eoulsan configuration and system environment.
+ *
  * @author Laurent Jourdren
  * @since 2.3
  */
@@ -39,9 +37,7 @@ public class Infos {
 
   private static final String NOT_SET = "(Not set)";
 
-  /**
-   * This class define an info.
-   */
+  /** This class define an info. */
   public static class Info {
 
     private final String name;
@@ -49,6 +45,7 @@ public class Infos {
 
     /**
      * Get the name of the information
+     *
      * @return the name of the information
      */
     public String getName() {
@@ -57,6 +54,7 @@ public class Infos {
 
     /**
      * Get the value of the information
+     *
      * @return the value of the information
      */
     public List<String> getValues() {
@@ -69,6 +67,7 @@ public class Infos {
 
     /**
      * Get the maximal length of the values
+     *
      * @return the maximal length of the values
      */
     public int maxValueLength() {
@@ -109,8 +108,7 @@ public class Infos {
 
       Info that = (Info) obj;
 
-      return Objects.equals(this.name, that.name)
-          && Objects.equals(this.values, that.values);
+      return Objects.equals(this.name, that.name) && Objects.equals(this.values, that.values);
     }
 
     //
@@ -119,6 +117,7 @@ public class Infos {
 
     /**
      * Constructor.
+     *
      * @param name name of the info
      * @param value value of the info
      */
@@ -129,6 +128,7 @@ public class Infos {
 
     /**
      * Constructor.
+     *
      * @param name name of the info
      * @param value value of the info
      */
@@ -139,6 +139,7 @@ public class Infos {
 
     /**
      * Constructor.
+     *
      * @param name name of the info
      * @param value value of the info
      */
@@ -149,14 +150,15 @@ public class Infos {
 
     /**
      * Constructor.
+     *
      * @param name name of the info
      * @param value value of the info
      * @param defaultValue default value
      */
-    public Info(final String name, final String value,
-        final String defaultValue) {
+    public Info(final String name, final String value, final String defaultValue) {
 
-      this(name,
+      this(
+          name,
           value == null
               ? Collections.singletonList(defaultValue)
               : Collections.singletonList(value));
@@ -164,19 +166,19 @@ public class Infos {
 
     /**
      * Constructor.
+     *
      * @param name name of the info
      * @param values values of the info
      * @param defaultValue defaultValue
      */
-    public Info(final String name, final List<String> values,
-        final String defaultValue) {
+    public Info(final String name, final List<String> values, final String defaultValue) {
 
-      this(name,
-          values.isEmpty() ? Collections.singletonList(NOT_SET) : values);
+      this(name, values.isEmpty() ? Collections.singletonList(NOT_SET) : values);
     }
 
     /**
      * Constructor.
+     *
      * @param name name of the info
      * @param values values of the info
      */
@@ -191,8 +193,8 @@ public class Infos {
   }
 
   /**
-   * This class define a list of info. It just avoid too long code lines when
-   * creatig a new Info object and adding it to a List.
+   * This class define a list of info. It just avoid too long code lines when creatig a new Info
+   * object and adding it to a List.
    */
   private static class ListInfo {
 
@@ -204,6 +206,7 @@ public class Infos {
 
     /**
      * Add an info to the list.
+     *
      * @param name name of the info
      * @param value value of the info
      */
@@ -214,6 +217,7 @@ public class Infos {
 
     /**
      * Add an info to the list.
+     *
      * @param name name of the info
      * @param value value of the info
      */
@@ -224,6 +228,7 @@ public class Infos {
 
     /**
      * Add an info to the list.
+     *
      * @param name name of the info
      * @param value value of the info
      */
@@ -234,31 +239,27 @@ public class Infos {
 
     /**
      * Add an info to the list.
+     *
      * @param name name of the info
      * @param values values of the info
      * @param defaultValue default value
      */
-    public void add(final String name, final List<String> values,
-        final String defaultValue) {
+    public void add(final String name, final List<String> values, final String defaultValue) {
 
       this.infos.add(new Info(name, values, defaultValue));
-
     }
-
   }
 
-  /**
-   * This class implements a "df" like command based on the FileStore class.
-   */
+  /** This class implements a "df" like command based on the FileStore class. */
   private static class DiskFree {
 
     private final FileStore fileStore;
 
     /**
      * Get the capacity of the partition.
+     *
      * @return the capacity of the partition
-     * @throws IOException if an error occurs while getting information about
-     *           the partition
+     * @throws IOException if an error occurs while getting information about the partition
      */
     public long getCapacity() throws IOException {
       return this.fileStore.getTotalSpace();
@@ -266,9 +267,9 @@ public class Infos {
 
     /**
      * Get the number of bytes used of the partition.
+     *
      * @return the number of bytes used of the partition
-     * @throws IOException if an error occurs while getting information about
-     *           the partition
+     * @throws IOException if an error occurs while getting information about the partition
      */
     public long getUsed() throws IOException {
       return this.fileStore.getTotalSpace() - this.fileStore.getUsableSpace();
@@ -276,9 +277,9 @@ public class Infos {
 
     /**
      * Get the number of byte available of the partition.
+     *
      * @return the number of bytes used of the partition
-     * @throws IOException if an error occurs while getting information about
-     *           the partition
+     * @throws IOException if an error occurs while getting information about the partition
      */
     public long getAvailable() throws IOException {
       return this.fileStore.getUsableSpace();
@@ -286,10 +287,9 @@ public class Infos {
 
     /**
      * Get the usage of the partition in percent of the partition.
-     * @return the usage of the partition in percent of the partition as a
-     *         double
-     * @throws IOException if an error occurs while getting information about
-     *           the partition
+     *
+     * @return the usage of the partition in percent of the partition as a double
+     * @throws IOException if an error occurs while getting information about the partition
      */
     public double getPercentUsed() throws IOException {
 
@@ -298,10 +298,9 @@ public class Infos {
 
     /**
      * Get the usage of the partition in percent of the partition.
-     * @return the usage of the partition in percent of the partition as an
-     *         integer
-     * @throws IOException if an error occurs while getting information about
-     *           the partition
+     *
+     * @return the usage of the partition in percent of the partition as an integer
+     * @throws IOException if an error occurs while getting information about the partition
      */
     public double getIntPercentUsed() throws IOException {
 
@@ -310,28 +309,32 @@ public class Infos {
 
     /**
      * Get the description of the partition
+     *
      * @return the description of the partition
      */
     public String getDescription() {
       return this.fileStore.name()
-          + " : " + this.fileStore.type() + " : " + this.fileStore.toString();
+          + " : "
+          + this.fileStore.type()
+          + " : "
+          + this.fileStore.toString();
     }
 
     /**
      * Constructor.
+     *
      * @param file a file of the partition
-     * @throws IOException if an error occurs while getting information about
-     *           the partition
+     * @throws IOException if an error occurs while getting information about the partition
      */
     public DiskFree(final File file) throws IOException {
 
       this.fileStore = Files.getFileStore(file.toPath());
     }
-
   }
 
   /**
    * Log a list of Info.
+   *
    * @param level Log level
    * @param listInfos the list of info to log
    */
@@ -347,6 +350,7 @@ public class Infos {
 
   /**
    * Log a list of Info.
+   *
    * @param level Log level
    * @param info info to log
    */
@@ -357,12 +361,12 @@ public class Infos {
 
     final Logger logger = EoulsanLogger.getLogger();
 
-    logger.log(level,
-        info.getName() + ": " + StringUtils.join(info.getValues(), " "));
+    logger.log(level, info.getName() + ": " + StringUtils.join(info.getValues(), " "));
   }
 
   /**
    * Get information about the partition of a file.
+   *
    * @param partition a file in the partition
    * @return a Info object with disk free information
    * @throws IOException if en error occurs while getting disk information
@@ -371,15 +375,21 @@ public class Infos {
 
     DiskFree df = new DiskFree(partition);
 
-    return new Info(df.getDescription(),
+    return new Info(
+        df.getDescription(),
         StringUtils.sizeToHumanReadable(df.getCapacity())
-            + " capacity, " + StringUtils.sizeToHumanReadable(df.getUsed())
-            + " used, " + StringUtils.sizeToHumanReadable(df.getAvailable())
-            + " available, " + df.getIntPercentUsed() + "% used");
+            + " capacity, "
+            + StringUtils.sizeToHumanReadable(df.getUsed())
+            + " used, "
+            + StringUtils.sizeToHumanReadable(df.getAvailable())
+            + " available, "
+            + df.getIntPercentUsed()
+            + "% used");
   }
 
   /**
    * Return a list with Eoulsan software informations.
+   *
    * @param main Eoulsan Main object
    * @return a list with Info objects
    */
@@ -397,12 +407,13 @@ public class Infos {
     li.add(Globals.APP_NAME + " disscusion group", Globals.DISCUSSION_GROUP);
 
     // Startup script
-    li.add(Globals.APP_NAME + " Startup script",
-        (main.getLaunchScriptPath() == null
-            ? "(no startup script)" : main.getLaunchScriptPath()));
+    li.add(
+        Globals.APP_NAME + " Startup script",
+        (main.getLaunchScriptPath() == null ? "(no startup script)" : main.getLaunchScriptPath()));
 
     // Eoulsan installation directory
-    li.add(Globals.APP_NAME + " installation directory",
+    li.add(
+        Globals.APP_NAME + " installation directory",
         (main.getEoulsanDirectory() == null
             ? "(installation directory not found)"
             : main.getEoulsanDirectory().toString()));
@@ -412,6 +423,7 @@ public class Infos {
 
   /**
    * Return a list with command line informations.
+   *
    * @param main Eoulsan Main object
    * @return a list with Info objects
    */
@@ -436,8 +448,7 @@ public class Infos {
     // li.add("Classpath", main.getClassPath());
 
     // Log file
-    li.add("Log file", (main.getLogFileArgument() == null
-        ? NOT_SET : main.getLogFileArgument()));
+    li.add("Log file", (main.getLogFileArgument() == null ? NOT_SET : main.getLogFileArgument()));
 
     // Log level
     li.add("Log level", getLogger().getLevel().getName());
@@ -447,6 +458,7 @@ public class Infos {
 
   /**
    * Return a list with system informations.
+   *
    * @return a list with Info objects
    */
   public static List<Info> systemInfos() {
@@ -477,6 +489,7 @@ public class Infos {
 
   /**
    * Return a list with general configuration informations.
+   *
    * @param settings the Eoulsan settings
    * @return a list with Info objects
    */
@@ -489,11 +502,9 @@ public class Infos {
     li.add("User interface", settings.getUIName());
     li.add("Maximum local thread count", settings.getLocalThreadsNumber());
     li.add("Print stack trace", settings.isPrintStackTrace());
-    li.add("User defined temporary directory",
-        settings.isUserDefinedTempDirectory());
+    li.add("User defined temporary directory", settings.isUserDefinedTempDirectory());
     li.add("Temporary directory", settings.getTempDirectory());
-    li.add("Executable temporary directory",
-        settings.getExecutablesTempDirectory());
+    li.add("Executable temporary directory", settings.getExecutablesTempDirectory());
     li.add("Output type", settings.getOutputTreeType());
     li.add("Generate workflow image", settings.isSaveWorkflowImage());
 
@@ -502,6 +513,7 @@ public class Infos {
 
   /**
    * Return a list with modules and format informations.
+   *
    * @param settings the Eoulsan settings
    * @return a list with Info objects
    */
@@ -513,8 +525,7 @@ public class Infos {
     // Modules and formats
     li.add("Data format path", settings.getDataFormatPaths(), NOT_SET);
     li.add("Galaxy tools path", settings.getGalaxyToolPaths(), NOT_SET);
-    li.add("Data format count",
-        DataFormatRegistry.getInstance().getAllFormats().size());
+    li.add("Data format count", DataFormatRegistry.getInstance().getAllFormats().size());
 
     // TODO add Galaxy tools count
     // TODO add module count, version count
@@ -525,6 +536,7 @@ public class Infos {
 
   /**
    * Return a list with storage informations.
+   *
    * @param settings the Eoulsan settings
    * @return a list with Info objects
    */
@@ -534,14 +546,13 @@ public class Infos {
     ListInfo li = new ListInfo();
 
     li.add("Genome description path", settings.getGenomeDescStoragePath());
-    li.add("Genome mapper index storage path",
-        settings.getGenomeMapperIndexStoragePath());
+    li.add("Genome mapper index storage path", settings.getGenomeMapperIndexStoragePath());
     li.add("Genome storage path", settings.getGenomeStoragePath());
     li.add("GFF storage path", settings.getGFFStoragePath());
     li.add("GTF storage path", settings.getGTFStoragePath());
-    li.add("Additional annotation path",
-        settings.getAdditionalAnnotationStoragePath());
-    li.add("Hyperlinks conf file for additional annotation",
+    li.add("Additional annotation path", settings.getAdditionalAnnotationStoragePath());
+    li.add(
+        "Hyperlinks conf file for additional annotation",
         settings.getAdditionalAnnotationHypertextLinksPath());
 
     return li.getList();
@@ -549,6 +560,7 @@ public class Infos {
 
   /**
    * Return a list with cluster configuration informations.
+   *
    * @param settings the Eoulsan settings
    * @return a list with Info objects
    */
@@ -558,14 +570,15 @@ public class Infos {
     ListInfo li = new ListInfo();
 
     li.add("Cluster scheduler", settings.getClusterSchedulerName());
-    li.add("Default cluster memory required",
+    li.add(
+        "Default cluster memory required",
         settings.getDefaultClusterMemoryRequired() == -1
-            ? NOT_SET : "" + settings.getDefaultClusterMemoryRequired());
+            ? NOT_SET
+            : "" + settings.getDefaultClusterMemoryRequired());
 
     // HTCondor Concurency limit
     if (settings.getSetting("htcondor.concurrency.limits") != null) {
-      li.add("HTCondor concurrency limits",
-          settings.getSetting("htcondor.concurrency.limits"));
+      li.add("HTCondor concurrency limits", settings.getSetting("htcondor.concurrency.limits"));
     }
 
     return li.getList();
@@ -573,6 +586,7 @@ public class Infos {
 
   /**
    * Return a list with Hadoop configuration informations.
+   *
    * @param settings the Eoulsan settings
    * @return a list with Info objects
    */
@@ -591,6 +605,7 @@ public class Infos {
 
   /**
    * Return a list with cloud configuration informations.
+   *
    * @param settings the Eoulsan settings
    * @return a list with Info objects
    */
@@ -599,12 +614,19 @@ public class Infos {
     requireNonNull(settings, "settings argument cannot be null");
     ListInfo li = new ListInfo();
 
-    li.add("Hadoop AWS access key", settings.getAWSAccessKey() != null
-        ? Strings.repeat("X", settings.getAWSAccessKey().length()) : NOT_SET);
-    li.add("Hadoop AWS secret key", settings.getAWSSecretKey() != null
-        ? Strings.repeat("X", settings.getAWSSecretKey().length()) : NOT_SET);
+    li.add(
+        "Hadoop AWS access key",
+        settings.getAWSAccessKey() != null
+            ? Strings.repeat("X", settings.getAWSAccessKey().length())
+            : NOT_SET);
+    li.add(
+        "Hadoop AWS secret key",
+        settings.getAWSSecretKey() != null
+            ? Strings.repeat("X", settings.getAWSSecretKey().length())
+            : NOT_SET);
     li.add("Obfuscate design", settings.isObfuscateDesign());
-    li.add("Remove duplicate info when obfuscate design",
+    li.add(
+        "Remove duplicate info when obfuscate design",
         settings.isObfuscateDesignRemoveReplicateInfo());
 
     return li.getList();
@@ -612,6 +634,7 @@ public class Infos {
 
   /**
    * Return a list with email configuration informations.
+   *
    * @param settings the Eoulsan settings
    * @return a list with Info objects
    */
@@ -624,14 +647,14 @@ public class Infos {
     li.add("Send results to", settings.getResultMail());
     li.add("SMTP server", settings.getSMTPHost());
     Properties p = settings.getJavaMailSMTPProperties();
-    li.add("JavaMail configuration",
-        p == null || p.isEmpty() ? NOT_SET : p.toString());
+    li.add("JavaMail configuration", p == null || p.isEmpty() ? NOT_SET : p.toString());
 
     return li.infos;
   }
 
   /**
    * Return a list with R and Rserve configuration informations.
+   *
    * @param settings the Eoulsan settings
    * @return a list with Info objects
    */
@@ -650,6 +673,7 @@ public class Infos {
 
   /**
    * Return a list with Docker configuration informations.
+   *
    * @param settings the Eoulsan settings
    * @return a list with Info objects
    */
@@ -658,8 +682,11 @@ public class Infos {
     requireNonNull(settings, "settings argument cannot be null");
     ListInfo li = new ListInfo();
 
-    li.add("Docker connection", settings.getDockerConnectionURI() == null
-        ? NOT_SET : settings.getDockerConnectionURI().toString());
+    li.add(
+        "Docker connection",
+        settings.getDockerConnectionURI() == null
+            ? NOT_SET
+            : settings.getDockerConnectionURI().toString());
     li.add("Mount NFS roots in containers", settings.isDockerMountNFSRoots());
 
     return li.infos;
@@ -667,6 +694,7 @@ public class Infos {
 
   /**
    * Return a list with CPU informations.
+   *
    * @return a list with Info objects
    */
   public static List<Info> cpuInfo() {
@@ -682,8 +710,7 @@ public class Infos {
     final String cores = cpuinfo.getCores();
 
     li.add("CPU model name", (modelName == null ? "NA" : modelName));
-    li.add("CPU count", (processor == null
-        ? "NA" : "" + (Integer.parseInt(processor.trim()) + 1)));
+    li.add("CPU count", (processor == null ? "NA" : "" + (Integer.parseInt(processor.trim()) + 1)));
 
     li.add("CPU cores", (cores == null ? "NA" : cores));
     li.add("CPU clock", (cpuMHz == null ? "NA" : cpuMHz) + " MHz");
@@ -694,6 +721,7 @@ public class Infos {
 
   /**
    * Return a list with memory informations.
+   *
    * @return a list with Info objects
    */
   public static List<Info> memInfo() {
@@ -710,6 +738,7 @@ public class Infos {
 
   /**
    * Return a list with Docker configuration informations.
+   *
    * @param settings the Eoulsan settings
    * @return a list with Info objects
    */
@@ -719,8 +748,14 @@ public class Infos {
 
     Set<Info> set = new LinkedHashSet<>();
 
-    for (String p : new HashSet<>(Arrays.asList("/", "/tmp", "/var",
-        settings.getTempDirectory(), settings.getExecutablesTempDirectory()))) {
+    for (String p :
+        new HashSet<>(
+            Arrays.asList(
+                "/",
+                "/tmp",
+                "/var",
+                settings.getTempDirectory(),
+                settings.getExecutablesTempDirectory()))) {
 
       if (p != null) {
 
@@ -738,5 +773,4 @@ public class Infos {
 
     return new ArrayList<>(set);
   }
-
 }

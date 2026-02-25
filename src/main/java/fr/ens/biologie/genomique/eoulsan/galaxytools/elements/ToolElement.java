@@ -28,6 +28,7 @@ import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 
 /**
  * The ToolElement interface.
+ *
  * @author Sandrine Perrin
  * @since 2.0
  */
@@ -38,33 +39,37 @@ public interface ToolElement {
 
   /**
    * Gets the name.
+   *
    * @return the name
    */
   String getName();
 
   /**
    * Gets the short name.
+   *
    * @return the short name
    */
   String getShortName();
 
   /**
    * Gets the name which respect Eoulsan's syntax.
+   *
    * @return the name
    */
   String getValidatedName();
 
   /**
    * Gets the value.
+   *
    * @return the value
    */
   String getValue();
 
   /**
    * Sets the value.
+   *
    * @param value the value
    * @throws EoulsanException the eoulsan exception
    */
   void setValue(final String value) throws EoulsanException;
-
 }

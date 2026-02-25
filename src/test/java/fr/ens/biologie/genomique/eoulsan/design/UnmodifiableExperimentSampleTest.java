@@ -43,5 +43,4 @@ public class UnmodifiableExperimentSampleTest {
     // test ExperimentSampleMetadata
     assertNotNull(ues.getMetadata());
   }
-
 }

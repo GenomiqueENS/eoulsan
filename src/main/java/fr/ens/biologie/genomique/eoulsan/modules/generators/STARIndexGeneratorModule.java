@@ -32,15 +32,6 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.GENOME_FASTA;
 import static fr.ens.biologie.genomique.kenetre.io.FileUtils.computeMD5Sum;
 import static java.util.Objects.requireNonNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.Generator;
@@ -56,23 +47,32 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
 import fr.ens.biologie.genomique.eoulsan.data.MapperIndexDataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.protocols.DataProtocol;
 import fr.ens.biologie.genomique.eoulsan.data.protocols.StorageDataProtocol;
-import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.modules.expression.AbstractExpressionModule;
 import fr.ens.biologie.genomique.kenetre.bio.expressioncounter.HTSeqCounter;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.Mapper;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperBuilder;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.STARMapperProvider;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class define a module that generate a STAR mapper index.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -83,8 +83,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
   public static final String MODULE_NAME = "starindexgenerator";
 
   private final Mapper mapper =
-      new MapperBuilder(STARMapperProvider.MAPPER_NAME)
-          .withLogger(getGenericLogger()).build();
+      new MapperBuilder(STARMapperProvider.MAPPER_NAME).withLogger(getGenericLogger()).build();
 
   private Integer overhang = null;
   private boolean gtfFile;
@@ -119,12 +118,10 @@ public class STARIndexGeneratorModule extends AbstractModule {
   public InputPorts getInputPorts() {
 
     final InputPortsBuilder builder = new InputPortsBuilder();
-    builder.addPort("genome", GENOME_FASTA).addPort("genomedescription",
-        GENOME_DESC_TXT);
+    builder.addPort("genome", GENOME_FASTA).addPort("genomedescription", GENOME_DESC_TXT);
 
     if (this.gtfFile) {
-      builder.addPort("annotation",
-          this.gtfFormat ? ANNOTATION_GTF : ANNOTATION_GFF);
+      builder.addPort("annotation", this.gtfFormat ? ANNOTATION_GTF : ANNOTATION_GFF);
     }
 
     return builder.create();
@@ -132,106 +129,100 @@ public class STARIndexGeneratorModule extends AbstractModule {
 
   @Override
   public OutputPorts getOutputPorts() {
-    return OutputPortsBuilder
-        .singleOutputPort(new MapperIndexDataFormat(this.mapper));
+    return OutputPortsBuilder.singleOutputPort(new MapperIndexDataFormat(this.mapper));
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     if (stepParameters == null) {
-      throw new EoulsanException(
-          "No parameters set in " + getName() + " generator");
+      throw new EoulsanException("No parameters set in " + getName() + " generator");
     }
 
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
-
-      case "overhang":
-        this.overhang = p.getIntValueGreaterOrEqualsTo(1);
-        break;
-
-      case "gtf.file":
-        Modules.renamedParameter(context, p, "use.gtf.file");
-        // fall through
-      case "use.gtf.file":
-        this.gtfFile = p.getBooleanValue();
-        break;
-
-      case "file.chr.start.end":
-        this.chrStartEndFilename = p.getStringValue();
-        break;
-
-      case "gtf.feature.exon":
-        this.gtfFeatureExon = p.getStringValue();
-        break;
-
-      case "gtf.tag.exon.parent.transcript":
-        this.gtfTagExonParentTranscript = p.getStringValue();
-        break;
-
-      case "genome.sa.index.nbases":
-        this.genomeSAindexNbases = p.getIntValueGreaterOrEqualsTo(0);
-        break;
-
-      case "genome.chr.bin.nbits":
-        this.genomeChrBinNbits = p.getIntValueGreaterOrEqualsTo(0);
-        break;
-
-      case "use.expression.step.parameters":
-        this.useExpressionStepParameters = p.getBooleanValue();
-        break;
-
-      case "indexer.arguments":
-        this.indexerArguments = p.getStringValue();
-        break;
-
-      case "local.threads":
-        Modules.removedParameter(context, p);
-        break;
-
-      case "max.local.threads":
-        Modules.removedParameter(context, p);
-        break;
-
-      case "features.file.format":
-
-        switch (p.getLowerStringValue()) {
-
-        case "gtf":
-          this.gtfFormat = true;
+        case "overhang":
+          this.overhang = p.getIntValueGreaterOrEqualsTo(1);
           break;
 
-        case "gff":
-        case "gff3":
-          this.gtfFormat = false;
+        case "gtf.file":
+          Modules.renamedParameter(context, p, "use.gtf.file");
+        // fall through
+        case "use.gtf.file":
+          this.gtfFile = p.getBooleanValue();
+          break;
+
+        case "file.chr.start.end":
+          this.chrStartEndFilename = p.getStringValue();
+          break;
+
+        case "gtf.feature.exon":
+          this.gtfFeatureExon = p.getStringValue();
+          break;
+
+        case "gtf.tag.exon.parent.transcript":
+          this.gtfTagExonParentTranscript = p.getStringValue();
+          break;
+
+        case "genome.sa.index.nbases":
+          this.genomeSAindexNbases = p.getIntValueGreaterOrEqualsTo(0);
+          break;
+
+        case "genome.chr.bin.nbits":
+          this.genomeChrBinNbits = p.getIntValueGreaterOrEqualsTo(0);
+          break;
+
+        case "use.expression.step.parameters":
+          this.useExpressionStepParameters = p.getBooleanValue();
+          break;
+
+        case "indexer.arguments":
+          this.indexerArguments = p.getStringValue();
+          break;
+
+        case "local.threads":
+          Modules.removedParameter(context, p);
+          break;
+
+        case "max.local.threads":
+          Modules.removedParameter(context, p);
+          break;
+
+        case "features.file.format":
+          switch (p.getLowerStringValue()) {
+            case "gtf":
+              this.gtfFormat = true;
+              break;
+
+            case "gff":
+            case "gff3":
+              this.gtfFormat = false;
+              break;
+
+            default:
+              Modules.badParameterValue(context, p, "Unknown annotation file format");
+              break;
+          }
+
           break;
 
         default:
-          Modules.badParameterValue(context, p,
-              "Unknown annotation file format");
-          break;
-        }
-
-        break;
-
-      default:
-        throw new EoulsanException(
-            "Unknown parameter for " + getName() + " step: " + p.getName());
+          throw new EoulsanException(
+              "Unknown parameter for " + getName() + " step: " + p.getName());
       }
     }
   }
 
   /**
-   * Set the "gtf.feature.exon" and "gtf.tag.exon.parent.transcript" parameter
-   * from the expression step parameters.
+   * Set the "gtf.feature.exon" and "gtf.tag.exon.parent.transcript" parameter from the expression
+   * step parameters.
+   *
    * @param context the context of the task
    * @throws EoulsanException if more than one expression step exists
    */
-  private void searchExpressionStepParameters(final TaskContext context)
-      throws EoulsanException {
+  private void searchExpressionStepParameters(final TaskContext context) throws EoulsanException {
 
     int count = 0;
 
@@ -242,17 +233,16 @@ public class STARIndexGeneratorModule extends AbstractModule {
         for (Parameter p : step.getParameters()) {
 
           switch (p.getName()) {
+            case HTSeqCounter.GENOMIC_TYPE_PARAMETER_NAME:
+              gtfFeatureExon = p.getStringValue();
+              break;
 
-          case HTSeqCounter.GENOMIC_TYPE_PARAMETER_NAME:
-            gtfFeatureExon = p.getStringValue();
-            break;
+            case HTSeqCounter.ATTRIBUTE_ID_PARAMETER_NAME:
+              gtfTagExonParentTranscript = p.getStringValue();
+              break;
 
-          case HTSeqCounter.ATTRIBUTE_ID_PARAMETER_NAME:
-            gtfTagExonParentTranscript = p.getStringValue();
-            break;
-
-          default:
-            break;
+            default:
+              break;
           }
         }
         count++;
@@ -264,14 +254,12 @@ public class STARIndexGeneratorModule extends AbstractModule {
     }
 
     if (count > 1) {
-      throw new EoulsanException(
-          "Found more than one expression step in the workflow");
+      throw new EoulsanException("Found more than one expression step in the workflow");
     }
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     try {
 
@@ -287,13 +275,12 @@ public class STARIndexGeneratorModule extends AbstractModule {
       if (this.gtfFile) {
 
         // Get the annotation data
-        final Data annotationData = context
-            .getInputData(this.gtfFormat ? ANNOTATION_GTF : ANNOTATION_GFF);
+        final Data annotationData =
+            context.getInputData(this.gtfFormat ? ANNOTATION_GTF : ANNOTATION_GFF);
 
         // Get the annotation DataFile
         final DataFile gffFile = annotationData.getDataFile();
-        final File gffFilePath =
-            uncompressFileIfNecessary(context, temporaryFiles, gffFile);
+        final File gffFilePath = uncompressFileIfNecessary(context, temporaryFiles, gffFile);
 
         additionalArguments.append("--sjdbGTFfile");
         additionalArguments.append(' ');
@@ -317,8 +304,8 @@ public class STARIndexGeneratorModule extends AbstractModule {
         additionalArguments.append(' ');
         additionalArguments.append(this.gtfTagExonParentTranscript);
         additionalArguments.append(' ');
-        additionalDescription.put("sjdbGTFtagExonParentTranscript",
-            this.gtfTagExonParentTranscript);
+        additionalDescription.put(
+            "sjdbGTFtagExonParentTranscript", this.gtfTagExonParentTranscript);
       }
 
       if (this.gtfFeatureExon != null) {
@@ -335,8 +322,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
         DataFile chrStartEndFile = new DataFile(this.chrStartEndFilename);
 
         if (!chrStartEndFile.exists()) {
-          throw new IOException(
-              "Unable to read chromosome startend file: " + chrStartEndFile);
+          throw new IOException("Unable to read chromosome startend file: " + chrStartEndFile);
         }
 
         final File chrStartEndFilePath =
@@ -346,8 +332,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
         additionalArguments.append(' ');
         additionalArguments.append(chrStartEndFilePath.getAbsolutePath());
         additionalArguments.append(' ');
-        additionalDescription.put("sjdbFileChrStartEnd",
-            computeMD5Sum(chrStartEndFilePath));
+        additionalDescription.put("sjdbFileChrStartEnd", computeMD5Sum(chrStartEndFilePath));
       }
 
       if (this.genomeSAindexNbases != null) {
@@ -356,8 +341,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
         additionalArguments.append(' ');
         additionalArguments.append(this.genomeSAindexNbases.toString());
         additionalArguments.append(' ');
-        additionalDescription.put("genomeSAindexNbases",
-            this.genomeSAindexNbases.toString());
+        additionalDescription.put("genomeSAindexNbases", this.genomeSAindexNbases.toString());
       }
 
       if (this.genomeChrBinNbits != null) {
@@ -365,8 +349,7 @@ public class STARIndexGeneratorModule extends AbstractModule {
         additionalArguments.append(' ');
         additionalArguments.append(this.genomeChrBinNbits.toString());
         additionalArguments.append(' ');
-        additionalDescription.put("genomeChrBinNbits",
-            this.genomeChrBinNbits.toString());
+        additionalDescription.put("genomeChrBinNbits", this.genomeChrBinNbits.toString());
       }
 
       if (this.indexerArguments != null && !this.indexerArguments.isEmpty()) {
@@ -377,17 +360,15 @@ public class STARIndexGeneratorModule extends AbstractModule {
       status.setProgressMessage(this.mapper.getName() + " index creation");
 
       // Create the index
-      GenomeMapperIndexGeneratorModule.execute(this.mapper, context,
-          additionalArguments.toString(), additionalDescription);
+      GenomeMapperIndexGeneratorModule.execute(
+          this.mapper, context, additionalArguments.toString(), additionalDescription);
 
       // Remove temporary files
       for (File temporaryFile : temporaryFiles) {
 
         if (!temporaryFile.delete()) {
-          context.getLogger()
-              .warning("Cannot remove temporary file: " + temporaryFile);
+          context.getLogger().warning("Cannot remove temporary file: " + temporaryFile);
         }
-
       }
 
     } catch (IOException | EoulsanException e) {
@@ -404,21 +385,22 @@ public class STARIndexGeneratorModule extends AbstractModule {
 
   /**
    * Uncompress a file if compressed.
+   *
    * @param context the step context
    * @param temporaryFiles the list of temporary files
    * @param file the file to process
    * @return the absolute path of the file (once uncompressed or not)
    * @throws IOException if an error occurs while uncompressing the file
    */
-  private File uncompressFileIfNecessary(final TaskContext context,
-      List<File> temporaryFiles, final DataFile file) throws IOException {
+  private File uncompressFileIfNecessary(
+      final TaskContext context, List<File> temporaryFiles, final DataFile file)
+      throws IOException {
 
     requireNonNull(file, "file argument cannot be null");
 
     final File result;
 
-    if (file.getCompressionType() != CompressionType.NONE
-        || !file.isLocalFile()) {
+    if (file.getCompressionType() != CompressionType.NONE || !file.isLocalFile()) {
 
       // Uncompress file
       final File uncompressedFile = uncompressFile(context, file);
@@ -436,13 +418,13 @@ public class STARIndexGeneratorModule extends AbstractModule {
 
   /**
    * Uncompress a file to a temporary file.
+   *
    * @param context Step context
    * @param file file to uncompress
    * @return the path to the uncompressed file
    * @throws IOException if an error occurs while creating the uncompressed file
    */
-  private File uncompressFile(final TaskContext context, final DataFile file)
-      throws IOException {
+  private File uncompressFile(final TaskContext context, final DataFile file) throws IOException {
 
     requireNonNull(file, "file argument cannot be null");
 
@@ -458,15 +440,16 @@ public class STARIndexGeneratorModule extends AbstractModule {
     }
 
     final File outputFile =
-        Files.createTempFile(context.getLocalTempDirectory().toPath(),
-            MODULE_NAME + "-", realFile.getExtension()).toFile();
+        Files.createTempFile(
+                context.getLocalTempDirectory().toPath(),
+                MODULE_NAME + "-",
+                realFile.getExtension())
+            .toFile();
 
-    context.getLogger()
-        .fine("Uncompress/copy " + realFile + " to " + outputFile);
+    context.getLogger().fine("Uncompress/copy " + realFile + " to " + outputFile);
 
     DataFiles.copy(realFile, new DataFile(outputFile));
 
     return outputFile;
   }
-
 }

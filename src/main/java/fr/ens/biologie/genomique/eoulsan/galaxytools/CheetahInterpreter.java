@@ -26,23 +26,21 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.Splitter;
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.kenetre.util.GuavaCompatibility;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.python.core.PyDictionary;
 import org.python.core.PyObject;
 import org.python.core.PyString;
 import org.python.util.PythonInterpreter;
 
-import com.google.common.base.Splitter;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.kenetre.util.GuavaCompatibility;
-
 /**
- * This class create a Cheetah interpreter, it can build a command line tool
- * from command tag from Galaxy tool XML file.
+ * This class create a Cheetah interpreter, it can build a command line tool from command tag from
+ * Galaxy tool XML file.
+ *
  * @author Sandrine Perrin
  * @since 2.0
  */
@@ -67,10 +65,7 @@ public class CheetahInterpreter {
   // Inner class
   //
 
-  /**
-   * This class define a Python dictionary that __str__() returns can be
-   * defined.
-   */
+  /** This class define a Python dictionary that __str__() returns can be defined. */
   private static class PyStrDictionary extends PyDictionary {
 
     private static final long serialVersionUID = 1L;
@@ -79,6 +74,7 @@ public class CheetahInterpreter {
 
     /**
      * The the value.
+     *
      * @param value the value
      */
     public void setValue(final String value) {
@@ -100,24 +96,22 @@ public class CheetahInterpreter {
     // Constructor
     //
 
-    /**
-     * Default constructor.
-     */
-    public PyStrDictionary() {
-    }
+    /** Default constructor. */
+    public PyStrDictionary() {}
 
     /**
      * Constructor.
+     *
      * @param value the value of the returns of __str___
      */
     public PyStrDictionary(final String value) {
       setValue(value);
     }
-
   }
 
   /**
    * Execute script by Python interpreter and replace variable name by value.
+   *
    * @return final command line
    * @throws EoulsanException if an error throws by interpretation.
    */
@@ -130,8 +124,9 @@ public class CheetahInterpreter {
       interpreter.set("template", this.cheetahScript);
       interpreter.set("nameSpace", nameSpace);
 
-      final String pythonScript = "from Cheetah.Template import Template\n"
-          + "result = str(Template(template, searchList=[nameSpace]))";
+      final String pythonScript =
+          "from Cheetah.Template import Template\n"
+              + "result = str(Template(template, searchList=[nameSpace]))";
 
       interpreter.exec(pythonScript);
 
@@ -144,11 +139,11 @@ public class CheetahInterpreter {
 
   /**
    * Create the dictionary that contains all the placeholders for Cheetah.
+   *
    * @param plateholders the placeholders
    * @return a modified Python dictionnary
    */
-  private static PyStrDictionary createNameSpace(
-      final Map<String, String> plateholders) {
+  private static PyStrDictionary createNameSpace(final Map<String, String> plateholders) {
 
     final PyStrDictionary result = new PyStrDictionary();
 
@@ -156,8 +151,7 @@ public class CheetahInterpreter {
 
       for (Map.Entry<String, String> e : plateholders.entrySet()) {
 
-        List<String> fields =
-            GuavaCompatibility.splitToList(Splitter.on('.'), e.getKey());
+        List<String> fields = GuavaCompatibility.splitToList(Splitter.on('.'), e.getKey());
 
         PyStrDictionary dict = result;
 
@@ -201,20 +195,21 @@ public class CheetahInterpreter {
 
   /**
    * Instantiates a new tool Cheetah script interpreter.
+   *
    * @param cheetahScript the Cheetah script to execute
    * @param variables the variables of the script
    * @throws EoulsanException if the constructor fails
    */
-  public CheetahInterpreter(final String cheetahScript,
-      final Map<String, String> variables) throws EoulsanException {
+  public CheetahInterpreter(final String cheetahScript, final Map<String, String> variables)
+      throws EoulsanException {
 
     requireNonNull(variables, "No variable set for Cheetah interpreter");
 
-    checkState(!variables.isEmpty(),
+    checkState(
+        !variables.isEmpty(),
         "Tool instance from Galaxy Tool not found variables for interpretation");
 
     this.cheetahScript = cheetahScript;
     this.variables = new HashMap<>(variables);
   }
-
 }

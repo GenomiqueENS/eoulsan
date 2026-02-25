@@ -22,6 +22,15 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.hadoopbamcli;
 
+import htsjdk.samtools.ReservedTagConstants;
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamFileHeaderMerger;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReaderFactory;
+import htsjdk.samtools.ValidationStringency;
+import htsjdk.samtools.util.BlockCompressedStreamConstants;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,7 +41,6 @@ import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -43,426 +51,401 @@ import org.apache.hadoop.mapreduce.lib.partition.TotalOrderPartitioner;
 import org.seqdoop.hadoop_bam.SAMFormat;
 import org.seqdoop.hadoop_bam.util.SAMOutputPreparer;
 
-import htsjdk.samtools.ReservedTagConstants;
-import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMRecord;
-import htsjdk.samtools.SamFileHeaderMerger;
-import htsjdk.samtools.SamInputResource;
-import htsjdk.samtools.SamReader;
-import htsjdk.samtools.SamReaderFactory;
-import htsjdk.samtools.ValidationStringency;
-import htsjdk.samtools.util.BlockCompressedStreamConstants;
-
 @SuppressWarnings("deprecation")
 public final class Utils {
 
-    /**
-     * Print wrapped.
-     * @param out print stream
-     * @param str string to write
-     */
-	public static void printWrapped(PrintStream out, String str) {
-		printWrapped(out, str, 0);
-	}
+  /**
+   * Print wrapped.
+   *
+   * @param out print stream
+   * @param str string to write
+   */
+  public static void printWrapped(PrintStream out, String str) {
+    printWrapped(out, str, 0);
+  }
 
-    /**
-     * Print wrapped.
-     * @param out print stream
-     * @param str string to write
-     * @param indent indentation
-     */
-	public static void printWrapped(PrintStream out, String str, int indent) {
-		printWrapped(out, str, indent, 80);
-	}
+  /**
+   * Print wrapped.
+   *
+   * @param out print stream
+   * @param str string to write
+   * @param indent indentation
+   */
+  public static void printWrapped(PrintStream out, String str, int indent) {
+    printWrapped(out, str, indent, 80);
+  }
 
-    /**
-     * Print wrapped.
-     * @param out print stream
-     * @param str string to write
-     * @param indent indentation
-     * @param wrapAt position to wrap
-     */
-	public static void printWrapped(
-		PrintStream out, String str, int indent, int wrapAt)
-	{
-		int pos = indent;
+  /**
+   * Print wrapped.
+   *
+   * @param out print stream
+   * @param str string to write
+   * @param indent indentation
+   * @param wrapAt position to wrap
+   */
+  public static void printWrapped(PrintStream out, String str, int indent, int wrapAt) {
+    int pos = indent;
 
-		try (Scanner words = new Scanner(str)) {
-			// Print the first word out here to avoid a spurious line break if it
-			// would wrap.
-			if (words.hasNext()) {
-				final String word = words.next();
-				out.print(word);
-				pos += word.length();
-			}
-			boolean addSpace = true;
-			while (words.hasNext()) {
-				final String word = words.next();
-				final int    wend = words.match().end();
+    try (Scanner words = new Scanner(str)) {
+      // Print the first word out here to avoid a spurious line break if it
+      // would wrap.
+      if (words.hasNext()) {
+        final String word = words.next();
+        out.print(word);
+        pos += word.length();
+      }
+      boolean addSpace = true;
+      while (words.hasNext()) {
+        final String word = words.next();
+        final int wend = words.match().end();
 
-				pos += word.length();
-				if (addSpace)
-					++pos;
+        pos += word.length();
+        if (addSpace) ++pos;
 
-				if (pos < wrapAt) {
-					if (addSpace)
-						out.print(' ');
-					out.print(word);
-				} else {
-					pos = indent + word.length();
-					out.print('\n');
-					for (int i = indent; i-- > 0;)
-						out.print(' ');
-					out.print(word);
-				}
+        if (pos < wrapAt) {
+          if (addSpace) out.print(' ');
+          out.print(word);
+        } else {
+          pos = indent + word.length();
+          out.print('\n');
+          for (int i = indent; i-- > 0; ) out.print(' ');
+          out.print(word);
+        }
 
-				if (wend < str.length() && str.charAt(wend) == '\n') {
-					pos = indent;
-					addSpace = false;
+        if (wend < str.length() && str.charAt(wend) == '\n') {
+          pos = indent;
+          addSpace = false;
 
-					int i = wend;
-					do
-						out.print('\n');
-					while (++i < str.length() && str.charAt(i) == '\n');
+          int i = wend;
+          do out.print('\n');
+          while (++i < str.length() && str.charAt(i) == '\n');
 
-					for (i = indent; i-- > 0;)
-						out.print(' ');
-				} else
-					addSpace = true;
-			}
-		}
+          for (i = indent; i-- > 0; ) out.print(' ');
+        } else addSpace = true;
+      }
+    }
 
-		out.print('\n');
-	}
+    out.print('\n');
+  }
 
-	private static String   argv0 = null;
-	private static Class<?> argv0Class = null;
+  private static String argv0 = null;
+  private static Class<?> argv0Class = null;
 
-	// For printing something intelligent in "Usage: argv0 <args>" messages.
-	public static String getArgv0() {
-		if (argv0 != null)
-			return argv0;
-		if (argv0Class == null)
-			return null;
+  // For printing something intelligent in "Usage: argv0 <args>" messages.
+  public static String getArgv0() {
+    if (argv0 != null) return argv0;
+    if (argv0Class == null) return null;
 
-		final CodeSource cs =
-			argv0Class.getProtectionDomain().getCodeSource();
-		if (cs == null)
-			return null;
+    final CodeSource cs = argv0Class.getProtectionDomain().getCodeSource();
+    if (cs == null) return null;
 
-		final String path = cs.getLocation().getPath();
-		if (path.endsWith("/")) {
-			// Typically (always?) a .class file loaded from the directory in
-			// path.
-			argv0 = argv0Class.getSimpleName();
-		} else {
-			// Typically (always?) a .jar file.
-			argv0 = java.nio.file.Path.of(path).getFileName().toString();
-		}
+    final String path = cs.getLocation().getPath();
+    if (path.endsWith("/")) {
+      // Typically (always?) a .class file loaded from the directory in
+      // path.
+      argv0 = argv0Class.getSimpleName();
+    } else {
+      // Typically (always?) a .jar file.
+      argv0 = java.nio.file.Path.of(path).getFileName().toString();
+    }
 
-		return argv0;
-	}
+    return argv0;
+  }
 
-	/**
-	 * Set the arg0 class.
-	 * @param cl the class to set
-	 */
-	public static void setArgv0Class(Class<?> cl) {
-		argv0Class = cl;
-		argv0 = null;
-	}
+  /**
+   * Set the arg0 class.
+   *
+   * @param cl the class to set
+   */
+  public static void setArgv0Class(Class<?> cl) {
+    argv0Class = cl;
+    argv0 = null;
+  }
 
-	/**
-	 * Configure sampling.
-	 * @param workDir work directory
-	 * @param outName output name
-	 * @param conf Hadoop configuration
-	 * @throws IOException if an error occurs while configuring the sampling
-	 */
-	public static void configureSampling(
-			Path workDir, String outName, Configuration conf)
-		throws IOException
-	{
-		final Path partition =
-			workDir.getFileSystem(conf).makeQualified(
-				new Path(workDir, "_partitioning" + outName));
+  /**
+   * Configure sampling.
+   *
+   * @param workDir work directory
+   * @param outName output name
+   * @param conf Hadoop configuration
+   * @throws IOException if an error occurs while configuring the sampling
+   */
+  public static void configureSampling(Path workDir, String outName, Configuration conf)
+      throws IOException {
+    final Path partition =
+        workDir.getFileSystem(conf).makeQualified(new Path(workDir, "_partitioning" + outName));
 
-		TotalOrderPartitioner.setPartitionFile(conf, partition);
-		try {
-			final URI partitionURI = new URI(
-				partition.toString() + "#" + partition.getName());
+    TotalOrderPartitioner.setPartitionFile(conf, partition);
+    try {
+      final URI partitionURI = new URI(partition.toString() + "#" + partition.getName());
 
-			if (partitionURI.getScheme().equals("file"))
-				return;
+      if (partitionURI.getScheme().equals("file")) return;
 
-			org.apache.hadoop.filecache.DistributedCache.addCacheFile(partitionURI, conf);
-			org.apache.hadoop.filecache.DistributedCache.createSymlink(conf);
-		} catch (URISyntaxException e) { throw new RuntimeException(e); }
-	}
+      org.apache.hadoop.filecache.DistributedCache.addCacheFile(partitionURI, conf);
+      org.apache.hadoop.filecache.DistributedCache.createSymlink(conf);
+    } catch (URISyntaxException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-	public static final String WORK_FILENAME_PROPERTY =
-		"hadoopbam.work.filename";
+  public static final String WORK_FILENAME_PROPERTY = "hadoopbam.work.filename";
 
-	/** Returns a name that mergeInto() will recognize as a file to be merged.
-	 *
-	 * The filename is the value of WORK_FILENAME_PROPERTY surrounded by
-	 * basePrefix and basePostfix, followed by the part number and with the
-	 * given extension.
-	 * @param directory the directory
-	 * @param basePrefix base prefix
-	 * @param basePostfix base postfix
-	 * @param ctx task context
-	 * @param extension the extension
-	 * @return a Path
-	 */
-	public static Path getMergeableWorkFile(
-			Path directory, String basePrefix, String basePostfix,
-			TaskAttemptContext ctx, String extension)
-	{
-		return new Path(
-			directory,
-			  basePrefix
-			+ ContextUtil.getConfiguration(ctx).get(WORK_FILENAME_PROPERTY)
-			+ basePostfix
-			+ "-"
-			+ String.format("%06d", ctx.getTaskAttemptID().getTaskID().getId())
-			+ (extension.isEmpty() ? extension : "." + extension));
-	}
+  /**
+   * Returns a name that mergeInto() will recognize as a file to be merged.
+   *
+   * <p>The filename is the value of WORK_FILENAME_PROPERTY surrounded by basePrefix and
+   * basePostfix, followed by the part number and with the given extension.
+   *
+   * @param directory the directory
+   * @param basePrefix base prefix
+   * @param basePostfix base postfix
+   * @param ctx task context
+   * @param extension the extension
+   * @return a Path
+   */
+  public static Path getMergeableWorkFile(
+      Path directory,
+      String basePrefix,
+      String basePostfix,
+      TaskAttemptContext ctx,
+      String extension) {
+    return new Path(
+        directory,
+        basePrefix
+            + ContextUtil.getConfiguration(ctx).get(WORK_FILENAME_PROPERTY)
+            + basePostfix
+            + "-"
+            + String.format("%06d", ctx.getTaskAttemptID().getTaskID().getId())
+            + (extension.isEmpty() ? extension : "." + extension));
+  }
 
-	/** Merges the files in the given directory that have names given by
-	 * getMergeableWorkFile() into out.
-	 *
-	 * Outputs progress reports if commandName is non-null.
-	 * @param out out stream
-	 * @param directory directory
-     * @param basePrefix base prefix
-     * @param basePostfix base postfix
-     * @param conf Hadoop configuration
-     * @param commandName command name
-     * @throws IOException if an error occurs while merging
-	 */
-	public static void mergeInto(
-			OutputStream out,
-			Path directory, String basePrefix, String basePostfix,
-			Configuration conf, String commandName)
-		throws IOException
-	{
-		final FileSystem fs = directory.getFileSystem(conf);
+  /**
+   * Merges the files in the given directory that have names given by getMergeableWorkFile() into
+   * out.
+   *
+   * <p>Outputs progress reports if commandName is non-null.
+   *
+   * @param out out stream
+   * @param directory directory
+   * @param basePrefix base prefix
+   * @param basePostfix base postfix
+   * @param conf Hadoop configuration
+   * @param commandName command name
+   * @throws IOException if an error occurs while merging
+   */
+  public static void mergeInto(
+      OutputStream out,
+      Path directory,
+      String basePrefix,
+      String basePostfix,
+      Configuration conf,
+      String commandName)
+      throws IOException {
+    final FileSystem fs = directory.getFileSystem(conf);
 
-		final FileStatus[] parts = fs.globStatus(new Path(
-			directory,
-			  basePrefix + conf.get(WORK_FILENAME_PROPERTY) + basePostfix
-			+ "-[0-9][0-9][0-9][0-9][0-9][0-9]*"));
+    final FileStatus[] parts =
+        fs.globStatus(
+            new Path(
+                directory,
+                basePrefix
+                    + conf.get(WORK_FILENAME_PROPERTY)
+                    + basePostfix
+                    + "-[0-9][0-9][0-9][0-9][0-9][0-9]*"));
 
-		//int i = 0;
-		//Timer t = new Timer();
-		for (final FileStatus part : parts) {
-			//if (commandName != null) {
-			//	System.out.printf("%s :: Merging part %d (size %d)...",
-			//	                  commandName, ++i, part.getLen());
-			//	System.out.flush();
+    // int i = 0;
+    // Timer t = new Timer();
+    for (final FileStatus part : parts) {
+      // if (commandName != null) {
+      //	System.out.printf("%s :: Merging part %d (size %d)...",
+      //	                  commandName, ++i, part.getLen());
+      //	System.out.flush();
 
-			//	//t.start();
-			//}
+      //	//t.start();
+      // }
 
-			final InputStream in = fs.open(part.getPath());
-			IOUtils.copyBytes(in, out, conf, false);
-			in.close();
+      final InputStream in = fs.open(part.getPath());
+      IOUtils.copyBytes(in, out, conf, false);
+      in.close();
 
-			// if (commandName != null)
-			//	System.out.printf(" done in %d.%03d s.\n", t.stopS(), t.fms());
-		}
-		for (final FileStatus part : parts)
-			fs.delete(part.getPath(), false);
-	}
+      // if (commandName != null)
+      //	System.out.printf(" done in %d.%03d s.\n", t.stopS(), t.fms());
+    }
+    for (final FileStatus part : parts) fs.delete(part.getPath(), false);
+  }
 
-	private static final String
-		HEADERMERGER_SORTORDER_PROP = "hadoopbam.headermerger.sortorder";
+  private static final String HEADERMERGER_SORTORDER_PROP = "hadoopbam.headermerger.sortorder";
 
-	/**
-	 * Set Header merger order.
-	 * @param conf Hadoop configuration
-	 * @param order order to use
-	 */
-	public static void setHeaderMergerSortOrder(
-		Configuration conf, SAMFileHeader.SortOrder order)
-	{
-		conf.set(HEADERMERGER_SORTORDER_PROP, order.name());
-	}
+  /**
+   * Set Header merger order.
+   *
+   * @param conf Hadoop configuration
+   * @param order order to use
+   */
+  public static void setHeaderMergerSortOrder(Configuration conf, SAMFileHeader.SortOrder order) {
+    conf.set(HEADERMERGER_SORTORDER_PROP, order.name());
+  }
 
-	public static final String
-		HEADERMERGER_INPUTS_PROPERTY = "hadoopbam.headermerger.inputs";
+  public static final String HEADERMERGER_INPUTS_PROPERTY = "hadoopbam.headermerger.inputs";
 
-	private static SamFileHeaderMerger headerMerger = null;
+  private static SamFileHeaderMerger headerMerger = null;
 
-	/** Computes the merger of the SAM headers in the files listed in
-	 * HEADERMERGER_INPUTS_PROPERTY. The sort order of the result is set
-	 * according to the last call to setHeaderMergerSortOrder, or otherwise
-	 * to "unsorted".
-	 *
-	 * The result is cached locally to prevent it from being recomputed too
-	 * often.
-	 * @param conf Hadoop configuration
-	 * @return a SamFileHeaderMerger object
-	 * @throws IOException if an error occurs while getting the header
-	 */
-	public static SamFileHeaderMerger getSAMHeaderMerger(Configuration conf)
-		throws IOException
-	{
-		// TODO: it would be preferable to cache this beforehand instead of
-		// having every task read the header block of every input file. But that
-		// would be trickier, given that SamFileHeaderMerger isn't trivially
-		// serializable.
+  /**
+   * Computes the merger of the SAM headers in the files listed in HEADERMERGER_INPUTS_PROPERTY. The
+   * sort order of the result is set according to the last call to setHeaderMergerSortOrder, or
+   * otherwise to "unsorted".
+   *
+   * <p>The result is cached locally to prevent it from being recomputed too often.
+   *
+   * @param conf Hadoop configuration
+   * @return a SamFileHeaderMerger object
+   * @throws IOException if an error occurs while getting the header
+   */
+  public static SamFileHeaderMerger getSAMHeaderMerger(Configuration conf) throws IOException {
+    // TODO: it would be preferable to cache this beforehand instead of
+    // having every task read the header block of every input file. But that
+    // would be trickier, given that SamFileHeaderMerger isn't trivially
+    // serializable.
 
-		// Save it in a static field, though, in case that helps anything.
-		if (headerMerger != null)
-			return headerMerger;
+    // Save it in a static field, though, in case that helps anything.
+    if (headerMerger != null) return headerMerger;
 
-		final List<SAMFileHeader> headers = new ArrayList<SAMFileHeader>();
+    final List<SAMFileHeader> headers = new ArrayList<SAMFileHeader>();
 
-		for (final String in : conf.getStrings(HEADERMERGER_INPUTS_PROPERTY)) {
-			final Path p = new Path(in);
+    for (final String in : conf.getStrings(HEADERMERGER_INPUTS_PROPERTY)) {
+      final Path p = new Path(in);
 
-			final SamReader r = SamReaderFactory.makeDefault()
-		          .open(SamInputResource.of(p.getFileSystem(conf).open(p)));
-		      headers.add(r.getFileHeader());
-		      r.close();
-		}
+      final SamReader r =
+          SamReaderFactory.makeDefault().open(SamInputResource.of(p.getFileSystem(conf).open(p)));
+      headers.add(r.getFileHeader());
+      r.close();
+    }
 
-		final String orderStr = conf.get(HEADERMERGER_SORTORDER_PROP);
-		final SAMFileHeader.SortOrder order;
-        if (orderStr == null) {
-			order = SAMFileHeader.SortOrder.unsorted;
-		} else {
-			order = SAMFileHeader.SortOrder.valueOf(orderStr);
-		}
+    final String orderStr = conf.get(HEADERMERGER_SORTORDER_PROP);
+    final SAMFileHeader.SortOrder order;
+    if (orderStr == null) {
+      order = SAMFileHeader.SortOrder.unsorted;
+    } else {
+      order = SAMFileHeader.SortOrder.valueOf(orderStr);
+    }
 
-		headerMerger = new SamFileHeaderMerger(order, headers, true);
+    headerMerger = new SamFileHeaderMerger(order, headers, true);
 
-		return headerMerger;
-	}
+    return headerMerger;
+  }
 
-	/** Changes the given SAMRecord as appropriate for being placed in a file
-	 * whose header is getSAMHeaderMerger(conf).getMergedHeader().
-	 * @param r SAM record
-	 * @param conf Hadoop configuration
-     * @throws IOException if an error occurs
-	 */
-	public static void correctSAMRecordForMerging(
-			SAMRecord r, Configuration conf)
-		throws IOException
-	{
-		if (headerMerger == null)
-			getSAMHeaderMerger(conf);
+  /**
+   * Changes the given SAMRecord as appropriate for being placed in a file whose header is
+   * getSAMHeaderMerger(conf).getMergedHeader().
+   *
+   * @param r SAM record
+   * @param conf Hadoop configuration
+   * @throws IOException if an error occurs
+   */
+  public static void correctSAMRecordForMerging(SAMRecord r, Configuration conf)
+      throws IOException {
+    if (headerMerger == null) getSAMHeaderMerger(conf);
 
-		final SAMFileHeader h = r.getHeader();
+    final SAMFileHeader h = r.getHeader();
 
-		// Correct the reference indices, and thus the key, if necessary.
-		if (headerMerger.hasMergedSequenceDictionary()) {
-			final int ri = headerMerger.getMergedSequenceIndex(
-				h, r.getReferenceIndex());
+    // Correct the reference indices, and thus the key, if necessary.
+    if (headerMerger.hasMergedSequenceDictionary()) {
+      final int ri = headerMerger.getMergedSequenceIndex(h, r.getReferenceIndex());
 
-			r.setReferenceIndex(ri);
-			if (r.getReadPairedFlag())
-				r.setMateReferenceIndex(headerMerger.getMergedSequenceIndex(
-					h, r.getMateReferenceIndex()));
-		}
+      r.setReferenceIndex(ri);
+      if (r.getReadPairedFlag())
+        r.setMateReferenceIndex(headerMerger.getMergedSequenceIndex(h, r.getMateReferenceIndex()));
+    }
 
-		// Correct the program group if necessary.
-		if (headerMerger.hasProgramGroupCollisions()) {
-			final String pg = (String)r.getAttribute(
-				ReservedTagConstants.PROGRAM_GROUP_ID);
-			if (pg != null)
-				r.setAttribute(
-					ReservedTagConstants.PROGRAM_GROUP_ID,
-					headerMerger.getProgramGroupId(h, pg));
-		}
+    // Correct the program group if necessary.
+    if (headerMerger.hasProgramGroupCollisions()) {
+      final String pg = (String) r.getAttribute(ReservedTagConstants.PROGRAM_GROUP_ID);
+      if (pg != null)
+        r.setAttribute(
+            ReservedTagConstants.PROGRAM_GROUP_ID, headerMerger.getProgramGroupId(h, pg));
+    }
 
-		// Correct the read group if necessary.
-		if (headerMerger.hasReadGroupCollisions()) {
-			final String rg = (String)r.getAttribute(
-				ReservedTagConstants.READ_GROUP_ID);
-			if (rg != null)
-				r.setAttribute(
-					ReservedTagConstants.READ_GROUP_ID,
-					headerMerger.getProgramGroupId(h, rg));
-		}
-	}
+    // Correct the read group if necessary.
+    if (headerMerger.hasReadGroupCollisions()) {
+      final String rg = (String) r.getAttribute(ReservedTagConstants.READ_GROUP_ID);
+      if (rg != null)
+        r.setAttribute(ReservedTagConstants.READ_GROUP_ID, headerMerger.getProgramGroupId(h, rg));
+    }
+  }
 
-	/** Merges the files in the given directory that have names given by
-	 * getMergeableWorkFile() into out in the given SAMFormat, using
-	 * getSAMHeaderMerger().getMergedHeader() as the header.
-	 *
-	 * Outputs progress reports if commandName is non-null.
-	 * @param out out stream
-     * @param directory directory
-     * @param basePrefix base prefix
-     * @param basePostfix base postfix
-     * @param format SAM format
-     * @param conf Hadoop configuration
-     * @param commandName command name
-     * @throws IOException if an error occurs while merging
-	 */
-	public static void mergeSAMInto(
-			Path out, Path directory, String basePrefix, String basePostfix,
-			SAMFormat format, Configuration conf, String commandName)
-		throws IOException
-	{
-		//Timer t = new Timer();
-		//System.out.printf("%s :: Merging output...\n", commandName);
-		//t.start();
+  /**
+   * Merges the files in the given directory that have names given by getMergeableWorkFile() into
+   * out in the given SAMFormat, using getSAMHeaderMerger().getMergedHeader() as the header.
+   *
+   * <p>Outputs progress reports if commandName is non-null.
+   *
+   * @param out out stream
+   * @param directory directory
+   * @param basePrefix base prefix
+   * @param basePostfix base postfix
+   * @param format SAM format
+   * @param conf Hadoop configuration
+   * @param commandName command name
+   * @throws IOException if an error occurs while merging
+   */
+  public static void mergeSAMInto(
+      Path out,
+      Path directory,
+      String basePrefix,
+      String basePostfix,
+      SAMFormat format,
+      Configuration conf,
+      String commandName)
+      throws IOException {
+    // Timer t = new Timer();
+    // System.out.printf("%s :: Merging output...\n", commandName);
+    // t.start();
 
-		final OutputStream outs = out.getFileSystem(conf).create(out);
+    final OutputStream outs = out.getFileSystem(conf).create(out);
 
-		// First, place the SAM or BAM header.
-		//
-		// Don't use the returned stream, because we're concatenating directly
-		// and don't want to apply another layer of compression to BAM.
-		new SAMOutputPreparer().prepareForRecords(
-				outs, format, getSAMHeaderMerger(conf).getMergedHeader());
+    // First, place the SAM or BAM header.
+    //
+    // Don't use the returned stream, because we're concatenating directly
+    // and don't want to apply another layer of compression to BAM.
+    new SAMOutputPreparer()
+        .prepareForRecords(outs, format, getSAMHeaderMerger(conf).getMergedHeader());
 
-		// Then, the actual SAM or BAM contents.
-		mergeInto(outs, directory, basePrefix, basePostfix, conf, commandName);
+    // Then, the actual SAM or BAM contents.
+    mergeInto(outs, directory, basePrefix, basePostfix, conf, commandName);
 
-		// And if BAM, the BGZF terminator.
-		if (format == SAMFormat.BAM)
-			outs.write(BlockCompressedStreamConstants.EMPTY_GZIP_BLOCK);
+    // And if BAM, the BGZF terminator.
+    if (format == SAMFormat.BAM) outs.write(BlockCompressedStreamConstants.EMPTY_GZIP_BLOCK);
 
-		outs.close();
+    outs.close();
 
-		//System.out.printf("%s :: Merging complete in %d.%03d s.\n",
-		//                  commandName, t.stopS(), t.fms());
-	}
+    // System.out.printf("%s :: Merging complete in %d.%03d s.\n",
+    //                  commandName, t.stopS(), t.fms());
+  }
 
-	private static String stringencyOptHelp = null;
+  private static String stringencyOptHelp = null;
 
-	/**
-	 * Get stringency option help
-	 * @return a string with the help
-	 */
-	public static String getStringencyOptHelp() {
-		if (stringencyOptHelp != null)
-			return stringencyOptHelp;
+  /**
+   * Get stringency option help
+   *
+   * @return a string with the help
+   */
+  public static String getStringencyOptHelp() {
+    if (stringencyOptHelp != null) return stringencyOptHelp;
 
-		final StringBuilder sb = new StringBuilder(
-			"set Picard's validation stringency to S (");
+    final StringBuilder sb = new StringBuilder("set Picard's validation stringency to S (");
 
-		String last = null;
-		for (final ValidationStringency v
-		     : ValidationStringency.values())
-		{
-			if (last != null) {
-				sb.append(last);
-				sb.append(", ");
-			}
-			last = v.name();
-		}
-		sb.append("or ");
-		sb.append(last);
-		sb.append(')');
+    String last = null;
+    for (final ValidationStringency v : ValidationStringency.values()) {
+      if (last != null) {
+        sb.append(last);
+        sb.append(", ");
+      }
+      last = v.name();
+    }
+    sb.append("or ");
+    sb.append(last);
+    sb.append(')');
 
-		stringencyOptHelp = sb.toString();
-		return stringencyOptHelp;
-	}
-
+    stringencyOptHelp = sb.toString();
+    return stringencyOptHelp;
+  }
 }

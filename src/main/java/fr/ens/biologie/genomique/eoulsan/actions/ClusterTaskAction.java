@@ -26,17 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.actions;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.List;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.help.HelpFormatter;
-
 import fr.ens.biologie.genomique.eoulsan.AbstractEoulsanRuntime.EoulsanExecMode;
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -45,9 +34,19 @@ import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.LocalEoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskSerializationUtils;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 
 /**
  * This class define a action to launch a task on a cluster.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -85,8 +84,7 @@ public class ClusterTaskAction extends AbstractAction {
     try {
 
       // parse the command line arguments
-      final CommandLine line =
-          parser.parse(options, arguments.toArray(new String[0]), true);
+      final CommandLine line = parser.parse(options, arguments.toArray(new String[0]), true);
 
       // Help option
       if (line.hasOption("help")) {
@@ -94,8 +92,7 @@ public class ClusterTaskAction extends AbstractAction {
       }
 
     } catch (ParseException e) {
-      Common.errorExit(e,
-          "Error while parsing parameter file: " + e.getMessage());
+      Common.errorExit(e, "Error while parsing parameter file: " + e.getMessage());
     }
 
     if (arguments.size() != argsOptions + 1) {
@@ -114,6 +111,7 @@ public class ClusterTaskAction extends AbstractAction {
 
   /**
    * Create options for command line
+   *
    * @return an Options object
    */
   private Options makeOptions() {
@@ -129,18 +127,20 @@ public class ClusterTaskAction extends AbstractAction {
 
   /**
    * Show command line help.
+   *
    * @param options Options of the software
    */
   private void help(final Options options) {
 
     // Show help message
-    final HelpFormatter formatter =
-        HelpFormatter.builder().setShowSince(false).get();
+    final HelpFormatter formatter = HelpFormatter.builder().setShowSince(false).get();
     try {
       formatter.printHelp(
-          Globals.APP_NAME_LOWER_CASE
-              + ".sh " + getName() + " [options] stepcontext.context",
-          "", options, "", false);
+          Globals.APP_NAME_LOWER_CASE + ".sh " + getName() + " [options] stepcontext.context",
+          "",
+          options,
+          "",
+          false);
     } catch (IOException e) {
       Common.errorExit(e, "Error while creating help message.");
     }
@@ -154,6 +154,7 @@ public class ClusterTaskAction extends AbstractAction {
 
   /**
    * Execute the task.
+   *
    * @param taskContextFile context file
    */
   @SuppressWarnings("CatchAndPrintStackTrace")
@@ -162,8 +163,7 @@ public class ClusterTaskAction extends AbstractAction {
     requireNonNull(taskContextFile, "contextFile is null");
 
     // Get Eoulsan runtime
-    final LocalEoulsanRuntime localRuntime =
-        (LocalEoulsanRuntime) EoulsanRuntime.getRuntime();
+    final LocalEoulsanRuntime localRuntime = (LocalEoulsanRuntime) EoulsanRuntime.getRuntime();
 
     // Set the cluster task mode
     localRuntime.setMode(EoulsanExecMode.CLUSTER_TASK);
@@ -178,11 +178,10 @@ public class ClusterTaskAction extends AbstractAction {
     } catch (IOException e) {
       Common.errorExit(e, "IOException: " + e.getMessage());
     } catch (EoulsanRuntimeException e) {
-      Common.errorExit(e, "Error while executing "
-          + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
+      Common.errorExit(
+          e, "Error while executing " + Globals.APP_NAME_LOWER_CASE + ": " + e.getMessage());
     } catch (Throwable t) {
       t.printStackTrace();
     }
   }
-
 }

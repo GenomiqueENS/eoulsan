@@ -62,7 +62,5 @@ public class DesignMetadataTest {
     assertEquals("/home/toto/titi.txt", dm.getAdditionalAnnotationFile());
     // test containsAdditionalAnnotationFile
     assertTrue(dm.containsAdditionalAnnotationFile());
-
   }
-
 }

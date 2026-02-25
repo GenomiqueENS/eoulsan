@@ -74,7 +74,6 @@ public class UnmodifiableDesignTest {
     } catch (UnsupportedOperationException e) {
       assertTrue(true);
     }
-
   }
 
   @Test
@@ -170,7 +169,5 @@ public class UnmodifiableDesignTest {
 
     // test getDesignNumber
     assertEquals("MyDesign", ud.getName());
-
   }
-
 }

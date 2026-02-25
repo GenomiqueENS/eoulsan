@@ -24,14 +24,14 @@
 
 package fr.ens.biologie.genomique.eoulsan.core;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.Globals;
 import java.io.Serializable;
 import java.util.Objects;
 
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.Globals;
-
 /**
  * This class define a parameter. The parameter name is always in lower case.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -45,6 +45,7 @@ public class Parameter implements Serializable, Comparable<Parameter> {
 
   /**
    * Get the name of the parameter.
+   *
    * @return Returns the name
    */
   public String getName() {
@@ -53,6 +54,7 @@ public class Parameter implements Serializable, Comparable<Parameter> {
 
   /**
    * Get the value of the parameter.
+   *
    * @return Returns the value
    */
   public String getValue() {
@@ -61,6 +63,7 @@ public class Parameter implements Serializable, Comparable<Parameter> {
 
   /**
    * Get the value of the parameter as a String value.
+   *
    * @return the value as a String
    */
   public String getStringValue() {
@@ -70,6 +73,7 @@ public class Parameter implements Serializable, Comparable<Parameter> {
 
   /**
    * Get the value of the parameter as a lower case String value.
+   *
    * @return the value as a String
    */
   public String getLowerStringValue() {
@@ -79,6 +83,7 @@ public class Parameter implements Serializable, Comparable<Parameter> {
 
   /**
    * Get the value of the parameter as a upper case String value.
+   *
    * @return the value as a String
    */
   public String getUpperStringValue() {
@@ -88,6 +93,7 @@ public class Parameter implements Serializable, Comparable<Parameter> {
 
   /**
    * Get the value of the parameter as a integer value.
+   *
    * @return the value as an integer
    * @throws EoulsanException if the parameter if not an integer
    */
@@ -100,34 +106,36 @@ public class Parameter implements Serializable, Comparable<Parameter> {
 
       throw new EoulsanException(
           "Invalid parameter, an integer parameter is need for "
-              + this.name + " parameter: " + this.value,
+              + this.name
+              + " parameter: "
+              + this.value,
           e);
     }
   }
 
   /**
-   * * Get the value of the parameter as a integer value and check if this value
-   * is greater or equals to the min parameter value.
+   * * Get the value of the parameter as a integer value and check if this value is greater or
+   * equals to the min parameter value.
+   *
    * @param min minimal value (included)
    * @return the value as an integer
    * @throws EoulsanException if the parameter if not in the range
    */
-  public int getIntValueGreaterOrEqualsTo(final int min)
-      throws EoulsanException {
+  public int getIntValueGreaterOrEqualsTo(final int min) throws EoulsanException {
 
     return getIntValueInRange(min, Integer.MAX_VALUE);
   }
 
   /**
-   * Get the value of the parameter as a integer value and check if this value
-   * is in the correct range.
+   * Get the value of the parameter as a integer value and check if this value is in the correct
+   * range.
+   *
    * @param min minimal value (included)
    * @param max maximal value (included)
    * @return the value as an integer
    * @throws EoulsanException if the parameter if not in the range
    */
-  public int getIntValueInRange(final int min, final int max)
-      throws EoulsanException {
+  public int getIntValueInRange(final int min, final int max) throws EoulsanException {
 
     final int result = getIntValue();
 
@@ -135,15 +143,23 @@ public class Parameter implements Serializable, Comparable<Parameter> {
     final int maxValue = Math.max(min, max);
 
     if (result < minValue) {
-      throw new EoulsanException("Invalid "
-          + this.name + "parameter (The value must be greater than " + minValue
-          + "): " + result);
+      throw new EoulsanException(
+          "Invalid "
+              + this.name
+              + "parameter (The value must be greater than "
+              + minValue
+              + "): "
+              + result);
     }
 
     if (result > maxValue) {
-      throw new EoulsanException("Invalid "
-          + this.name + "parameter (The value must be lower than " + maxValue
-          + "): " + result);
+      throw new EoulsanException(
+          "Invalid "
+              + this.name
+              + "parameter (The value must be lower than "
+              + maxValue
+              + "): "
+              + result);
     }
 
     return result;
@@ -151,6 +167,7 @@ public class Parameter implements Serializable, Comparable<Parameter> {
 
   /**
    * Get the value of the parameter as a double value.
+   *
    * @return the value as an integer
    * @throws EoulsanException if the parameter if not a double
    */
@@ -163,13 +180,16 @@ public class Parameter implements Serializable, Comparable<Parameter> {
 
       throw new EoulsanException(
           "Invalid parameter, an integer parameter is need for "
-              + this.name + " parameter: " + this.value,
+              + this.name
+              + " parameter: "
+              + this.value,
           e);
     }
   }
 
   /**
    * Get the value of the parameter as a boolean value.
+   *
    * @return the value as a boolean
    */
   public boolean getBooleanValue() {
@@ -206,8 +226,7 @@ public class Parameter implements Serializable, Comparable<Parameter> {
 
     final Parameter that = (Parameter) o;
 
-    return Objects.equals(this.name, that.name)
-        && Objects.equals(this.value, that.value);
+    return Objects.equals(this.name, that.name) && Objects.equals(this.value, that.value);
   }
 
   @Override
@@ -232,6 +251,7 @@ public class Parameter implements Serializable, Comparable<Parameter> {
 
   /**
    * Public constructor.
+   *
    * @param name Name of the parameter
    * @param value value of the parameter
    */
@@ -254,5 +274,4 @@ public class Parameter implements Serializable, Comparable<Parameter> {
     this.name = nameLower;
     this.value = value;
   }
-
 }

@@ -29,13 +29,6 @@ import static fr.ens.biologie.genomique.eoulsan.Globals.APP_VERSION;
 import static fr.ens.biologie.genomique.kenetre.util.StringUtils.datetoString;
 import static java.util.Objects.requireNonNull;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -49,9 +42,16 @@ import fr.ens.biologie.genomique.eoulsan.ui.UI;
 import fr.ens.biologie.genomique.eoulsan.ui.UIService;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.HadoopInfo;
 import fr.ens.biologie.genomique.kenetre.util.SystemUtils;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class is the executor for running all the steps of an analysis.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -67,6 +67,7 @@ public class Executor {
 
   /**
    * Check design.
+   *
    * @throws EoulsanException if there is an issue with the design
    */
   private void checkDesign() throws EoulsanException {
@@ -77,12 +78,10 @@ public class Executor {
 
     // Check samples count
     if (this.design.getSamples().isEmpty()) {
-      throw new EoulsanException(
-          "Nothing to do, no samples found in design file");
+      throw new EoulsanException("Nothing to do, no samples found in design file");
     }
 
-    getLogger().info("Found "
-        + this.design.getSamples().size() + " sample(s) in design file");
+    getLogger().info("Found " + this.design.getSamples().size() + " sample(s) in design file");
   }
 
   //
@@ -91,8 +90,8 @@ public class Executor {
 
   /**
    * run Eoulsan.
-   * @throws EoulsanException if an error occurs while creating of executing
-   *           steps
+   *
+   * @throws EoulsanException if an error occurs while creating of executing steps
    */
   public void execute() throws EoulsanException {
 
@@ -101,13 +100,13 @@ public class Executor {
 
   /**
    * run Eoulsan.
+   *
    * @param firstSteps steps to add at the begin the workflow
    * @param lastSteps steps to add at the end the workflow
-   * @throws EoulsanException if an error occurs while creating of executing
-   *           steps
+   * @throws EoulsanException if an error occurs while creating of executing steps
    */
-  public void execute(final List<Module> firstSteps,
-      final List<Module> lastSteps) throws EoulsanException {
+  public void execute(final List<Module> firstSteps, final List<Module> lastSteps)
+      throws EoulsanException {
 
     // Add general executor info
     logInfo(this.arguments, this.command);
@@ -135,8 +134,8 @@ public class Executor {
     configureEoulsanTools(settings);
 
     // Create Workflow
-    final CommandWorkflow workflow = new CommandWorkflow(this.arguments,
-        this.command, firstSteps, lastSteps, this.design);
+    final CommandWorkflow workflow =
+        new CommandWorkflow(this.arguments, this.command, firstSteps, lastSteps, this.design);
 
     // Check directories (log, working, output, temporary...)
     workflow.checkDirectories();
@@ -147,8 +146,7 @@ public class Executor {
     // Enable listen workflow events by ui
     StepObserverRegistry.getInstance().addObserver(ui);
 
-    getLogger()
-        .info("Start analysis at " + datetoString(System.currentTimeMillis()));
+    getLogger().info("Start analysis at " + datetoString(System.currentTimeMillis()));
 
     // Execute Workflow
     workflow.execute();
@@ -160,6 +158,7 @@ public class Executor {
 
   /**
    * Start the UI.
+   *
    * @param workflow the workflow
    * @return the UI object
    * @throws EoulsanException if an error occurs while stating the UI
@@ -192,11 +191,12 @@ public class Executor {
 
   /**
    * Log some information about the current execution.
+   *
    * @param execArgs execution information
    * @param command workflow file content
    */
-  private static void logInfo(final ExecutorArguments execArgs,
-      final CommandWorkflowModel command) {
+  private static void logInfo(
+      final ExecutorArguments execArgs, final CommandWorkflowModel command) {
 
     getLogger().info("Design file path: " + execArgs.getDesignPathname());
     getLogger().info("Workflow file path: " + execArgs.getWorkflowPathname());
@@ -217,12 +217,12 @@ public class Executor {
 
   /**
    * Load the design.
+   *
    * @param arguments executor arguments
    * @return the design
    * @throws EoulsanException if an error occurs while loading the design
    */
-  private static Design loadDesign(final ExecutorArguments arguments)
-      throws EoulsanException {
+  private static Design loadDesign(final ExecutorArguments arguments) throws EoulsanException {
 
     try {
 
@@ -237,21 +237,20 @@ public class Executor {
       return new DefaultDesignReader(is).read();
 
     } catch (IOException e) {
-      throw new EoulsanException(
-          "Error while reading design file: " + e.getMessage(), e);
+      throw new EoulsanException("Error while reading design file: " + e.getMessage(), e);
     }
   }
 
   /**
    * Load workflow model.
+   *
    * @param arguments executor arguments
    * @param design design
    * @return the workflow model
    * @throws EoulsanException if an error occurs while creating the model
    */
   private static CommandWorkflowModel loadCommand(
-      final ExecutorArguments arguments, final Design design)
-      throws EoulsanException {
+      final ExecutorArguments arguments, final Design design) throws EoulsanException {
 
     try {
 
@@ -278,6 +277,7 @@ public class Executor {
 
   /**
    * Update Eoulsan settings with global parameters.
+   *
    * @param settings the Eoulsan settings
    * @param command the command object
    */
@@ -287,8 +287,7 @@ public class Executor {
     final Set<Parameter> globalParameters = command.getGlobalParameters();
 
     // Add globals parameters to Settings
-    getLogger()
-        .info("Init all steps with global parameters: " + globalParameters);
+    getLogger().info("Init all steps with global parameters: " + globalParameters);
     for (Parameter p : globalParameters) {
       settings.setSetting(p.getName(), p.getStringValue());
     }
@@ -296,6 +295,7 @@ public class Executor {
 
   /**
    * Configure default standard Galaxy modules and external formats.
+   *
    * @param settings the Eoulsan settings
    */
   private static void configureEoulsanTools(final Settings settings) {
@@ -306,14 +306,13 @@ public class Executor {
     }
 
     // Is internet connection active?
-    if (SystemUtils.isActiveConnection(Globals.INTERNET_CHECK_SERVER,
-        Globals.INTERNET_CHECK_PORT, 5000)) {
+    if (SystemUtils.isActiveConnection(
+        Globals.INTERNET_CHECK_SERVER, Globals.INTERNET_CHECK_PORT, 5000)) {
 
       // Define the branch to use
       String branch = "master";
       if (APP_VERSION.getMajor() > 1) {
-        branch =
-            "branch" + APP_VERSION.getMajor() + "." + APP_VERSION.getMinor();
+        branch = "branch" + APP_VERSION.getMajor() + "." + APP_VERSION.getMinor();
       }
 
       // Define default external Galaxy tools Path
@@ -321,22 +320,18 @@ public class Executor {
           Globals.EOULSAN_TOOLS_WEBSITE_URL + "/" + branch + "/galaxytools";
 
       // Define default external format Path
-      String defaultDataFormatPath =
-          Globals.EOULSAN_TOOLS_WEBSITE_URL + "/" + branch + "/formats";
+      String defaultDataFormatPath = Globals.EOULSAN_TOOLS_WEBSITE_URL + "/" + branch + "/formats";
 
       // Add standard galaxy tools from Eoulsan tools GitHub repository
-      List<String> galaxyToolPathList =
-          new ArrayList<>(settings.getGalaxyToolPaths());
+      List<String> galaxyToolPathList = new ArrayList<>(settings.getGalaxyToolPaths());
       galaxyToolPathList.add(defaultGalaxyToolPath);
       settings.setGalaxyToolsPaths(galaxyToolPathList);
 
       // Add standard format from Eoulsan tools GitHub repository
-      List<String> dataFormatPathList =
-          new ArrayList<>(settings.getDataFormatPaths());
+      List<String> dataFormatPathList = new ArrayList<>(settings.getDataFormatPaths());
       dataFormatPathList.add(defaultDataFormatPath);
       settings.setDataFormatPaths(dataFormatPathList);
     }
-
   }
 
   //
@@ -345,9 +340,9 @@ public class Executor {
 
   /**
    * Constructor.
+   *
    * @param arguments arguments for the Executor
-   * @throws EoulsanException if an error occurs while loading and parsing
-   *           design and workflow files
+   * @throws EoulsanException if an error occurs while loading and parsing design and workflow files
    */
   public Executor(final ExecutorArguments arguments) throws EoulsanException {
 
@@ -363,7 +358,5 @@ public class Executor {
         arguments.setLocalWorkingPathname(p.getValue());
       }
     }
-
   }
-
 }

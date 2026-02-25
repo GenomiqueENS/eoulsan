@@ -24,10 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.splitermergers;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
@@ -37,9 +33,13 @@ import fr.ens.biologie.genomique.kenetre.bio.BadBioEntryException;
 import fr.ens.biologie.genomique.kenetre.bio.ReadSequence;
 import fr.ens.biologie.genomique.kenetre.bio.io.FastqReader;
 import fr.ens.biologie.genomique.kenetre.bio.io.FastqWriter;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * This class define a splitter class for FASTQ files.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -61,21 +61,20 @@ public class FastqSplitter implements Splitter {
     for (Parameter p : conf) {
 
       switch (p.getName()) {
+        case "max.entries":
+          this.splitMaxEntries = p.getIntValueGreaterOrEqualsTo(1);
+          break;
 
-      case "max.entries":
-        this.splitMaxEntries = p.getIntValueGreaterOrEqualsTo(1);
-        break;
-
-      default:
-        throw new EoulsanException("Unknown parameter for "
-            + getFormat().getName() + " splitter: " + p.getName());
+        default:
+          throw new EoulsanException(
+              "Unknown parameter for " + getFormat().getName() + " splitter: " + p.getName());
       }
     }
   }
 
   @Override
-  public void split(final DataFile inFile,
-      final Iterator<DataFile> outFileIterator) throws IOException {
+  public void split(final DataFile inFile, final Iterator<DataFile> outFileIterator)
+      throws IOException {
 
     final FastqReader reader = new FastqReader(inFile.open());
 
@@ -111,7 +110,5 @@ public class FastqSplitter implements Splitter {
     } catch (BadBioEntryException e) {
       throw new IOException(e);
     }
-
   }
-
 }

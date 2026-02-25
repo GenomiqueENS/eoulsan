@@ -31,6 +31,7 @@ import java.util.Map;
 
 /**
  * This class store all the TokenManager instances.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -42,6 +43,7 @@ public class TokenManagerRegistry {
 
   /**
    * Get the requested TokenManager.
+   *
    * @param step step which TokenManager is requested
    * @return a TokenManager instance
    */
@@ -62,6 +64,7 @@ public class TokenManagerRegistry {
 
   /**
    * Get the TokenManagerRegistry instance.
+   *
    * @return the TokenManagerRegistry instance
    */
   static TokenManagerRegistry getInstance() {
@@ -77,10 +80,6 @@ public class TokenManagerRegistry {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
-  private TokenManagerRegistry() {
-  }
-
+  /** Private constructor. */
+  private TokenManagerRegistry() {}
 }

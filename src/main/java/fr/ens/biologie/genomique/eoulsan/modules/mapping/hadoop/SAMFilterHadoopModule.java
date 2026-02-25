@@ -30,15 +30,6 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX;
 
-import java.io.IOException;
-
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
@@ -51,9 +42,17 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractSAMFilterModule;
 import fr.ens.biologie.genomique.eoulsan.util.hadoop.MapReduceUtils;
+import java.io.IOException;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 /**
  * This class define a filter alignment step in Hadoop mode.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -67,8 +66,7 @@ public class SAMFilterHadoopModule extends AbstractSAMFilterModule {
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     // Create configuration object
     final Configuration conf = createConfiguration();
@@ -82,27 +80,26 @@ public class SAMFilterHadoopModule extends AbstractSAMFilterModule {
       final Job job = createJob(conf, inData, outData);
 
       // Launch jobs
-      MapReduceUtils.submitAndWaitForJob(job, inData.getName(),
-          CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
+      MapReduceUtils.submitAndWaitForJob(
+          job, inData.getName(), CommonHadoop.CHECK_COMPLETION_TIME, status, COUNTER_GROUP);
 
       return status.createTaskResult();
     } catch (IOException | EoulsanException e) {
 
-      return status.createTaskResult(e,
-          "Error while running job: " + e.getMessage());
+      return status.createTaskResult(e, "Error while running job: " + e.getMessage());
     }
-
   }
 
   /**
    * Create the JobConf object for a sample
+   *
    * @param inData input data
    * @param outData output data
    * @return a new JobConf object
    * @throws IOException if an error occurs creating the job
    */
-  private Job createJob(final Configuration parentConf, final Data inData,
-      final Data outData) throws IOException {
+  private Job createJob(final Configuration parentConf, final Data inData, final Data outData)
+      throws IOException {
 
     final Configuration jobConf = new Configuration(parentConf);
 
@@ -113,15 +110,16 @@ public class SAMFilterHadoopModule extends AbstractSAMFilterModule {
     jobConf.set(CommonHadoop.COUNTER_GROUP_KEY, COUNTER_GROUP);
 
     // Set SAM filter parameters
-    addParametersToJobConf(getAlignmentsFilterParameters(),
-        MAP_FILTER_PARAMETER_KEY_PREFIX, jobConf);
+    addParametersToJobConf(
+        getAlignmentsFilterParameters(), MAP_FILTER_PARAMETER_KEY_PREFIX, jobConf);
 
     // timeout
     jobConf.set("mapreduce.task.timeout", "" + 30 * 60 * 1000);
 
     // Create the job and its name
-    final Job job = Job.getInstance(jobConf, "Filter SAM file ("
-        + inData.getName() + ", " + inputPath.getName() + ")");
+    final Job job =
+        Job.getInstance(
+            jobConf, "Filter SAM file (" + inData.getName() + ", " + inputPath.getName() + ")");
 
     // Set the jar
     job.setJarByClass(ReadsMapperHadoopModule.class);
@@ -157,10 +155,8 @@ public class SAMFilterHadoopModule extends AbstractSAMFilterModule {
     job.setOutputValueClass(Text.class);
 
     // Set output path
-    FileOutputFormat.setOutputPath(job,
-        new Path(outData.getDataFile().getSource()));
+    FileOutputFormat.setOutputPath(job, new Path(outData.getDataFile().getSource()));
 
     return job;
   }
-
 }

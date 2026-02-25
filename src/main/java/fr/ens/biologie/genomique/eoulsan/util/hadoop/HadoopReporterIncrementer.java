@@ -26,22 +26,21 @@ package fr.ens.biologie.genomique.eoulsan.util.hadoop;
 
 import static java.util.Objects.requireNonNull;
 
-import org.apache.hadoop.mapreduce.TaskInputOutputContext;
-
 import fr.ens.biologie.genomique.kenetre.util.ReporterIncrementer;
+import org.apache.hadoop.mapreduce.TaskInputOutputContext;
 
 /**
  * This class define a Hadoop reporter.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
 public class HadoopReporterIncrementer implements ReporterIncrementer {
 
-  private final TaskInputOutputContext<?,?,?,?> context;
+  private final TaskInputOutputContext<?, ?, ?, ?> context;
 
   @Override
-  public void incrCounter(final String counterGroup, final String counterName,
-      final long amount) {
+  public void incrCounter(final String counterGroup, final String counterName, final long amount) {
 
     this.context.getCounter(counterGroup, counterName).increment(amount);
   }
@@ -52,13 +51,13 @@ public class HadoopReporterIncrementer implements ReporterIncrementer {
 
   /**
    * Constructor.
+   *
    * @param context context to use for counter incrementation
    */
-  public HadoopReporterIncrementer(final TaskInputOutputContext<?,?,?,?> context) {
+  public HadoopReporterIncrementer(final TaskInputOutputContext<?, ?, ?, ?> context) {
 
     requireNonNull(context, "Context is null");
 
     this.context = context;
   }
-
 }

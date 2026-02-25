@@ -69,5 +69,4 @@ public class ExperimentSampleMetadataTest {
     // test containsReference
     assertTrue(esm.containsReference());
   }
-
 }

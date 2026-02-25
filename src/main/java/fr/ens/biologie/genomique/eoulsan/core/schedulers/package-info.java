@@ -24,6 +24,7 @@
 
 /**
  * This package contains classes for schedulers.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */

@@ -24,14 +24,14 @@
 
 package fr.ens.biologie.genomique.eoulsan.requirements;
 
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.Progress;
+import java.util.Set;
 
 /**
  * This interface define a requirement for an Eoulsan Step.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -39,47 +39,52 @@ public interface Requirement {
 
   /**
    * The name of the requirement.
+   *
    * @return the name of the requirement
    */
   String getName();
 
   /**
    * Test if the requirement is optional.
+   *
    * @return true if he requirement is optional
    */
   boolean isOptional();
 
   /**
    * Test if the requirement is available.
+   *
    * @return true if he requirement is optional
    */
   boolean isAvailable();
 
   /**
    * Test if the requirement is installable.
+   *
    * @return true if the requirement is installable
    */
   boolean isInstallable();
 
   /**
    * Get the parameters of the requirement
+   *
    * @return a set of parameters
    */
   Set<Parameter> getParameters();
 
   /**
    * Configure the requirement.
+   *
    * @param parameters the parameters of the requirement
-   * @throws EoulsanException if an error occurs while configuring the
-   *           requirement
+   * @throws EoulsanException if an error occurs while configuring the requirement
    */
   void configure(Set<Parameter> parameters) throws EoulsanException;
 
   /**
    * Install the requirement.
+   *
    * @param progress Progress object
    * @throws EoulsanException if the requirement cannot be installed
    */
   void install(Progress progress) throws EoulsanException;
-
 }

@@ -16,8 +16,7 @@ class UnmodifiableExperimentSample implements ExperimentSample, Serializable {
 
   @Override
   public ExperimentSampleMetadata getMetadata() {
-    return new UnmodifiableExperimentSampleMetadata(
-        this.experimentSample.getMetadata());
+    return new UnmodifiableExperimentSampleMetadata(this.experimentSample.getMetadata());
   }
 
   @Override
@@ -38,5 +37,4 @@ class UnmodifiableExperimentSample implements ExperimentSample, Serializable {
 
     this.experimentSample = experimentSample;
   }
-
 }

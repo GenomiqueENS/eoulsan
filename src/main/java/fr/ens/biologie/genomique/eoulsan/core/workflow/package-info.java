@@ -24,6 +24,7 @@
 
 /**
  * This package contains Eoulsan workflow dedicated classes.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */

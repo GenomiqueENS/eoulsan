@@ -6,6 +6,7 @@ import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
 
 /**
  * This class define a StepState event.
+ *
  * @since 2.3
  * @author Laurent Jourdren
  */
@@ -16,6 +17,7 @@ class StepStateEvent {
 
   /**
    * Get the step.
+   *
    * @return the step
    */
   public AbstractStep getStep() {
@@ -25,6 +27,7 @@ class StepStateEvent {
 
   /**
    * Get the state of the step.
+   *
    * @return the state of the step
    */
   public StepState getState() {
@@ -40,8 +43,12 @@ class StepStateEvent {
   public String toString() {
 
     return "StepStateEvent{StepId="
-        + this.step.getId() + ", StepNumber=" + this.step.getNumber()
-        + ", state=" + this.state + "}";
+        + this.step.getId()
+        + ", StepNumber="
+        + this.step.getNumber()
+        + ", state="
+        + this.state
+        + "}";
   }
 
   //
@@ -56,5 +63,4 @@ class StepStateEvent {
     this.step = step;
     this.state = state;
   }
-
 }

@@ -36,6 +36,18 @@ import static fr.ens.biologie.genomique.kenetre.util.StringUtils.stackTraceToStr
 import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toTimeHumanReadable;
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.base.Joiner;
+import fr.ens.biologie.genomique.eoulsan.EoulsanException;
+import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
+import fr.ens.biologie.genomique.eoulsan.Globals;
+import fr.ens.biologie.genomique.eoulsan.Main;
+import fr.ens.biologie.genomique.eoulsan.core.Module;
+import fr.ens.biologie.genomique.eoulsan.core.Parameter;
+import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
+import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
+import fr.ens.biologie.genomique.eoulsan.data.Data;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
+import fr.ens.biologie.genomique.kenetre.util.Version;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.LinkedHashSet;
@@ -45,22 +57,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
-import com.google.common.base.Joiner;
-
-import fr.ens.biologie.genomique.eoulsan.EoulsanException;
-import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
-import fr.ens.biologie.genomique.eoulsan.Globals;
-import fr.ens.biologie.genomique.eoulsan.Main;
-import fr.ens.biologie.genomique.eoulsan.core.Module;
-import fr.ens.biologie.genomique.eoulsan.core.Parameter;
-import fr.ens.biologie.genomique.eoulsan.core.Step.StepType;
-import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
-import fr.ens.biologie.genomique.kenetre.util.Version;
-import fr.ens.biologie.genomique.eoulsan.data.Data;
-import fr.ens.biologie.genomique.eoulsan.data.DataFile;
-
 /**
  * This class allow to run a task context.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -79,6 +78,7 @@ public class TaskRunner {
 
   /**
    * Get the context result.
+   *
    * @return a TaskResult object
    */
   public TaskResultImpl getResult() {
@@ -93,8 +93,8 @@ public class TaskRunner {
   //
 
   /**
-   * Force the TaskRunner to reuse the original step instance when execute the
-   * task.
+   * Force the TaskRunner to reuse the original step instance when execute the task.
+   *
    * @param reuse true if the step instance must be reuse when execute the task
    */
   public void setForceStepInstanceReuse(final boolean reuse) {
@@ -108,6 +108,7 @@ public class TaskRunner {
 
   /**
    * Run the task context.
+   *
    * @return a task result object
    */
   public TaskResultImpl run() {
@@ -116,15 +117,14 @@ public class TaskRunner {
     checkState(this.result == null, "task has been already executed");
 
     // Thread group name
-    final String threadGroupName = "TaskRunner_"
-        + this.context.getStep().getId() + "_#" + this.context.getId();
+    final String threadGroupName =
+        "TaskRunner_" + this.context.getStep().getId() + "_#" + this.context.getId();
 
     // Define thread group
     final ThreadGroup threadGroup = new ThreadGroup(threadGroupName);
 
     // Create Log handler and register it
-    final Logger logger = isNoLog(this.module)
-        ? null : createStepLogger(threadGroupName);
+    final Logger logger = isNoLog(this.module) ? null : createStepLogger(threadGroupName);
 
     // Register the logger
     if (logger != null) {
@@ -133,119 +133,113 @@ public class TaskRunner {
 
     // We use here a thread to execute the step
     // This allow to save log of step in distinct files
-    final Runnable r = new Runnable() {
+    final Runnable r =
+        new Runnable() {
 
-      @Override
-      public void run() {
+          @Override
+          public void run() {
 
-        getLogger().info("Start of task #" + TaskRunner.this.context.getId());
-        final long startTime = System.currentTimeMillis();
+            getLogger().info("Start of task #" + TaskRunner.this.context.getId());
+            final long startTime = System.currentTimeMillis();
 
-        final Module module;
-        final StepType stepType =
-            TaskRunner.this.context.getWorkflowStep().getType();
-        final boolean reuseAnnot = isReuseStepInstance(TaskRunner.this.module);
+            final Module module;
+            final StepType stepType = TaskRunner.this.context.getWorkflowStep().getType();
+            final boolean reuseAnnot = isReuseStepInstance(TaskRunner.this.module);
 
-        final String stepDescLog =
-            String.format("step (id: %s, name: %s, class: %s) for task #%d",
-                TaskRunner.this.context.getWorkflowStep().getId(),
-                TaskRunner.this.module.getName(),
-                TaskRunner.this.module.getClass().getName(),
-                TaskRunner.this.context.getId());
+            final String stepDescLog =
+                String.format(
+                    "step (id: %s, name: %s, class: %s) for task #%d",
+                    TaskRunner.this.context.getWorkflowStep().getId(),
+                    TaskRunner.this.module.getName(),
+                    TaskRunner.this.module.getClass().getName(),
+                    TaskRunner.this.context.getId());
 
-        try {
+            try {
 
-          // If step is a standard step and reuse of step instance is not
-          // required by step
-          // Create a new instance of the step for the task
-          if (stepType == StepType.STANDARD_STEP
-              && !reuseAnnot && !TaskRunner.this.forceStepInstanceReuse) {
+              // If step is a standard step and reuse of step instance is not
+              // required by step
+              // Create a new instance of the step for the task
+              if (stepType == StepType.STANDARD_STEP
+                  && !reuseAnnot
+                  && !TaskRunner.this.forceStepInstanceReuse) {
 
-            // Create the new instance of the step
-            getLogger().fine("Create new instance of " + stepDescLog);
+                // Create the new instance of the step
+                getLogger().fine("Create new instance of " + stepDescLog);
 
-            final String stepName = TaskRunner.this.module.getName();
-            final Version stepVersion = TaskRunner.this.module.getVersion();
+                final String stepName = TaskRunner.this.module.getName();
+                final Version stepVersion = TaskRunner.this.module.getVersion();
 
-            module = ModuleRegistry.getInstance().loadModule(stepName,
-                stepVersion.toString());
+                module = ModuleRegistry.getInstance().loadModule(stepName, stepVersion.toString());
 
-            // Log step parameters
-            logStepParameters();
+                // Log step parameters
+                logStepParameters();
 
-            // Configure the new step instance
-            getLogger().fine("Configure step instance");
-            module.configure(
-                new StepConfigurationContextImpl(
-                    TaskRunner.this.context.getStep()),
-                TaskRunner.this.context.getCurrentStep().getParameters());
+                // Configure the new step instance
+                getLogger().fine("Configure step instance");
+                module.configure(
+                    new StepConfigurationContextImpl(TaskRunner.this.context.getStep()),
+                    TaskRunner.this.context.getCurrentStep().getParameters());
 
-          } else {
+              } else {
 
-            // Use the original step instance for the task
-            getLogger().fine("Reuse original instance of " + stepDescLog);
-            module = TaskRunner.this.module;
+                // Use the original step instance for the task
+                getLogger().fine("Reuse original instance of " + stepDescLog);
+                module = TaskRunner.this.module;
 
-            // Log step parameters
-            logStepParameters();
+                // Log step parameters
+                logStepParameters();
+              }
+
+              // Execute task
+              getLogger().info("Execute task");
+              TaskRunner.this.result =
+                  module.execute(TaskRunner.this.context, TaskRunner.this.status);
+
+            } catch (Throwable t) {
+
+              getLogger().severe("Exception while executing task: " + t.getMessage());
+
+              // Handle exception not catch by step code
+              TaskRunner.this.result = TaskRunner.this.status.createTaskResult(t);
+            }
+
+            final long duration = System.currentTimeMillis() - startTime;
+            final TaskResult result = TaskRunner.this.result;
+            final boolean success = result.isSuccess();
+
+            getLogger().info("End of task #" + TaskRunner.this.context.getId());
+            getLogger().info("Duration: " + toTimeHumanReadable(duration));
+            getLogger().info("Result: " + (success ? "Success" : "Fail"));
+
+            if (!success) {
+
+              final String errorMessage = result.getErrorMessage();
+              final Throwable exception = result.getException();
+
+              if (errorMessage != null) {
+                getLogger().severe("Error message: " + errorMessage);
+              }
+
+              if (exception != null) {
+                getLogger().severe("Exception: " + stackTraceToString(exception));
+              }
+            }
           }
 
-          // Execute task
-          getLogger().info("Execute task");
-          TaskRunner.this.result =
-              module.execute(TaskRunner.this.context, TaskRunner.this.status);
+          /** Log step parameters. */
+          private void logStepParameters() {
 
-        } catch (Throwable t) {
+            final Set<Parameter> parameters = context.getCurrentStep().getParameters();
 
-          getLogger()
-              .severe("Exception while executing task: " + t.getMessage());
-
-          // Handle exception not catch by step code
-          TaskRunner.this.result = TaskRunner.this.status.createTaskResult(t);
-        }
-
-        final long duration = System.currentTimeMillis() - startTime;
-        final TaskResult result = TaskRunner.this.result;
-        final boolean success = result.isSuccess();
-
-        getLogger().info("End of task #" + TaskRunner.this.context.getId());
-        getLogger().info("Duration: " + toTimeHumanReadable(duration));
-        getLogger().info("Result: " + (success ? "Success" : "Fail"));
-
-        if (!success) {
-
-          final String errorMessage = result.getErrorMessage();
-          final Throwable exception = result.getException();
-
-          if (errorMessage != null) {
-            getLogger().severe("Error message: " + errorMessage);
+            if (parameters.isEmpty()) {
+              getLogger().fine("Step has no parameter");
+            } else {
+              for (Parameter p : parameters) {
+                getLogger().fine("Step parameter: " + p.getName() + "=" + p.getValue());
+              }
+            }
           }
-
-          if (exception != null) {
-            getLogger().severe("Exception: " + stackTraceToString(exception));
-          }
-        }
-      }
-
-      /**
-       * Log step parameters.
-       */
-      private void logStepParameters() {
-
-        final Set<Parameter> parameters =
-            context.getCurrentStep().getParameters();
-
-        if (parameters.isEmpty()) {
-          getLogger().fine("Step has no parameter");
-        } else {
-          for (Parameter p : parameters) {
-            getLogger()
-                .fine("Step parameter: " + p.getName() + "=" + p.getValue());
-          }
-        }
-      }
-
-    };
+        };
 
     // Set the progress of the task to 0%
     this.status.setProgress(0);
@@ -265,11 +259,15 @@ public class TaskRunner {
       thread.join();
 
     } catch (InterruptedException e) {
-      getLogger().severe(e.getMessage() == null
-          ? "Interruption of the thread " + threadGroupName : e.getMessage());
+      getLogger()
+          .severe(
+              e.getMessage() == null
+                  ? "Interruption of the thread " + threadGroupName
+                  : e.getMessage());
 
       // Inform the step token manager of the failed output data
-      TokenManagerRegistry.getInstance().getTokenManager(this.context.getStep())
+      TokenManagerRegistry.getInstance()
+          .getTokenManager(this.context.getStep())
           .addFailedOutputData(this.context);
 
     } finally {
@@ -299,9 +297,11 @@ public class TaskRunner {
     if (this.result == null) {
 
       this.result =
-          this.status.createTaskResult(new EoulsanException("The step "
-              + this.context.getStep().getId()
-              + " has not generate a result object"));
+          this.status.createTaskResult(
+              new EoulsanException(
+                  "The step "
+                      + this.context.getStep().getId()
+                      + " has not generate a result object"));
     }
 
     // Send the tokens
@@ -310,9 +310,7 @@ public class TaskRunner {
     return (TaskResultImpl) this.result;
   }
 
-  /**
-   * Send token.
-   */
+  /** Send token. */
   private void sendTokens() {
 
     // Check if result has been created
@@ -329,12 +327,10 @@ public class TaskRunner {
     }
 
     // For all output ports
-    for (String portName : this.context.getCurrentStep().getOutputPorts()
-        .getPortNames()) {
+    for (String portName : this.context.getCurrentStep().getOutputPorts().getPortNames()) {
 
       // Get data required for token creation
-      final StepOutputPort port =
-          this.context.getStep().getWorkflowOutputPorts().getPort(portName);
+      final StepOutputPort port = this.context.getStep().getWorkflowOutputPorts().getPort(portName);
       final Data data = this.context.getOutputData(port);
 
       // Send the token
@@ -347,11 +343,11 @@ public class TaskRunner {
     if (step.getState() == WORKING) {
       WorkflowEventBus.getInstance().postStepStateChange(step, PARTIALLY_DONE);
     }
-
   }
 
   /**
    * Create default context name.
+   *
    * @return a string with the default context name
    */
   private String createDefaultContextName() {
@@ -362,12 +358,10 @@ public class TaskRunner {
     final Set<String> otherDataNames = new LinkedHashSet<>();
 
     // Collect the names of the data and files names
-    for (String inputPortName : this.context.getCurrentStep().getInputPorts()
-        .getPortNames()) {
+    for (String inputPortName : this.context.getCurrentStep().getInputPorts().getPortNames()) {
 
       final AbstractData data =
-          ((UnmodifiableData) this.context.getInputData(inputPortName))
-              .getData();
+          ((UnmodifiableData) this.context.getInputData(inputPortName)).getData();
 
       if (!data.isList()) {
 
@@ -401,16 +395,16 @@ public class TaskRunner {
 
   /**
    * Create the logger for a step.
+   *
    * @param threadGroupName the name of the thread group
    * @return a Logger instance
    */
   private Logger createStepLogger(final String threadGroupName) {
 
     // Define the log file for the step
-    final DataFile logDir =
-        this.context.getStep().getAbstractWorkflow().getTaskDirectory();
-    final DataFile logFile = new DataFile(logDir,
-        this.context.getTaskFilePrefix() + TASK_LOG_EXTENSION);
+    final DataFile logDir = this.context.getStep().getAbstractWorkflow().getTaskDirectory();
+    final DataFile logFile =
+        new DataFile(logDir, this.context.getTaskFilePrefix() + TASK_LOG_EXTENSION);
 
     OutputStream logOut;
     try {
@@ -453,6 +447,7 @@ public class TaskRunner {
 
   /**
    * Create a step result for an exception.
+   *
    * @param taskContext task context
    * @param exception exception
    * @return a new TaskResult object
@@ -460,20 +455,20 @@ public class TaskRunner {
   public static TaskResultImpl createStepResult(
       final TaskContextImpl taskContext, final Throwable exception) {
 
-    return createStepResult(taskContext, exception,
-        exception != null ? exception.getMessage() : null);
+    return createStepResult(
+        taskContext, exception, exception != null ? exception.getMessage() : null);
   }
 
   /**
    * Create a step result for an exception.
+   *
    * @param taskContext task context
    * @param exception exception
    * @param errorMessage error message
    * @return a new TaskResult object
    */
   public static TaskResultImpl createStepResult(
-      final TaskContextImpl taskContext, final Throwable exception,
-      final String errorMessage) {
+      final TaskContextImpl taskContext, final Throwable exception, final String errorMessage) {
 
     final TaskRunner runner = new TaskRunner(taskContext);
 
@@ -481,17 +476,17 @@ public class TaskRunner {
     runner.status.durationStart();
 
     // Create the result object
-    return (TaskResultImpl) runner.status.createTaskResult(exception,
-        errorMessage);
+    return (TaskResultImpl) runner.status.createTaskResult(exception, errorMessage);
   }
 
   /**
    * Send tokens for a serialized task result.
+   *
    * @param taskContext task context
    * @param taskResult task result
    */
-  public static void sendTokens(final TaskContextImpl taskContext,
-      final TaskResultImpl taskResult) {
+  public static void sendTokens(
+      final TaskContextImpl taskContext, final TaskResultImpl taskResult) {
 
     new TaskRunner(taskContext, taskResult).sendTokens();
   }
@@ -502,6 +497,7 @@ public class TaskRunner {
 
   /**
    * Constructor.
+   *
    * @param taskContext task context to execute
    */
   public TaskRunner(final TaskContextImpl taskContext) {
@@ -511,17 +507,16 @@ public class TaskRunner {
 
   /**
    * Constructor.
+   *
    * @param taskContext task context to execute
    * @param stepStatus step status
    */
-  public TaskRunner(final TaskContextImpl taskContext,
-      final StepStatus stepStatus) {
+  public TaskRunner(final TaskContextImpl taskContext, final StepStatus stepStatus) {
 
     requireNonNull(taskContext, "taskContext cannot be null");
 
     this.context = taskContext;
-    this.module =
-        StepInstances.getInstance().getModule(taskContext.getCurrentStep());
+    this.module = StepInstances.getInstance().getModule(taskContext.getCurrentStep());
 
     this.status = new TaskStatusImpl(taskContext, stepStatus);
 
@@ -531,11 +526,11 @@ public class TaskRunner {
 
   /**
    * Private constructor used to send token for serialized result.
+   *
    * @param taskContext task context
    * @param taskResult task result
    */
-  private TaskRunner(final TaskContextImpl taskContext,
-      final TaskResultImpl taskResult) {
+  private TaskRunner(final TaskContextImpl taskContext, final TaskResultImpl taskResult) {
 
     requireNonNull(taskContext, "taskContext cannot be null");
     requireNonNull(taskResult, "taskResult cannot be null");
@@ -550,5 +545,4 @@ public class TaskRunner {
     this.module = null;
     this.status = null;
   }
-
 }

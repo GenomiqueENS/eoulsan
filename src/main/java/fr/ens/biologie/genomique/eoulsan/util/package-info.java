@@ -24,6 +24,7 @@
 
 /**
  * This package contain utility classes.
+ *
  * @since 1.0
  */
 package fr.ens.biologie.genomique.eoulsan.util;

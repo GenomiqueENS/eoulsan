@@ -27,17 +27,9 @@ package fr.ens.biologie.genomique.eoulsan.modules;
 import static fr.ens.biologie.genomique.kenetre.io.CompressionType.NONE;
 import static fr.ens.biologie.genomique.kenetre.io.CompressionType.getCompressionTypeByContentEncoding;
 
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -54,16 +46,23 @@ import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
-import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 import fr.ens.biologie.genomique.eoulsan.splitermergers.Merger;
+import fr.ens.biologie.genomique.kenetre.io.CompressionType;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This class define a generic merger module.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -80,10 +79,7 @@ public class MergerModule extends AbstractModule {
   // Inner class
   //
 
-  /**
-   * This inner class allow to create iterator needed by SplitterMerger.merge()
-   * method.
-   */
+  /** This inner class allow to create iterator needed by SplitterMerger.merge() method. */
   private final class MergerIterator {
 
     private final ListMultimap<String, Data> map = ArrayListMultimap.create();
@@ -104,14 +100,13 @@ public class MergerModule extends AbstractModule {
       return this.maxFileIndex;
     }
 
-    public Iterator<DataFile> getIterator(final String dataName)
-        throws EoulsanException {
+    public Iterator<DataFile> getIterator(final String dataName) throws EoulsanException {
 
       return getIterator(dataName, -1);
     }
 
-    public Iterator<DataFile> getIterator(final String dataName,
-        final int fileIndex) throws EoulsanException {
+    public Iterator<DataFile> getIterator(final String dataName, final int fileIndex)
+        throws EoulsanException {
 
       final List<Data> list = Lists.newArrayList(this.map.get(dataName));
 
@@ -161,6 +156,7 @@ public class MergerModule extends AbstractModule {
 
     /**
      * Check that two keys cannot produce the same data name.
+     *
      * @throws EoulsanException if two keys share the same data name
      */
     private void checkKeys() throws EoulsanException {
@@ -173,8 +169,7 @@ public class MergerModule extends AbstractModule {
 
         if (validNames.contains(validName)) {
           throw new EoulsanException(
-              "Two merger keys share the same data name ("
-                  + name + " -> " + validName + ")");
+              "Two merger keys share the same data name (" + name + " -> " + validName + ")");
         }
 
         validNames.add(validName);
@@ -183,6 +178,7 @@ public class MergerModule extends AbstractModule {
 
     /**
      * Constructor.
+     *
      * @param data the data
      * @throws EoulsanException if two keys share the same data name
      */
@@ -205,7 +201,6 @@ public class MergerModule extends AbstractModule {
       // Check keys
       checkKeys();
     }
-
   }
 
   //
@@ -214,6 +209,7 @@ public class MergerModule extends AbstractModule {
 
   /**
    * Define the key to use for replicate merging.
+   *
    * @param data data to merge
    * @return the merging key
    */
@@ -246,8 +242,7 @@ public class MergerModule extends AbstractModule {
   @Override
   public InputPorts getInputPorts() {
 
-    return new InputPortsBuilder()
-        .addPort("input", true, this.merger.getFormat()).create();
+    return new InputPortsBuilder().addPort("input", true, this.merger.getFormat()).create();
   }
 
   @Override
@@ -259,44 +254,42 @@ public class MergerModule extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     final Set<Parameter> mergerParameters = new HashSet<>();
 
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
+        case "format":
+          // Get format
+          final DataFormat format =
+              DataFormatRegistry.getInstance().getDataFormatFromNameOrAlias(p.getValue());
 
-      case "format":
-        // Get format
-        final DataFormat format = DataFormatRegistry.getInstance()
-            .getDataFormatFromNameOrAlias(p.getValue());
+          // Check if the format exists
+          if (format == null) {
+            Modules.badParameterValue(context, p, "Unknown format: " + p.getValue());
+          }
 
-        // Check if the format exists
-        if (format == null) {
-          Modules.badParameterValue(context, p,
-              "Unknown format: " + p.getValue());
-        }
+          // Check if a merger exists for the format
+          if (!format.isMerger()) {
+            Modules.badParameterValue(
+                context, p, "No splitter exists for format: " + format.getName());
+          }
 
-        // Check if a merger exists for the format
-        if (!format.isMerger()) {
-          Modules.badParameterValue(context, p,
-              "No splitter exists for format: " + format.getName());
-        }
+          // Set the merger
+          this.merger = format.getMerger();
 
-        // Set the merger
-        this.merger = format.getMerger();
+          break;
 
-        break;
+        case "compression":
+          this.compression = getCompressionTypeByContentEncoding(p.getValue());
+          break;
 
-      case "compression":
-        this.compression = getCompressionTypeByContentEncoding(p.getValue());
-        break;
-
-      default:
-        mergerParameters.add(p);
-        break;
+        default:
+          mergerParameters.add(p);
+          break;
       }
     }
 
@@ -310,8 +303,7 @@ public class MergerModule extends AbstractModule {
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     final DataFormat format = this.merger.getFormat();
 
@@ -325,8 +317,7 @@ public class MergerModule extends AbstractModule {
 
       for (String dataName : it.getDataNames()) {
 
-        final Data outData =
-            outListData.addDataToList(Naming.toValidName(dataName));
+        final Data outData = outListData.addDataToList(Naming.toValidName(dataName));
 
         // Set metadata for output data
         DataUtils.setDataMetadata(outData, it.getListData(dataName));
@@ -342,8 +333,7 @@ public class MergerModule extends AbstractModule {
         } else {
 
           // For each file of the multi-file format
-          for (int fileIndex = 0; fileIndex < it
-              .getMaxFileIndex(); fileIndex++) {
+          for (int fileIndex = 0; fileIndex < it.getMaxFileIndex(); fileIndex++) {
 
             // Get output file
             final DataFile outFile = outData.getDataFile(fileIndex);

@@ -6,8 +6,6 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_INDEX_BAI;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.InputPorts;
@@ -16,11 +14,13 @@ import fr.ens.biologie.genomique.eoulsan.core.OutputPorts;
 import fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder;
 import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.util.Set;
 
 /**
  * This class define a module for converting SAM files into BAM.
+ *
  * @since 2.0
  * @author Laurent Jourdren
  */
@@ -42,6 +42,7 @@ public abstract class AbstractSAM2BAMModule extends AbstractModule {
 
   /**
    * Get the compression level to use.
+   *
    * @return the compression level to use
    */
   protected int getCompressionLevel() {
@@ -50,6 +51,7 @@ public abstract class AbstractSAM2BAMModule extends AbstractModule {
 
   /**
    * Get the reducer task count.
+   *
    * @return the reducer task count
    */
   protected int getReducerTaskCount() {
@@ -59,6 +61,7 @@ public abstract class AbstractSAM2BAMModule extends AbstractModule {
 
   /**
    * Get the maximum records in RAM.
+   *
    * @return the reducer task count
    */
   protected int getMaxRecordsInRam() {
@@ -96,38 +99,38 @@ public abstract class AbstractSAM2BAMModule extends AbstractModule {
   @Override
   public OutputPorts getOutputPorts() {
 
-    return new OutputPortsBuilder().addPort("bam", MAPPER_RESULTS_BAM)
-        .addPort("bai", MAPPER_RESULTS_INDEX_BAI).create();
+    return new OutputPortsBuilder()
+        .addPort("bam", MAPPER_RESULTS_BAM)
+        .addPort("bai", MAPPER_RESULTS_INDEX_BAI)
+        .create();
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     for (Parameter p : stepParameters) {
 
       switch (p.getName()) {
+        case "compression.level":
+          this.compressionLevel = p.getIntValueInRange(0, 9);
+          break;
 
-      case "compression.level":
-        this.compressionLevel = p.getIntValueInRange(0, 9);
-        break;
+        case "input.format":
+          Modules.deprecatedParameter(context, p, true);
+          break;
 
-      case "input.format":
-        Modules.deprecatedParameter(context, p, true);
-        break;
+        case "max.entries.in.ram":
+          this.maxRecordsInRam = p.getIntValueGreaterOrEqualsTo(1);
+          break;
 
-      case "max.entries.in.ram":
-        this.maxRecordsInRam = p.getIntValueGreaterOrEqualsTo(1);
-        break;
+        case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
+          this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
+          break;
 
-      case HADOOP_REDUCER_TASK_COUNT_PARAMETER_NAME:
-        this.reducerTaskCount = p.getIntValueGreaterOrEqualsTo(1);
-        break;
-
-      default:
-        Modules.unknownParameter(context, p);
+        default:
+          Modules.unknownParameter(context, p);
       }
     }
   }
-
 }

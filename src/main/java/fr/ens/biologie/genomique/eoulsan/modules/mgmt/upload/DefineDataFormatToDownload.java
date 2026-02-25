@@ -27,11 +27,7 @@ package fr.ens.biologie.genomique.eoulsan.modules.mgmt.upload;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.modules.mgmt.upload.HDFSDataDownloadModule.DATAFORMATS_TO_DOWNLOAD_SETTING;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.google.common.base.Splitter;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Settings;
@@ -45,10 +41,13 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * This Step allow to define the list of the formats of the files to download at
- * the end of a Hadoop execution.
+ * This Step allow to define the list of the formats of the files to download at the end of a Hadoop
+ * execution.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -79,8 +78,8 @@ public class DefineDataFormatToDownload extends AbstractModule {
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     String formatNames = null;
 
@@ -89,8 +88,7 @@ public class DefineDataFormatToDownload extends AbstractModule {
       if ("formats".equals(p.getName())) {
         formatNames = p.getStringValue();
       } else {
-        throw new EoulsanException(
-            "Unknown parameter for " + getName() + " step: " + p.getName());
+        throw new EoulsanException("Unknown parameter for " + getName() + " step: " + p.getName());
       }
     }
 
@@ -119,8 +117,7 @@ public class DefineDataFormatToDownload extends AbstractModule {
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     final StringBuilder sb = new StringBuilder();
     boolean first = true;
@@ -148,5 +145,4 @@ public class DefineDataFormatToDownload extends AbstractModule {
     status.setProgressMessage("Formats to download: " + formats);
     return status.createTaskResult();
   }
-
 }

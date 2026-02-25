@@ -29,14 +29,6 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESU
 import static java.util.Collections.unmodifiableSet;
 import static java.util.Objects.requireNonNull;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -61,13 +53,20 @@ import fr.ens.biologie.genomique.eoulsan.util.r.DockerRExecutor;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 import fr.ens.biologie.genomique.kenetre.bio.io.TSVCountsReader;
 import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Class to run the differential analysis with DEseq2
+ *
  * @author Xavier Bauquet
  * @since 2.0
  */
-
 @LocalOnly
 public class DESeq2Module extends AbstractModule {
 
@@ -75,8 +74,10 @@ public class DESeq2Module extends AbstractModule {
   public static final String MODULE_NAME = "deseq2";
 
   private static final String[] EASY_CONTRASTS_DEFAULT_DOCKER_IMAGES =
-      new String[] {"genomicpariscentre/bioconductor:release_sequencing_3.1",
-          "genomicpariscentre/easycontrasts:2.0"};
+      new String[] {
+        "genomicpariscentre/bioconductor:release_sequencing_3.1",
+        "genomicpariscentre/easycontrasts:2.0"
+      };
 
   // DEseq2 options names
   private static final String NORMALIZATION_FIGURES = "norm.fig";
@@ -135,107 +136,106 @@ public class DESeq2Module extends AbstractModule {
     return new DESeq2DesignChecker();
   }
 
-  private String defaultDockerImage(Set<Parameter> parameters)
-      throws EoulsanException {
+  private String defaultDockerImage(Set<Parameter> parameters) throws EoulsanException {
 
     // Get Easy contrast version
     for (Parameter p : new HashSet<>(parameters)) {
 
       switch (p.getName()) {
-      case VERSION:
-        this.deseq2Parameters
-            .setEasyContrastsVersion(p.getIntValueInRange(1, 2));
-        parameters.remove(p);
-        break;
+        case VERSION:
+          this.deseq2Parameters.setEasyContrastsVersion(p.getIntValueInRange(1, 2));
+          parameters.remove(p);
+          break;
 
-      default:
-        break;
+        default:
+          break;
       }
     }
 
-    return EASY_CONTRASTS_DEFAULT_DOCKER_IMAGES[this.deseq2Parameters
-        .getEasyContrastsVersion() - 1];
+    return EASY_CONTRASTS_DEFAULT_DOCKER_IMAGES[
+        this.deseq2Parameters.getEasyContrastsVersion() - 1];
   }
 
   @Override
-  public void configure(final StepConfigurationContext context,
-      final Set<Parameter> stepParameters) throws EoulsanException {
+  public void configure(final StepConfigurationContext context, final Set<Parameter> stepParameters)
+      throws EoulsanException {
 
     final Set<Parameter> parameters = new HashSet<>(stepParameters);
     final int version = this.deseq2Parameters.getEasyContrastsVersion();
 
-    context.getLogger().info("Easy contrast version: "
-        + this.deseq2Parameters.getEasyContrastsVersion());
+    context
+        .getLogger()
+        .info("Easy contrast version: " + this.deseq2Parameters.getEasyContrastsVersion());
 
     context.getLogger().info("Docker image: " + defaultDockerImage(parameters));
 
     context.getLogger().info("Easy contrast version: " + version);
 
     // Parse R executor parameters
-    this.executor = RModuleCommonConfiguration.parseRExecutorParameter(context,
-        parameters, this.requirements, defaultDockerImage(parameters));
+    this.executor =
+        RModuleCommonConfiguration.parseRExecutorParameter(
+            context, parameters, this.requirements, defaultDockerImage(parameters));
 
     context.getLogger().info("Docker image: " + defaultDockerImage(parameters));
 
     for (Parameter p : parameters) {
 
       switch (p.getName()) {
+        case NORMALIZATION_FIGURES:
+          notRelevantParameterV2(context, p);
+          this.deseq2Parameters.setNormFig(parseBoolean(p));
+          break;
 
-      case NORMALIZATION_FIGURES:
-        notRelevantParameterV2(context, p);
-        this.deseq2Parameters.setNormFig(parseBoolean(p));
-        break;
+        case DIFFANA_FIGURES:
+          notRelevantParameterV2(context, p);
+          this.deseq2Parameters.setDiffanaFig(parseBoolean(p));
+          break;
 
-      case DIFFANA_FIGURES:
-        notRelevantParameterV2(context, p);
-        this.deseq2Parameters.setDiffanaFig(parseBoolean(p));
-        break;
+        case NORM_DIFFANA:
+          notRelevantParameterV2(context, p);
+          this.deseq2Parameters.setNormDiffana(parseBoolean(p));
+          break;
 
-      case NORM_DIFFANA:
-        notRelevantParameterV2(context, p);
-        this.deseq2Parameters.setNormDiffana(parseBoolean(p));
-        break;
+        case DIFFANA:
+          this.deseq2Parameters.setDiffana(parseBoolean(p));
+          break;
 
-      case DIFFANA:
-        this.deseq2Parameters.setDiffana(parseBoolean(p));
-        break;
+        case SIZE_FACTORS_TYPE:
+          this.deseq2Parameters.setSizeFactorsType(p.getName(), p.getStringValue());
+          break;
 
-      case SIZE_FACTORS_TYPE:
-        this.deseq2Parameters.setSizeFactorsType(p.getName(), p.getStringValue());
-        break;
+        case FIT_TYPE:
+          this.deseq2Parameters.setFitType(p.getName(), p.getStringValue());
+          break;
 
-      case FIT_TYPE:
-        this.deseq2Parameters.setFitType(p.getName(), p.getStringValue());
-        break;
+        case STATISTIC_TEST:
+          this.deseq2Parameters.setStatisticTest(p.getName(), p.getStringValue());
+          break;
 
-      case STATISTIC_TEST:
-        this.deseq2Parameters.setStatisticTest(p.getName(), p.getStringValue());
-        break;
+        // Modules
+        case WEIGHT_CONTRAST:
+          notRelevantParameterV1(context, p);
+          this.deseq2Parameters.setWeightContrast(p.getBooleanValue());
+          break;
 
-      // Modules
-      case WEIGHT_CONTRAST:
-        notRelevantParameterV1(context, p);
-        this.deseq2Parameters.setWeightContrast(p.getBooleanValue());
-        break;
+        case LOGO_URL:
+          notRelevantParameterV1(context, p);
+          this.deseq2Parameters.setLogoUrl(p.getStringValue());
+          break;
 
-      case LOGO_URL:
-        notRelevantParameterV1(context, p);
-        this.deseq2Parameters.setLogoUrl(p.getStringValue());
-        break;
+        case AUTHOR_NAME:
+          notRelevantParameterV1(context, p);
+          this.deseq2Parameters.setAuthorName(p.getStringValue());
+          break;
 
-      case AUTHOR_NAME:
-        notRelevantParameterV1(context, p);
-        this.deseq2Parameters.setAuthorName(p.getStringValue());
-        break;
+        case AUTHOR_MAIL:
+          notRelevantParameterV1(context, p);
+          this.deseq2Parameters.setAuthorEmail(p.getStringValue());
+          break;
 
-      case AUTHOR_MAIL:
-        notRelevantParameterV1(context, p);
-        this.deseq2Parameters.setAuthorEmail(p.getStringValue());
-        break;
-
-      default:
-        throw new EoulsanException(
-            "Unkown parameter for step " + getName() + " : " + p.getName());
+        default:
+          throw new EoulsanException(
+              "Unkown parameter for step " + getName() + " : " + p.getName());
       }
     }
 
@@ -246,12 +246,12 @@ public class DESeq2Module extends AbstractModule {
 
   /**
    * Parse a boolean parameter.
+   *
    * @param p the parameter
    * @return a boolean
    * @throws EoulsanException if the parameter is not a boolean
    */
-  private static boolean parseBoolean(final Parameter p)
-      throws EoulsanException {
+  private static boolean parseBoolean(final Parameter p) throws EoulsanException {
 
     if (p == null) {
       throw new NullPointerException("p parameter cannot be null");
@@ -260,16 +260,15 @@ public class DESeq2Module extends AbstractModule {
     String value = p.getLowerStringValue().trim();
 
     if (!("true".equals(value) || "false".equals(value))) {
-      throw new EoulsanException("Invalid boolean value for parameter "
-          + p.getName() + ": " + p.getValue());
+      throw new EoulsanException(
+          "Invalid boolean value for parameter " + p.getName() + ": " + p.getValue());
     }
 
     return p.getBooleanValue();
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     if (DockerRExecutor.REXECUTOR_NAME.equals(this.executor.getName())) {
       status.setDockerImage(((DockerRExecutor) executor).getDockerImage());
@@ -304,31 +303,41 @@ public class DESeq2Module extends AbstractModule {
         // Select the version of Easy contrasts
         AbstractEasyContrasts ec;
         switch (this.deseq2Parameters.getEasyContrastsVersion()) {
+          case 1:
+            ec =
+                new EasyContrasts1(
+                    this.executor,
+                    stepId,
+                    design,
+                    e,
+                    sampleFiles,
+                    this.deseq2Parameters,
+                    context.getSettings().isSaveRscripts());
+            break;
 
-        case 1:
-          ec = new EasyContrasts1(this.executor, stepId, design, e, sampleFiles,
-              this.deseq2Parameters, context.getSettings().isSaveRscripts());
-          break;
+          case 2:
+            ec =
+                new EasyContrasts2(
+                    this.executor,
+                    stepId,
+                    design,
+                    e,
+                    sampleFiles,
+                    this.deseq2Parameters,
+                    context.getSettings().isSaveRscripts());
+            break;
 
-        case 2:
-          ec = new EasyContrasts2(this.executor, stepId, design, e, sampleFiles,
-              this.deseq2Parameters, context.getSettings().isSaveRscripts());
-          break;
-
-        default:
-          throw new IllegalStateException(
-              "Invalide easy-contrasts-DESeq2 version: "
-                  + this.deseq2Parameters.getEasyContrastsVersion());
-
+          default:
+            throw new IllegalStateException(
+                "Invalide easy-contrasts-DESeq2 version: "
+                    + this.deseq2Parameters.getEasyContrastsVersion());
         }
 
         // Run DEseq2
         ec.runDEseq2(context.getOutputDirectory());
-
       }
     } catch (IOException | EoulsanException e) {
-      return status.createTaskResult(e,
-          "Error while analysis data: " + e.getMessage());
+      return status.createTaskResult(e, "Error while analysis data: " + e.getMessage());
     }
 
     // Write log file
@@ -337,6 +346,7 @@ public class DESeq2Module extends AbstractModule {
 
   /**
    * Check if all the count in an expression file are null
+   *
    * @param file the file to test
    * @return true if all the count in an expression file are null
    * @throws FileNotFoundException if the file cannot be found
@@ -364,14 +374,15 @@ public class DESeq2Module extends AbstractModule {
 
   /**
    * Check if the counts of a condition are null.
+   *
    * @param design the design
    * @param sampleFiles the expression files
    * @throws IOException if an expression file cannot be read
    * @throws FileNotFoundException if an expression file cannot be found
    * @throws EoulsanException if all the counts of a condition are null
    */
-  private static void checkIfAllCountAreNullInConditions(final Design design,
-      final Map<String, File> sampleFiles)
+  private static void checkIfAllCountAreNullInConditions(
+      final Design design, final Map<String, File> sampleFiles)
       throws FileNotFoundException, IOException, EoulsanException {
 
     Map<String, Boolean> emptyFiles = new HashMap<>();
@@ -393,8 +404,7 @@ public class DESeq2Module extends AbstractModule {
 
     // Check all the files
     for (Map.Entry<String, File> e : sampleFiles.entrySet()) {
-      emptyFiles.put(e.getKey(),
-          checkAllCountAreNullInExpressionFile(e.getValue()));
+      emptyFiles.put(e.getKey(), checkAllCountAreNullInExpressionFile(e.getValue()));
     }
 
     // Check if all the expression file of a technical replicate group are null
@@ -423,41 +433,45 @@ public class DESeq2Module extends AbstractModule {
 
         throw new EoulsanException(
             "All the counts in the expression files are null for the the \""
-                + e.getKey() + "\" condition");
+                + e.getKey()
+                + "\" condition");
       }
     }
-
   }
 
-  private static void notRelevantParameterV1(StepConfigurationContext context,
-      Parameter parameter) throws EoulsanException {
+  private static void notRelevantParameterV1(StepConfigurationContext context, Parameter parameter)
+      throws EoulsanException {
     notRelevantParameter(context, parameter, 1);
   }
 
-  private static void notRelevantParameterV2(StepConfigurationContext context,
-      Parameter parameter) throws EoulsanException {
+  private static void notRelevantParameterV2(StepConfigurationContext context, Parameter parameter)
+      throws EoulsanException {
     notRelevantParameter(context, parameter, 2);
   }
 
   /**
    * Show a message for not relevant parameters.
+   *
    * @param context the Eoulsan context
    * @param parameter the deprecated parameter
    * @throws EoulsanException throw an exception if required
    */
-  private static void notRelevantParameter(StepConfigurationContext context,
-      Parameter parameter, int version) throws EoulsanException {
+  private static void notRelevantParameter(
+      StepConfigurationContext context, Parameter parameter, int version) throws EoulsanException {
 
     requireNonNull(context, "context argument cannot be null");
     requireNonNull(parameter, "parameter argument cannot be null");
 
     String stepId = context.getCurrentStep().getId();
-    String message = "The parameter \""
-        + parameter.getName() + "\" in the \"" + stepId
-        + "\" step is not handled by the version " + version
-        + " of Easy contrats";
+    String message =
+        "The parameter \""
+            + parameter.getName()
+            + "\" in the \""
+            + stepId
+            + "\" step is not handled by the version "
+            + version
+            + " of Easy contrats";
 
     Common.printWarning(message);
   }
-
 }

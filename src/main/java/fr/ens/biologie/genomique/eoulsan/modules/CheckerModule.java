@@ -28,16 +28,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -54,12 +46,19 @@ import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
-import fr.ens.biologie.genomique.kenetre.util.Version;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
+import fr.ens.biologie.genomique.kenetre.util.Version;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class is a module that launch checkers.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -72,20 +71,18 @@ public class CheckerModule extends AbstractModule {
   private static CheckerModule instance;
 
   private final Map<DataFormat, Checker> checkers = new HashMap<>();
-  private final Map<DataFormat, Set<Parameter>> checkerConfiguration =
-      new HashMap<>();
+  private final Map<DataFormat, Set<Parameter>> checkerConfiguration = new HashMap<>();
   private InputPorts inputPorts = InputPortsBuilder.noInputPort();
   private boolean inputPortsConfigured;
 
   /**
-   * Configure input port of the checker from the output ports of the design
-   * step.
+   * Configure input port of the checker from the output ports of the design step.
+   *
    * @param designOutputPorts output ports of the design step
    */
   void configureInputPorts(final OutputPorts designOutputPorts) {
 
-    checkState(!this.inputPortsConfigured,
-        "inputPorts has been already configured");
+    checkState(!this.inputPortsConfigured, "inputPorts has been already configured");
 
     final InputPortsBuilder builder = new InputPortsBuilder();
 
@@ -109,20 +106,18 @@ public class CheckerModule extends AbstractModule {
   }
 
   /**
-   * This method allow to configure a checker from the configure method of other
-   * steps, that's why this method is static.
+   * This method allow to configure a checker from the configure method of other steps, that's why
+   * this method is static.
+   *
    * @param format checker format to configure
    * @param parameters parameter of the checker
    */
-  public static void configureChecker(final DataFormat format,
-      final Set<Parameter> parameters) {
+  public static void configureChecker(final DataFormat format, final Set<Parameter> parameters) {
 
     requireNonNull(format, "format argument cannot be null");
     requireNonNull(parameters, "parameter argument cannot be null");
-    checkArgument(format.isChecker(),
-        "No checker exists for format: " + format.getName());
-    checkState(instance != null,
-        "Instance of CheckerModule has not been yet created");
+    checkArgument(format.isChecker(), "No checker exists for format: " + format.getName());
+    checkState(instance != null, "Instance of CheckerModule has not been yet created");
 
     instance.checkerConfiguration.put(format, Sets.newHashSet(parameters));
   }
@@ -150,8 +145,7 @@ public class CheckerModule extends AbstractModule {
   }
 
   @Override
-  public TaskResult execute(final TaskContext context,
-      final TaskStatus status) {
+  public TaskResult execute(final TaskContext context, final TaskStatus status) {
 
     // Get the CheckStore
     final CheckStore checkStore = CheckStore.getCheckStore();
@@ -163,8 +157,7 @@ public class CheckerModule extends AbstractModule {
 
     try {
 
-      final List<Checker> checkerList =
-          createDependenciesList(context.getWorkflow().getSteps());
+      final List<Checker> checkerList = createDependenciesList(context.getWorkflow().getSteps());
 
       // For all input ports of the step
       for (Checker checker : checkerList) {
@@ -190,18 +183,24 @@ public class CheckerModule extends AbstractModule {
 
           for (Data data : context.getInputData(format).getListElements()) {
 
-            context.getLogger()
-                .info("Start checker "
-                    + checker.getName() + " to check: "
-                    + DataUtils.getDataFiles(data));
+            context
+                .getLogger()
+                .info(
+                    "Start checker "
+                        + checker.getName()
+                        + " to check: "
+                        + DataUtils.getDataFiles(data));
 
             // Check the data
             checker.check(data, checkStore);
 
-            context.getLogger()
-                .info("End of checker "
-                    + checker.getName() + " to check: "
-                    + DataUtils.getDataFiles(data));
+            context
+                .getLogger()
+                .info(
+                    "End of checker "
+                        + checker.getName()
+                        + " to check: "
+                        + DataUtils.getDataFiles(data));
           }
         }
 
@@ -224,13 +223,12 @@ public class CheckerModule extends AbstractModule {
 
   /**
    * Create the dependencies list of the checker.
+   *
    * @param steps a set with the steps of the workflow
-   * @return a list of Checker object correctly ordered to avoid missing
-   *         dependencies
+   * @return a list of Checker object correctly ordered to avoid missing dependencies
    * @throws EoulsanException if dependencies order cannot be defined
    */
-  private List<Checker> createDependenciesList(final Set<Step> steps)
-      throws EoulsanException {
+  private List<Checker> createDependenciesList(final Set<Step> steps) throws EoulsanException {
 
     List<Checker> list = Lists.newArrayList(this.checkers.values());
     List<Checker> result = new ArrayList<>();
@@ -302,14 +300,10 @@ public class CheckerModule extends AbstractModule {
   // Constructor
   //
 
-  /**
-   * Public constructor.
-   */
+  /** Public constructor. */
   public CheckerModule() {
 
-    checkState(instance == null,
-        "Instance of CheckerModule has been already created");
+    checkState(instance == null, "Instance of CheckerModule has been already created");
     instance = this;
   }
-
 }

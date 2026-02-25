@@ -34,12 +34,7 @@ import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.GENERATOR_STE
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.STANDARD_STEP;
 import static java.util.Objects.requireNonNull;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.google.common.collect.Sets;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.annotations.EoulsanAnnotationUtils;
@@ -57,10 +52,14 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.modules.CheckerModule;
 import fr.ens.biologie.genomique.eoulsan.modules.DesignModule;
 import fr.ens.biologie.genomique.eoulsan.modules.FakeModule;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * This class define a step of the workflow. This class must be extended by a
- * class to be able to work with a specific workflow file format.
+ * This class define a step of the workflow. This class must be extended by a class to be able to
+ * work with a specific workflow file format.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -79,8 +78,7 @@ public abstract class AbstractStep implements Step {
   private final StepType type;
   private final Set<Parameter> parameters;
   private final Checker checker;
-  private ParallelizationMode parallelizationMode =
-      ParallelizationMode.STANDARD;
+  private ParallelizationMode parallelizationMode = ParallelizationMode.STANDARD;
   private InputPorts inputPortsParameter = noInputPort();
   private OutputPorts outputPortsParameter = noOutputPort();
 
@@ -116,6 +114,7 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Get the abstract workflow object.
+   *
    * @return the AbstractWorkflow object of the step
    */
   AbstractWorkflow getAbstractWorkflow() {
@@ -155,6 +154,7 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Test if the step is a terminal step.
+   *
    * @return true if the step is a terminal step
    */
   protected boolean isTerminalStep() {
@@ -170,6 +170,7 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Get the underlying Module object.
+   *
    * @return the Module object
    */
   public Module getModule() {
@@ -183,6 +184,7 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Get the Eoulsan mode of the step.
+   *
    * @return an EoulsanMode enum
    */
   public ExecutionMode getEoulsanMode() {
@@ -199,8 +201,7 @@ public abstract class AbstractStep implements Step {
   @Override
   public StepState getState() {
 
-    return this.stepStateDependencies != null
-        ? this.stepStateDependencies.getState() : null;
+    return this.stepStateDependencies != null ? this.stepStateDependencies.getState() : null;
   }
 
   @Override
@@ -240,6 +241,7 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Get the input ports.
+   *
    * @return the InputPorts object
    */
   StepInputPorts getWorkflowInputPorts() {
@@ -249,6 +251,7 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Get the output ports.
+   *
    * @return the OutputPorts object
    */
   StepOutputPorts getWorkflowOutputPorts() {
@@ -258,6 +261,7 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Get step output directory (where output file of the step will be written).
+   *
    * @return the output directory
    */
   public DataFile getStepOutputDirectory() {
@@ -267,6 +271,7 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Test if step log files must be created.
+   *
    * @return true if step log files must be created
    */
   boolean isCreateLogFiles() {
@@ -276,6 +281,7 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Get the state observer object related to this step.
+   *
    * @return a StepStateObserver
    */
   StepStateDependencies getStepStateDependencies() {
@@ -285,6 +291,7 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Get the parallelization mode of the step.
+   *
    * @return a ParallelizationMode enum
    */
   public ParallelizationMode getParallelizationMode() {
@@ -294,6 +301,7 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Get the data product for the step.
+   *
    * @return the data product for the step
    */
   DataProduct getDataProduct() {
@@ -302,6 +310,7 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Get the discard output value.
+   *
    * @return the discard output value
    */
   public DiscardOutput getDiscardOutput() {
@@ -314,6 +323,7 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Set the state of the step.
+   *
    * @param state the new state of the step
    */
   private void setState(final StepState state) {
@@ -326,11 +336,13 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Set the skip state of the step.
+   *
    * @param skipped the skipped state
    */
   void setSkipped(final boolean skipped) {
 
-    checkArgument(this.type == StepType.GENERATOR_STEP,
+    checkArgument(
+        this.type == StepType.GENERATOR_STEP,
         "The step is not a generator and cannot be skipped: " + getId());
 
     this.skip = skipped;
@@ -355,23 +367,22 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Add a dependency for this step.
+   *
    * @param inputPort the input port provided by the dependency
    * @param dependencyOutputPort the output port of the step
    */
-  protected void addDependency(final StepInputPort inputPort,
-      final StepOutputPort dependencyOutputPort) {
+  protected void addDependency(
+      final StepInputPort inputPort, final StepOutputPort dependencyOutputPort) {
 
     requireNonNull(inputPort, "inputPort argument cannot be null");
-    requireNonNull(dependencyOutputPort,
-        "dependencyOutputPort argument cannot be null");
+    requireNonNull(dependencyOutputPort, "dependencyOutputPort argument cannot be null");
 
     final AbstractStep step = inputPort.getStep();
     final AbstractStep dependencyStep = dependencyOutputPort.getStep();
 
-    checkArgument(step == this,
-        "input port ("
-            + inputPort.getName() + ") is not a port of the step (" + getId()
-            + ")");
+    checkArgument(
+        step == this,
+        "input port (" + inputPort.getName() + ") is not a port of the step (" + getId() + ")");
 
     // Set the link
     inputPort.setLink(dependencyOutputPort);
@@ -383,6 +394,7 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Add a dependency for this step.
+   *
    * @param step the dependency
    */
   protected void addDependency(final AbstractStep step) {
@@ -391,14 +403,12 @@ public abstract class AbstractStep implements Step {
 
     // Check if try to link a step to itself
     if (step == this) {
-      throw new EoulsanRuntimeException(
-          "a step cannot depends on itself: " + step.getId());
+      throw new EoulsanRuntimeException("a step cannot depends on itself: " + step.getId());
     }
 
     // Check if the step are in the same workflow
     if (this.getWorkflow() != step.getWorkflow()) {
-      throw new EoulsanRuntimeException(
-          "step dependency is not in the same workflow");
+      throw new EoulsanRuntimeException("step dependency is not in the same workflow");
     }
 
     // Add step dependency
@@ -411,13 +421,13 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Configure the step.
+   *
    * @throws EoulsanException if an error occurs while configuring a step
    */
   protected void configure() throws EoulsanException {
 
     if (getState() != StepState.CREATED) {
-      throw new IllegalStateException(
-          "Illegal step state for configuration: " + getState());
+      throw new IllegalStateException("Illegal step state for configuration: " + getState());
     }
 
     // Configure only standard steps and generator steps
@@ -426,16 +436,15 @@ public abstract class AbstractStep implements Step {
         || getType() == StepType.GENERATOR_STEP
         || getType() == StepType.CHECKER_STEP) {
 
-      getLogger().info("Configure "
-          + getId() + " step with step parameters: " + getParameters());
+      getLogger().info("Configure " + getId() + " step with step parameters: " + getParameters());
 
       final Module module = getModule();
       if (getType() == StepType.STANDARD_STEP
-          || getType() == StepType.DESIGN_STEP || isGenerator(module)) {
+          || getType() == StepType.DESIGN_STEP
+          || isGenerator(module)) {
 
         // Configure step
-        module.configure(new StepConfigurationContextImpl(this),
-            getParameters());
+        module.configure(new StepConfigurationContextImpl(this), getParameters());
 
         // Update parallelization mode if step configuration requires it
         this.parallelizationMode = getParallelizationMode(module);
@@ -447,9 +456,8 @@ public abstract class AbstractStep implements Step {
 
     // Configure data product
     this.dataProduct.configure(this.dataProductConfiguration);
-    getLogger().info("Use "
-        + this.dataProduct.getName() + " data product for " + getId()
-        + " step");
+    getLogger()
+        .info("Use " + this.dataProduct.getName() + " data product for " + getId() + " step");
 
     setState(StepState.CONFIGURED);
   }
@@ -460,11 +468,11 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Get the parallelization mode of a module.
+   *
    * @param module The module
    * @return a ParallelizationMode that cannot be null
    */
-  private static ParallelizationMode getParallelizationMode(
-      final Module module) {
+  private static ParallelizationMode getParallelizationMode(final Module module) {
 
     if (module != null) {
       final ParallelizationMode mode = module.getParallelizationMode();
@@ -482,17 +490,18 @@ public abstract class AbstractStep implements Step {
   //
 
   /**
-   * Constructor that create a step with nothing to execute like ROOT_STEP,
-   * DESIGN_STEP and FIRST_STEP.
+   * Constructor that create a step with nothing to execute like ROOT_STEP, DESIGN_STEP and
+   * FIRST_STEP.
+   *
    * @param workflow the workflow of the step
    * @param type the type of the step
    */
   AbstractStep(final AbstractWorkflow workflow, final StepType type) {
 
-    checkArgument(type != StepType.STANDARD_STEP,
-        "This constructor cannot be used for standard steps");
-    checkArgument(type != StepType.GENERATOR_STEP,
-        "This constructor cannot be used for standard steps");
+    checkArgument(
+        type != StepType.STANDARD_STEP, "This constructor cannot be used for standard steps");
+    checkArgument(
+        type != StepType.GENERATOR_STEP, "This constructor cannot be used for standard steps");
 
     requireNonNull(workflow, "Workflow argument cannot be null");
     requireNonNull(type, "Type argument cannot be null");
@@ -513,53 +522,53 @@ public abstract class AbstractStep implements Step {
     this.checker = null;
 
     switch (type) {
-    case CHECKER_STEP:
+      case CHECKER_STEP:
 
-      // Create and register checker step
-      final Module checkerModule = new CheckerModule();
-      StepInstances.getInstance().registerStep(this, checkerModule);
+        // Create and register checker step
+        final Module checkerModule = new CheckerModule();
+        StepInstances.getInstance().registerStep(this, checkerModule);
 
-      this.moduleName = checkerModule.getName();
-      this.version = checkerModule.getVersion().toString();
-      this.mode = ExecutionMode.getExecutionMode(checkerModule.getClass());
+        this.moduleName = checkerModule.getName();
+        this.version = checkerModule.getVersion().toString();
+        this.mode = ExecutionMode.getExecutionMode(checkerModule.getClass());
 
-      // Define output directory
-      this.outputDir = StepOutputDirectory.getInstance()
-          .defaultDirectory(workflow, this, checkerModule, false);
-      break;
+        // Define output directory
+        this.outputDir =
+            StepOutputDirectory.getInstance()
+                .defaultDirectory(workflow, this, checkerModule, false);
+        break;
 
-    case DESIGN_STEP:
+      case DESIGN_STEP:
 
-      // Create and register checker step
-      final Module checkerModule2 =
-          StepInstances.getInstance().getModule(this.workflow.getCheckerStep());
-      final Module designModule = new DesignModule(this.workflow.getDesign(),
-          (CheckerModule) checkerModule2);
-      StepInstances.getInstance().registerStep(this, designModule);
+        // Create and register checker step
+        final Module checkerModule2 =
+            StepInstances.getInstance().getModule(this.workflow.getCheckerStep());
+        final Module designModule =
+            new DesignModule(this.workflow.getDesign(), (CheckerModule) checkerModule2);
+        StepInstances.getInstance().registerStep(this, designModule);
 
-      this.moduleName = designModule.getName();
-      this.version = checkerModule2.getVersion().toString();
-      this.mode = ExecutionMode.getExecutionMode(designModule.getClass());
+        this.moduleName = designModule.getName();
+        this.version = checkerModule2.getVersion().toString();
+        this.mode = ExecutionMode.getExecutionMode(designModule.getClass());
 
-      // Define output directory
-      this.outputDir = StepOutputDirectory.getInstance()
-          .defaultDirectory(workflow, this, designModule, false);
+        // Define output directory
+        this.outputDir =
+            StepOutputDirectory.getInstance().defaultDirectory(workflow, this, designModule, false);
 
-      break;
+        break;
 
-    default:
+      default:
+        final Module fakeModule = new FakeModule();
+        StepInstances.getInstance().registerStep(this, fakeModule);
 
-      final Module fakeModule = new FakeModule();
-      StepInstances.getInstance().registerStep(this, fakeModule);
+        this.moduleName = type.name();
+        this.version = fakeModule.getVersion().toString();
+        this.mode = ExecutionMode.NONE;
 
-      this.moduleName = type.name();
-      this.version = fakeModule.getVersion().toString();
-      this.mode = ExecutionMode.NONE;
-
-      // Define output directory
-      this.outputDir = StepOutputDirectory.getInstance()
-          .defaultDirectory(workflow, this, fakeModule, false);
-      break;
+        // Define output directory
+        this.outputDir =
+            StepOutputDirectory.getInstance().defaultDirectory(workflow, this, fakeModule, false);
+        break;
     }
 
     // Set state observer
@@ -571,12 +580,12 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Create a Generator Workflow step.
+   *
    * @param workflow the workflow
    * @param format DataFormat
    * @throws EoulsanException if an error occurs while configuring the generator
    */
-  AbstractStep(final AbstractWorkflow workflow, final DataFormat format)
-      throws EoulsanException {
+  AbstractStep(final AbstractWorkflow workflow, final DataFormat format) throws EoulsanException {
 
     requireNonNull(workflow, "Workflow argument cannot be null");
     requireNonNull(format, "Format argument cannot be null");
@@ -605,8 +614,8 @@ public abstract class AbstractStep implements Step {
     this.checker = null;
 
     // Define output directory
-    this.outputDir = StepOutputDirectory.getInstance()
-        .defaultDirectory(workflow, this, generatorModule, false);
+    this.outputDir =
+        StepOutputDirectory.getInstance().defaultDirectory(workflow, this, generatorModule, false);
 
     // Set state observer
     this.stepStateDependencies = new StepStateDependencies(this);
@@ -617,6 +626,7 @@ public abstract class AbstractStep implements Step {
 
   /**
    * Create a step for a standard step.
+   *
    * @param workflow workflow of the step
    * @param id identifier of the step
    * @param moduleName module name
@@ -629,18 +639,36 @@ public abstract class AbstractStep implements Step {
    * @param dataProduct data product
    * @throws EoulsanException id an error occurs while creating the step
    */
-  AbstractStep(final AbstractWorkflow workflow, final String id,
-      final String moduleName, final String stepVersion, final boolean skip,
-      final DiscardOutput discardOutput, final Set<Parameter> parameters,
-      final int requiredMemory, final int requiredProcessors,
-      final String dataProduct) throws EoulsanException {
+  AbstractStep(
+      final AbstractWorkflow workflow,
+      final String id,
+      final String moduleName,
+      final String stepVersion,
+      final boolean skip,
+      final DiscardOutput discardOutput,
+      final Set<Parameter> parameters,
+      final int requiredMemory,
+      final int requiredProcessors,
+      final String dataProduct)
+      throws EoulsanException {
 
-    this(workflow, id, moduleName, stepVersion, skip, discardOutput, parameters,
-        requiredMemory, requiredProcessors, dataProduct, null);
+    this(
+        workflow,
+        id,
+        moduleName,
+        stepVersion,
+        skip,
+        discardOutput,
+        parameters,
+        requiredMemory,
+        requiredProcessors,
+        dataProduct,
+        null);
   }
 
   /**
    * Create a step for a standard step.
+   *
    * @param workflow workflow of the step
    * @param id identifier of the step
    * @param moduleName module name
@@ -654,11 +682,18 @@ public abstract class AbstractStep implements Step {
    * @param outputDirectory output directory
    * @throws EoulsanException id an error occurs while creating the step
    */
-  AbstractStep(final AbstractWorkflow workflow, final String id,
-      final String moduleName, final String stepVersion, final boolean skip,
-      final DiscardOutput discardOutput, final Set<Parameter> parameters,
-      final int requiredMemory, final int requiredProcessors,
-      final String dataProduct, final DataFile outputDirectory)
+  AbstractStep(
+      final AbstractWorkflow workflow,
+      final String id,
+      final String moduleName,
+      final String stepVersion,
+      final boolean skip,
+      final DiscardOutput discardOutput,
+      final Set<Parameter> parameters,
+      final int requiredMemory,
+      final int requiredProcessors,
+      final String dataProduct,
+      final DataFile outputDirectory)
       throws EoulsanException {
 
     requireNonNull(workflow, "Workflow argument cannot be null");
@@ -679,8 +714,7 @@ public abstract class AbstractStep implements Step {
     this.dataProductConfiguration = dataProduct;
 
     // Load Step instance
-    final Module module =
-        StepInstances.getInstance().getModule(this, moduleName, stepVersion);
+    final Module module = StepInstances.getInstance().getModule(this, moduleName, stepVersion);
     this.type = isGenerator(module) ? GENERATOR_STEP : STANDARD_STEP;
     this.mode = ExecutionMode.getExecutionMode(module.getClass());
     this.parameters = Sets.newLinkedHashSet(parameters);
@@ -690,9 +724,11 @@ public abstract class AbstractStep implements Step {
     this.checker = module.getChecker();
 
     // Define output directory
-    this.outputDir = outputDirectory != null
-        ? outputDirectory : StepOutputDirectory.getInstance().defaultDirectory(
-            workflow, this, module, discardOutput.isCopyResultsToOutput());
+    this.outputDir =
+        outputDirectory != null
+            ? outputDirectory
+            : StepOutputDirectory.getInstance()
+                .defaultDirectory(workflow, this, module, discardOutput.isCopyResultsToOutput());
 
     // Set state observer
     this.stepStateDependencies = new StepStateDependencies(this);
@@ -700,5 +736,4 @@ public abstract class AbstractStep implements Step {
     // Register this step in the workflow
     this.workflow.register(this);
   }
-
 }

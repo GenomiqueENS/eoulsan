@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Random;
-
 import org.junit.Test;
 
 public class ByteCountOutputStreamTest {
@@ -82,13 +81,11 @@ public class ByteCountOutputStreamTest {
 
     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-    final ByteCountOutputStream bcos =
-        new ByteCountOutputStream(baos, bytes.length);
+    final ByteCountOutputStream bcos = new ByteCountOutputStream(baos, bytes.length);
 
     Writer writer = new OutputStreamWriter(bcos, defaultCharset());
 
     writer.write(s);
     writer.close();
   }
-
 }

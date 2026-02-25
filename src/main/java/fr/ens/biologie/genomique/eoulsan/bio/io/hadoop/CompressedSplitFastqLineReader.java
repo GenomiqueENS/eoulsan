@@ -20,7 +20,6 @@ package fr.ens.biologie.genomique.eoulsan.bio.io.hadoop;
 
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.compress.SplitCompressionInputStream;
@@ -28,6 +27,7 @@ import org.apache.hadoop.mapreduce.lib.input.SplitLineReader;
 
 /**
  * This class define a split line reader for compressed FASTQ files.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -41,21 +41,22 @@ public class CompressedSplitFastqLineReader extends SplitLineReader {
 
   /**
    * Constructor.
+   *
    * @param in input stream
    * @param conf Hadoop configuration
    * @param recordDelimiterBytes bytes
    * @throws IOException if an error occurs while reading data
    */
-  public CompressedSplitFastqLineReader(SplitCompressionInputStream in,
-      Configuration conf, byte[] recordDelimiterBytes) throws IOException {
+  public CompressedSplitFastqLineReader(
+      SplitCompressionInputStream in, Configuration conf, byte[] recordDelimiterBytes)
+      throws IOException {
     super(in, conf, recordDelimiterBytes);
     scin = in;
     usingCRLF = (recordDelimiterBytes == null);
   }
 
   @Override
-  protected int fillBuffer(InputStream in, byte[] buffer, boolean inDelimiter)
-      throws IOException {
+  protected int fillBuffer(InputStream in, byte[] buffer, boolean inDelimiter) throws IOException {
     int bytesRead = in.read(buffer);
 
     // If the split ended in the middle of a record delimiter then we need
@@ -75,8 +76,7 @@ public class CompressedSplitFastqLineReader extends SplitLineReader {
   }
 
   @Override
-  public int readLine(Text str, int maxLineLength, int maxBytesToConsume)
-      throws IOException {
+  public int readLine(Text str, int maxLineLength, int maxBytesToConsume) throws IOException {
     int bytesRead = 0;
     if (!finished) {
       // only allow at most one more record to be read after the stream

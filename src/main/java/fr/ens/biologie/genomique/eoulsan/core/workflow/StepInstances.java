@@ -26,18 +26,18 @@ package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * This class store module instances and avoid storing this instance in Step
- * objects that are serialized.
+ * This class store module instances and avoid storing this instance in Step objects that are
+ * serialized.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
@@ -49,6 +49,7 @@ public class StepInstances {
 
   /**
    * Get a module instance.
+   *
    * @param step the step
    * @return a module instance
    * @throws EoulsanRuntimeException if an error occurs while loading the module
@@ -68,14 +69,15 @@ public class StepInstances {
 
   /**
    * Get a module instance.
+   *
    * @param step workflow step
    * @param moduleName module name
    * @param moduleVersion module version
    * @return a Module instance
    * @throws EoulsanException if an error occurs while loading the step
    */
-  public Module getModule(final Step step, final String moduleName,
-      final String moduleVersion) throws EoulsanException {
+  public Module getModule(final Step step, final String moduleName, final String moduleVersion)
+      throws EoulsanException {
 
     requireNonNull(moduleName, "Step name is null");
 
@@ -96,6 +98,7 @@ public class StepInstances {
 
   /**
    * Register a step instance.
+   *
    * @param step the step
    * @param module module instance
    */
@@ -109,6 +112,7 @@ public class StepInstances {
 
   /**
    * Remove a step instance.
+   *
    * @param step workflow step
    */
   public void removeStep(final Step step) {
@@ -124,6 +128,7 @@ public class StepInstances {
 
   /**
    * Singleton method.
+   *
    * @return the singleton
    */
   public static StepInstances getInstance() {
@@ -141,13 +146,14 @@ public class StepInstances {
 
   /**
    * Get a Module object from its name.
+   *
    * @param moduleName name of the step
    * @param moduleVersion version of the step
    * @return a Module object
    * @throws EoulsanException if the module does not exits
    */
-  private static Module loadModule(final String moduleName,
-      final String moduleVersion) throws EoulsanException {
+  private static Module loadModule(final String moduleName, final String moduleVersion)
+      throws EoulsanException {
 
     if (moduleName == null) {
       throw new EoulsanException("Step name is null");
@@ -155,13 +161,13 @@ public class StepInstances {
 
     final String lower = moduleName.trim().toLowerCase(Globals.DEFAULT_LOCALE);
 
-    final Module result =
-        ModuleRegistry.getInstance().loadModule(lower, moduleVersion);
+    final Module result = ModuleRegistry.getInstance().loadModule(lower, moduleVersion);
 
     if (result == null) {
-      throw new EoulsanException("Unknown module: "
-          + lower + ("".equals(moduleVersion)
-              ? "" : " (version required: " + moduleVersion + ")"));
+      throw new EoulsanException(
+          "Unknown module: "
+              + lower
+              + ("".equals(moduleVersion) ? "" : " (version required: " + moduleVersion + ")"));
     }
 
     return result;
@@ -171,10 +177,6 @@ public class StepInstances {
   // Constructor
   //
 
-  /**
-   * Private constructor.
-   */
-  private StepInstances() {
-  }
-
+  /** Private constructor. */
+  private StepInstances() {}
 }

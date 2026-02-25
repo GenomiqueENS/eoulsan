@@ -28,14 +28,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 /**
- * This class define the Runtime to execute low level IO operation for Eoulsan
- * in Hadoop mode.
+ * This class define the Runtime to execute low level IO operation for Eoulsan in Hadoop mode.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -48,6 +47,7 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
 
   /**
    * Get Hadoop configuration.
+   *
    * @return Hadoop Configuration object
    */
   public Configuration getConfiguration() {
@@ -75,7 +75,7 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
       // Use Hadoop temporary directory if defined or the default JVM
       // temporary directory
       return java.nio.file.Path.of(
-          this.conf.get(HADOOP_TEMP_DIR, System.getProperty("java.io.tmpdir")))
+              this.conf.get(HADOOP_TEMP_DIR, System.getProperty("java.io.tmpdir")))
           .toFile();
     }
 
@@ -83,8 +83,7 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
   }
 
   @Override
-  public InputStream getInputStream(final String dataSource)
-      throws IOException {
+  public InputStream getInputStream(final String dataSource) throws IOException {
 
     if (dataSource == null) {
       throw new IllegalArgumentException("The datasource is null.");
@@ -97,8 +96,7 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
   }
 
   @Override
-  public InputStream getRawInputStream(final String dataSource)
-      throws IOException {
+  public InputStream getRawInputStream(final String dataSource) throws IOException {
 
     if (dataSource == null) {
       throw new IllegalArgumentException("The datasource is null.");
@@ -111,8 +109,7 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
   }
 
   @Override
-  public OutputStream getOutputStream(final String dataSource)
-      throws IOException {
+  public OutputStream getOutputStream(final String dataSource) throws IOException {
 
     if (dataSource == null) {
       throw new IllegalArgumentException("The datasource is null.");
@@ -129,8 +126,9 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
   //
 
   /**
-   * Public constructor, initialize the runtime. This constructor is useful in
-   * mappers or reducers for initialize Eoulsan DataProtocols.
+   * Public constructor, initialize the runtime. This constructor is useful in mappers or reducers
+   * for initialize Eoulsan DataProtocols.
+   *
    * @param conf Hadoop configuration of the application
    * @return an Hadoop Eoulsan runtime
    * @throws IOException if error occurs while creating the runtime
@@ -139,18 +137,16 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
       throws IOException {
 
     try {
-      return newEoulsanRuntime(new Settings(false), conf,
-          EoulsanExecMode.HADOOP_TASK);
+      return newEoulsanRuntime(new Settings(false), conf, EoulsanExecMode.HADOOP_TASK);
     } catch (EoulsanException e) {
 
       throw new IOException(e);
     }
-
   }
 
   /**
-   * Package constructor, initialize the runtime. This constructor can only
-   * called by MainHadoop class.
+   * Package constructor, initialize the runtime. This constructor can only called by MainHadoop
+   * class.
    */
   static HadoopEoulsanRuntime newEoulsanRuntime(final Settings settings) {
 
@@ -163,16 +159,15 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
 
   /**
    * Private constructor, initialize the runtime.
+   *
    * @param settings Settings of the application
    * @param conf Hadoop configuration object
    */
   private static synchronized HadoopEoulsanRuntime newEoulsanRuntime(
-      final Settings settings, final Configuration conf,
-      final EoulsanExecMode mode) {
+      final Settings settings, final Configuration conf, final EoulsanExecMode mode) {
 
     // Create instance
-    final HadoopEoulsanRuntime instance =
-        new HadoopEoulsanRuntime(settings, conf, mode);
+    final HadoopEoulsanRuntime instance = new HadoopEoulsanRuntime(settings, conf, mode);
 
     // Set the instance
     EoulsanRuntime.setInstance(instance, true);
@@ -182,11 +177,12 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
 
   /**
    * Private constructor.
+   *
    * @param settings Settings of the application
    * @param conf Hadoop configuration object
    */
-  private HadoopEoulsanRuntime(final Settings settings,
-      final Configuration conf, final EoulsanExecMode mode) {
+  private HadoopEoulsanRuntime(
+      final Settings settings, final Configuration conf, final EoulsanExecMode mode) {
 
     super(settings);
 
@@ -197,5 +193,4 @@ public final class HadoopEoulsanRuntime extends AbstractEoulsanRuntime {
     this.conf = conf;
     this.mode = mode;
   }
-
 }

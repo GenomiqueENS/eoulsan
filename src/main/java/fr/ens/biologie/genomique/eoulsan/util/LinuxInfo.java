@@ -26,6 +26,7 @@ package fr.ens.biologie.genomique.eoulsan.util;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
+import com.google.common.base.Splitter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,10 +35,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Splitter;
-
 /**
  * This class define a linux info file parser.
+ *
  * @since 1.0
  * @author Laurent Jourdren
  */
@@ -47,6 +47,7 @@ public abstract class LinuxInfo {
 
   /**
    * Get the file to parse.
+   *
    * @return the file to parse
    */
   public abstract Path getInfoFile();
@@ -64,18 +65,17 @@ public abstract class LinuxInfo {
         if (fields.size() > 1) {
           this.map.put(fields.get(0).trim(), fields.get(1).trim());
         }
-
       }
 
     } catch (IOException e) {
 
-      getLogger()
-          .warning("unable to parse " + getInfoFile() + ": " + e.getMessage());
+      getLogger().warning("unable to parse " + getInfoFile() + ": " + e.getMessage());
     }
   }
 
   /**
    * Get the value for a key
+   *
    * @param key key
    * @return the value for the key
    */
@@ -83,5 +83,4 @@ public abstract class LinuxInfo {
 
     return this.map.get(key);
   }
-
 }

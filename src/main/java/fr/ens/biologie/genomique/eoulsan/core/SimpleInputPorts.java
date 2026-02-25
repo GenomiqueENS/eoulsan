@@ -28,16 +28,15 @@ import java.util.Set;
 
 /**
  * This class define a class that handles a set of input ports.
+ *
  * @author Laurent Jourdren
  * @since 2.0
  */
-public class SimpleInputPorts extends AbstractPorts<InputPort>
-    implements InputPorts {
+public class SimpleInputPorts extends AbstractPorts<InputPort> implements InputPorts {
 
   private static final long serialVersionUID = -6661589274392547355L;
 
   SimpleInputPorts(final Set<InputPort> ports) {
     super(ports);
   }
-
 }
