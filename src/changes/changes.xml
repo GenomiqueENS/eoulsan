@@ -2022,7 +2022,7 @@ of reads that reject each filter like in local mode.
 
          </release>
 
-	 <release version="2.7" description="Eoulsan 2.7 release" date="TBD">
+	 <release version="2.7" description="Eoulsan 2.7 release" date="2026-02-26">
 
             <action dev="jourdren" type="fix">
               The "main.local.threads" global parameter was not used to determine the number of threads for index creation.
