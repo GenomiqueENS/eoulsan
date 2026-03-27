@@ -151,9 +151,15 @@ public class ExpressionInputPreprocessor implements InputPreprocessor {
         Writer writer = Files.newBufferedWriter(outFile)) {
 
       String line;
+      boolean first = true;
 
       while ((line = reader.readLine()) != null) {
-        writer.write(line + '\n');
+        if (first) {
+          writer.write("feature\tcount\n");
+          first = false;
+        } else {
+          writer.write(line + '\n');
+        }
       }
 
       if (stats != null) {
