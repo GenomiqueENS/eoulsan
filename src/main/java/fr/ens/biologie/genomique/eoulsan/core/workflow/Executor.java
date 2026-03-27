@@ -313,6 +313,7 @@ public class Executor {
     if (settings.isUserDefinedTempDirectory()) {
       arguments.setTemporaryPathname(settings.getTempDirectory());
     }
+    settings.setTempDirectory(arguments.getTemporaryPathname());
   }
 
   /**
