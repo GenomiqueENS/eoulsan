@@ -71,7 +71,7 @@ $ ./eoulsan.sh
    
      <p>It is very easy to install Eoulsan using Docker. You just had to execute the following command:</p>
 <source>
-$ curl @@@WEBSITE@@@/eoulsan-docker-installer.sh | bash
+$ curl -L @@@WEBSITE@@@/eoulsan-docker-installer.sh | bash
 </source>
      <p>This command will create a <tt>eoulsan-docker.sh</tt> script in your current directory that launch Eoulsan in a Docker container with the right Environment. This script automatically:</p>
      <ul>
