@@ -3,14 +3,18 @@
 # Based on Ubuntu
 ############################################################
 
-# Set the base image to Ubuntu
-FROM bioconductor/release_sequencing:3.1
+# Set the base image to easycontrasts
+FROM genomicpariscentre/easycontrasts:2.0
 
-# File Author / Maintainer
-MAINTAINER Laurent Jourdren <jourdren@biologie.ens.fr>
+ARG BUILD_PACKAGES="wget"
+ARG DEBIAN_FRONTEND=noninteractive
 
 # Install Eoulsan 
 RUN cd /tmp && \
+    apt update && \
+    apt install --yes $BUILD_PACKAGES locales openjdk-17-jre-headless && \
+    locale-gen en_US.UTF-8 && \
+    update-locale && \
     wget --quiet https://github.com/GenomiqueENS/eoulsan/releases/download/v2.7/eoulsan-2.7.tar.gz && \
     tar --directory /usr/local -xf /tmp/eoulsan-*.tar.gz && \
     ln -s /usr/local/eoulsan-*/eoulsan.sh /usr/local/bin/eoulsan.sh && \
@@ -22,7 +26,10 @@ RUN cd /tmp && \
     mkdir -p /data/additional_annotations && \
     mkdir -p /data/plugins && \
     rm -rf /tmp/eoulsan-*.tar.gz && \
-    apt-get clean
+    apt remove --purge --yes $BUILD_PACKAGES && \
+    apt autoremove --purge --yes && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Default command to execute at startup of the container
-CMD eoulsan.sh --version
+CMD ["eoulsan.sh", "-version"]
