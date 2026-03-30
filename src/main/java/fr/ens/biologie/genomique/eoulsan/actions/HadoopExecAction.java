@@ -213,6 +213,9 @@ public class HadoopExecAction extends AbstractAction {
       final String hdfsPath,
       final String jobDescription) {
 
+    // Deprecation message
+    System.err.println("Warning: Hadoop support in " + Globals.APP_NAME + " is now deprecated.");
+
     requireNonNull(workflowFile, "paramFile is null");
     requireNonNull(designFile, "designFile is null");
     requireNonNull(hdfsPath, "hdfsPath is null");

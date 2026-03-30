@@ -35,6 +35,7 @@
   
      <section name="Install an Hadoop cluster">
 
+     <p><b>Note</b>: Hadoop support by Eoulsan is now <u>deprecated</u>.</p>
      <p>Eoulsan 2.x has been tested on an Hadoop cluster using Cloudera CDH 5.3 (Hadoop 2.5.0). As Eoulsan only requires Hadoop core modules, it can be deployed on any Hadoop 2.x cluster. Eoulsan requires the following Hadoop related software:</p>
      <ul>
        <li>Hadoop HDFS and MapReduce (YARN)</li>

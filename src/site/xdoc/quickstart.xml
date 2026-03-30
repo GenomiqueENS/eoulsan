@@ -177,19 +177,6 @@ $ eoulsan.sh exec workflow-local.xml design.txt
 
 		</subsection>
 
-		<a name="hadoop_mode"/>
-		<subsection name="Launch Eoulsan in local hadoop cluster mode">
-
-			<p>First, you must have a configurated Hadoop cluster (see <a href="hadoopmode.html">hadoop configuration</a>). 
-			   You can launch Eoulsan analysis with the following command:</p>
-<source>
-$ eoulsan.sh hadoopexec workflow-hadoop.xml design.txt hdfs://master.example.com/test
-</source>
-
-			<p>When a step can be distributed on the Hadoop cluster, required input files are automatically copied on the HDFS filesystem before launching the step.</p>
-
-		</subsection>
-
 		<a name="cluster_mode"/>
 		<subsection name="Launch Eoulsan in cluster mode">
 
@@ -203,6 +190,19 @@ $ eoulsan.sh clusterexec workflow-local.xml design.txt
 
 		</subsection>
 
+		<a name="hadoop_mode"/>
+		<subsection name="Launch Eoulsan in local hadoop cluster mode">
+
+			<p><b>Note</b>: Hadoop support by Eoulsan is now <u>deprecated</u>.</p>
+			<p>First, you must have a configurated Hadoop cluster (see <a href="hadoopmode.html">hadoop configuration</a>).
+			   You can launch Eoulsan analysis with the following command:</p>
+<source>
+$ eoulsan.sh hadoopexec workflow-hadoop.xml design.txt hdfs://master.example.com/test
+</source>
+
+			<p>When a step can be distributed on the Hadoop cluster, required input files are automatically copied on the HDFS filesystem before launching the step.</p>
+
+		</subsection>
 	</section>
 	</body>
 </document>

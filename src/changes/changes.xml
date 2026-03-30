@@ -2101,7 +2101,11 @@ of reads that reject each filter like in local mode.
             </action>
 
             <action dev="jourdren" type="fix">
-              Expression files were not handled by recent version of MultiQC.
+              The ${jobdir}/tmp directory was not used as default temporary directory like in previous Eoulsan versions.
+            </action>
+
+            <action dev="jourdren" type="update">
+              Hadoop support in now deprecated.
             </action>
 
          </release>
