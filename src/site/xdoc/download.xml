@@ -93,7 +93,7 @@
           </tr>
 	  <tr>
             <td>Java Runtime Environment</td>
-            <td>11 or above. We recommend
+            <td>17 or above. We recommend
             the OpenJDK version of the JRE.
             You can check your installed JRE version with: <source>$ java -version</source></td>
           </tr>
