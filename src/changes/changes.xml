@@ -2094,7 +2094,7 @@ of reads that reject each filter like in local mode.
 
          </release>
 
-         <release version="2.7.1" description="Eoulsan 2.7.1 release" date="TBD">
+         <release version="2.7.1" description="Eoulsan 2.7.1 release" date="2026-03-31">
 
             <action dev="jourdren" type="fix">
               The ${jobdir}/tmp directory was not used as default temporary directory like in previous Eoulsan versions.
@@ -2106,6 +2106,10 @@ of reads that reject each filter like in local mode.
 
             <action dev="jourdren" type="update">
               Hadoop support in now deprecated.
+            </action>
+
+            <action dev="jourdren" type="update">
+              Update Dockerfile with easy-contrasts-DESeq2 2.0 image as base image.
             </action>
 
          </release>

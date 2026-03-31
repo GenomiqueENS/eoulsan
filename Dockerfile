@@ -15,7 +15,7 @@ RUN cd /tmp && \
     apt install --yes $BUILD_PACKAGES locales openjdk-17-jre-headless && \
     locale-gen en_US.UTF-8 && \
     update-locale && \
-    wget --quiet https://github.com/GenomiqueENS/eoulsan/releases/download/v2.7/eoulsan-2.7.tar.gz && \
+    wget --quiet https://github.com/GenomiqueENS/eoulsan/releases/download/v2.7.1/eoulsan-2.7.1.tar.gz && \
     tar --directory /usr/local -xf /tmp/eoulsan-*.tar.gz && \
     ln -s /usr/local/eoulsan-*/eoulsan.sh /usr/local/bin/eoulsan.sh && \
     ln -s /usr/local/eoulsan-*/eoulsan.sh /usr/local/bin/eoulsan && \
