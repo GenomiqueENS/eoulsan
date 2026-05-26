@@ -140,9 +140,10 @@ knitr::knit_hooks$set(
 
 <!-- knit setup -->
 ```{r knit_setup, echo = FALSE}
-fig_save_folder = ifelse(grepl("[[:alnum:]]$", params$prefix),
-                         yes = paste0(params$prefix, "_figures/"),
-                         no = paste0(params$prefix, "figures/"))
+prefix = ifelse(grepl("[[:alnum:]]$", params$prefix),
+                yes = paste0(params$prefix, "_"),
+                no = params$prefix)
+fig_save_folder = paste0(prefix, "figures/")
 
 knitr::opts_chunk$set(
   echo = TRUE,
@@ -672,7 +673,6 @@ sizeFactorType  = params$sizeFactorType
 fitType         = params$fitType
 statisticTest   = params$statisticTest
 weightContrast  = params$weightContrast
-prefix          = params$prefix
 plotInteractive = params$plotInteractive
 leaveOnError    = params$leaveOnError
 
