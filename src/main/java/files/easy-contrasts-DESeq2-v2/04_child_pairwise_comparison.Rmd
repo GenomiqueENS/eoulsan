@@ -33,7 +33,11 @@ res = DESeq2::results(dds,
   dplyr::mutate(ID = rownames(.)) %>%
   dplyr::relocate(ID)
 
-head(res[, -1]) %>%
+# Display
+na.omit(res[, -1]) %>%
+  head() %>%
+  round(., 4) %>%
+  rbind.data.frame(., "..." = rep("...", ncol(.))) %>%
   knitr::kable("html") %>%
   kableExtra::kable_styling(full_width = FALSE)
 ```
@@ -80,7 +84,7 @@ summary(res$pvalue) %>%
 ggplot2::ggplot(res, aes(x = pvalue)) +
   ggplot2::geom_histogram(col = "black", fill = "#A20F58", bins = 50) +
   # Style
-  ggplot2::labs(x = "Adjusted p-value",
+  ggplot2::labs(x = "Raw p-value",
                 y = "Number of genes",
                 title = "Raw p-value distribution",
                 subtitle = comparison_subtitle) +
@@ -373,7 +377,7 @@ plotly::ggplotly(p, tooltip = "text") %>%
 
 ### Heatmap
 
-We draw a heatmap for the **`r length(genes_up) + length(genes_dn)`** gene(s) presented above. We compute Z-scores from the normalised count matrix and visualise the top left corner of the resulting table, meaning the **`r length(genes_up) + length(genes_dn)`** gene(s) and their Z-scores in two samples. The Z-scores are only used for visualisation. The Z-score matrix is not saved.
+We draw a heatmap for the **`r length(genes_up) + length(genes_dn)`** gene(s) presented above. We compute Z-scores from the normalised count matrix and visualise part of the resulting table, meaning the **`r length(genes_up) + length(genes_dn)`** gene(s) and their Z-scores in two samples. The Z-scores are only used for visualisation. The Z-score matrix is not saved.
 
 ```{r zscore_mat}
 samples_of_interest = c(comparison_samples_group1,
@@ -447,7 +451,7 @@ if (complexMode) {
 
   # Annotation
   ha_top = ComplexHeatmap::HeatmapAnnotation(
-    df = sub_design,
+    Condition = sub_design,
     col = list(Condition = setNames(nm = c(condition1, condition2),
                                     c("#3AA5C1", "#FF6800")),
                SubCondition = colors_condition[unique(sub_design$SubCondition)]),
@@ -460,7 +464,7 @@ if (complexMode) {
 
   # Annotation
   ha_top = ComplexHeatmap::HeatmapAnnotation(
-    df = sub_design,
+    Condition = sub_design,
     col = list(Condition = colors_condition[c(condition1, condition2)]),
     na_col = "#F7F7F7")
 }
@@ -523,7 +527,11 @@ res = res %>%
                   "BH adjusted p-values",
                   "dispersions.dds.") )
 
-head(res[, -1]) %>%
+# Display
+na.omit(res[, -1]) %>%
+  head() %>%
+  round(., 4) %>%
+  rbind.data.frame(., "..." = rep("...", ncol(.))) %>%
   knitr::kable("html") %>%
   kableExtra::kable_styling(full_width = FALSE)
 ```

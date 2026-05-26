@@ -22,13 +22,15 @@ cat(sprintf('The code behind this section can be downloaded at:
 
 ## Data handling
 
-We collapse the technical replicates by summing their raw count for each gene. We display the top left corner of this matrix, meaning 5 genes and 5 samples. As for the raw counts, collapsed count data are integer values.
+We collapse the technical replicates by summing their raw count for each gene. We display part of this matrix, meaning 5 genes and 5 samples. As for the raw counts, collapsed count data are integer values.
 
 ```{r collapse_replicates_deseq2}
 dds = DESeq2::collapseReplicates(dds,
                                  groupby = dds$RepTechGroup)
 
-DESeq2::counts(dds)[c(1:5), c(1:5)] %>%
+# Display
+DESeq2::counts(dds)[top5_to_print, c(1:5)] %>%
+  rbind.data.frame(., "..." = rep("...", ncol(.))) %>%
   knitr::kable("html") %>%
   kableExtra::kable_styling(full_width = FALSE)
 ```
