@@ -291,6 +291,9 @@ public class CommandWorkflow extends AbstractWorkflow {
       Set<Requirement> stepRequirements = step.getModule().getRequirements();
 
       if (stepRequirements != null && !stepRequirements.isEmpty()) {
+        for (Requirement r : stepRequirements) {
+          getLogger().fine("Step " + step.getId() + " requires " + r.toString());
+        }
         requirements.putAll(step, stepRequirements);
       }
     }
