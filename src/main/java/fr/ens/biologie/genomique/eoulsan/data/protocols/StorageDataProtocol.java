@@ -24,15 +24,26 @@
 
 package fr.ens.biologie.genomique.eoulsan.data.protocols;
 
+import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFileMetadata;
 import fr.ens.biologie.genomique.eoulsan.data.storages.DataFileStorage;
+import fr.ens.biologie.genomique.kenetre.util.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * This abstract class define a storage protocol. It is useful to easily access common resources
@@ -42,6 +53,8 @@ import java.util.List;
  * @author Laurent Jourdren
  */
 public abstract class StorageDataProtocol extends AbstractDataProtocol {
+
+  private static final ReentrantLock JVM_LOCK = new ReentrantLock();
 
   /**
    * Get the path where searching the files.
@@ -146,6 +159,60 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
       throw new IOException("No " + getName() + " found for: " + src.getName());
     }
 
+    if (result.isLocalFile() && EoulsanRuntime.getSettings().isStorageUsageLog()) {
+
+      Path logPath = Paths.get(basePath, "usage.log");
+      logGet(logPath, src, result);
+    }
+
     return result;
+  }
+
+  //
+  // Log methods
+  //
+
+  private static void logGet(Path logPath, DataFile in, DataFile out) {
+
+    if (logPath == null) {
+      return;
+    }
+
+    try {
+      if (!Files.isRegularFile(logPath)) {
+
+        // Create the log file
+        appendLineWithLock(logPath, "#Date\tURL\tFile");
+      }
+
+      StringBuilder sb = new StringBuilder();
+      sb.append(OffsetDateTime.now());
+      sb.append('\t');
+      sb.append(in);
+      sb.append('\t');
+      sb.append(out);
+
+      appendLineWithLock(logPath, sb.toString());
+
+    } catch (IOException e) {
+      Utils.nop();
+    }
+  }
+
+  private static void appendLineWithLock(Path filePath, String line) throws IOException {
+
+    JVM_LOCK.lock();
+    try (FileChannel channel =
+            FileChannel.open(
+                filePath,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.APPEND,
+                StandardOpenOption.WRITE);
+        FileLock lock = channel.lock()) {
+
+      channel.write(Charset.defaultCharset().encode(line + System.lineSeparator()));
+    } finally {
+      JVM_LOCK.unlock();
+    }
   }
 }

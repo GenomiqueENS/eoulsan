@@ -124,6 +124,8 @@ public final class Settings implements Serializable {
 
   private static final String GTF_STORAGE_KEY = MAIN_PREFIX_KEY + "gtf.storage.path";
 
+  private static final String STORAGE_USAGE_LOG = MAIN_PREFIX_KEY + "storage.usage.log";
+
   private static final String ADDITIONAL_ANNOTATION_STORAGE_KEY =
       MAIN_PREFIX_KEY + "additional.annotation.storage.path";
 
@@ -482,6 +484,16 @@ public final class Settings implements Serializable {
   public String getGTFStoragePath() {
 
     return this.properties.getProperty(GTF_STORAGE_KEY);
+  }
+
+  /**
+   * Test if storage usage log is enabled.
+   *
+   * @return true if storage usage log is enabled
+   */
+  public boolean isStorageUsageLog() {
+
+    return Boolean.parseBoolean(this.properties.getProperty(STORAGE_USAGE_LOG));
   }
 
   /**
@@ -1145,6 +1157,16 @@ public final class Settings implements Serializable {
   public void setGTFStoragePath(final String gtfStoragePath) {
 
     this.properties.setProperty(GTF_STORAGE_KEY, gtfStoragePath);
+  }
+
+  /**
+   * Enable storage usage log.
+   *
+   * @param enable enable storage usage log.
+   */
+  public void setStorageUsageLog(final boolean enable) {
+
+    this.properties.setProperty(STORAGE_USAGE_LOG, "" + enable);
   }
 
   /**
