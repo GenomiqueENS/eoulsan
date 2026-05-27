@@ -4,6 +4,7 @@
   <prefix>additionalannotation</prefix>
   <onefileperanalysis>true</onefileperanalysis>
   <designmetadatakey>AdditionalAnnotationFile</designmetadatakey>
+  <checker>fr.ens.biologie.genomique.eoulsan.checkers.AdditionalAnnotationChecker</checker>
   <extensions>
     <extension default="true">.tsv</extension>
     <extension>.txt</extension>
