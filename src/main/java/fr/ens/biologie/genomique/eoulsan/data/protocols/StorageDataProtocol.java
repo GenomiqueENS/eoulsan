@@ -38,7 +38,6 @@ import java.nio.channels.FileLock;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.OffsetDateTime;
 import java.util.Collections;
@@ -161,7 +160,7 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
 
     if (result.isLocalFile() && EoulsanRuntime.getSettings().isStorageUsageLog()) {
 
-      Path logPath = Paths.get(basePath, "usage.log");
+      Path logPath = Path.of(basePath, "usage.log");
       logGet(logPath, src, result);
     }
 

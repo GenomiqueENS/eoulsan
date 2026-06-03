@@ -48,8 +48,7 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.MapperIndexDataFormat;
-import fr.ens.biologie.genomique.eoulsan.data.storages.DataFileGenomeIndexStorage;
-import fr.ens.biologie.genomique.eoulsan.data.storages.DataFileGenomeMapperIndexer;
+import fr.ens.biologie.genomique.eoulsan.data.storages.DataFileDataPath;
 import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractFilterAndMapReadsModule;
 import fr.ens.biologie.genomique.eoulsan.modules.mapping.AbstractReadsMapperModule;
@@ -58,6 +57,8 @@ import fr.ens.biologie.genomique.kenetre.bio.readmapper.Mapper;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperBuilder;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstance;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperInstanceBuilder;
+import fr.ens.biologie.genomique.kenetre.storage.FileGenomeIndexStorage;
+import fr.ens.biologie.genomique.kenetre.storage.FileGenomeMapperIndexer;
 import fr.ens.biologie.genomique.kenetre.storage.GenomeIndexStorage;
 import fr.ens.biologie.genomique.kenetre.util.Version;
 import java.io.IOException;
@@ -244,15 +245,24 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
 
     // Get the genome index storage
     String genomeMapperIndexStoragePath = context.getSettings().getGenomeMapperIndexStoragePath();
-    GenomeIndexStorage genomeIndexStorage =
-        genomeMapperIndexStoragePath != null
-            ? DataFileGenomeIndexStorage.getInstance(
-                genomeMapperIndexStoragePath, EoulsanLogger.getGenericLogger())
-            : null;
+    GenomeIndexStorage genomeIndexStorage = null;
+    if (genomeMapperIndexStoragePath != null) {
+
+      if (!new DataFile(genomeMapperIndexStoragePath).isLocalFile()) {
+        throw new EoulsanException(
+            "Mapper index storage must be a local path: " + genomeMapperIndexStoragePath);
+      }
+
+      genomeIndexStorage =
+          FileGenomeIndexStorage.getInstance(
+              genomeMapperIndexStoragePath,
+              context.getSettings().isStorageUsageLog(),
+              EoulsanLogger.getGenericLogger());
+    }
 
     // Create indexer
-    final DataFileGenomeMapperIndexer indexer =
-        new DataFileGenomeMapperIndexer(
+    final FileGenomeMapperIndexer indexer =
+        new FileGenomeMapperIndexer(
             mapperInstance,
             args,
             descriptions,
@@ -262,7 +272,8 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
             EoulsanLogger.getGenericLogger());
 
     // Create index
-    indexer.createIndex(genomeDataFile, desc, mapperIndexDataFile);
+    indexer.createIndex(
+        new DataFileDataPath(genomeDataFile), desc, new DataFileDataPath(mapperIndexDataFile));
   }
 
   @Override
