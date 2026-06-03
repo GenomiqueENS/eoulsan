@@ -54,6 +54,19 @@ dds = DESeq2::DESeq(dds,
                     betaPrior = FALSE)
 ```
 
+```{r save_processed_dds_rds, eval = saveRDS, results = 'asis'}
+cat("## Save object\n\n")
+cat("We save the dds object in RDS format.\n")
+
+filename = paste0(prefix, projectName,
+                  "-processed_dds_object.rds")
+
+saveRDS(dds,
+        file = filename)
+
+cat(paste0("Output file name:<br>*", filename, "*\n"))
+```
+
 # Results
 
 The aim of this section is to extract the results for each paired comparison and build relevant figures.

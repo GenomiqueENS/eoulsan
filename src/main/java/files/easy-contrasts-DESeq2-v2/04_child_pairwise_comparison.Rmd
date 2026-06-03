@@ -151,14 +151,14 @@ ggplot2::ggplot(res, aes(x = padj)) +
 
 ### MA plot
 
-The MA plot represents the log<sub>2</sub> fold change of each gene (dot) as a function of their mean normalised expression value across all samples. Dots are colored based on the significance of the statistical test, using a significant threshold of 0.05 for the adjusted p-value (`padj`).
+The MA plot represents the log<sub>2</sub> fold change of each gene (dot) as a function of their mean normalised expression value across all samples. Dots are colored based on the significance of the statistical test, using a significant threshold of **`r padjLimit`** for the adjusted p-value (`padj`).
 
 ```{r fig-diffana_MA_plot, fig.width = 10, fig.height = 6}
 ggplot2::ggplot(res, aes(x = baseMean, y = log2FoldChange,
-                         col = padj < 0.05)) +
+                         col = padj < padjLimit)) +
   ggplot2::geom_point(size = 1) +
   ggplot2::geom_hline(yintercept = 0, lty = 1, col = "lightgray") +
-  ggplot2::scale_color_manual(name = "padj < 0.05",
+  ggplot2::scale_color_manual(name = paste0("padj < ", padjLimit),
                               breaks = c(FALSE, TRUE, NA),
                               values = c("black", "#D32A24", "lightgray"),
                               na.value = "lightgray") +
@@ -279,56 +279,77 @@ p
 The volcano plot represents the adjusted p-value as a function of the log<sub>2</sub> fold change between condition **`r condition1`** and condition **`r condition2`**. We label a maximum of 10 genes in both directions. We identify such genes.
 
 ```{r genes_for_volcano_plot}
-padj_threshold = 0.05
-log2FC_threshold = 2
-
 genes_up = res %>%
-  dplyr::filter(padj < padj_threshold) %>%
+  dplyr::filter(padj < padjLimit) %>%
   dplyr::filter(log2FoldChange > 0) %>%
   dplyr::top_n(n = 10, wt = log2FoldChange) %>%
   dplyr::pull(ID)
 
 genes_dn = res %>%
-  dplyr::filter(padj < padj_threshold) %>%
+  dplyr::filter(padj < padjLimit) %>%
   dplyr::filter(log2FoldChange < 0) %>%
   dplyr::top_n(n = 10, wt = -log2FoldChange) %>%
   dplyr::pull(ID)
+
+non_zero_min = min(res$padj[res$padj != 0], na.rm = TRUE)
 ```
 
-We label **`r length(genes_up)`** significantly over-regulated and **`r length(genes_dn)`** significantly down-regulated genes, considering an adjusted p-value of `r padj_threshold`.
+We label **`r length(genes_up)`** significantly over-regulated and **`r length(genes_dn)`** significantly down-regulated genes, considering an adjusted p-value of **`r padjLimit`**.
+
+```{r volcano_prep_1, eval = is.null(correspPath), echo = is.null(correspPath)}
+p = res %>%
+  dplyr::filter(!is.na(padj)) %>%
+  ggplot2::ggplot(.,
+                  aes(x = log2FoldChange,
+                      y = ifelse(padj == 0, # -log10(0) = Inf
+                                 yes = -log10(non_zero_min),
+                                 no = -log10(padj)),
+                      label = ID,
+                      text = paste0(ID, "<br>",
+                                    "log_2 (fold change): ", round(log2FoldChange, 2), "<br>",
+                                    "adjusted p-value: ", round(padj, 4))))
+```
+
+```{r volcano_prep_2, eval = !is.null(correspPath), echo = !is.null(correspPath)}
+res = res %>%
+  dplyr::mutate(symbol = correspIdSymbol[ID, 2])
+
+p = res %>%
+  dplyr::filter(!is.na(padj)) %>%
+  ggplot2::ggplot(.,
+                  aes(x = log2FoldChange,
+                      y = ifelse(padj == 0, # -log10(0) = Inf
+                                 yes = -log10(non_zero_min),
+                                 no = -log10(padj)),
+                      label = symbol,
+                      text = paste0(symbol, "<br>",
+                                    "ID: ", ID, "<br>",
+                                    "log_2 (fold change): ", round(log2FoldChange, 2), "<br>",
+                                    "adjusted p-value: ", round(padj, 4))))
+```
 
 ```{r volcano_prep, class.source = "fold-hide"}
-non_zero_min = min(res$padj[res$padj != 0], na.rm = TRUE)
-
-p = ggplot2::ggplot(res %>% dplyr::filter(!is.na(padj)),
-                    aes(x = log2FoldChange,
-                        y = ifelse(padj == 0, # -log10(0) = Inf
-                                   yes = -log10(non_zero_min),
-                                   no = -log10(padj)),
-                        label = ID,
-                        text = paste0(ID, "<br>",
-                                      "log_2 (fold change): ", round(log2FoldChange, 2), "<br>",
-                                      "adjusted p-value: ", round(padj, 4)))) +
+p = p +
   # Lines
   ggplot2::geom_hline(yintercept = 0, col = "lightgray") +
-  ggplot2::geom_hline(yintercept = -log10(padj_threshold), lty = 2, col = "#A3ADB8") +
-  ggplot2::geom_vline(xintercept = log2FC_threshold, lty = 2, col = "#A3ADB8") +
-  ggplot2::geom_vline(xintercept = -log2FC_threshold, lty = 2, col = "#A3ADB8") +
+  ggplot2::geom_hline(yintercept = -log10(padjLimit), lty = 2, col = "#A3ADB8") +
+  ggplot2::geom_vline(xintercept = log2FCLimit, lty = 2, col = "#A3ADB8") +
+  ggplot2::geom_vline(xintercept = -log2FCLimit, lty = 2, col = "#A3ADB8") +
   # Points
   ggplot2::geom_point(data = res %>%
-                        dplyr::filter(padj >= padj_threshold),
+                        dplyr::filter(padj >= padjLimit),
                       mapping = aes(col = "Others")) +
   ggplot2::geom_point(data = res %>%
-                        dplyr::filter(log2FoldChange > -log2FC_threshold &
-                                        log2FoldChange < log2FC_threshold),
+                        dplyr::filter(log2FoldChange > -log2FCLimit &
+                                        log2FoldChange < log2FCLimit),
                       mapping = aes(col = "Others")) +
   ggplot2::geom_point(data = res %>%
-                        dplyr::filter(padj < padj_threshold) %>%
-                        dplyr::filter(log2FoldChange >= log2FC_threshold),
+                        dplyr::filter(padj < padjLimit) %>%
+                        dplyr::filter(log2FoldChange >= log2FCLimit),
                       mapping = aes(col = "Significantly up-regulated")) +
   ggplot2::geom_point(data = res %>%
-                        dplyr::filter(padj < padj_threshold) %>%
-                        dplyr::filter(log2FoldChange <= -log2FC_threshold),
+                        dplyr::filter(padj < padjLimit) %>%
+                        dplyr::filter(log2FoldChange <= -log2FCLimit),
                       mapping = aes(col = "Significantly down-regulated")) +
   ggplot2::scale_color_manual(name = "genes",
                               values = c("#D32A24", "#224897", "#A3ADB8"),
@@ -356,7 +377,7 @@ p = ggplot2::ggplot(res %>% dplyr::filter(!is.na(padj)),
 #### Static {-}
 
 ```{r fig-diffana_volcano_plot, fig.width = 10, fig.height = 6}
-p + ggrepel::geom_label_repel(data = res %>% dplyr::filter(ID %in% c(genes_up, genes_dn)),
+p + ggrepel::geom_label_repel(data = ~ dplyr::filter(., ID %in% c(genes_up, genes_dn)),
                               fill = NA, label.size = 0,
                               size = 3, max.overlaps = 50)
 ```
@@ -373,6 +394,11 @@ p = p + ggplot2::theme(legend.position = "none")
 plotly::ggplotly(p, tooltip = "text") %>%
   plotly::layout(paper_bgcolor = "rgba(0,0,0,0)",
                  plot_bgcolor  = "rgba(0,0,0,0)")
+```
+
+
+```{r clean_symbol, eval = !is.null(correspPath), echo = FALSE}
+res$symbol = NULL
 ```
 
 ### Heatmap
@@ -406,7 +432,23 @@ if (nb_genes < 1) {
   zscore_mat = zscore_mat %>%
     t() %>% scale() %>% t()
 }
+```
 
+```{r zscore_mat_2, eval = !is.null(correspPath), echo = !is.null(correspPath)}
+# The code below is compatible with 1 gene
+# Otherwise, zscore_mat[, c(1:2)] would have sufficed and been much simpler
+matrix(zscore_mat[, c(1:2)],
+       nrow = max(1, nb_genes),
+       dimnames = list(row_names = c(genes_up, genes_dn),
+                       col_names = samples_of_interest[c(1:2)])) %>%
+  as.data.frame() %>%
+  dplyr::mutate(Symbol = correspIdSymbol[rownames(.), 2]) %>%
+  dplyr::relocate(Symbol) %>%
+  knitr::kable("html") %>%
+  kableExtra::kable_styling(full_width = FALSE)
+```
+
+```{r zscore_mat_2, eval = is.null(correspPath), echo = is.null(correspPath)}
 # The code below is compatible with 1 gene
 # Otherwise, zscore_mat[, c(1:2)] would have sufficed and been much simpler
 matrix(zscore_mat[, c(1:2)],
@@ -415,6 +457,17 @@ matrix(zscore_mat[, c(1:2)],
                        col_names = samples_of_interest[c(1:2)])) %>%
   knitr::kable("html") %>%
   kableExtra::kable_styling(full_width = FALSE)
+```
+
+In case a gene is expressed in a single sample, the normalisation outputs NaN values. We remove them.
+
+```{r remove_NaN}
+NaN_rows = (which(rowSums(is.nan(zscore_mat)) > 0))
+
+if (length(NaN_rows) > 0) {
+  nb_genes = nb_genes - length(NaN_rows)
+  zscore_mat = zscore_mat[-(NaN_rows), ]
+}
 ```
 
 On the heatmap, each gene is one row and each sample is one column. Samples are annotated for their condition. The sample dendrogram is calculated based on the distances between samples considering only the genes represented on the heatmap. The condition associated to each sample is not considered by the method (unsupervised method). The genes dendrogram is calculated based on the Z-score of that gene among all samples.
@@ -429,7 +482,6 @@ samples_weight = samples_height/10
 heatmap_height = genes_weight + samples_weight
 heatmap_height = max(5, heatmap_height)
 ```
-
 
 ```{r fig-heatmap, class.source = "fold-hide", fig.width = 10, fig.height = heatmap_height}
 # Heatmap top annotation
@@ -451,7 +503,7 @@ if (complexMode) {
 
   # Annotation
   ha_top = ComplexHeatmap::HeatmapAnnotation(
-    Condition = sub_design,
+    df = sub_design,
     col = list(Condition = setNames(nm = c(condition1, condition2),
                                     c("#3AA5C1", "#FF6800")),
                SubCondition = colors_condition[unique(sub_design$SubCondition)]),
@@ -480,18 +532,26 @@ if (nb_genes > 1) {
                     comparison_subtitle)
 }
 
+# Rownames
+if (!is.null(correspPath)) {
+  row_labels = correspIdSymbol[rownames(zscore_mat), 2]
+} else {
+  row_labels = rownames(zscore_mat)
+}
+
 # Heatmap main
 ht = ComplexHeatmap::Heatmap(
   as.matrix(zscore_mat),
   # Expression colors
-  col = expressionColors(range(zscore_mat)),
+  col = expressionColors(range(zscore_mat, na.rm = TRUE)),
   heatmap_legend_param = list(title = "Z-score"),
   # Annotation
   top_annotation = ha_top,
   # Sample order
   cluster_columns = TRUE,
-  # gene order
+  # Gene order
   cluster_rows = TRUE,
+  row_labels = row_labels,
   # Visual aspect
   show_heatmap_legend = TRUE,
   border = TRUE,

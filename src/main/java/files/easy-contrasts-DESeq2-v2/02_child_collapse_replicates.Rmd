@@ -55,6 +55,15 @@ saveTable(DESeq2::counts(dds),
 
 Output file name:<br>*`r filename`*
 
+```{r save_norm_count_matrix_rds, eval = saveRDS, results = 'asis'}
+cat("We also save the object in RDS format. The file name is the same. The extension is '.rds'.\n")
+
+saveRDS(dds,
+        file = stringr::str_replace(string = filename,
+                                    pattern = "tsv$",
+                                    replacement = "rds"))
+```
+
 ## Visualisation
 
 ### Pooled counts barplot

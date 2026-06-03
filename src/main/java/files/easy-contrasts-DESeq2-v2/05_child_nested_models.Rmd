@@ -1,0 +1,166 @@
+
+<!--
+Child document for 01_normDiffana.Rmd.
+The environment is inherited from the parent file.
+-->
+
+# Nested models evaluation
+
+The aim of this section is to evaluate the relevance of the terms in the formula. The design formula is: **`r deseqModel`**. The terms of interest are: **`r paste(all_terms, collapse = ", ")`**.
+
+```{r dl_05, echo = FALSE, results = "asis"}
+dl_file = "./05_child_nested_models.Rmd"
+
+cat(sprintf('<br>The code behind this section can be downloaded at:
+    <a download="%s" href="data:%s;base64,%s">
+    <button class="btn-custom">Nested Models file (Rmd)</button>
+    </a>',
+    basename(dl_file),
+    "text/csv",
+    base64enc::base64encode(dl_file)))
+```
+
+## Formula pairs
+
+We automatically determine the full and reduced formula pairs. The full formulas are defined such that they match one of the following patterns:
+
+* all terms and all interactions
+* all terms and one interaction
+* all terms
+* one term
+
+```{r nested_model, class.source = "fold-hide"}
+all_interactions = combn(all_terms, m = 2) %>%
+  apply(., 2, FUN = paste, collapse = ":")
+
+# Models with all interactions
+nested_model = list()
+i_start = 0
+
+for (i in c(1:length(all_interactions))) {
+  full_formula = c(all_terms, all_interactions) %>%
+    paste(., collapse = "+")
+  reduced_formula = c(all_terms, all_interactions[-i]) %>%
+    paste(., collapse = "+")
+
+  nested_model[[i_start + i]] = c(full_formula,
+                                  reduced_formula)
+}
+
+# Models with a single interaction
+i_start = i_start + length(all_interactions)
+
+for (i in c(1:length(all_interactions))) {
+  full_formula = c(all_terms, all_interactions[i]) %>%
+    paste(., collapse = "+")
+  reduced_formula = all_terms %>%
+    paste(., collapse = "+")
+
+  nested_model[[i_start + i]] = c(full_formula,
+                                  reduced_formula)
+}
+
+# Models with all terms
+i_start = i_start + length(all_terms)
+
+for (i in c(1:length(all_terms))) {
+  full_formula = all_terms %>%
+    paste(., collapse = "+")
+  reduced_formula = all_terms[-i] %>%
+    paste(., collapse = "+")
+
+  nested_model[[i_start + i]] = c(full_formula,
+                                  reduced_formula)
+}
+
+# Models with 1 term
+i_start = i_start + length(all_terms)
+
+for (i in c(1:length(all_terms))) {
+  full_formula = all_terms[i]
+  reduced_formula = "1"
+
+  nested_model[[i_start + i]] = c(full_formula,
+                                  reduced_formula)
+}
+
+# Make as a dataframe
+nested_model = nested_model %>%
+  do.call(rbind.data.frame, .) %>%
+  unique %>%
+  `colnames<-`(c("full_formula", "reduced_formula")) %>%
+  dplyr::mutate(full_formula = paste0("~", full_formula)) %>%
+  dplyr::mutate(reduced_formula = paste0("~", reduced_formula))
+```
+
+## Likelihood Ratio Tests
+
+For each pair, we build the DESeq2 dataset, perform the LRT analysis and check how many genes are differentially expressed between the two models. It informs whether the removed term in the formula is to be considered in the definitive model or not. The differentially expressed genes are the ones with an adjusted p-value smaller than **`r padjLimit`**. Note that the fold change is not considered.
+
+```{r lrt, warning = FALSE, message = FALSE}
+nested_model[, c("nb_genes", "decision")] = apply(nested_model, 1, FUN = function(models) {
+  # Get the formula
+  full_formula    = as.formula(models[[1]])
+  reduced_formula = as.formula(models[[2]])
+
+  # DESeq2 object with full formula
+  dds = DESeq2::DESeqDataSetFromMatrix(
+    countData = DESeq2::counts(dds, normalized = FALSE),
+    colData = design,
+    design = full_formula)
+
+  # Nested model
+  dds_res = DESeq2::DESeq(dds,
+                          test = "LRT",
+                          full = full_formula,
+                          reduced = reduced_formula)
+
+  # Number of DE genes between models
+  res_LRT = DESeq2::results(dds_res)
+  signif_or_not = (res_LRT$padj < padjLimit) # TRUE / FALSE
+  nb_genes = sum(signif_or_not, na.rm = TRUE)
+  prop_genes = mean(signif_or_not, na.rm = TRUE)  # between 0 and 1
+  percent_genes = 100*(round(prop_genes, 2))      # between 0 and 100
+
+  # Decision
+  decision = "irrelevant"
+  if (prop_genes > 0.05) {
+    decision = "relevant"
+  }
+
+  # Output
+  nb_prop_genes = paste0(nb_genes, " (", percent_genes, "%)")
+
+  return(c(nb_prop_genes, decision))
+}) %>% t() %>%
+  rbind.data.frame()
+
+# Color the variable being evaluated
+nested_model$full_formula = apply(
+  X = nested_model,
+  MARGIN = 1,
+  FUN = function(row_i) {
+    missingSubstring(A = row_i[[1]],
+                     B = row_i[[2]])
+  })
+
+# Display
+nested_model %>%
+  knitr::kable("html",
+               col.names = c("Full formula",
+                             "Reduced formula",
+                             "Nb DE genes",
+                             "The colored term is..."),
+               escape = FALSE,
+               row.names = FALSE) %>%
+  kableExtra::kable_styling(full_width = FALSE)
+```
+
+The best model should identify many differentially expressed genes without including terms in the formula that, when removed, result in a small number of differentially expressed genes.
+
+------------------------------------------------------------------------
+
+<!--
+End of the child file.
+Coming back to the parent file.
+-->
