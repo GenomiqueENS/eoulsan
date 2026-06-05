@@ -9,6 +9,8 @@ import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -28,6 +30,8 @@ public class EasyContrasts2 extends AbstractEasyContrasts {
         "03_child_differential_expression.Rmd",
         "04_child_pairwise_comparison.Rmd"
       };
+
+  private Path annotationFile;
 
   /**
    * Install R scripts to execute.
@@ -64,12 +68,21 @@ public class EasyContrasts2 extends AbstractEasyContrasts {
     addParameter(result, "sizeFactorType", parameters.getSizeFactorsType().toDESeq2Value());
     addParameter(result, "fitType", parameters.getFitType().toDESeq2Value());
     addParameter(result, "statisticTest", parameters.getStatisticTest().toDESeq2Value());
+    addParameter(result, "padjLimit", parameters.getAdjPValueThreshold());
+    addParameter(result, "log2FCLimit", parameters.getLog2FCThreshold());
+    addParameter(result, "saveRDS", parameters.isSaveRDS());
     addParameter(result, "prefix", prefix);
     addParameter(result, "plotInteractive", false);
 
     if (isComplexMode()) {
       addParameter(result, "comparisonPath", comparisonFileName(prefix));
       addParameter(result, "weightContrast", parameters.isWeightContrast());
+    }
+
+    if (parameters.isDisableNestedModels()) {
+      addParameter(result, "nestedModel", false);
+    } else {
+      addParameter(result, "nestedModel", null);
     }
 
     if (parameters.getLogoUrl() != null) {
@@ -84,7 +97,10 @@ public class EasyContrasts2 extends AbstractEasyContrasts {
       addParameter(result, "authorEmail", parameters.getAuthorEmail());
     }
 
-    //
+    if (this.annotationFile != null && Files.isRegularFile(this.annotationFile)) {
+      addParameter(result, "correspPath", this.annotationFile.getFileName().toString());
+    }
+
     addParameter(result, "leaveOnError", true);
 
     return result;
@@ -99,7 +115,12 @@ public class EasyContrasts2 extends AbstractEasyContrasts {
    */
   private void addParameter(Map<String, String> map, String key, String value) {
 
-    map.put(key, '"' + value + '"');
+    if (value == null) {
+      map.put(key, "NULL");
+    } else {
+
+      map.put(key, '"' + value + '"');
+    }
   }
 
   /**
@@ -112,6 +133,18 @@ public class EasyContrasts2 extends AbstractEasyContrasts {
   private void addParameter(Map<String, String> map, String key, boolean value) {
 
     map.put(key, value ? "TRUE" : "FALSE");
+  }
+
+  /**
+   * Add a parameter to the script parameter map.
+   *
+   * @param map the script parameter map
+   * @param key name of the parameter to add
+   * @param value value of the parameter to add
+   */
+  private void addParameter(Map<String, String> map, String key, double value) {
+
+    map.put(key, Double.toString(value));
   }
 
   /**
@@ -192,8 +225,10 @@ public class EasyContrasts2 extends AbstractEasyContrasts {
       final Experiment experiment,
       final Map<String, File> sampleFiles,
       final DESeq2Parameters parameters,
+      final Path annotationFile,
       boolean saveRScripts) {
 
     super(executor, stepId, design, experiment, sampleFiles, parameters, saveRScripts);
+    this.annotationFile = annotationFile;
   }
 }

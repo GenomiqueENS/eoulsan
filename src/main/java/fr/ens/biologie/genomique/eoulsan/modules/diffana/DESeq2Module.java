@@ -24,7 +24,7 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.diffana;
 
-import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
+import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.ADDITIONAL_ANNOTATION_TSV;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.EXPRESSION_RESULTS_TSV;
 import static fr.ens.biologie.genomique.eoulsan.modules.diffana.RModuleCommonConfiguration.DOCKER_IMAGE_PARAMETER;
 import static java.util.Collections.unmodifiableSet;
@@ -44,6 +44,7 @@ import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
 import fr.ens.biologie.genomique.eoulsan.core.TaskResult;
 import fr.ens.biologie.genomique.eoulsan.core.TaskStatus;
 import fr.ens.biologie.genomique.eoulsan.data.Data;
+import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.DesignUtils;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
@@ -52,11 +53,17 @@ import fr.ens.biologie.genomique.eoulsan.modules.AbstractModule;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.eoulsan.util.r.DockerRExecutor;
 import fr.ens.biologie.genomique.eoulsan.util.r.RExecutor;
+import fr.ens.biologie.genomique.kenetre.bio.AnnotationMatrix;
+import fr.ens.biologie.genomique.kenetre.bio.io.TSVAnnotationMatrixReader;
 import fr.ens.biologie.genomique.kenetre.bio.io.TSVCountsReader;
+import fr.ens.biologie.genomique.kenetre.translator.AnnotationMatrixTranslator;
+import fr.ens.biologie.genomique.kenetre.translator.Translator;
 import fr.ens.biologie.genomique.kenetre.util.Version;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -101,10 +108,16 @@ public class DESeq2Module extends AbstractModule {
   private static final String AUTHOR_EMAIL = "author.email";
   private static final String SAVE_R_SCRIPTS = "save.r.scripts";
   private static final String VERSION = "easy.contrasts.version";
+  private static final String USE_ANNOTATION_FILE = "use.additional.annotation.file";
+  private static final String PADJ_LIMIT = "adjusted.p.value.threshold";
+  private static final String DISABLE_NESTED_MODELS = "disable.nested.models";
+  private static final String LOG2_FOLD_FC_LIMIT = "log2.fc.threshold";
+  private static final String SAVE_RDS = "save.rds";
 
   // Default value for DEseq options
   DESeq2Parameters deseq2Parameters = new DESeq2Parameters();
 
+  private boolean useAdditionalAnnotationFile = true;
   private final Set<Requirement> requirements = new HashSet<>();
   private RExecutor executor;
   private boolean saveRScripts;
@@ -128,9 +141,17 @@ public class DESeq2Module extends AbstractModule {
   @Override
   public InputPorts getInputPorts() {
 
-    return new InputPortsBuilder()
-        .addPort(DEFAULT_SINGLE_INPUT_PORT_NAME, true, EXPRESSION_RESULTS_TSV)
-        .create();
+    final InputPortsBuilder builder = new InputPortsBuilder();
+
+    // Add the port for the expression files
+    builder.addPort("expressionfile", true, EXPRESSION_RESULTS_TSV);
+
+    // Add the port for the additional annotation
+    if (this.useAdditionalAnnotationFile) {
+      builder.addPort("additionalannotation", ADDITIONAL_ANNOTATION_TSV, true);
+    }
+
+    return builder.create();
   }
 
   @Override
@@ -187,15 +208,15 @@ public class DESeq2Module extends AbstractModule {
       throws EoulsanException {
 
     final Set<Parameter> parameters = new HashSet<>(stepParameters);
-    final int version = this.deseq2Parameters.getEasyContrastsVersion();
     String dockerImage = defaultDockerImage(parameters);
+    final int easyContrastVersion = this.deseq2Parameters.getEasyContrastsVersion();
 
     // Parse R executor parameters
     this.executor =
         RModuleCommonConfiguration.parseRExecutorParameter(
             context, parameters, this.requirements, dockerImage);
 
-    context.getLogger().info("Easy contrast version: " + version);
+    context.getLogger().info("Easy contrast version: " + easyContrastVersion);
     if (isDockerMode()) {
 
       DockerRExecutor e = (DockerRExecutor) this.executor;
@@ -207,17 +228,17 @@ public class DESeq2Module extends AbstractModule {
 
       switch (p.getName()) {
         case NORMALIZATION_FIGURES:
-          notRelevantParameterV2(context, p);
+          notRelevantParameterV2(context, easyContrastVersion, p);
           this.deseq2Parameters.setNormFig(parseBoolean(p));
           break;
 
         case DIFFANA_FIGURES:
-          notRelevantParameterV2(context, p);
+          notRelevantParameterV2(context, easyContrastVersion, p);
           this.deseq2Parameters.setDiffanaFig(parseBoolean(p));
           break;
 
         case NORM_DIFFANA:
-          notRelevantParameterV2(context, p);
+          notRelevantParameterV2(context, easyContrastVersion, p);
           this.deseq2Parameters.setNormDiffana(parseBoolean(p));
           break;
 
@@ -237,29 +258,53 @@ public class DESeq2Module extends AbstractModule {
           this.deseq2Parameters.setStatisticTest(p.getName(), p.getStringValue());
           break;
 
-        // Modules
         case WEIGHT_CONTRAST:
-          notRelevantParameterV1(context, p);
+          notRelevantParameterV1(context, easyContrastVersion, p);
           this.deseq2Parameters.setWeightContrast(p.getBooleanValue());
           break;
 
+        case PADJ_LIMIT:
+          notRelevantParameterV1(context, easyContrastVersion, p);
+          this.deseq2Parameters.setAdjPValueThreshold(p.getDoubleValue());
+          break;
+
+        case LOG2_FOLD_FC_LIMIT:
+          notRelevantParameterV1(context, easyContrastVersion, p);
+          this.deseq2Parameters.setLog2FCThreshold(p.getDoubleValue());
+          break;
+
+        case DISABLE_NESTED_MODELS:
+          notRelevantParameterV1(context, easyContrastVersion, p);
+          this.deseq2Parameters.setDisableNestedModels(p.getBooleanValue());
+          break;
+
+        case SAVE_RDS:
+          notRelevantParameterV1(context, easyContrastVersion, p);
+          this.deseq2Parameters.setSaveRDS(p.getBooleanValue());
+          break;
+
         case LOGO_URL:
-          notRelevantParameterV1(context, p);
+          notRelevantParameterV1(context, easyContrastVersion, p);
           this.deseq2Parameters.setLogoUrl(p.getStringValue());
           break;
 
         case AUTHOR_NAME:
-          notRelevantParameterV1(context, p);
+          notRelevantParameterV1(context, easyContrastVersion, p);
           this.deseq2Parameters.setAuthorName(p.getStringValue());
           break;
 
         case AUTHOR_EMAIL:
-          notRelevantParameterV1(context, p);
+          notRelevantParameterV1(context, easyContrastVersion, p);
           this.deseq2Parameters.setAuthorEmail(p.getStringValue());
           break;
 
         case SAVE_R_SCRIPTS:
           this.saveRScripts = p.getBooleanValue();
+          break;
+
+        case USE_ANNOTATION_FILE:
+          notRelevantParameterV1(context, easyContrastVersion, p);
+          this.useAdditionalAnnotationFile = p.getBooleanValue();
           break;
 
         default:
@@ -332,6 +377,18 @@ public class DESeq2Module extends AbstractModule {
 
     String stepId = context.getCurrentStep().getId();
     boolean saveScripts = this.saveRScripts || context.getSettings().isSaveRscripts();
+    Path annotationFile = null;
+
+    // Create annotation file
+    if (this.useAdditionalAnnotationFile) {
+
+      annotationFile =
+          Path.of(context.getStepOutputDirectory().toPath().toString(), "annotation.tsv");
+      if (!createAnnotationForEasyContrast(
+          context.getInputData(ADDITIONAL_ANNOTATION_TSV).getDataFile(), annotationFile)) {
+        annotationFile = null;
+      }
+    }
 
     try {
 
@@ -369,6 +426,7 @@ public class DESeq2Module extends AbstractModule {
                     e,
                     sampleFiles,
                     this.deseq2Parameters,
+                    annotationFile,
                     saveScripts);
             break;
 
@@ -484,14 +542,16 @@ public class DESeq2Module extends AbstractModule {
     }
   }
 
-  private static void notRelevantParameterV1(StepConfigurationContext context, Parameter parameter)
+  private static void notRelevantParameterV1(
+      StepConfigurationContext context, int easyContrastVersion, Parameter parameter)
       throws EoulsanException {
-    notRelevantParameter(context, parameter, 1);
+    notRelevantParameter(context, parameter, easyContrastVersion, 2);
   }
 
-  private static void notRelevantParameterV2(StepConfigurationContext context, Parameter parameter)
+  private static void notRelevantParameterV2(
+      StepConfigurationContext context, int easyContrastVersion, Parameter parameter)
       throws EoulsanException {
-    notRelevantParameter(context, parameter, 2);
+    notRelevantParameter(context, parameter, easyContrastVersion, 1);
   }
 
   /**
@@ -502,10 +562,18 @@ public class DESeq2Module extends AbstractModule {
    * @throws EoulsanException throw an exception if required
    */
   private static void notRelevantParameter(
-      StepConfigurationContext context, Parameter parameter, int version) throws EoulsanException {
+      StepConfigurationContext context,
+      Parameter parameter,
+      int easyContrastVersion,
+      int requiredVersion)
+      throws EoulsanException {
 
     requireNonNull(context, "context argument cannot be null");
     requireNonNull(parameter, "parameter argument cannot be null");
+
+    if (easyContrastVersion == requiredVersion) {
+      return;
+    }
 
     String stepId = context.getCurrentStep().getId();
     String message =
@@ -514,9 +582,49 @@ public class DESeq2Module extends AbstractModule {
             + "\" in the \""
             + stepId
             + "\" step is not handled by the version "
-            + version
+            + requiredVersion
             + " of Easy contrats";
 
     Common.printWarning(message);
+  }
+
+  private static boolean createAnnotationForEasyContrast(DataFile annotationFile, Path outputFile) {
+
+    // Load annotation file
+    AnnotationMatrix matrix;
+    try (TSVAnnotationMatrixReader reader = new TSVAnnotationMatrixReader(annotationFile.open())) {
+      matrix = reader.read();
+    } catch (IOException e) {
+      return false;
+    }
+
+    // Create translator
+    Translator translator = new AnnotationMatrixTranslator(matrix);
+
+    // Test if translator is there is an annotation field
+    if (translator.getFields().isEmpty()) {
+      return false;
+    }
+
+    StringBuilder sb = new StringBuilder();
+    sb.append("ID\tsymbol");
+    sb.append(System.lineSeparator());
+
+    // Create file content
+    for (String id : translator.getIds()) {
+      sb.append(id);
+      sb.append('\t');
+      sb.append(translator.translateField(id));
+      sb.append(System.lineSeparator());
+    }
+
+    // Write output file
+    try {
+      Files.writeString(outputFile, sb.toString());
+    } catch (IOException e) {
+      return false;
+    }
+
+    return true;
   }
 }

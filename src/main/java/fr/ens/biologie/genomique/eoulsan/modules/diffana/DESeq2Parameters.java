@@ -23,9 +23,14 @@ public class DESeq2Parameters {
   private StatisticTest statisticTest = StatisticTest.WALD;
   private boolean expHeader = true;
   private boolean weightContrast = false;
+  private boolean disableNestedModels = false;
   private String logoUrl;
   private String authorName;
   private String authorEmail;
+  private double adjPValueThreshold = 0.05;
+  private double log2FCThreshold = 2.0;
+
+  private boolean saveRDS = true;
 
   private int easyContrastVersion = 2;
 
@@ -258,7 +263,7 @@ public class DESeq2Parameters {
    * @return the weightContrast
    */
   public boolean isWeightContrast() {
-    return weightContrast;
+    return this.weightContrast;
   }
 
   /**
@@ -267,7 +272,7 @@ public class DESeq2Parameters {
    * @return the logoUrl
    */
   public String getLogoUrl() {
-    return logoUrl;
+    return this.logoUrl;
   }
 
   /**
@@ -276,7 +281,7 @@ public class DESeq2Parameters {
    * @return the author name
    */
   public String getAuthorName() {
-    return authorName;
+    return this.authorName;
   }
 
   /**
@@ -285,7 +290,43 @@ public class DESeq2Parameters {
    * @return the author email
    */
   public String getAuthorEmail() {
-    return authorEmail;
+    return this.authorEmail;
+  }
+
+  /**
+   * Get the p-value adjusted threshold.
+   *
+   * @return the p-value adjusted threshold
+   */
+  public double getAdjPValueThreshold() {
+    return this.adjPValueThreshold;
+  }
+
+  /**
+   * Get the log2 fold change threshold.
+   *
+   * @return the log2 fold change threshold
+   */
+  public double getLog2FCThreshold() {
+    return this.log2FCThreshold;
+  }
+
+  /**
+   * Test if RDS file must be saved
+   *
+   * @return true if RDS file must be saved
+   */
+  public boolean isSaveRDS() {
+    return this.saveRDS;
+  }
+
+  /**
+   * Test if RDS file must be saved
+   *
+   * @return true if RDS file must be saved
+   */
+  public boolean isDisableNestedModels() {
+    return this.disableNestedModels;
   }
 
   //
@@ -475,7 +516,7 @@ public class DESeq2Parameters {
    */
   public void setLogoUrl(String logoUrl) {
 
-    requireNonNull(authorEmail);
+    requireNonNull(logoUrl);
 
     if (this.frozen) {
       throw new IllegalStateException();
@@ -491,7 +532,7 @@ public class DESeq2Parameters {
    */
   public void setAuthorName(String authorName) {
 
-    requireNonNull(authorEmail);
+    requireNonNull(authorName);
 
     if (this.frozen) {
       throw new IllegalStateException();
@@ -514,6 +555,62 @@ public class DESeq2Parameters {
     }
 
     this.authorEmail = authorEmail;
+  }
+
+  /**
+   * Set the adjusted p-value threshold.
+   *
+   * @param padjLimit the adjusted p-value threshold to set
+   */
+  public void setAdjPValueThreshold(double padjLimit) {
+
+    if (this.frozen) {
+      throw new IllegalStateException();
+    }
+
+    this.adjPValueThreshold = padjLimit;
+  }
+
+  /**
+   * Set the log2 fold change threshold.
+   *
+   * @param log2fcLimit the log2 fold change threshold to set
+   */
+  public void setLog2FCThreshold(double log2fcLimit) {
+
+    if (this.frozen) {
+      throw new IllegalStateException();
+    }
+
+    log2FCThreshold = log2fcLimit;
+  }
+
+  /**
+   * Set save RDS.
+   *
+   * @param saveRDS the saveRDS to set
+   */
+  public void setSaveRDS(boolean saveRDS) {
+
+    if (this.frozen) {
+      throw new IllegalStateException();
+    }
+
+    this.saveRDS = saveRDS;
+  }
+
+  /**
+   * Disable nested models.
+   *
+   * @param disabled true to disable nested models
+   */
+  public void setDisableNestedModels(boolean disabled) {
+
+    if (this.frozen) {
+      throw new IllegalStateException();
+    }
+
+    this.disableNestedModels = disabled;
   }
 
   /** Freeze the values in the object. */

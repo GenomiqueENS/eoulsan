@@ -61,19 +61,22 @@
 							<li>unpooled counts boxplot.</li>
 							<li>pooled counts barplot: number of counts per sample (After RepTech pooling).</li>
 							<li>pooled counts boxplot.</li>
-							<li>pooled and normalized clustering.</li>
+							<li>pooled and normalized dendrogram.</li>
 							<li>pooled and normalized PCA.</li>
 							<li>pooled and normalized boxplot.</li>
 							<li>most expressed features plot: percentage of reads on the gene with the maximum number of reads.</li>
 						</ul>
 						</li>
 						<li><b>Graphs for the differential analysis:</b>
-							<ul>
+						<ul>
 							<li>dispersion plot.</li>
-							<li>p-value plot.</li>
-							<li>adjusted p-value plot.</li>
+							<li>p-value distribution plot.</li>
+							<li>adjusted p-value distribution plot.</li>
 							<li>MA plot.</li>
-							</ul>
+							<li>Number of differentially expressed genes plot.</li>
+							<li>volcano plot (easy-contrasts-DESeq2 v2 only).</li>
+							<li>Heatmap (easy-contrasts-DESeq2 v2 only).</li>
+						</ul>
 						</li>
 						<li><b>TSV files:</b>
 						<ul>
@@ -81,6 +84,12 @@
 							<li>pooled counts matrix.</li>
 							<li>normalized counts matrix.</li>
 							<li>diffana matrix: one for each comparison performed during the differential expression analysis.</li>
+						</ul>
+						</li>
+						<li><b>Other files:</b>
+						<ul>
+							<li>HTML report file (easy-contrasts-DESeq2 v2 only).</li>
+							<li>RDS file for import statistical analysis in R (easy-contrasts-DESeq2 v2 only).</li>
 						</ul>
 						</li>
 					</ul>
@@ -104,7 +113,9 @@
 							<th>Type</th>
 							<th>Description</th>
 							<th>Default value</th>
+							<th>easy-contrasts-DESeq2 compatibility</th>
 						</tr>
+						<tr><td>easy.contrasts.version</td><td>integer</td><td>Version of Easy-contrasts-DESeq2 to use.</td><td>2</td><td>N/A</td></tr>
 						<tr>
 							<td>norm.fig</td>
 							<td>boolean</td>
@@ -112,6 +123,7 @@
 								If true, generate the figures of the normalization.
 							</td>
 							<td>true</td>
+							<td>v1 only</td>
 						</tr>
 						<tr>
 							<td>diffana.fig</td>
@@ -120,6 +132,7 @@
 								If true, generate the figures of the differential analysis.
 							</td>
 							<td>true</td>
+							<td>v1 only</td>
 						</tr>
 						<tr>
 							<td>norm.diffana</td>
@@ -130,6 +143,7 @@
 								the differential analysis.
 							</td>
 							<td>true</td>
+							<td>v1 only</td>
 						</tr>
 						<tr>
 							<td>diffana</td>
@@ -138,6 +152,7 @@
 								If set to false, skip the differential analysis.
 							</td>
 							<td>true</td>
+							<td>all versions</td>
 						</tr>
 						<tr>
 							<td>size.factors.type</td>
@@ -147,6 +162,7 @@
 								analysis (value: ratio or iterate).
 							</td>
 							<td>ratio</td>
+							<td>all versions</td>
 						</tr>
 						<tr>
 							<td>fit.type</td>
@@ -156,6 +172,7 @@
 								analysis (value: parametric, local or mean).
 							</td>
 							<td>parametric</td>
+							<td>all versions</td>
 						</tr>
 						<tr>
 							<td>statistical.test</td>
@@ -164,12 +181,20 @@
 								Statistical test to be used during the differential analysis (value: Wald or LRT).
 							</td>
 							<td>Wald</td>
+							<td>all versions</td>
 						</tr>
-                                                <tr><td>easy.contrasts.version</td><td>integer</td><td>Version of Easy-contrasts-DESeq2 to use.</td><td>2</td></tr>
-                                                <tr><td>r.execution.mode</td><td>string</td><td>The R execution mode. The available mode values are: process, rserve and docker.</td><td>process</td></tr>
-                                                <tr><td>rserve.servername</td><td>string</td><td>The Rserve server name to use in rserve execution mode</td><td>not set</td></tr>
-                                                <tr><td>docker.image</td><td>string</td><td>The Docker image to use in Docker execution mode.</td><td>bioconductor/release_sequencing:3.1</td></tr>
-						<tr><td>save.r.scripts</td><td>boolean</td><td>Save or not R scripts</td><td>false</td></tr>
+						<tr><td>adjusted.p.value.threshold</td><td>float</td><td>Adjusted p-value threshold.</td><td>0.05</td><td>v2 only</td></tr>
+						<tr><td>log2.fc.threshold</td><td>float</td><td>Log<sub>2</sub> fold change threshold.</td><td>2.0</td><td>v2 only</td></tr>
+						<tr><td>disable.nested.models</td><td>boolean</td><td>Disable nested models.</td><td>false</td><td>v2 only</td></tr>
+						<tr><td>use.additional.annotation.file</td><td>boolean</td><td>Set if an additional annotation file must be used.</td><td>true</td><td>v2 only</td></tr>
+                                                <tr><td>r.execution.mode</td><td>string</td><td>The R execution mode. The available mode values are: process, rserve and docker.</td><td>process</td><td>all versions</td></tr>
+                                                <tr><td>rserve.servername</td><td>string</td><td>The Rserve server name to use in rserve execution mode</td><td>not set</td><td>all versions</td></tr>
+						<tr><td>docker.image</td><td>string</td><td>The Docker image to use in Docker execution mode.</td><td>bioconductor/release_sequencing:3.1</td><td>all versions</td></tr>
+						<tr><td>logo.url</td><td>string</td><td>Logo URL on the HTML report.</td><td>Eoulsan logo</td><td>v2 only</td></tr>
+						<tr><td>author.name</td><td>string</td><td>Author name.</td><td>Eoulsan</td><td>v2 only</td></tr>
+						<tr><td>author.email</td><td>boolean</td><td>Author email.</td><td>eoulsan@biologie.ens.fr</td><td>v2 only</td></tr>
+						<tr><td>save.rds</td><td>boolean</td><td>Save or not RDS object of the analysis.</td><td>false</td><td>v2 only</td></tr>
+						<tr><td>save.r.scripts</td><td>boolean</td><td>Save or not R scripts.</td><td>false</td><td>all versions</td></tr>
 					</table>
 
 
@@ -181,16 +206,15 @@
 
 		<section name="Required R packages installation">
 
-			<p>Eoulsan differential expression analysis module use R with the package DESeq2
-				as statistical backend and FactoMineR. Differential analysis module was tested with
-				R 3.2.0, DESeq2 1.8.1 and FactoMineR 1.28.
-				You can install DESeq2 and FactoMineR R packages on your
-				computer or on a Rserve server, or you can use the docker containing
-				all the packages needed to run deseq2:
-				<a href="https://hub.docker.com/r/bioconductor/release_sequencing/">bioconductor/release_sequencing:3.1 docker image</a>.
+			<p>Eoulsan differential expression analysis module use <a href="https://github.com/GenomiqueENS/easy-contrasts-DESeq2">easy-contrasts-DESeq2</a> R scripts to perform statistical analysis.
+			This R scripts are bundled with Eoulsan, however they need R and some R packages to work.
+				Requirements for easy-contrasts-DESeq2 are described on the <a href="https://github.com/GenomiqueENS/easy-contrasts-DESeq2">easy-contrasts-DESeq2 project page on GitHub</a>.
+				You can install DESeq2 and required R packages on your computer, on a Rserve server, or you can use the Docker image containing all the packages needed to run DESeq2:
+				<ul>
+					<li>easy-contrasts-DESeq2 v1.x: <a href="https://hub.docker.com/r/bioconductor/release_sequencing/">bioconductor/release_sequencing:3.1 docker image</a>.</li>
+					<li>easy-contrasts-DESeq2 v2.x: <a href="https://hub.docker.com/r/genomicpariscentre/easycontrasts">genomicpariscentre/easycontrasts:2.0 docker image</a>.</li>
+				</ul>
 
-				These packages are also present on the Eoulsan docker:
-				<a href="https://registry.hub.docker.com/u/genomicpariscentre/eoulsan/">Eoulsan docker</a>.
 			</p>
 		</section>
 
