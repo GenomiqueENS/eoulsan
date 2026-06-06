@@ -211,7 +211,7 @@
 				Requirements for easy-contrasts-DESeq2 are described on the <a href="https://github.com/GenomiqueENS/easy-contrasts-DESeq2">easy-contrasts-DESeq2 project page on GitHub</a>.
 				You can install DESeq2 and required R packages on your computer, on a Rserve server, or you can use the Docker image containing all the packages needed to run DESeq2:
 				<ul>
-					<li>easy-contrasts-DESeq2 v1.x: <a href="https://hub.docker.com/r/bioconductor/release_sequencing/">bioconductor/release_sequencing:3.1 docker image</a>.</li>
+					<li>easy-contrasts-DESeq2 v1.x: <a href="https://hub.docker.com/r/genomicpariscentre/bioconductor">genomicpariscentre/bioconductor:release_sequencing_3.1 docker image</a> (The original <a href="https://hub.docker.com/r/bioconductor/release_sequencing/">bioconductor/release_sequencing:3.1 docker image</a> was too old to work with latest release of Docker).</li>
 					<li>easy-contrasts-DESeq2 v2.x: <a href="https://hub.docker.com/r/genomicpariscentre/easycontrasts">genomicpariscentre/easycontrasts:2.0 docker image</a>.</li>
 				</ul>
 
