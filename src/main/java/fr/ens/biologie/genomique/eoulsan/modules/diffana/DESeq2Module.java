@@ -211,6 +211,11 @@ public class DESeq2Module extends AbstractModule {
     String dockerImage = defaultDockerImage(parameters);
     final int easyContrastVersion = this.deseq2Parameters.getEasyContrastsVersion();
 
+    // Additional annotation is useless with Easy contrast DESeq2 v1
+    if (easyContrastVersion == 1) {
+      this.useAdditionalAnnotationFile = false;
+    }
+
     // Parse R executor parameters
     this.executor =
         RModuleCommonConfiguration.parseRExecutorParameter(
