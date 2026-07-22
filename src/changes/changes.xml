@@ -2134,6 +2134,14 @@ of reads that reject each filter like in local mode.
 
          </release>
 
+         <release version="2.8.1" description="Eoulsan 2.8.1 release" date="2026-07-22">
+
+            <action dev="jourdren" type="fix">
+              Fix Docker issue with newer versions of Docker.
+            </action>
+
+         </release>
+
     </body>
 
 </document>
