@@ -241,8 +241,8 @@ condition_reference %>%
 #------ Text
 cat("The values in the `Reference` column are used to define the pairwise comparisons:\n\n")
 cat("- **Reference < 0**: the samples were considered by the normalisation step but not by the differential expression analysis\n")
-cat("- **Reference = 0**: the condition associated with these samples is considered as a reference in the differential expression analysis\n")
-cat("- **Reference > 0**: the condition associated with these samples is compared to each condition having a lower reference value\n\n")
+cat("- **Reference = 0**: the condition(s) associated with these samples is (are) never used as a reference\n")
+cat("- **Reference > 0**: the condition associated with these samples is compared to all conditions with a lower 'Reference' number\n\n")
 cat("The table below summarised the paired comparisons (condition1 vs condition2) of interest.\n\n")
 
 #------ Remove conditions to be ignored (Reference < 0)
@@ -265,9 +265,9 @@ comparison_df = data.frame(
                    by = c("condition2" = "Condition")) %>%
   `colnames<-`(c("condition1", "condition2", "reference1", "reference2")) %>%
   # Keep only the comparisons with reference1 < reference2
-  dplyr::filter(reference1 > reference2 | reference2 == 0) %>%
-  # Remove comparisons when reference1 == 0
-  dplyr::filter(reference1 != 0) %>%
+  dplyr::filter(reference1 > reference2 | reference1 == 0) %>%
+  # Remove comparisons when reference2 == 0
+  dplyr::filter(reference2 != 0) %>%
   # Arrange
   dplyr::arrange(reference2, condition2, reference1, condition1) %>%
   # Style
