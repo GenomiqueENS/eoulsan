@@ -469,13 +469,10 @@ public class ReadsMapperLocalModule extends AbstractReadsMapperModule {
     // Required processors in step attributes
     int requiredProcessors = context.getCurrentStep().getRequiredProcessors();
 
-    if (requiredProcessors > 0) {
-      return requiredProcessors;
-    }
+    int result = requiredProcessors > 0 ? requiredProcessors : getMapperLocalThreads();
 
-    int result = getMapperLocalThreads();
     if (result > Runtime.getRuntime().availableProcessors() || result < 1) {
-      result = Runtime.getRuntime().availableProcessors();
+      result = context.getSettings().getLocalThreadsNumber();
     }
 
     return result;
