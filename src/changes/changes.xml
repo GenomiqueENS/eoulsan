@@ -2142,6 +2142,18 @@ of reads that reject each filter like in local mode.
 
          </release>
 
+	 <release version="2.8.2" description="Eoulsan 2.8.2 release" date="2026-10-05">
+
+            <action dev="jourdren" type="fix">
+              Eoulsan now use easy-contrasts-DESeq2 version 2.3.2 and its fix with order of comparison in reference mode.
+            </action>
+
+            <action dev="jourdren" type="fix">
+              For read mapper in local mode, now use the defined max local thread count as the default value for thread count instead of all available cores.
+            </action>
+
+         </release>
+
     </body>
 
 </document>
