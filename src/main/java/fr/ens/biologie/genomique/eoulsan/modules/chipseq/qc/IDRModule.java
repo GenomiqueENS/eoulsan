@@ -450,7 +450,7 @@ public class IDRModule extends AbstractModule {
     return runAnalysisPlot(
         1,
         String.format("%s/%s", outputDir, outputPrefix),
-        Collections.singletonList(String.format("%s/%s", outputDir, inputPrefix)));
+        List.of(String.format("%s/%s", outputDir, inputPrefix)));
   }
 
   /**

@@ -315,7 +315,7 @@ public class FileDataProtocol extends AbstractDataProtocol {
     final File[] files = directoryFile.listFiles();
 
     if (files == null) {
-      return Collections.emptyList();
+      return List.of();
     }
 
     // Convert the File array to a list of DataFile

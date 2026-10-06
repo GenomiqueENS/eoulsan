@@ -24,7 +24,6 @@
 package fr.ens.biologie.genomique.eoulsan.data;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static java.util.Collections.singletonList;
 import static java.util.Objects.requireNonNull;
 
 import com.google.common.base.MoreObjects;
@@ -38,9 +37,9 @@ import fr.ens.biologie.genomique.eoulsan.splitermergers.Merger;
 import fr.ens.biologie.genomique.eoulsan.splitermergers.Splitter;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.Mapper;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * This class define a DataFormat from an XML file.
@@ -111,12 +110,12 @@ public class MapperIndexDataFormat extends AbstractDataFormat implements Seriali
   @Override
   public List<String> getExtensions() {
 
-    return singletonList(".zip");
+    return List.of(".zip");
   }
 
   @Override
   public List<String> getGalaxyFormatNames() {
-    return Collections.emptyList();
+    return List.of();
   }
 
   @Override
@@ -151,7 +150,7 @@ public class MapperIndexDataFormat extends AbstractDataFormat implements Seriali
     Parameter mapperNameParameter = new Parameter("mapperName", this.mapperName);
 
     try {
-      generator.configure(null, Collections.singleton(mapperNameParameter));
+      generator.configure(null, Set.of(mapperNameParameter));
 
       return generator;
     } catch (EoulsanException e) {

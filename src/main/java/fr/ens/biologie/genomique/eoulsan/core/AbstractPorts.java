@@ -131,7 +131,7 @@ public abstract class AbstractPorts<E extends Port> implements Ports<E>, Seriali
 
     // If ports is null
     if (ports == null || ports.isEmpty()) {
-      this.ports = Collections.emptyMap();
+      this.ports = Map.of();
       return;
     }
 
@@ -153,12 +153,12 @@ public abstract class AbstractPorts<E extends Port> implements Ports<E>, Seriali
 
     switch (map.size()) {
       case 0:
-        this.ports = Collections.emptyMap();
+        this.ports = Map.of();
         break;
 
       case 1:
         final E value = map.values().iterator().next();
-        this.ports = Collections.singletonMap(value.getName(), value);
+        this.ports = Map.of(value.getName(), value);
         break;
 
       default:
@@ -188,7 +188,7 @@ public abstract class AbstractPorts<E extends Port> implements Ports<E>, Seriali
   public List<E> getPortsWithDataFormat(final DataFormat format) {
 
     if (format == null) {
-      return Collections.emptyList();
+      return List.of();
     }
 
     final List<E> result = new ArrayList<>();

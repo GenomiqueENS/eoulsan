@@ -64,7 +64,7 @@ class StepInputPorts extends AbstractPorts<StepInputPort> {
 
   static StepInputPorts noInputPort() {
 
-    final Set<StepInputPort> ports = Collections.emptySet();
+    final Set<StepInputPort> ports = Set.of();
     return new StepInputPorts(ports);
   }
 

@@ -27,7 +27,6 @@ package fr.ens.biologie.genomique.eoulsan.data;
 import com.google.common.base.MoreObjects;
 import fr.ens.biologie.genomique.eoulsan.checkers.Checker;
 import fr.ens.biologie.genomique.eoulsan.core.Module;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -48,7 +47,7 @@ abstract class AbstractDataFormat implements DataFormat {
   @Override
   public List<String> getExtensions() {
 
-    return Collections.singletonList(getDefaultExtension());
+    return List.of(getDefaultExtension());
   }
 
   @Override

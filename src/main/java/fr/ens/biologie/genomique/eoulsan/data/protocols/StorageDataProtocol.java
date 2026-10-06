@@ -40,7 +40,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.OffsetDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -80,7 +79,7 @@ public abstract class StorageDataProtocol extends AbstractDataProtocol {
    */
   protected List<String> getExtensions() {
 
-    return Collections.singletonList(getExtension());
+    return List.of(getExtension());
   }
 
   @Override

@@ -23,7 +23,6 @@ import fr.ens.biologie.genomique.eoulsan.design.ExperimentMetadata;
 import fr.ens.biologie.genomique.eoulsan.design.ExperimentSample;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -78,7 +77,7 @@ public class DESeq2DesignChecker implements Checker, Serializable {
 
   @Override
   public Set<DataFormat> getCheckersRequired() {
-    return Collections.emptySet();
+    return Set.of();
   }
 
   //

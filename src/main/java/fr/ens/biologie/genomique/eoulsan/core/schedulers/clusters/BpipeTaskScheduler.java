@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -419,6 +418,6 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
    * @return a Map with the additional environment variables
    */
   protected Map<String, String> additionalScriptEnvironment() {
-    return Collections.emptyMap();
+    return Map.of();
   }
 }

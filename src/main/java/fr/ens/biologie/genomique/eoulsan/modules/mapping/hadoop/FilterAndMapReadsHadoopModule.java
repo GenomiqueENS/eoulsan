@@ -35,7 +35,6 @@ import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsFilt
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsMapperHadoopModule.computeZipCheckSum;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsMapperHadoopModule.setZooKeeperJobConfiguration;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX;
-import static java.util.Collections.singletonList;
 
 import com.google.common.base.Joiner;
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
@@ -127,7 +126,7 @@ public class FilterAndMapReadsHadoopModule extends AbstractFilterAndMapReadsModu
 
         // Define input and output files
         final DataFile inFile = readsData.getDataFile(0);
-        final List<String> filenames = singletonList(inFile.getName());
+        final List<String> filenames = List.of(inFile.getName());
 
         job =
             createJobConf(

@@ -35,7 +35,6 @@ import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
 import fr.ens.biologie.genomique.eoulsan.modules.generators.GenomeDescriptionCreator;
 import fr.ens.biologie.genomique.kenetre.bio.BadBioEntryException;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -66,7 +65,7 @@ public class GenomeChecker implements Checker {
 
   @Override
   public Set<DataFormat> getCheckersRequired() {
-    return Collections.emptySet();
+    return Set.of();
   }
 
   @Override

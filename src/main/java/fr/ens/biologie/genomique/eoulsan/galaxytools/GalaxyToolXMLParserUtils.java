@@ -101,7 +101,7 @@ public final class GalaxyToolXMLParserUtils {
   public static Map<String, ToolElement> extractParamElement(
       final ToolInfo toolInfo, final Element parent, final String elementName)
       throws EoulsanException {
-    final Map<String, Parameter> stepParameters = Collections.emptyMap();
+    final Map<String, Parameter> stepParameters = Map.of();
     return extractParamElement(toolInfo, parent, elementName, stepParameters);
   }
 
@@ -175,7 +175,7 @@ public final class GalaxyToolXMLParserUtils {
    */
   public static Map<String, ToolElement> extractConditionalParamElement(
       final ToolInfo toolInfo, final Element parent) throws EoulsanException {
-    final Map<String, Parameter> stepParameters = Collections.emptyMap();
+    final Map<String, Parameter> stepParameters = Map.of();
     return extractConditionalParamElement(toolInfo, parent, stepParameters);
   }
 
@@ -263,7 +263,7 @@ public final class GalaxyToolXMLParserUtils {
     }
 
     if (result == null || result.isEmpty()) {
-      return Collections.emptyList();
+      return List.of();
     }
 
     return Collections.unmodifiableList(result);
@@ -353,7 +353,7 @@ public final class GalaxyToolXMLParserUtils {
     }
 
     if (result == null || result.isEmpty()) {
-      return Collections.emptyList();
+      return List.of();
     }
 
     return Collections.unmodifiableList(result);
@@ -397,7 +397,7 @@ public final class GalaxyToolXMLParserUtils {
     }
 
     if (result == null || result.isEmpty()) {
-      return Collections.emptyList();
+      return List.of();
     }
 
     return Collections.unmodifiableList(result);

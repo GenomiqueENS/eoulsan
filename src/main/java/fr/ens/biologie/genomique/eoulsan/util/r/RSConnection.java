@@ -38,7 +38,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -629,7 +628,7 @@ public class RSConnection {
     String[] files = c.eval("list.files()").asStrings();
 
     if (files == null) {
-      return Collections.emptyList();
+      return List.of();
     }
 
     return Arrays.asList(files);

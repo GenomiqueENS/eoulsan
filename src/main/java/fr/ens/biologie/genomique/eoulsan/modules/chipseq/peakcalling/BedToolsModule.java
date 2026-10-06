@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +116,7 @@ public class BedToolsModule extends AbstractModule {
 
   @Override
   public Set<Requirement> getRequirements() {
-    return Collections.singleton(this.requirement);
+    return Set.of(this.requirement);
   }
 
   /** Run bedtools multiinter. Installation (if needed) was made during configuration. */

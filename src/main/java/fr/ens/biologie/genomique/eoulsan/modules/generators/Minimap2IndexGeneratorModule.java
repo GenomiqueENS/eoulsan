@@ -48,7 +48,7 @@ import fr.ens.biologie.genomique.kenetre.bio.readmapper.MapperBuilder;
 import fr.ens.biologie.genomique.kenetre.bio.readmapper.Minimap2MapperProvider;
 import fr.ens.biologie.genomique.kenetre.util.Version;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -134,7 +134,7 @@ public class Minimap2IndexGeneratorModule extends AbstractModule {
           this.mapper,
           context,
           this.indexerArguments,
-          Collections.singletonMap("indexer.arguments", this.indexerArguments));
+          Map.of("indexer.arguments", this.indexerArguments));
 
     } catch (IOException | EoulsanException e) {
 

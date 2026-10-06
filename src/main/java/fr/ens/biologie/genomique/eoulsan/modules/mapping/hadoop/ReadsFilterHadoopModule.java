@@ -31,7 +31,6 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_FASTQ;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_TFQ;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX;
-import static java.util.Collections.singletonList;
 
 import com.google.common.base.Joiner;
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
@@ -112,7 +111,7 @@ public class ReadsFilterHadoopModule extends AbstractReadsFilterModule {
         // Define input and output files
         final DataFile inFile = inData.getDataFile(0);
         final DataFile outFile = outData.getDataFile(0);
-        final List<String> filenames = singletonList(inFile.getName());
+        final List<String> filenames = List.of(inFile.getName());
 
         job = createJobConf(conf, dataName, inFile, filenames, READS_FASTQ, fastqFormat, outFile);
       } else {

@@ -27,7 +27,6 @@ import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_SINGLE_INPUT_PORT_NAME;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_SAM;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_FASTQ;
-import static java.util.Collections.singletonList;
 
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -344,9 +343,7 @@ public class FastQCModule extends AbstractModule {
 
     // If no entries in the input file use a dedicated module
     final List<AbstractQCModule> reportModules =
-        seqFile.getCount() > 0
-            ? modules
-            : singletonList((AbstractQCModule) new EmptyFileQC(inputFile));
+        seqFile.getCount() > 0 ? modules : List.of((AbstractQCModule) new EmptyFileQC(inputFile));
 
     // Set the description of the context
     status.setDescription(

@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.util;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 /**
  * This class define an utility class that contains useful methods for collections.
@@ -46,7 +46,7 @@ public class CollectionUtils {
 
     if (c == null) {
 
-      return Collections.emptyList();
+      return List.of();
     }
 
     return c;

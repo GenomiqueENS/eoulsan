@@ -513,7 +513,7 @@ public abstract class AbstractStep implements Step {
     this.terminalStep = false;
     this.createLogFiles = false;
     this.type = type;
-    this.parameters = Collections.emptySet();
+    this.parameters = Set.of();
     this.parallelizationMode = ParallelizationMode.NOT_NEEDED;
     this.requiredMemory = -1;
     this.requiredProcessors = -1;
@@ -605,7 +605,7 @@ public abstract class AbstractStep implements Step {
     this.moduleName = generatorModule.getName();
     this.version = generatorModule.getVersion().toString();
     this.mode = ExecutionMode.getExecutionMode(generatorModule.getClass());
-    this.parameters = Collections.emptySet();
+    this.parameters = Set.of();
     this.parallelizationMode = getParallelizationMode(generatorModule);
     this.requiredMemory = -1;
     this.requiredProcessors = -1;

@@ -25,8 +25,6 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Collections.emptySet;
-import static java.util.Collections.singleton;
 import static java.util.Objects.requireNonNull;
 
 import com.google.common.base.MoreObjects;
@@ -154,10 +152,10 @@ class StepInputPort extends SimpleInputPort {
   public Set<Step> getLinkedSteps() {
 
     if (this.link == null) {
-      return emptySet();
+      return Set.of();
     }
 
-    return singleton((Step) this.link.getStep());
+    return Set.of((Step) this.link.getStep());
   }
 
   @Override

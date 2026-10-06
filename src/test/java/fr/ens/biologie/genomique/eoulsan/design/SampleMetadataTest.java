@@ -29,7 +29,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
-import java.util.Collections;
+import java.util.List;
 import org.junit.Test;
 
 public class SampleMetadataTest {
@@ -43,8 +43,8 @@ public class SampleMetadataTest {
     // test getReads
     assertNull(sm.getReads());
     // test setReads
-    sm.setReads(Collections.singletonList("toto"));
-    assertEquals(Collections.singletonList("toto"), sm.getReads());
+    sm.setReads(List.of("toto"));
+    assertEquals(List.of("toto"), sm.getReads());
     // test containsReads
     assertTrue(sm.containsReads());
 

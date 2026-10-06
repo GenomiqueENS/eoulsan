@@ -117,7 +117,7 @@ public class DataFileDataPath implements DataPath, Comparable<DataFileDataPath> 
   public List<DataPath> list() throws IOException {
 
     if (!this.file.getProtocol().canList()) {
-      return Collections.emptyList();
+      return List.of();
     }
 
     List<DataPath> result = new ArrayList<>();

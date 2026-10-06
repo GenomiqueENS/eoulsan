@@ -494,7 +494,7 @@ public class DataFormatRegistry {
   public Set<DataFormat> getDataFormatsFromExtension(final String extension) {
 
     if (extension == null) {
-      return Collections.emptySet();
+      return Set.of();
     }
 
     final Set<DataFormat> result = new HashSet<>();

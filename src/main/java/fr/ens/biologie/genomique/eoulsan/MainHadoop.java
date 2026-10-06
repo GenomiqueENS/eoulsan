@@ -25,12 +25,12 @@
 package fr.ens.biologie.genomique.eoulsan;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
-import static java.util.Collections.singletonList;
 
 import fr.ens.biologie.genomique.eoulsan.Infos.Info;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.StreamHandler;
@@ -101,7 +101,7 @@ public final class MainHadoop extends Main {
       // Log the usage of the hadoop temporary directory partition
       java.nio.file.Path hadoopTmp = java.nio.file.Path.of(this.conf.get("hadoop.tmp.dir"));
       if (hadoopTmp != null) {
-        Infos.log(Level.INFO, singletonList(Infos.diskFreeInfo(hadoopTmp.toFile())));
+        Infos.log(Level.INFO, List.of(Infos.diskFreeInfo(hadoopTmp.toFile())));
       }
 
       // Log the usage of the Java temporary directory partition

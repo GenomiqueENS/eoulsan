@@ -699,7 +699,7 @@ public final class Settings implements Serializable {
     String value = this.properties.getProperty(DATA_FORMAT_PATH_KEY);
 
     if (value == null) {
-      return Collections.emptyList();
+      return List.of();
     }
 
     List<String> result = new ArrayList<>();
@@ -724,7 +724,7 @@ public final class Settings implements Serializable {
     String value = this.properties.getProperty(GALAXY_TOOL_PATH_KEY);
 
     if (value == null) {
-      return Collections.emptyList();
+      return List.of();
     }
 
     List<String> result = new ArrayList<>();

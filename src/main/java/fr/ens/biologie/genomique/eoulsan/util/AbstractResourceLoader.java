@@ -120,7 +120,7 @@ public abstract class AbstractResourceLoader<S> implements ResourceLoader<S> {
     requireNonNull(resourceName, "resourceName argument cannot be null");
 
     if (!this.resources.containsKey(resourceName)) {
-      return Collections.emptyList();
+      return List.of();
     }
 
     final List<S> result = new ArrayList<>();

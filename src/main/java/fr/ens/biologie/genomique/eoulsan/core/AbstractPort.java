@@ -30,7 +30,6 @@ import static java.util.Objects.requireNonNull;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -67,7 +66,7 @@ public abstract class AbstractPort implements Port, Serializable {
 
   @Override
   public Set<Step> getLinkedSteps() {
-    return Collections.emptySet();
+    return Set.of();
   }
 
   //

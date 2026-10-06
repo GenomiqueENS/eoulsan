@@ -65,7 +65,6 @@ import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -604,7 +603,7 @@ public class TokenManager implements Runnable {
     // in Context
     synchronized (this.cartesianProductsUsed) {
       if (!checkIfAllPortsHasReceivedSomeData() || !checkIfAllListPortsAreClosed()) {
-        cartesianProductToProcess = Collections.emptySet();
+        cartesianProductToProcess = Set.of();
       } else {
         cartesianProductToProcess =
             this.step.getDataProduct().makeProduct(this.inputPorts, this.inputTokens);
@@ -636,13 +635,12 @@ public class TokenManager implements Runnable {
       final WorkflowContext workflowContext) {
 
     // Empty input Data for the context
-    Map<InputPort, Data> inputData = Collections.emptyMap();
+    Map<InputPort, Data> inputData = Map.of();
 
     // Create the Data object for the output port
     Map<OutputPort, AbstractData> outputData = createContextOutputData();
 
-    return Collections.singleton(
-        new TaskContextImpl(workflowContext, this.step, inputData, outputData));
+    return Set.of(new TaskContextImpl(workflowContext, this.step, inputData, outputData));
   }
 
   //

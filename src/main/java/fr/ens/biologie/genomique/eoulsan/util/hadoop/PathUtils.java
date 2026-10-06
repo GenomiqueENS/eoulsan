@@ -677,7 +677,7 @@ public final class PathUtils {
         fs.listStatus(dir, new PrefixPathFilter(prefix, allowCompressedExtension));
 
     if (filesStatus == null) {
-      return Collections.emptyList();
+      return List.of();
     }
 
     final List<Path> result = new ArrayList<>(filesStatus.length);
@@ -742,7 +742,7 @@ public final class PathUtils {
         fs.listStatus(dir, new SuffixPathFilter(suffix, allowCompressedExtension));
 
     if (filesStatus == null) {
-      return Collections.emptyList();
+      return List.of();
     }
 
     final List<Path> result = new ArrayList<>(filesStatus.length);

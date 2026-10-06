@@ -56,7 +56,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -718,7 +717,7 @@ public class DesignBuilder {
                 date,
                 operator,
                 defaultFastqFormat,
-                Collections.singletonList(fe.path.getSource()),
+                List.of(fe.path.getSource()),
                 fe.path);
             count++;
           }

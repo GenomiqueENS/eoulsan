@@ -25,7 +25,6 @@
 package fr.ens.biologie.genomique.eoulsan.core.workflow;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Collections.emptySet;
 import static java.util.Objects.requireNonNull;
 
 import com.google.common.base.MoreObjects;
@@ -164,7 +163,7 @@ class StepOutputPort extends SimpleOutputPort {
       }
 
     } catch (IOException e) {
-      return Collections.emptyList();
+      return List.of();
     }
 
     return Collections.unmodifiableList(result);
@@ -182,7 +181,7 @@ class StepOutputPort extends SimpleOutputPort {
 
     // Do nothing if there is no file
     if (files.isEmpty()) {
-      return Collections.emptySet();
+      return Set.of();
     }
 
     // Create the result object
@@ -238,7 +237,7 @@ class StepOutputPort extends SimpleOutputPort {
   public Set<Step> getLinkedSteps() {
 
     if (this.links.isEmpty()) {
-      return emptySet();
+      return Set.of();
     }
 
     final Set<Step> result = new HashSet<>();

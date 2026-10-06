@@ -103,7 +103,7 @@ public class DataMetadataStorage {
     final Map<String, String> entries = this.metadata.get(file.getName());
 
     if (entries == null) {
-      return Collections.emptyMap();
+      return Map.of();
     }
 
     return Collections.unmodifiableMap(entries);

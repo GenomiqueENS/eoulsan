@@ -39,7 +39,6 @@ import fr.ens.biologie.genomique.kenetre.bio.ReadSequence;
 import fr.ens.biologie.genomique.kenetre.bio.io.FastqReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -70,7 +69,7 @@ public class ReadsChecker implements Checker {
 
   @Override
   public Set<DataFormat> getCheckersRequired() {
-    return Collections.emptySet();
+    return Set.of();
   }
 
   @Override

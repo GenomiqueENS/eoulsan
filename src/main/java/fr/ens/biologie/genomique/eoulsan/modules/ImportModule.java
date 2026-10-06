@@ -305,7 +305,7 @@ public class ImportModule extends AbstractModule {
               // Set metadata of imported files
               final boolean isMetadataSet =
                   DataMetadataStorage.getInstance(context.getOutputDirectory())
-                      .loadMetadata(data, Collections.singletonList(inputFile));
+                      .loadMetadata(data, List.of(inputFile));
 
               // Set the metadata from sample metadata
               if (!isMetadataSet && samples.containsKey(data.getName())) {
@@ -427,7 +427,7 @@ public class ImportModule extends AbstractModule {
       final Set<DataFile> files, final DataFormat format) throws EoulsanException {
 
     if (files == null) {
-      return Collections.emptyMap();
+      return Map.of();
     }
 
     final Map<DataFormat, CompressionType> result = new HashMap<>();

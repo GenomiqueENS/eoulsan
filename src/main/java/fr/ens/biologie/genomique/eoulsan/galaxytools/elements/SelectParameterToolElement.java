@@ -134,7 +134,7 @@ public class SelectParameterToolElement extends AbstractParameterToolElement {
       // throw new EoulsanException(
       // "Parsing tool xml: no option found in conditional element: "
       // + getName());
-      return Collections.emptyList();
+      return List.of();
     }
 
     return Collections.unmodifiableList(options);

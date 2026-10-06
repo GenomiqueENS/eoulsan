@@ -38,7 +38,6 @@ import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.core.StepConfigurationContext;
 import fr.ens.biologie.genomique.eoulsan.requirements.Requirement;
 import fr.ens.biologie.genomique.kenetre.util.Version;
-import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -76,7 +75,7 @@ public abstract class AbstractModule implements Module {
   @Override
   public Set<Requirement> getRequirements() {
 
-    return Collections.emptySet();
+    return Set.of();
   }
 
   @Override

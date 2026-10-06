@@ -37,7 +37,7 @@ import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
+import java.util.List;
 import org.junit.Test;
 
 public class Eoulsan2ReaderWriterTest {
@@ -88,8 +88,8 @@ public class Eoulsan2ReaderWriterTest {
     SampleMetadata sample1MD = sample1.getMetadata();
     SampleMetadata sample2MD = sample2.getMetadata();
 
-    sample1MD.setReads(Collections.singletonList("read_sample1.fasta"));
-    sample2MD.setReads(Collections.singletonList("read_sample2.fasta"));
+    sample1MD.setReads(List.of("read_sample1.fasta"));
+    sample2MD.setReads(List.of("read_sample2.fasta"));
 
     sample1MD.setDate("06.10.2015");
     sample2MD.setDate("06.10.2015");

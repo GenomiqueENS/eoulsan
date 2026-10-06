@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -194,7 +195,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
         process.execute(
             commandLine,
             getOutputDirectory().toFile(),
-            Collections.singletonMap(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG),
+            Map.of(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG),
             getTemporaryDirectory().toFile(),
             stdoutFile.toFile(),
             stdoutFile.toFile(),
@@ -218,7 +219,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
         process.execute(
             commandLine,
             getOutputDirectory().toFile(),
-            Collections.singletonMap(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG),
+            Map.of(LANG_ENVIRONMENT_VARIABLE, DEFAULT_R_LANG),
             getTemporaryDirectory().toFile(),
             stdoutFile,
             stdoutFile,

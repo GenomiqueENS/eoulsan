@@ -42,7 +42,7 @@ public class RserveRequirement extends AbstractRequirement {
           break;
 
         default:
-          super.configure(Collections.singleton(p));
+          super.configure(Set.of(p));
           break;
       }
     }

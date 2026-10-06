@@ -30,7 +30,6 @@ import fr.ens.biologie.genomique.eoulsan.data.Data;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormats;
-import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -59,7 +58,7 @@ public class AdditionalAnnotationChecker implements Checker {
 
   @Override
   public Set<DataFormat> getCheckersRequired() {
-    return Collections.emptySet();
+    return Set.of();
   }
 
   @Override

@@ -81,7 +81,7 @@ public class CommandWorkflow extends AbstractWorkflow {
   private static final long serialVersionUID = 4132064673361068654L;
 
   private static final String LATEST_SUFFIX = "-latest";
-  static final Set<Parameter> EMPTY_PARAMETERS = Collections.emptySet();
+  static final Set<Parameter> EMPTY_PARAMETERS = Set.of();
 
   private final List<CommandStep> steps = new ArrayList<>();
   private final Set<String> stepsIds = new HashSet<>();

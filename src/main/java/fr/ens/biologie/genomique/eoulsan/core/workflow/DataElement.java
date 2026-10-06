@@ -90,7 +90,7 @@ class DataElement extends AbstractData {
 
   @Override
   public List<Data> getListElements() {
-    return Collections.singletonList((Data) this);
+    return List.of((Data) this);
   }
 
   @Override
@@ -312,7 +312,7 @@ class DataElement extends AbstractData {
   }
 
   DataElement(final DataFormat format, final DataFile file, final Design design) {
-    this(format, Collections.singletonList(file), design);
+    this(format, List.of(file), design);
   }
 
   DataElement(final StepOutputPort port, final Design design) {

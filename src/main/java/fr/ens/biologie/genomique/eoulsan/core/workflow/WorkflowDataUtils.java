@@ -13,7 +13,6 @@ import fr.ens.biologie.genomique.eoulsan.design.Design;
 import fr.ens.biologie.genomique.eoulsan.design.Experiment;
 import fr.ens.biologie.genomique.eoulsan.design.Sample;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -92,7 +91,7 @@ public class WorkflowDataUtils {
     requireNonNull(data, "data argument cannot be null");
 
     if (data.isList()) {
-      return Collections.emptyList();
+      return List.of();
     }
 
     return ((DataElement) data).getDataFiles();

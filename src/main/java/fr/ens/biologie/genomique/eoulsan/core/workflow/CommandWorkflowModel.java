@@ -61,7 +61,6 @@ import fr.ens.biologie.genomique.eoulsan.core.workflow.CommandWorkflowParser.Ste
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -381,7 +380,7 @@ public class CommandWorkflowModel implements Serializable {
     Map<String, StepPort> result = this.stepInputs.get(stepId);
 
     if (result == null) {
-      result = Collections.emptyMap();
+      result = Map.of();
     }
 
     return result;
@@ -398,7 +397,7 @@ public class CommandWorkflowModel implements Serializable {
     Set<Parameter> result = this.stepParameters.get(stepId);
 
     if (result == null) {
-      result = Collections.emptySet();
+      result = Set.of();
     }
 
     return result;

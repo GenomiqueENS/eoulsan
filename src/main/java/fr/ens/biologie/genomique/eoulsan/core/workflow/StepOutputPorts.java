@@ -70,7 +70,7 @@ class StepOutputPorts extends AbstractPorts<StepOutputPort> {
    */
   static StepOutputPorts noOutputPort() {
 
-    final Set<StepOutputPort> ports = Collections.emptySet();
+    final Set<StepOutputPort> ports = Set.of();
     return new StepOutputPorts(ports);
   }
 

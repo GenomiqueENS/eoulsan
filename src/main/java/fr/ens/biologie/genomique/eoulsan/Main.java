@@ -38,7 +38,6 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -239,7 +238,7 @@ public abstract class Main {
   public List<String> getCommandLineSettings() {
 
     if (this.commandLineSettings == null) {
-      return Collections.emptyList();
+      return List.of();
     }
 
     return unmodifiableList(this.commandLineSettings);

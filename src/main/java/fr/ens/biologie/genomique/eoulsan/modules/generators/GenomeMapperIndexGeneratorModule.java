@@ -62,7 +62,6 @@ import fr.ens.biologie.genomique.kenetre.storage.FileGenomeMapperIndexer;
 import fr.ens.biologie.genomique.kenetre.storage.GenomeIndexStorage;
 import fr.ens.biologie.genomique.kenetre.util.Version;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -222,7 +221,7 @@ public class GenomeMapperIndexGeneratorModule extends AbstractModule {
     if (additionalDescription != null) {
       descriptions = additionalDescription;
     } else {
-      descriptions = Collections.emptyMap();
+      descriptions = Map.of();
     }
 
     // Get input and output data

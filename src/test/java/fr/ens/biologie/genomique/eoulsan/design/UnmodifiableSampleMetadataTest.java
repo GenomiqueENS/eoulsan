@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
-import java.util.Collections;
+import java.util.List;
 import org.junit.Test;
 
 public class UnmodifiableSampleMetadataTest {
@@ -132,8 +132,8 @@ public class UnmodifiableSampleMetadataTest {
     // test getReads
     assertNull(usm.getReads());
     // test setReads
-    sm.setReads(Collections.singletonList("toto"));
-    assertEquals(Collections.singletonList("toto"), usm.getReads());
+    sm.setReads(List.of("toto"));
+    assertEquals(List.of("toto"), usm.getReads());
     // test containsReads
     assertTrue(usm.containsReads());
 

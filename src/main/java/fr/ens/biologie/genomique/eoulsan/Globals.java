@@ -128,7 +128,7 @@ public final class Globals {
 
   /** Platforms alias. */
   public static final Map<String, String> AVAILABLE_BINARY_ARCH_ALIAS =
-      Collections.unmodifiableMap(Collections.singletonMap("linux\tx86_64", "linux\tamd64"));
+      Collections.unmodifiableMap(Map.of("linux\tx86_64", "linux\tamd64"));
 
   /** Format of the log. */
   public static final Formatter LOG_FORMATTER =

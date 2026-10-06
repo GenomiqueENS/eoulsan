@@ -51,7 +51,6 @@ import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -366,9 +365,7 @@ public class RSingleCellExperimentCreatorModule extends AbstractModule {
 
         // Get existing column names
         Set<String> existingColumnNames =
-            resultMatrix == null
-                ? Collections.emptySet()
-                : new HashSet<>(resultMatrix.getColumnNames());
+            resultMatrix == null ? Set.of() : new HashSet<>(resultMatrix.getColumnNames());
 
         // Read matrix
         ExpressionMatrix loadedMatrix =

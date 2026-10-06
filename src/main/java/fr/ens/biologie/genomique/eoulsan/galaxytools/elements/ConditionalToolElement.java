@@ -37,7 +37,6 @@ import fr.ens.biologie.genomique.eoulsan.core.Parameter;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -114,7 +113,7 @@ public class ConditionalToolElement implements ToolElement {
   public Map<String, ToolElement> getToolElementsResult() {
 
     if (this.toolElementResult.isEmpty()) {
-      return Collections.emptyMap();
+      return Map.of();
     }
 
     return this.toolElementResult;

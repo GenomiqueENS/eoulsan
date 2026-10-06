@@ -17,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -157,11 +156,7 @@ public class Infos {
      */
     public Info(final String name, final String value, final String defaultValue) {
 
-      this(
-          name,
-          value == null
-              ? Collections.singletonList(defaultValue)
-              : Collections.singletonList(value));
+      this(name, value == null ? List.of(defaultValue) : List.of(value));
     }
 
     /**
@@ -173,7 +168,7 @@ public class Infos {
      */
     public Info(final String name, final List<String> values, final String defaultValue) {
 
-      this(name, values.isEmpty() ? Collections.singletonList(NOT_SET) : values);
+      this(name, values.isEmpty() ? List.of(NOT_SET) : values);
     }
 
     /**
