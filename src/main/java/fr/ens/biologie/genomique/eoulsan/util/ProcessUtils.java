@@ -67,9 +67,9 @@ public final class ProcessUtils {
    */
   public static int system(final String cmd) throws IOException {
 
-    getLogger().fine("execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
+    getLogger().fine("execute (Thread " + Thread.currentThread().threadId() + "): " + cmd);
 
-    final Process p = Runtime.getRuntime().exec(cmd);
+    final Process p = new ProcessBuilder("sh", "-c", cmd).start();
 
     try {
       return p.waitFor();
@@ -137,11 +137,11 @@ public final class ProcessUtils {
    */
   public static void exec(final String cmd, final boolean stdOutput) throws IOException {
 
-    getLogger().fine("execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
+    getLogger().fine("execute (Thread " + Thread.currentThread().threadId() + "): " + cmd);
 
     final long startTime = System.currentTimeMillis();
 
-    Process p = Runtime.getRuntime().exec(cmd);
+    Process p = new ProcessBuilder("sh", "-c", cmd).start();
 
     InputStream std = p.getInputStream();
     BufferedReader stdr = new BufferedReader(new InputStreamReader(std, CHARSET));
@@ -178,11 +178,11 @@ public final class ProcessUtils {
    */
   public static void execWriteOutput(final String cmd, final File outputFile) throws IOException {
 
-    getLogger().fine("execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
+    getLogger().fine("execute (Thread " + Thread.currentThread().threadId() + "): " + cmd);
 
     final long startTime = System.currentTimeMillis();
 
-    Process p = Runtime.getRuntime().exec(cmd);
+    Process p = new ProcessBuilder("sh", "-c", cmd).start();
 
     InputStream std = p.getInputStream();
 
@@ -229,7 +229,7 @@ public final class ProcessUtils {
   public static String execToString(
       final String cmd, final boolean addStdErr, final boolean checkExitCode) throws IOException {
 
-    getLogger().fine("execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
+    getLogger().fine("execute (Thread " + Thread.currentThread().threadId() + "): " + cmd);
 
     final long startTime = System.currentTimeMillis();
 
@@ -292,7 +292,7 @@ public final class ProcessUtils {
       getLogger()
           .fine(
               "Done (Thread "
-                  + Thread.currentThread().getId()
+                  + Thread.currentThread().threadId()
                   + ", exit code: "
                   + exitValue
                   + ") in "
@@ -473,11 +473,11 @@ public final class ProcessUtils {
    */
   public static void execThreadOutput(final String cmd) throws IOException {
 
-    getLogger().fine("execute (Thread " + Thread.currentThread().getId() + "): " + cmd);
+    getLogger().fine("execute (Thread " + Thread.currentThread().threadId() + "): " + cmd);
 
     final long startTime = System.currentTimeMillis();
 
-    Process p = Runtime.getRuntime().exec(cmd);
+    Process p = new ProcessBuilder("sh", "-c", cmd).start();
 
     final BufferedReader stdr =
         new BufferedReader(new InputStreamReader(p.getInputStream(), CHARSET));
@@ -500,7 +500,8 @@ public final class ProcessUtils {
   public static void execThreadOutput(final String[] cmd) throws IOException {
 
     getLogger()
-        .fine("execute (Thread " + Thread.currentThread().getId() + "): " + Arrays.toString(cmd));
+        .fine(
+            "execute (Thread " + Thread.currentThread().threadId() + "): " + Arrays.toString(cmd));
 
     final long startTime = System.currentTimeMillis();
 

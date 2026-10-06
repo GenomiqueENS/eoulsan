@@ -202,7 +202,7 @@ public final class Ticket implements Comparable<Ticket>, Serializable {
   public Ticket(final String description) {
     this(
         getCurrentPid(),
-        Thread.currentThread().getId(),
+        Thread.currentThread().threadId(),
         System.currentTimeMillis(),
         System.nanoTime(),
         description,
