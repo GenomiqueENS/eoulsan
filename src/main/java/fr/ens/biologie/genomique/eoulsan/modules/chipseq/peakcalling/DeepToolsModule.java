@@ -5,7 +5,6 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.MAPPER_RESULTS_INDEX_BAI;
 import static fr.ens.biologie.genomique.eoulsan.modules.chipseq.ChIPSeqDataFormats.PEAK;
 
-import com.google.common.base.Joiner;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -279,7 +278,7 @@ public class DeepToolsModule extends AbstractModule {
                 stdoutFile1.toFile(),
                 stderrFile1.toFile());
 
-        ProcessUtils.throwExitCodeException(exitValue1, Joiner.on(' ').join(cmd1multibamSummary));
+        ProcessUtils.throwExitCodeException(exitValue1, String.join(" ", cmd1multibamSummary));
       } catch (IOException err) {
         return status.createTaskResult(err);
       }
@@ -324,7 +323,7 @@ public class DeepToolsModule extends AbstractModule {
                 stdoutFile2.toFile(),
                 stderrFile2.toFile());
 
-        ProcessUtils.throwExitCodeException(exitValue2, Joiner.on(' ').join(cmd2bamCorrelate));
+        ProcessUtils.throwExitCodeException(exitValue2, String.join(" ", cmd2bamCorrelate));
       } catch (IOException err) {
         return status.createTaskResult(err);
       }
@@ -370,7 +369,7 @@ public class DeepToolsModule extends AbstractModule {
                   stdoutFile3.toFile(),
                   stderrFile3.toFile());
 
-          ProcessUtils.throwExitCodeException(exitValue3, Joiner.on(' ').join(cmd3multibamSummary));
+          ProcessUtils.throwExitCodeException(exitValue3, String.join(" ", cmd3multibamSummary));
         } catch (IOException err) {
           return status.createTaskResult(err);
         }
@@ -416,7 +415,7 @@ public class DeepToolsModule extends AbstractModule {
                   stdoutFile4.toFile(),
                   stderrFile4.toFile());
 
-          ProcessUtils.throwExitCodeException(exitValue4, Joiner.on(' ').join(cmd4bamCorrelate));
+          ProcessUtils.throwExitCodeException(exitValue4, String.join(" ", cmd4bamCorrelate));
         } catch (IOException err) {
           return status.createTaskResult(err);
         }
@@ -453,7 +452,7 @@ public class DeepToolsModule extends AbstractModule {
                 stdoutFile5.toFile(),
                 stderrFile5.toFile());
 
-        ProcessUtils.throwExitCodeException(exitValue5, Joiner.on(' ').join(cmd5bamFingerprint));
+        ProcessUtils.throwExitCodeException(exitValue5, String.join(" ", cmd5bamFingerprint));
       } catch (IOException err) {
         return status.createTaskResult(err);
       }

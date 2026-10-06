@@ -32,7 +32,6 @@ import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_TFQ;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.HadoopMappingUtils.addParametersToJobConf;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsFilterMapper.READ_FILTER_PARAMETER_KEY_PREFIX;
 
-import com.google.common.base.Joiner;
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -218,7 +217,7 @@ public class ReadsFilterHadoopModule extends AbstractReadsFilterModule {
     // Create the job and its name
     final Job job =
         Job.getInstance(
-            jobConf, "Filter reads (" + dataName + ", " + Joiner.on(", ").join(filenames) + ")");
+            jobConf, "Filter reads (" + dataName + ", " + String.join(", ", filenames) + ")");
 
     // Set the jar
     job.setJarByClass(ReadsFilterHadoopModule.class);

@@ -30,7 +30,6 @@ import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.INPUT_ALIGNMENTS_COUNTER;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.OUTPUT_FILTERED_ALIGNMENTS_COUNTER;
 
-import com.google.common.base.Joiner;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
@@ -81,8 +80,7 @@ public class SAMFilterLocalModule extends AbstractSAMFilterModule {
       final MultiReadAlignmentFilter filter =
           getAlignmentFilter(context.getGenericLogger(), reporter, COUNTER_GROUP);
       getLogger()
-          .info(
-              "Read alignments filters to apply: " + Joiner.on(", ").join(filter.getFilterNames()));
+          .info("Read alignments filters to apply: " + String.join(", ", filter.getFilterNames()));
 
       filterSample(context, reporter, status, filter);
 

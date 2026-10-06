@@ -7,7 +7,6 @@ import static fr.ens.biologie.genomique.eoulsan.modules.chipseq.ChIPSeqDataForma
 import static fr.ens.biologie.genomique.eoulsan.modules.chipseq.ChIPSeqDataFormats.PEAK;
 import static fr.ens.biologie.genomique.eoulsan.modules.chipseq.ChIPSeqDataFormats.PEAK_XLS;
 
-import com.google.common.base.Joiner;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -296,7 +295,7 @@ public class MACS2Module extends AbstractModule {
           commandLine.addAll(StringUtils.splitShellCommandLine(extraArgs));
         }
 
-        String commandLine2 = Joiner.on(" ").join(commandLine);
+        String commandLine2 = String.join(" ", commandLine);
 
         final Path stdoutFile = context.getStepOutputDirectory().toPath().resolve("macs2.out");
         final Path stderrFile = context.getStepOutputDirectory().toPath().resolve("macs2.err");
@@ -315,7 +314,7 @@ public class MACS2Module extends AbstractModule {
                   sampleFile,
                   refFile);
 
-          ProcessUtils.throwExitCodeException(exitValue, Joiner.on(' ').join(commandLine));
+          ProcessUtils.throwExitCodeException(exitValue, String.join(" ", commandLine));
         } catch (IOException err) {
           return status.createTaskResult(err);
         }

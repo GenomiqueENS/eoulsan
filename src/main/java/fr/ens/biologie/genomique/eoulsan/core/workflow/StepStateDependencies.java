@@ -32,7 +32,6 @@ import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.READY;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WAITING;
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.base.Joiner;
 import com.google.common.eventbus.Subscribe;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
@@ -239,7 +238,7 @@ public class StepStateDependencies implements Serializable {
     if (list.isEmpty()) {
       msg += "no dependencies";
     } else {
-      msg += Joiner.on(", ").join(list);
+      msg += String.join(", ", list);
     }
     getLogger().fine(msg);
   }

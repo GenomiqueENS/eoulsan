@@ -36,7 +36,6 @@ import static fr.ens.biologie.genomique.kenetre.util.StringUtils.stackTraceToStr
 import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toTimeHumanReadable;
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.base.Joiner;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -383,13 +382,13 @@ public class TaskRunner {
 
     // Choose the name of the context
     if (!namedData.isEmpty()) {
-      return Joiner.on('-').join(namedData);
+      return String.join("-", namedData);
     } else if (!defaultNamedData.isEmpty()) {
-      return Joiner.on('-').join(defaultNamedData);
+      return String.join("-", defaultNamedData);
     } else if (!fileNames.isEmpty()) {
-      return Joiner.on('-').join(fileNames);
+      return String.join("-", fileNames);
     } else {
-      return Joiner.on('-').join(otherDataNames);
+      return String.join("-", otherDataNames);
     }
   }
 

@@ -36,7 +36,6 @@ import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsMapp
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsMapperHadoopModule.setZooKeeperJobConfiguration;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAMFilterReducer.MAP_FILTER_PARAMETER_KEY_PREFIX;
 
-import com.google.common.base.Joiner;
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.annotations.HadoopOnly;
@@ -282,7 +281,7 @@ public class FilterAndMapReadsHadoopModule extends AbstractFilterAndMapReadsModu
     final Job job =
         Job.getInstance(
             jobConf,
-            "Filter and map reads (" + dataName + ", " + Joiner.on(", ").join(filenames) + ")");
+            "Filter and map reads (" + dataName + ", " + String.join(", ", filenames) + ")");
 
     // Set the jar
     job.setJarByClass(ReadsFilterHadoopModule.class);

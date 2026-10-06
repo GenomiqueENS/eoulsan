@@ -27,7 +27,6 @@ package fr.ens.biologie.genomique.eoulsan.util;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.kenetre.util.Utils.silentSleep;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import fr.ens.biologie.genomique.eoulsan.io.FileCharsets;
 import fr.ens.biologie.genomique.kenetre.io.FileUtils;
@@ -515,7 +514,7 @@ public final class ProcessUtils {
     new Thread(new ProcessThreadOutput(stdr, System.out)).start();
     new Thread(new ProcessThreadOutput(errr, System.err)).start();
 
-    logEndTime(p, Joiner.on(' ').join(cmd), startTime);
+    logEndTime(p, String.join(" ", cmd), startTime);
   }
 
   private ProcessUtils() {}

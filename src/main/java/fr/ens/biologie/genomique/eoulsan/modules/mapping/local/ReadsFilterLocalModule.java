@@ -30,7 +30,6 @@ import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.OUTPUT_FILTERED_READS_COUNTER;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.MappingCounters.READS_REJECTED_BY_FILTERS_COUNTER;
 
-import com.google.common.base.Joiner;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
 import fr.ens.biologie.genomique.eoulsan.core.TaskContext;
@@ -90,7 +89,7 @@ public class ReadsFilterLocalModule extends AbstractReadsFilterModule {
       // Get the read filter
       final MultiReadFilter filter =
           getReadFilter(context.getGenericLogger(), reporter, COUNTER_GROUP);
-      getLogger().info("Reads filters to apply: " + Joiner.on(", ").join(filter.getFilterNames()));
+      getLogger().info("Reads filters to apply: " + String.join(", ", filter.getFilterNames()));
 
       // Run the filter in single or pair-end mode
       if (inFileCount == 1) {

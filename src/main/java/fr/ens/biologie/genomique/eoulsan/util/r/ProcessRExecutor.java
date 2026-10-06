@@ -1,6 +1,5 @@
 package fr.ens.biologie.genomique.eoulsan.util.r;
 
-import com.google.common.base.Joiner;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import fr.ens.biologie.genomique.eoulsan.data.DataFiles;
@@ -202,7 +201,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
             true,
             workflowOutputDir.toFile());
 
-    ProcessUtils.throwExitCodeException(exitValue, Joiner.on(' ').join(commandLine));
+    ProcessUtils.throwExitCodeException(exitValue, String.join(" ", commandLine));
   }
 
   @Override
@@ -226,7 +225,7 @@ public class ProcessRExecutor extends AbstractRExecutor {
             true,
             workflowOutputDir);
 
-    ProcessUtils.throwExitCodeException(exitValue, Joiner.on(' ').join(commandLine));
+    ProcessUtils.throwExitCodeException(exitValue, String.join(" ", commandLine));
   }
 
   /**

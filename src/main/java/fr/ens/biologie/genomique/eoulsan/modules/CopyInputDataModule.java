@@ -28,7 +28,6 @@ import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.DEFAULT_S
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.singleInputPort;
 import static fr.ens.biologie.genomique.eoulsan.core.OutputPortsBuilder.DEFAULT_SINGLE_OUTPUT_PORT_NAME;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -351,7 +350,18 @@ public class CopyInputDataModule extends AbstractModule {
       return null;
     }
 
-    return Joiner.on('\t').join(outputCompressionAllowed);
+    boolean first = true;
+    StringBuilder result = new StringBuilder();
+    for (CompressionType compression : outputCompressionAllowed) {
+      if (first) {
+        first = false;
+      } else {
+        result.append('\t');
+      }
+      result.append(compression.toString());
+    }
+
+    return result.toString();
   }
 
   /**

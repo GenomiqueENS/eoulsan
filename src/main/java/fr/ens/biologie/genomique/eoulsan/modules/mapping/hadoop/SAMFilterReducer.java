@@ -31,7 +31,6 @@ import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.HadoopMap
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAMHeaderHadoopUtils.createSAMSequenceDictionaryFromSAMHeader;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.SAMHeaderHadoopUtils.loadSAMHeaders;
 
-import com.google.common.base.Joiner;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
 import fr.ens.biologie.genomique.eoulsan.Globals;
@@ -105,7 +104,7 @@ public class SAMFilterReducer extends Reducer<Text, Text, Text, Text> {
       getLogger()
           .info(
               "Read alignments filters to apply: "
-                  + Joiner.on(", ").join(this.filter.getFilterNames()));
+                  + String.join(", ", this.filter.getFilterNames()));
 
     } catch (KenetreException e) {
       throw new IOException(e);

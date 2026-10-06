@@ -3,7 +3,6 @@ package fr.ens.biologie.genomique.eoulsan.modules.chipseq.peakcalling;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static fr.ens.biologie.genomique.eoulsan.modules.chipseq.ChIPSeqDataFormats.PEAK;
 
-import com.google.common.base.Joiner;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.annotations.LocalOnly;
@@ -276,7 +275,7 @@ public class BedToolsModule extends AbstractModule {
 
       final File stderrFile = Path.of("docker.err").toFile();
 
-      String cmd2 = Joiner.on(' ').join(cmd);
+      String cmd2 = String.join(" ", cmd);
       getLogger().info("Run command line : " + cmd2);
 
       // Run bedtools
@@ -292,7 +291,7 @@ public class BedToolsModule extends AbstractModule {
                 outputFile,
                 stderrFile);
 
-        ProcessUtils.throwExitCodeException(exitValue, Joiner.on(' ').join(cmd));
+        ProcessUtils.throwExitCodeException(exitValue, String.join(" ", cmd));
       } catch (IOException err) {
         return status.createTaskResult(err);
       }

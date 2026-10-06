@@ -25,7 +25,6 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.newEoulsanException;
 
-import com.google.common.base.Joiner;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
@@ -107,7 +106,7 @@ public class DataToolElement extends AbstractToolElement {
       throw newEoulsanException(
           toolInfo,
           getName(),
-          "more one format data found (" + Joiner.on(",").join(this.formats) + ")");
+          "more one format data found (" + String.join(",", this.formats) + ")");
     }
 
     if (this.formats.isEmpty()) {

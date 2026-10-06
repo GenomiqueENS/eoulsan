@@ -32,7 +32,6 @@ import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.HadoopMap
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsFilterHadoopModule.OUTPUT_FILE1_KEY;
 import static fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop.ReadsFilterHadoopModule.OUTPUT_FILE2_KEY;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import fr.ens.biologie.genomique.eoulsan.CommonHadoop;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
@@ -124,7 +123,7 @@ public class ReadsFilterMapper extends Mapper<Text, Text, Text, Text> {
       this.filter = mrfb.getReadFilter(new HadoopReporterIncrementer(context), this.counterGroup);
 
       getLogger()
-          .info("Reads filters to apply: " + Joiner.on(", ").join(this.filter.getFilterNames()));
+          .info("Reads filters to apply: " + String.join(", ", this.filter.getFilterNames()));
 
     } catch (KenetreException e) {
       throw new IOException(e);

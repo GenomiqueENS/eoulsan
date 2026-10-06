@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -64,7 +63,7 @@ public class HadoopMappingUtils {
     }
 
     // Set the key with the list of parameters keys as a string
-    jobConf.set(prefix + PARAM_KEYS_LIST_SUFFIX, Joiner.on(',').join(parameters.keySet()));
+    jobConf.set(prefix + PARAM_KEYS_LIST_SUFFIX, String.join(",", parameters.keySet()));
   }
 
   /**

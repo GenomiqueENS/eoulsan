@@ -36,7 +36,6 @@ import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.GENERATOR_STE
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepType.STANDARD_STEP;
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableMap;
@@ -1078,7 +1077,7 @@ public class TokenManager implements Runnable {
                 + (port.isList() ? " [list]" : ""));
       }
 
-      msg += Joiner.on(", ").join(list);
+      msg += String.join(", ", list);
     }
 
     getLogger().fine(msg);
@@ -1102,7 +1101,7 @@ public class TokenManager implements Runnable {
                 + "): "
                 + this.outputTokens.get(port).size());
       }
-      msg += Joiner.on(", ").join(list);
+      msg += String.join(", ", list);
     }
 
     getLogger().fine(msg);

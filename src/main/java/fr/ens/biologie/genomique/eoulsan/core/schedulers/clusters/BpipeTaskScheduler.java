@@ -28,7 +28,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
@@ -83,7 +82,7 @@ public abstract class BpipeTaskScheduler extends AbstractClusterTaskScheduler {
         jobDirectory.isDirectory(),
         "The job directory does not exists or is not a directory: " + jobDirectory);
 
-    final String jobCommandString = Joiner.on(' ').join(jobCommand);
+    final String jobCommandString = String.join(" ", jobCommand);
 
     try {
       final Process process =

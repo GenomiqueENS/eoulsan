@@ -2,7 +2,6 @@ package fr.ens.biologie.genomique.eoulsan.actions;
 
 import static java.util.Collections.nCopies;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import fr.ens.biologie.genomique.eoulsan.Settings;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormat;
@@ -90,7 +89,7 @@ public class FormatsAction extends AbstractInfoAction {
       aliases.add(format.getAlias());
     }
     aliases.addAll(format.getGalaxyFormatNames());
-    result.add(Joiner.on(", ").join(aliases));
+    result.add(String.join(", ", aliases));
 
     // Get format extensions
     List<String> extensions = new ArrayList<>();
@@ -100,7 +99,7 @@ public class FormatsAction extends AbstractInfoAction {
         extensions.add(s);
       }
     }
-    result.add(Joiner.on(", ").join(extensions));
+    result.add(String.join(", ", extensions));
 
     // Get "prefix" in output filenamme
     result.add(null2Empty(format.getPrefix()));

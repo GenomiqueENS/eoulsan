@@ -25,7 +25,6 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools.elements;
 
 import static fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils.newEoulsanException;
 
-import com.google.common.base.Joiner;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.GalaxyToolXMLParserUtils;
 import fr.ens.biologie.genomique.eoulsan.galaxytools.ToolInfo;
@@ -101,7 +100,7 @@ public class SelectParameterToolElement extends AbstractParameterToolElement {
           "The \""
               + this.value
               + "\" value is invalid. Available values are: "
-              + Joiner.on(",").join(this.optionsValue));
+              + String.join(",", this.optionsValue));
     }
   }
 

@@ -26,7 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop;
 
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.base.Joiner;
 import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.FastqInputFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import java.io.IOException;
@@ -57,8 +56,6 @@ public class PairedEndFastqToTfq {
    */
   public static final class FastqPairedEndReducer extends Reducer<Text, Text, Text, Text> {
 
-    private static final Joiner JOINER = Joiner.on('\t');
-
     @Override
     protected void reduce(final Text key, final Iterable<Text> values, final Context context)
         throws IOException, InterruptedException {
@@ -70,7 +67,7 @@ public class PairedEndFastqToTfq {
 
       Collections.sort(list);
 
-      context.write(key, new Text(JOINER.join(list)));
+      context.write(key, new Text(String.join("\t", list)));
     }
   }
 

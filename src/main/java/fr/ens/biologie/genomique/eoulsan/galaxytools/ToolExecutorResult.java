@@ -26,7 +26,6 @@ package fr.ens.biologie.genomique.eoulsan.galaxytools;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.base.Joiner;
 import java.util.List;
 
 /**
@@ -90,7 +89,7 @@ public class ToolExecutorResult {
    * @return the command line as a String
    */
   public String getCommandLineAsString() {
-    return Joiner.on(' ').join(this.commandLineTool);
+    return String.join(" ", this.commandLineTool);
   }
 
   @Override

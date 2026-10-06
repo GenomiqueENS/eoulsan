@@ -27,7 +27,6 @@ package fr.ens.biologie.genomique.eoulsan.actions;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.base.Joiner;
 import fr.ens.biologie.genomique.eoulsan.Common;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.Main;
@@ -196,7 +195,7 @@ public class HadoopExecAction extends AbstractAction {
       result.add("-D" + Main.EOULSAN_CLASSPATH_JVM_ARG + "=" + main.getClassPath());
     }
 
-    return Joiner.on(' ').join(result);
+    return String.join(" ", result);
   }
 
   /**

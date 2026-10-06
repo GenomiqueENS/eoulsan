@@ -3,7 +3,6 @@ package fr.ens.biologie.genomique.eoulsan;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.util.LinuxCpuInfo;
@@ -437,7 +436,7 @@ public class Infos {
       }
     }
 
-    li.add("Command line", Joiner.on(' ').join(args));
+    li.add("Command line", String.join(" ", args));
 
     li.add("Configuration file", main.getConfigurationFileArgument());
     // li.add("Classpath", main.getClassPath());
