@@ -255,12 +255,10 @@ public class DistributedLock {
           final String nextLowestNode = sortedMembers.get(memberIndex - 1);
           LOG.log(
               Level.INFO,
-              String.format(
-                  "Current LockWatcher with ephemeral node [%s], is "
-                      + "waiting for [%s] to release lock.",
-                  currentId, nextLowestNode));
+              "Current LockWatcher with ephemeral node [%s], is waiting for [%s] to release lock."
+                  .formatted(currentId, nextLowestNode));
 
-          watchedNode = String.format("%s/%s", lockPath, nextLowestNode);
+          watchedNode = "%s/%s".formatted(lockPath, nextLowestNode);
           Stat stat = zkClient.exists(watchedNode, this);
           if (stat == null) {
             checkForLock();
@@ -269,19 +267,15 @@ public class DistributedLock {
       } catch (InterruptedException e) {
         LOG.log(
             Level.WARNING,
-            String.format(
-                "Current LockWatcher with ephemeral node [%s] "
-                    + "got interrupted. Trying to cancel lock acquisition.",
-                currentId),
+            "Current LockWatcher with ephemeral node [%s] got interrupted. Trying to cancel lock acquisition."
+                .formatted(currentId),
             e);
         cancelAttempt();
       } catch (KeeperException e) {
         LOG.log(
             Level.WARNING,
-            String.format(
-                "Current LockWatcher with ephemeral node [%s] "
-                    + "got a KeeperException. Trying to cancel lock acquisition.",
-                currentId),
+            "Current LockWatcher with ephemeral node [%s] got a KeeperException. Trying to cancel lock acquisition."
+                .formatted(currentId),
             e);
         cancelAttempt();
       }
@@ -306,7 +300,7 @@ public class DistributedLock {
             LOG.info("Reconnected...");
             break;
           case Expired:
-            LOG.log(Level.WARNING, String.format("Current ZK session expired![%s]", currentId));
+            LOG.log(Level.WARNING, "Current ZK session expired![%s]".formatted(currentId));
             cancelAttempt();
             break;
           default:
@@ -315,7 +309,7 @@ public class DistributedLock {
       } else if (event.getType() == Event.EventType.NodeDeleted) {
         checkForLock();
       } else {
-        LOG.log(Level.WARNING, String.format("Unexpected ZK event: %s", event.getType().name()));
+        LOG.log(Level.WARNING, "Unexpected ZK event: " + event.getType().name());
       }
     }
   }

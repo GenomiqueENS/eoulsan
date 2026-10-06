@@ -117,9 +117,8 @@ public class BasicUI extends AbstractUI {
     }
 
     final String msg =
-        String.format(
-            "%.0f%% workflow done (currently process step %s #%d, %.0f%% done)",
-            globalProgress * 100.0, step.getId(), step.getNumber(), progress * 100.0);
+        "%.0f%% workflow done (currently process step %s #%d, %.0f%% done)"
+            .formatted(globalProgress * 100.0, step.getId(), step.getNumber(), progress * 100.0);
 
     // Clear previous message
     System.out.print(Strings.repeat("\r", this.lastMessageLength));

@@ -147,12 +147,12 @@ public class TaskRunner {
             final boolean reuseAnnot = isReuseStepInstance(TaskRunner.this.module);
 
             final String stepDescLog =
-                String.format(
-                    "step (id: %s, name: %s, class: %s) for task #%d",
-                    TaskRunner.this.context.getWorkflowStep().getId(),
-                    TaskRunner.this.module.getName(),
-                    TaskRunner.this.module.getClass().getName(),
-                    TaskRunner.this.context.getId());
+                "step (id: %s, name: %s, class: %s) for task #%d"
+                    .formatted(
+                        TaskRunner.this.context.getWorkflowStep().getId(),
+                        TaskRunner.this.module.getName(),
+                        TaskRunner.this.module.getClass().getName(),
+                        TaskRunner.this.context.getId());
 
             try {
 

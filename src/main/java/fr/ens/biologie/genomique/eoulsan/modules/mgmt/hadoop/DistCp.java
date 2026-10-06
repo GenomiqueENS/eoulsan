@@ -484,7 +484,7 @@ public class DistCp implements Tool {
           out.write(this.buffer, 0, cbread);
           cbcopied += cbread;
           reporter.setStatus(
-              String.format("%.2f ", cbcopied * 100.0 / srcstat.getLen())
+              "%.2f ".formatted(cbcopied * 100.0 / srcstat.getLen())
                   + absdst
                   + " [ "
                   + StringUtils.humanReadableInt(cbcopied)

@@ -174,11 +174,11 @@ public class DeepToolsModule extends AbstractModule {
 
         getLogger()
             .info(
-                String.format(
-                    "BAM Experiment %s - Condition %s - RepTechGroup %s",
-                    e.getName(),
-                    DesignUtils.getCondition(expSam),
-                    DesignUtils.getRepTechGroup(expSam)));
+                "BAM Experiment %s - Condition %s - RepTechGroup %s"
+                    .formatted(
+                        e.getName(),
+                        DesignUtils.getCondition(expSam),
+                        DesignUtils.getRepTechGroup(expSam)));
 
         final String bamFileName;
 

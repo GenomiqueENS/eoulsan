@@ -215,7 +215,7 @@ public final class Utils {
             + ContextUtil.getConfiguration(ctx).get(WORK_FILENAME_PROPERTY)
             + basePostfix
             + "-"
-            + String.format("%06d", ctx.getTaskAttemptID().getTaskID().getId())
+            + "%06d".formatted(ctx.getTaskAttemptID().getTaskID().getId())
             + (extension.isEmpty() ? extension : "." + extension));
   }
 

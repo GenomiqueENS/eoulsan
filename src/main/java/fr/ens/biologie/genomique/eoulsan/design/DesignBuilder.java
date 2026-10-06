@@ -517,7 +517,7 @@ public class DesignBuilder {
         continue;
       }
 
-      final String laneKey = sampleLane == -1 ? "_L" : String.format("_L%03d_", sampleLane);
+      final String laneKey = sampleLane == -1 ? "_L" : "_L%03d_".formatted(sampleLane);
 
       // List the input FASTQ files
       final File[] files =

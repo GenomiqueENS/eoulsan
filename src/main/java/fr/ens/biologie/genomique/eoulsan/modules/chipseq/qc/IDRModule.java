@@ -153,7 +153,7 @@ public class IDRModule extends AbstractModule {
       DataFile idrArchive = new DataFile(binaryFile);
 
       this.idrPath = idrArchive.getParent().getSource();
-      String cmd = String.format("tar -xzf %s -C %s", idrArchive.getSource(), idrPath);
+      String cmd = "tar -xzf %s -C %s".formatted(idrArchive.getSource(), idrPath);
       getLogger().info("Unpacking archive : " + cmd);
       ProcessUtils.exec(cmd, false);
 
@@ -350,11 +350,11 @@ public class IDRModule extends AbstractModule {
             int retVal = runAnalysis(replicatesList.get(i), replicatesList.get(j));
             if (retVal == 0) {
               outputs.add(
-                  String.format(
-                      "%s/idr_output_%s_vs_%s",
-                      outputDir,
-                      replicatesList.get(i).getMetadata().get("Name"),
-                      replicatesList.get(j).getMetadata().get("Name")));
+                  "%s/idr_output_%s_vs_%s"
+                      .formatted(
+                          outputDir,
+                          replicatesList.get(i).getMetadata().get("Name"),
+                          replicatesList.get(j).getMetadata().get("Name")));
             }
           }
         }
@@ -362,9 +362,7 @@ public class IDRModule extends AbstractModule {
         // Call IDR on all replicates together, if we have more than 2
         if (outputs.size() > 1) {
           runAnalysisPlot(
-              outputs.size(),
-              String.format("%s/idrplot_output_%s", outputDir, entry.getKey()),
-              outputs);
+              outputs.size(), "%s/idrplot_output_%s".formatted(outputDir, entry.getKey()), outputs);
         }
       }
     }
@@ -406,23 +404,22 @@ public class IDRModule extends AbstractModule {
     // Consequently, IDR was patched in order to accept the path to the
     // genome table to be used as input parameter (8th argument).
     String inputPrefix =
-        String.format(
-            "idr_output_%s_vs_%s",
-            data1.getMetadata().get("Name"), data2.getMetadata().get("Name"));
+        "idr_output_%s_vs_%s"
+            .formatted(data1.getMetadata().get("Name"), data2.getMetadata().get("Name"));
     String cmd =
-        String.format(
-            "cd %s/idrCode/ ; Rscript %s/batch-consistency-analysis.r %s %s %d %s/%s %d %s %s %s; cd -",
-            this.idrPath,
-            ".",
-            data1.getDataFile().getSource(),
-            data2.getDataFile().getSource(),
-            this.peakHalfWidth,
-            outputDir,
-            inputPrefix,
-            this.minOverlapRatio,
-            this.isBroadpeak ? "T" : "F",
-            this.rankingMeasure,
-            ACCEPTED_ASSEMBLIES_FILES.get(this.assembly));
+        "cd %s/idrCode/ ; Rscript %s/batch-consistency-analysis.r %s %s %d %s/%s %d %s %s %s; cd -"
+            .formatted(
+                this.idrPath,
+                ".",
+                data1.getDataFile().getSource(),
+                data2.getDataFile().getSource(),
+                this.peakHalfWidth,
+                outputDir,
+                inputPrefix,
+                this.minOverlapRatio,
+                this.isBroadpeak ? "T" : "F",
+                this.rankingMeasure,
+                ACCEPTED_ASSEMBLIES_FILES.get(this.assembly));
     getLogger().info("Running : " + cmd);
 
     String outputStr = "";
@@ -444,12 +441,11 @@ public class IDRModule extends AbstractModule {
 
     // Run plot on generated files
     String outputPrefix =
-        String.format(
-            "idrplot_output_%s_vs_%s",
-            data1.getMetadata().get("Name"), data2.getMetadata().get("Name"));
+        "idrplot_output_%s_vs_%s"
+            .formatted(data1.getMetadata().get("Name"), data2.getMetadata().get("Name"));
     return runAnalysisPlot(
         1,
-        String.format("%s/%s", outputDir, outputPrefix),
+        "%s/%s".formatted(outputDir, outputPrefix),
         List.of(String.format("%s/%s", outputDir, inputPrefix)));
   }
 
@@ -474,9 +470,8 @@ public class IDRModule extends AbstractModule {
     }
 
     String cmd =
-        String.format(
-            "cd %s/idrCode/ ; Rscript %s/batch-consistency-plot.r %d %s %s; cd -",
-            this.idrPath, ".", nbPairs, outputPrefix, sb.toString());
+        "cd %s/idrCode/ ; Rscript %s/batch-consistency-plot.r %d %s %s; cd -"
+            .formatted(this.idrPath, ".", nbPairs, outputPrefix, sb.toString());
     getLogger().info("Running : " + cmd);
 
     // Execute command

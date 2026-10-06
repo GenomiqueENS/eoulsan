@@ -271,20 +271,20 @@ public class MACS2Module extends AbstractModule {
         // If pvalue threshold is set, qvalue threshold will be ignored by macs2
         if (this.pvalue != 0) {
           commandLine.add("--pvalue");
-          commandLine.add(String.format("%f", pvalue));
+          commandLine.add(Double.toString(pvalue));
         } else { // Default was set to qvalue=0.01
           commandLine.add("--qvalue");
-          commandLine.add(String.format("%f", qvalue));
+          commandLine.add(Double.toString(qvalue));
         }
 
         // Options/parameters and extra arguments
         String prefixOutputFiles =
-            String.format(
-                "macs2_ouput_%s", expSam2.getSample().getName().replaceAll("[^a-zA-Z0-9]", ""));
+            "macs2_ouput_%s"
+                .formatted(expSam2.getSample().getName().replaceAll("[^a-zA-Z0-9]", ""));
         commandLine.add("--name");
-        commandLine.add(String.format("%s", prefixOutputFiles));
+        commandLine.add(prefixOutputFiles);
         commandLine.add("--gsize");
-        commandLine.add(String.format("%s", genomeSize));
+        commandLine.add(genomeSize);
         if (isBroad) {
           commandLine.add("--broad");
         }

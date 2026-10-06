@@ -384,7 +384,7 @@ public class LanternaUI extends AbstractUI implements TerminalResizeListener {
 
     int x = 0;
     x = putString(x, y, " * Step ");
-    x = putStringSGR(x, y, String.format("%-40s", stepId), SGR.BOLD);
+    x = putStringSGR(x, y, "%-40s".formatted(stepId), SGR.BOLD);
     x = putString(x, y, " ");
 
     switch (state) {
@@ -453,7 +453,7 @@ public class LanternaUI extends AbstractUI implements TerminalResizeListener {
       this.terminal.putCharacter('\n');
     } else {
 
-      x = putString(x, y, String.format("%.0f%% workflow done", progress * 100.0));
+      x = putString(x, y, "%.0f%% workflow done".formatted(progress * 100.0));
     }
 
     clearEndOfLine(x, y);

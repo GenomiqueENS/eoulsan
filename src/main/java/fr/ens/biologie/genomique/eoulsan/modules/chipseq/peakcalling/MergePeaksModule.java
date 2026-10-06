@@ -136,17 +136,17 @@ public class MergePeaksModule extends AbstractModule {
 
       StringBuilder cmd = new StringBuilder("cat");
       for (Data sample : expDataList) {
-        cmd.append(String.format(" %s", sample.getDataFile().getSource()));
+        cmd.append(sample.getDataFile().getSource());
       }
 
       try {
         Path outputFile =
             Path.of(
-                String.format(
-                    "%s/mergedpeaks_output_%s.bed",
-                    expDataList.get(0).getDataFile().getParent().getSource(), experimentName));
+                "%s/mergedpeaks_output_%s.bed"
+                    .formatted(
+                        expDataList.get(0).getDataFile().getParent().getSource(), experimentName));
 
-        getLogger().info(String.format("Running : %s with output: %s", cmd.toString(), outputFile));
+        getLogger().info("Running : %s with output: %s".formatted(cmd.toString(), outputFile));
         ProcessUtils.execWriteOutput(cmd.toString(), outputFile.toFile());
 
       } catch (java.io.IOException e) {

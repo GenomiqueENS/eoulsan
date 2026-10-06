@@ -214,7 +214,7 @@ final class Stopwatch {
     double value = (double) nanos / NANOSECONDS.convert(1, unit);
 
     // Too bad this functionality is not exposed as a regular method call
-    return String.format("%.4g %s", value, abbreviate(unit));
+    return "%.4g %s".formatted(value, abbreviate(unit));
   }
 
   private static TimeUnit chooseUnit(final long nanos) {

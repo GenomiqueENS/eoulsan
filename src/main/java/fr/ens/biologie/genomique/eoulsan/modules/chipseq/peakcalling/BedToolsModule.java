@@ -255,7 +255,7 @@ public class BedToolsModule extends AbstractModule {
       // Add all files to be merged
       cmd.add("-i");
       for (Data sample : expDataList2) {
-        cmd.add(String.format("%s", sample.getDataFilename()));
+        cmd.add("%s".formatted(sample.getDataFilename()));
       }
 
       // Get metadata of one peak file
