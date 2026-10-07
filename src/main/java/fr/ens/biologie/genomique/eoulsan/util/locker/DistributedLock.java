@@ -238,21 +238,21 @@ public class DistributedLock {
 
       try {
         List<String> candidates = zkClient.getChildren(lockPath, null);
-        ImmutableList<String> sortedMembers = Ordering.natural().immutableSortedCopy(candidates);
+        candidates.sort(Ordering.natural());
 
         // Unexpected behavior if there are no children!
-        if (sortedMembers.isEmpty()) {
+        if (candidates.isEmpty()) {
           throw new EoulsanRuntimeException("Error, member list is empty!");
         }
 
-        int memberIndex = sortedMembers.indexOf(currentId);
+        int memberIndex = candidates.indexOf(currentId);
 
         // If we hold the lock
         if (memberIndex == 0) {
           holdsLock = true;
           syncPoint.countDown();
         } else {
-          final String nextLowestNode = sortedMembers.get(memberIndex - 1);
+          final String nextLowestNode = candidates.get(memberIndex - 1);
           LOG.log(
               Level.INFO,
               "Current LockWatcher with ephemeral node [%s], is waiting for [%s] to release lock."

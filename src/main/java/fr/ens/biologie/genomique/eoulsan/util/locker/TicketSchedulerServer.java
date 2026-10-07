@@ -29,7 +29,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -149,7 +149,7 @@ public class TicketSchedulerServer implements TicketScheduler {
       }
 
       List<Ticket> list = new ArrayList<>(this.tickets.values());
-      Collections.sort(list);
+      list.sort(Comparator.naturalOrder());
       this.currentActive = list.get(0);
       this.currentActive.setWorking(true);
     }

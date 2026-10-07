@@ -37,7 +37,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -206,7 +206,7 @@ public class FinalExpressionFeaturesCreator {
 
     final List<ExpressionFeature> list = new ArrayList<>(this.expressionResults.values());
 
-    Collections.sort(list);
+    list.sort(Comparator.naturalOrder());
 
     final OutputStreamWriter osw = new OutputStreamWriter(os, CHARSET);
 

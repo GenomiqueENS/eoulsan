@@ -25,7 +25,7 @@
 package fr.ens.biologie.genomique.eoulsan.util.locker;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -90,7 +90,7 @@ public class ZooKeeperLocker implements Locker, Watcher {
                     }
                   });
 
-          Collections.sort(nodes);
+          nodes.sort(Comparator.naturalOrder());
 
           if (this.lockPath.endsWith(nodes.get(0))) {
             return;

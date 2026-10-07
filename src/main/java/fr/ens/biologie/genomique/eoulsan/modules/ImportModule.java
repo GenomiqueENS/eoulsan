@@ -64,6 +64,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -274,7 +275,7 @@ public class ImportModule extends AbstractModule {
 
       // Sort the list of files to process
       final List<DataFile> sortedFiles = new ArrayList<>(this.files);
-      Collections.sort(sortedFiles);
+      sortedFiles.sort(Comparator.naturalOrder());
 
       // Group files related to the same data
       final Set<List<DataFile>> groupedFiles = groupFiles(files);
@@ -518,7 +519,7 @@ public class ImportModule extends AbstractModule {
 
     // Sort files
     List<DataFile> sortedFiles = new ArrayList<>(files);
-    Collections.sort(sortedFiles);
+    sortedFiles.sort(Comparator.naturalOrder());
 
     // For each files
     for (DataFile file : sortedFiles) {

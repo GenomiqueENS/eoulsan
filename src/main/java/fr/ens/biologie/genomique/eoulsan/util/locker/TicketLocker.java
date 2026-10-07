@@ -33,7 +33,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -262,7 +262,7 @@ public class TicketLocker implements Locker {
     TicketLocker locker = new TicketLocker(args[0], Integer.parseInt(args[1]), null);
 
     List<Ticket> tickets = new ArrayList<>(locker.getStub().getTickets(null));
-    Collections.sort(tickets);
+    tickets.sort(Comparator.naturalOrder());
 
     for (Ticket t : tickets) {
       System.out.println(t);

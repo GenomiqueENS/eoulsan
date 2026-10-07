@@ -30,7 +30,7 @@ import fr.ens.biologie.genomique.eoulsan.bio.io.hadoop.FastqInputFormat;
 import fr.ens.biologie.genomique.eoulsan.data.DataFile;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -65,7 +65,7 @@ public class PairedEndFastqToTfq {
         list.add(t.toString());
       }
 
-      Collections.sort(list);
+      list.sort(Comparator.naturalOrder());
 
       context.write(key, new Text(String.join("\t", list)));
     }

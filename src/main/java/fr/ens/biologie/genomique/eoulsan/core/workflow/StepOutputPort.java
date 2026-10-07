@@ -43,6 +43,7 @@ import fr.ens.biologie.genomique.kenetre.io.CompressionType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -188,7 +189,7 @@ class StepOutputPort extends SimpleOutputPort {
     final Set<Data> result = new HashSet<>();
 
     // Sort the file
-    Collections.sort(files);
+    files.sort(Comparator.naturalOrder());
 
     final ListMultimap<String, DataFile> map = ArrayListMultimap.create();
 
