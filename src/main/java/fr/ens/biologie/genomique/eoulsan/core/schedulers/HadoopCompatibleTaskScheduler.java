@@ -32,7 +32,6 @@ import static fr.ens.biologie.genomique.eoulsan.Globals.TASK_RESULT_EXTENSION;
 import static fr.ens.biologie.genomique.kenetre.util.StringUtils.toTimeHumanReadable;
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.collect.Queues;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanLogger;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntime;
@@ -50,6 +49,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -71,7 +71,7 @@ import org.apache.hadoop.mapreduce.lib.output.NullOutputFormat;
 public class HadoopCompatibleTaskScheduler extends AbstractTaskScheduler {
 
   private final Configuration conf;
-  private final Queue<TaskThread> queue = Queues.newLinkedBlockingQueue();
+  private final Queue<TaskThread> queue = new LinkedBlockingQueue<>();
 
   /**
    * Wrapper class around a call to executeTask methods.

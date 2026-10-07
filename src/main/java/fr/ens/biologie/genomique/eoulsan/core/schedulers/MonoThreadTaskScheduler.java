@@ -26,11 +26,11 @@ package fr.ens.biologie.genomique.eoulsan.core.schedulers;
 
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 
-import com.google.common.collect.Queues;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskContextImpl;
 import fr.ens.biologie.genomique.eoulsan.core.workflow.TaskResultImpl;
 import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * This class define a mono thread scheduler.
@@ -41,7 +41,7 @@ import java.util.Queue;
 public class MonoThreadTaskScheduler extends AbstractTaskScheduler implements Runnable {
 
   private static final int SLEEP_TIME_IN_MS = 100;
-  private final Queue<TaskContextImpl> queue = Queues.newLinkedBlockingQueue();
+  private final Queue<TaskContextImpl> queue = new LinkedBlockingQueue<>();
 
   //
   // TaskExecutor methods
