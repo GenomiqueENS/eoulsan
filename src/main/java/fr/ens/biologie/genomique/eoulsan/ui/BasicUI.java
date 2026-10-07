@@ -27,7 +27,6 @@ package fr.ens.biologie.genomique.eoulsan.ui;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.base.Strings;
 import fr.ens.biologie.genomique.eoulsan.Globals;
 import fr.ens.biologie.genomique.eoulsan.core.Step;
 import fr.ens.biologie.genomique.eoulsan.core.Step.StepState;
@@ -121,9 +120,9 @@ public class BasicUI extends AbstractUI {
             .formatted(globalProgress * 100.0, step.getId(), step.getNumber(), progress * 100.0);
 
     // Clear previous message
-    System.out.print(Strings.repeat("\r", this.lastMessageLength));
-    System.out.print(Strings.repeat(" ", this.lastMessageLength));
-    System.out.print(Strings.repeat("\r", this.lastMessageLength));
+    System.out.print("\r".repeat(this.lastMessageLength));
+    System.out.print(" ".repeat(this.lastMessageLength));
+    System.out.print("\r".repeat(this.lastMessageLength));
     this.lastMessageLength = msg.length();
 
     System.out.print(msg);

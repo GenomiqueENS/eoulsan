@@ -27,7 +27,6 @@ package fr.ens.biologie.genomique.eoulsan.io;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import com.google.common.base.Strings;
 import fr.ens.biologie.genomique.kenetre.io.FileUtils;
 import java.io.BufferedReader;
 import java.io.File;
@@ -92,7 +91,7 @@ public class FileConcatInputStreamTest {
 
     for (int i = 0; i < lines; i++) {
       final int r = i % mod;
-      writer.write(r + "\t" + Strings.repeat("*", r) + "\n");
+      writer.write(r + "\t" + "*".repeat(r) + "\n");
     }
 
     writer.close();

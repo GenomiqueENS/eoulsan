@@ -3,7 +3,6 @@ package fr.ens.biologie.genomique.eoulsan;
 import static fr.ens.biologie.genomique.eoulsan.EoulsanLogger.getLogger;
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.base.Strings;
 import fr.ens.biologie.genomique.eoulsan.data.DataFormatRegistry;
 import fr.ens.biologie.genomique.eoulsan.util.LinuxCpuInfo;
 import fr.ens.biologie.genomique.eoulsan.util.LinuxMemInfo;
@@ -611,12 +610,12 @@ public class Infos {
     li.add(
         "Hadoop AWS access key",
         settings.getAWSAccessKey() != null
-            ? Strings.repeat("X", settings.getAWSAccessKey().length())
+            ? "X".repeat(settings.getAWSAccessKey().length())
             : NOT_SET);
     li.add(
         "Hadoop AWS secret key",
         settings.getAWSSecretKey() != null
-            ? Strings.repeat("X", settings.getAWSSecretKey().length())
+            ? "X".repeat(settings.getAWSSecretKey().length())
             : NOT_SET);
     li.add("Obfuscate design", settings.isObfuscateDesign());
     li.add(
