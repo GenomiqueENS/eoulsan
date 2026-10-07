@@ -19,10 +19,10 @@ package fr.ens.biologie.genomique.eoulsan.util.locker;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Ordering;
 import fr.ens.biologie.genomique.eoulsan.EoulsanException;
 import fr.ens.biologie.genomique.eoulsan.EoulsanRuntimeException;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
@@ -238,7 +238,7 @@ public class DistributedLock {
 
       try {
         List<String> candidates = zkClient.getChildren(lockPath, null);
-        candidates.sort(Ordering.natural());
+        candidates.sort(Comparator.naturalOrder());
 
         // Unexpected behavior if there are no children!
         if (candidates.isEmpty()) {
