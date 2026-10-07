@@ -29,7 +29,6 @@ import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.DONE;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.FAILED;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.PARTIALLY_DONE;
 import static fr.ens.biologie.genomique.eoulsan.core.Step.StepState.WORKING;
-import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
 import com.googlecode.lanterna.SGR;
@@ -396,14 +395,14 @@ public class LanternaUI extends AbstractUI implements TerminalResizeListener {
             putString(
                 x,
                 y,
-                format(
-                    "%3.0f%%    (%d/%d task%s done, %d task%s running)",
-                    progress * 100,
-                    terminatedTasks,
-                    submittedTasks,
-                    plural1,
-                    runningTasks,
-                    plural2));
+                "%3.0f%%    (%d/%d task%s done, %d task%s running)"
+                    .formatted(
+                        progress * 100,
+                        terminatedTasks,
+                        submittedTasks,
+                        plural1,
+                        runningTasks,
+                        plural2));
         break;
 
       case DONE:

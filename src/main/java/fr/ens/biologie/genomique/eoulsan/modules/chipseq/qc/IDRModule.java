@@ -446,7 +446,7 @@ public class IDRModule extends AbstractModule {
     return runAnalysisPlot(
         1,
         "%s/%s".formatted(outputDir, outputPrefix),
-        List.of(String.format("%s/%s", outputDir, inputPrefix)));
+        List.of("%s/%s".formatted(outputDir, inputPrefix)));
   }
 
   /**
