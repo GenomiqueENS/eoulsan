@@ -29,7 +29,8 @@ import fr.ens.biologie.genomique.kenetre.bio.FastqFormat;
 import fr.ens.biologie.genomique.kenetre.util.Utils;
 import fr.ens.biologie.genomique.kenetre.util.Version;
 import java.io.IOException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -435,10 +436,10 @@ public final class Globals {
         manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1) + MANIFEST_FILE;
       }
 
-      Manifest manifest = new Manifest(new URL(manifestPath).openStream());
+      Manifest manifest = new Manifest(new URI(manifestPath).toURL().openStream());
       manifestAttributes = manifest.getMainAttributes();
 
-    } catch (IOException e) {
+    } catch (URISyntaxException | IOException e) {
       // Do nothing when Manifest file does not exist (tests when building the
       // application)
       Utils.nop();

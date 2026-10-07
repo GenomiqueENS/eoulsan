@@ -30,8 +30,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLConnection;
 
 /**
@@ -49,8 +49,8 @@ public abstract class URLDataProtocol extends AbstractDataProtocol {
     }
 
     try {
-      return new URL(src.getSource()).openConnection();
-    } catch (MalformedURLException e) {
+      return new URI(src.getSource()).toURL().openConnection();
+    } catch (URISyntaxException e) {
       throw new IOException("Invalid URL: " + src);
     }
   }
@@ -77,7 +77,7 @@ public abstract class URLDataProtocol extends AbstractDataProtocol {
     final URLConnection con = createConnection(src);
 
     final SimpleDataFileMetadata result = new SimpleDataFileMetadata();
-    result.setContentLength(con.getContentLength());
+    result.setContentLength(con.getContentLengthLong());
     result.setLastModified(con.getLastModified());
     result.setContentType(con.getContentType());
     result.setContentEncoding(con.getContentEncoding());
