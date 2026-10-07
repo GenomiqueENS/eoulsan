@@ -55,12 +55,12 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.StringTokenizer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -1035,23 +1035,29 @@ public class DistCp implements Tool {
     if (!absPath.isAbsolute()) {
       throw new IllegalArgumentException("!absPath.isAbsolute(), absPath=" + absPath);
     }
-    String p = absPath.toUri().getPath();
 
-    StringTokenizer pathTokens = new StringTokenizer(p, "/");
-    for (StringTokenizer rootTokens = new StringTokenizer(root.toUri().getPath(), "/");
-        rootTokens.hasMoreTokens(); ) {
-      if (!rootTokens.nextToken().equals(pathTokens.nextToken())) {
-        return null;
-      }
+    final List<String> pathElements = splitPath(absPath.toUri().getPath());
+    final List<String> rootElements = splitPath(root.toUri().getPath());
+
+    if (rootElements.size() > pathElements.size()
+        || !pathElements.subList(0, rootElements.size()).equals(rootElements)) {
+      return null;
     }
-    StringBuilder sb = new StringBuilder();
-    for (; pathTokens.hasMoreTokens(); ) {
-      sb.append(pathTokens.nextToken());
-      if (pathTokens.hasMoreTokens()) {
-        sb.append(Path.SEPARATOR);
-      }
-    }
-    return sb.length() == 0 ? "." : sb.toString();
+
+    final List<String> relativeElements =
+        pathElements.subList(rootElements.size(), pathElements.size());
+
+    return relativeElements.isEmpty() ? "." : String.join(Path.SEPARATOR, relativeElements);
+  }
+
+  /**
+   * Split a path in its non-empty elements.
+   *
+   * @param path the path to split
+   * @return a list with the elements of the path
+   */
+  private static List<String> splitPath(final String path) {
+    return Arrays.stream(path.split("/")).filter(s -> !s.isEmpty()).toList();
   }
 
   /**
