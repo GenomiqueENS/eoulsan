@@ -798,7 +798,7 @@ public abstract class AbstractWorkflow implements Workflow {
 
     // Define the list of directories to create
     final List<DataFile> dirsToCheck =
-        Lists.newArrayList(
+        List.of(
             this.jobDir,
             this.outputDir,
             this.localWorkingDir,

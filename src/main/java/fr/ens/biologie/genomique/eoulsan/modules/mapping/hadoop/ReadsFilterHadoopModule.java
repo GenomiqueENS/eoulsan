@@ -24,7 +24,6 @@
 
 package fr.ens.biologie.genomique.eoulsan.modules.mapping.hadoop;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static fr.ens.biologie.genomique.eoulsan.CommonHadoop.createConfiguration;
 import static fr.ens.biologie.genomique.eoulsan.core.InputPortsBuilder.allPortsRequiredInWorkingDirectory;
 import static fr.ens.biologie.genomique.eoulsan.data.DataFormats.READS_FASTQ;
@@ -120,7 +119,7 @@ public class ReadsFilterHadoopModule extends AbstractReadsFilterModule {
         final DataFile inFile2 = inData.getDataFile(1);
         final DataFile outFile1 = outData.getDataFile(0);
         final DataFile outFile2 = outData.getDataFile(1);
-        final List<String> filenames = newArrayList(inFile1.getName(), inFile2.getName());
+        final List<String> filenames = List.of(inFile1.getName(), inFile2.getName());
 
         tfqFile =
             new DataFile(

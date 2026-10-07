@@ -327,9 +327,9 @@ class DataElement extends AbstractData {
     this.port = port;
 
     if (getFormat().getMaxFilesCount() == 1) {
-      this.files = Lists.newArrayList(createDataFile(-1));
+      this.files = List.of(createDataFile(-1));
     } else {
-      this.files = Lists.newArrayList(createDataFile(0));
+      this.files = List.of(createDataFile(0));
     }
   }
 
