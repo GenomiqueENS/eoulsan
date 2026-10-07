@@ -37,6 +37,7 @@ import fr.ens.biologie.genomique.eoulsan.design.SampleMetadata;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.List;
 import org.junit.Test;
 
@@ -114,7 +115,7 @@ public class Eoulsan2ReaderWriterTest {
 
     // Write design
 
-    File outFile = File.createTempFile("design-", ".txt");
+    File outFile = Files.createTempFile("design-", ".txt").toFile();
 
     new Eoulsan2DesignWriter(outFile).write(design);
 
@@ -135,7 +136,7 @@ public class Eoulsan2ReaderWriterTest {
     Design design = new Eoulsan2DesignReader(is).read();
 
     // Rewrite the the read design
-    File outFile = File.createTempFile("design-", ".txt");
+    File outFile = Files.createTempFile("design-", ".txt").toFile();
     new Eoulsan2DesignWriter(outFile).write(design);
 
     // Read the design generated

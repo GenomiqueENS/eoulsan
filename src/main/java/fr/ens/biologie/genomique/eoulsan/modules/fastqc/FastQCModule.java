@@ -401,7 +401,7 @@ public class FastQCModule extends AbstractModule {
 
     // Define the temporary output file
     final Path reportTempFile =
-        File.createTempFile("reportfile-", reportExtension, tempDirectory).toPath();
+        Files.createTempFile(tempDirectory.toPath(), "reportfile-", reportExtension);
 
     // Create the output report
     new HTMLReportArchive(seqFile, modules.toArray(new QCModule[0]), reportTempFile.toFile());

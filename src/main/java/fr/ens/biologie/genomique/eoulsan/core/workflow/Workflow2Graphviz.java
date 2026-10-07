@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -236,8 +237,8 @@ public class Workflow2Graphviz {
 
     try {
 
-      File tmpDotFile = File.createTempFile("eoulsan-workflow-", ".dot");
-      File tmpImageFile = File.createTempFile("eoulsan-workflow-", ".png");
+      File tmpDotFile = Files.createTempFile("eoulsan-workflow-", ".dot").toFile();
+      File tmpImageFile = Files.createTempFile("eoulsan-workflow-", ".png").toFile();
 
       tmpDotDataFile = new DataFile(tmpDotFile);
       tmpImageDataFile = new DataFile(tmpImageFile);

@@ -85,7 +85,7 @@ public class FileConcatInputStreamTest {
 
   private File writeFile(final int lines, final int mod) throws IOException {
 
-    File f = File.createTempFile("junit-", ".txt");
+    File f = Files.createTempFile("junit-", ".txt").toFile();
 
     Writer writer = Files.newBufferedWriter(f.toPath());
 

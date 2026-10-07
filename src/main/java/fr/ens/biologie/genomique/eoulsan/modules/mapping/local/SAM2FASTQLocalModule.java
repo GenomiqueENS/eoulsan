@@ -45,7 +45,8 @@ public class SAM2FASTQLocalModule extends AbstractSAM2FASTQModule {
       final Data inData = context.getInputData(DataFormats.MAPPER_RESULTS_SAM);
 
       // Get input SAM TMP data
-      File samTmpFile = File.createTempFile("samTmp", ".sam", context.getLocalTempDirectory());
+      File samTmpFile =
+          Files.createTempFile(context.getLocalTempDirectory().toPath(), "samTmp", ".sam").toFile();
 
       // Get output FASTQ data
       final Data outData = context.getOutputData(DataFormats.READS_FASTQ, inData);

@@ -71,7 +71,7 @@ public class FileDataProtocolTest {
   @Test
   public void testGetData() throws IOException {
 
-    File f = File.createTempFile("junit-", ".toto");
+    File f = Files.createTempFile("junit-", ".toto").toFile();
     writeFile(f, fileContent);
 
     DataFile df = new DataFile(f.getAbsolutePath());
@@ -94,7 +94,7 @@ public class FileDataProtocolTest {
   @Test
   public void testPutDataDataFile() throws IOException {
 
-    File f1 = File.createTempFile("junit-", ".toto");
+    File f1 = Files.createTempFile("junit-", ".toto").toFile();
     DataFile df = new DataFile(f1.getAbsolutePath());
 
     OutputStream os = df.create();
@@ -102,7 +102,7 @@ public class FileDataProtocolTest {
     writer.write(fileContent);
     writer.close();
 
-    File f2 = File.createTempFile("junit-", ".toto");
+    File f2 = Files.createTempFile("junit-", ".toto").toFile();
     writeFile(f2, fileContent);
 
     assertTrue(FileUtils.compareFile(f1, f2));
@@ -114,7 +114,7 @@ public class FileDataProtocolTest {
   @Test
   public void testGetMetadata() throws IOException, EoulsanException {
 
-    File f = File.createTempFile("junit-", ".toto");
+    File f = Files.createTempFile("junit-", ".toto").toFile();
     writeFile(f, fileContent);
 
     DataFile df = new DataFile(f.getAbsolutePath());
@@ -128,20 +128,20 @@ public class FileDataProtocolTest {
     assertEquals(f.lastModified(), md.getLastModified());
     f.delete();
 
-    f = File.createTempFile("junit-", ".txt");
+    f = Files.createTempFile("junit-", ".txt").toFile();
     writeFile(f, fileContent);
     md = new DataFile(f.getAbsolutePath()).getMetaData();
     assertEquals("text/plain", md.getContentType());
     f.delete();
 
-    f = File.createTempFile("junit-", ".txt.gz");
+    f = Files.createTempFile("junit-", ".txt.gz").toFile();
     writeFile(f, fileContent);
     md = new DataFile(f.getAbsolutePath()).getMetaData();
     assertEquals("text/plain", md.getContentType());
     assertEquals("gzip", md.getContentEncoding());
     f.delete();
 
-    f = File.createTempFile("junit-", ".png.bz2");
+    f = Files.createTempFile("junit-", ".png.bz2").toFile();
     writeFile(f, fileContent);
     md = new DataFile(f.getAbsolutePath()).getMetaData();
     assertEquals("image/png", md.getContentType());
@@ -176,7 +176,7 @@ public class FileDataProtocolTest {
     assertFalse(f.exists());
     assertEquals(f.exists(), df.exists());
 
-    f = File.createTempFile("junit-", ".toto");
+    f = Files.createTempFile("junit-", ".toto").toFile();
     df = new DataFile(f.getAbsolutePath());
 
     writeFile(f, fileContent);
