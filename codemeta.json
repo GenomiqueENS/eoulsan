@@ -1,0 +1,292 @@
+{
+  "@context": "https://w3id.org/codemeta/3.0",
+  "type": "SoftwareSourceCode",
+  "name": "Eoulsan",
+  "description": "Eoulsan is a modular and scalable workflow engine dedicated to high-throughput sequencing analyses, designed for bioinformaticians and core facilities. The experimental design is stored in a text file and the workflow steps and parameters in an XML file, which separates the workflow description from the commands to run. It supports bulk RNA-seq, Nanopore long-read RNA-seq, ChIP-seq and single-cell RNA-seq workflows, can reuse Galaxy tool XML wrappers as modules, and runs on workstations, servers and clusters (HTCondor, SLURM, TORQUE) with Docker or Singularity images.",
+  "version": "2.7.1",
+  "license": [
+    "https://spdx.org/licenses/LGPL-2.1",
+    "https://spdx.org/licenses/CECILL-C"
+  ],
+  "codeRepository": "https://github.com/GenomiqueENS/eoulsan",
+  "issueTracker": "https://github.com/GenomiqueENS/eoulsan/issues",
+  "sameAs": [
+    "https://archive.softwareheritage.org/browse/origin/?origin_url=https://github.com/GenomiqueENS/eoulsan"
+  ],
+  "url": "https://www.tools.genomique.bio.ens.psl.eu/eoulsan/",
+  "programmingLanguage": [
+    "Java"
+  ],
+  "runtimePlatform": "Java 17",
+  "operatingSystem": [
+    "Linux"
+  ],
+  "applicationCategory": "Bioinformatics",
+  "keywords": [
+    "bioinformatics",
+    "workflow engine",
+    "workflow manager",
+    "high-throughput sequencing",
+    "NGS",
+    "RNA-seq",
+    "long-read RNA-seq",
+    "Oxford Nanopore",
+    "single-cell RNA-seq",
+    "ChIP-seq",
+    "differential expression",
+    "DESeq2",
+    "Galaxy tool XML",
+    "Docker",
+    "Singularity",
+    "reproducibility",
+    "core facility"
+  ],
+  "softwareRequirements": [
+    "Java 17",
+    "GNU/Linux",
+    "Docker or Singularity (optional, to run module tools in containers)",
+    "Job scheduler (optional): HTCondor, SLURM or TORQUE",
+    "Kenetre (Java library, object model split out of Eoulsan)"
+  ],
+  "developmentStatus": "active",
+  "author": [
+    {
+      "id": "https://orcid.org/0000-0003-4253-1048",
+      "type": "Person",
+      "givenName": "Laurent",
+      "familyName": "Jourdren"
+    },
+    {
+      "type": "Person",
+      "givenName": "Nathalie",
+      "familyName": "Lehmann"
+    },
+    {
+      "type": "Person",
+      "givenName": "Sandrine",
+      "familyName": "Perrin"
+    },
+    {
+      "type": "Person",
+      "givenName": "Claire",
+      "familyName": "Wallon"
+    },
+    {
+      "type": "Person",
+      "givenName": "Xavier",
+      "familyName": "Bauquet"
+    },
+    {
+      "type": "Person",
+      "givenName": "Vivien",
+      "familyName": "Deshaies"
+    },
+    {
+      "type": "Person",
+      "givenName": "Cyril",
+      "familyName": "Firmo"
+    },
+    {
+      "type": "Person",
+      "givenName": "Runxin",
+      "familyName": "Du"
+    },
+    {
+      "type": "Person",
+      "givenName": "Charlotte",
+      "familyName": "Berthelier"
+    },
+    {
+      "type": "Person",
+      "givenName": "Céline",
+      "familyName": "Hernandez"
+    },
+    {
+      "type": "Person",
+      "givenName": "Cédric",
+      "familyName": "Michaud"
+    },
+    {
+      "type": "Person",
+      "givenName": "Denis",
+      "familyName": "Thieffry"
+    },
+    {
+      "id": "https://orcid.org/0000-0002-0534-7797",
+      "type": "Person",
+      "givenName": "Stéphane",
+      "familyName": "Le Crom"
+    },
+    {
+      "id": "https://orcid.org/0000-0003-2608-476X",
+      "type": "Person",
+      "givenName": "Morgane",
+      "familyName": "Thomas-Chollier"
+    },
+    {
+      "type": "Person",
+      "givenName": "Maria",
+      "familyName": "Bernard"
+    },
+    {
+      "type": "Person",
+      "givenName": "Marie-Agnès",
+      "familyName": "Dillies"
+    }
+  ],
+  "maintainer": {
+    "type": "Person",
+    "givenName": "Laurent",
+    "familyName": "Jourdren",
+    "email": "eoulsan@bio.ens.psl.eu"
+  },
+  "producer": {
+    "type": "Organization",
+    "name": "GenomiqueENS, Institut de Biologie de l'École normale supérieure (IBENS), Paris",
+    "url": "https://genomique.bio.ens.psl.eu"
+  },
+  "funding": [
+    {
+      "type": "Grant",
+      "identifier": "ANR-10-INBS-09",
+      "name": "France Génomique",
+      "funder": {
+        "type": "Organization",
+        "name": "Agence Nationale de la Recherche (ANR)"
+      }
+    },
+    {
+      "type": "Grant",
+      "name": "Infrastructures en Biologie Santé et Agronomie (IBiSA)",
+      "funder": {
+        "type": "Organization",
+        "name": "IBiSA"
+      }
+    }
+  ],
+  "referencePublication": [
+    {
+      "type": "ScholarlyArticle",
+      "name": "Eoulsan 2: an efficient workflow manager for reproducible bulk, long-read and single-cell transcriptomics analyses",
+      "identifier": "https://doi.org/10.1101/2021.10.13.464219",
+      "author": [
+        {
+          "type": "Person",
+          "givenName": "Nathalie",
+          "familyName": "Lehmann"
+        },
+        {
+          "type": "Person",
+          "givenName": "Sandrine",
+          "familyName": "Perrin"
+        },
+        {
+          "type": "Person",
+          "givenName": "Claire",
+          "familyName": "Wallon"
+        },
+        {
+          "type": "Person",
+          "givenName": "Xavier",
+          "familyName": "Bauquet"
+        },
+        {
+          "type": "Person",
+          "givenName": "Vivien",
+          "familyName": "Deshaies"
+        },
+        {
+          "type": "Person",
+          "givenName": "Cyril",
+          "familyName": "Firmo"
+        },
+        {
+          "type": "Person",
+          "givenName": "Runxin",
+          "familyName": "Du"
+        },
+        {
+          "type": "Person",
+          "givenName": "Charlotte",
+          "familyName": "Berthelier"
+        },
+        {
+          "type": "Person",
+          "givenName": "Céline",
+          "familyName": "Hernandez"
+        },
+        {
+          "type": "Person",
+          "givenName": "Cédric",
+          "familyName": "Michaud"
+        },
+        {
+          "type": "Person",
+          "givenName": "Denis",
+          "familyName": "Thieffry"
+        },
+        {
+          "type": "Person",
+          "givenName": "Stéphane",
+          "familyName": "Le Crom"
+        },
+        {
+          "type": "Person",
+          "givenName": "Morgane",
+          "familyName": "Thomas-Chollier"
+        },
+        {
+          "type": "Person",
+          "givenName": "Laurent",
+          "familyName": "Jourdren"
+        }
+      ],
+      "publisher": {
+        "type": "Organization",
+        "name": "bioRxiv"
+      },
+      "datePublished": "2021"
+    },
+    {
+      "type": "ScholarlyArticle",
+      "name": "Eoulsan: a cloud computing-based framework facilitating high throughput sequencing analyses",
+      "identifier": "https://doi.org/10.1093/bioinformatics/bts165",
+      "author": [
+        {
+          "type": "Person",
+          "givenName": "Laurent",
+          "familyName": "Jourdren"
+        },
+        {
+          "type": "Person",
+          "givenName": "Maria",
+          "familyName": "Bernard"
+        },
+        {
+          "type": "Person",
+          "givenName": "Marie-Agnès",
+          "familyName": "Dillies"
+        },
+        {
+          "type": "Person",
+          "givenName": "Stéphane",
+          "familyName": "Le Crom"
+        }
+      ],
+      "isPartOf": {
+        "type": "PublicationIssue",
+        "issueNumber": "11",
+        "isPartOf": {
+          "type": "PublicationVolume",
+          "volumeNumber": "28",
+          "isPartOf": {
+            "type": "Periodical",
+            "name": "Bioinformatics"
+          }
+        }
+      },
+      "pagination": "1542-1543",
+      "datePublished": "2012"
+    }
+  ]
+}
